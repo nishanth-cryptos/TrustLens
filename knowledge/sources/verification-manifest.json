@@ -1,0 +1,379 @@
+{
+  "$comment": "TrustLens source verification manifest. Produced by the Phase 1 verification pass mandated by DEC-003. Machine-readable companion to docs/01-research/RESEARCH-001-source-inventory.md. Tracking parameters (utm_source) have been stripped from all URLs.",
+  "manifest_version": "1.1",
+  "generated": "2026-07-31",
+  "amended": "2026-08-14 (GATE-001) — verified fraction restated as PRIMARY_VERIFIED only; claim_under_test and blocks_rules recorded for the seven failed sources that previously carried neither, so the manual re-retrieval work list is explicit.",
+  "verification_method": "Automated retrieval (HTTPS GET) followed by targeted claim location within the retrieved document. No claim is graded PRIMARY_VERIFIED unless its specific wording was located in the issuing body's own document.",
+  "grades": {
+    "PRIMARY_VERIFIED": "Issuing body's own document retrieved AND the specific claim located within it",
+    "PRIMARY_CITED_UNVERIFIED": "Specific document cited and shown to exist, but the claim was not locatable in retrieved content",
+    "INDEX_ONLY": "Citation resolves to a listing or home page, not a document substantiating the claim",
+    "RETRIEVAL_FAILED": "Document could not be retrieved from this environment; existence and content unconfirmed"
+  },
+  "summary": {
+    "total_sources": 26,
+    "primary_verified": 11,
+    "primary_cited_unverified": 1,
+    "index_only": 1,
+    "retrieval_failed": 13,
+    "primary_verified_fraction": "11/26 (42%)",
+    "$comment_fraction": "Only PRIMARY_VERIFIED counts as verified. PRIMARY_CITED_UNVERIFIED (SRC-023) is shown to exist but its claim was not located, so it is excluded from this fraction. Matches RESEARCH-001 section 2."
+  },
+  "sources": [
+    {
+      "id": "SRC-001",
+      "issuing_body": "PIB / Ministry of Home Affairs",
+      "authority": "OFFICIAL_GOVERNMENT",
+      "title": "National cybercrime response mechanism (CFCFRMS)",
+      "url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2287674",
+      "status": "RETRIEVAL_FAILED",
+      "http": "403",
+      "claim_under_test": "CFCFRMS saved >Rs 11,158 crore across >32.80 lakh complaints by 30 June 2026; 1930 helpline",
+      "note": "Headline statistic of the research package. UNVERIFIED — must not be repeated as fact in any TrustLens artifact."
+    },
+    {
+      "id": "SRC-002",
+      "issuing_body": "I4C, Ministry of Home Affairs",
+      "authority": "OFFICIAL_GOVERNMENT",
+      "title": "Advisories listing page",
+      "url": "https://i4c.mha.gov.in/advisories.aspx",
+      "status": "RETRIEVAL_FAILED",
+      "http": "ECONNRESET",
+      "footnote_markers_in_rp": 13,
+      "note": "Carries more citation markers than any other source in the research package, and is an index page rather than a document. Highest-impact evidence gap."
+    },
+    {
+      "id": "SRC-003",
+      "issuing_body": "CERT-In",
+      "authority": "OFFICIAL_GOVERNMENT",
+      "title": "CERT-In home page",
+      "url": "https://www.cert-in.org.in/",
+      "status": "INDEX_ONLY",
+      "note": "Home page; cannot substantiate any specific claim. Superseded by SRC-017 and SRC-021 which are specific advisories."
+    },
+    {
+      "id": "SRC-004",
+      "issuing_body": "Reserve Bank of India",
+      "authority": "OFFICIAL_REGULATOR",
+      "title": "Reserve Bank sensitises members of public on safe use of digital transactions",
+      "url": "https://www.rbi.org.in/commonman/english/scripts/PressReleases.aspx?Id=3232",
+      "published": "2020-06-22",
+      "status": "PRIMARY_VERIFIED",
+      "verified_quotes": [
+        "banks and other payment systems operators never ask for details such as password, PIN, OTP, CVV number",
+        "avoid undertaking banking or other financial transactions through public, open or free wifi-networks"
+      ],
+      "discrepancy": "D1 — the research package states this source says institutions never ask for 'password, PIN, OTP, CVV, or UPI-PIN'. UPI-PIN does NOT appear in the source's list. The RBI half of the UPI-PIN claim is unsupported by this document.",
+      "age_note": "Published 2020; six years old at time of verification. Freshness relevant to review scheduling."
+    },
+    {
+      "id": "SRC-005",
+      "issuing_body": "NPCI",
+      "authority": "OFFICIAL_PAYMENT_OPERATOR",
+      "title": "BHIM UPI Guidelines",
+      "url": "https://www.npci.org.in/uploads/BHIM_UPI_Guidelines_2026_012a0b1bce.pdf",
+      "status": "RETRIEVAL_FAILED",
+      "http": "403",
+      "claim_under_test": "UPI PIN must not be shared; only sending money requires UPI PIN",
+      "note": "Blocked via both WebFetch and direct curl. Substance independently verified through SRC-021 (CERT-In)."
+    },
+    {
+      "id": "SRC-006",
+      "issuing_body": "SEBI",
+      "authority": "OFFICIAL_REGULATOR",
+      "title": "Caution to Investor",
+      "url": "https://investor.sebi.gov.in/cautiontoinvestor.html",
+      "status": "PRIMARY_VERIFIED",
+      "verified_quotes": [
+        "Be highly suspicious of any guaranteed high return investment opportunity.",
+        "It is illegal to act as Investment Adviser without SEBI registration.",
+        "Investors are advised to take advice for investment only from entities registered under SEBI (Investment Adviser) Regulations, 2013.",
+        "Investment Advisers have to limit themselves to giving advice and they should not handle cash or securities."
+      ],
+      "discrepancy": "D2 — the research package attributes deepfake and misleading social-media financial content warnings to this page. They are NOT present here; that material belongs to SRC-023."
+    },
+    {
+      "id": "SRC-007",
+      "issuing_body": "DoT / Sanchar Saathi (Chakshu)",
+      "authority": "OFFICIAL_GOVERNMENT",
+      "title": "Suspected Fraud Communication Reporting (Chakshu)",
+      "url": "https://sancharsaathi.gov.in/sfc",
+      "status": "PRIMARY_VERIFIED",
+      "verified_quotes": [
+        "Bank Account / Payment Wallet / SIM / Gas / Electricity / KYC update, impersonation as Government official, sextortion etc."
+      ],
+      "note": "Confirms the reporting-category taxonomy the research package attributes to Chakshu."
+    },
+    {
+      "id": "SRC-008",
+      "issuing_body": "HDFC Bank",
+      "authority": "INDUSTRY",
+      "title": "Beware of Fraud / SIM swap",
+      "url": "https://www.hdfcbank.com/personal/useful-links/security/beware-of-fraud/sim-swap",
+      "status": "RETRIEVAL_FAILED",
+      "http": "302 -> https://www.hdfc.bank.in/security",
+      "discrepancy": "D5 — LINK ROT CONFIRMED. The cited URL now redirects to a different host, and the destination page did not contain the cited fraud content. Five rules in the research package rest on this source.",
+      "note": "Commercial source; not an authority (CONF-005)."
+    },
+    {
+      "id": "SRC-009",
+      "issuing_body": "CISA (US)",
+      "authority": "FOREIGN_OFFICIAL",
+      "title": "Malware, Phishing, and Ransomware",
+      "url": "https://www.cisa.gov/topics/cyber-threats-and-advisories/malware-phishing-and-ransomware",
+      "status": "PRIMARY_VERIFIED",
+      "verified_quotes": [
+        "Phishing is online scam enticing users to share private information using deceitful or misleading tactics."
+      ],
+      "discrepancy": "D3 — the research package attributes smishing/vishing definitions to this page. They are NOT present here."
+    },
+    {
+      "id": "SRC-010",
+      "issuing_body": "Google",
+      "authority": "INDUSTRY",
+      "title": "Google's Safety Charter for India's AI-led Transformation",
+      "url": "https://blog.google/intl/en-in/company-news/googles-safety-charter-for-indias-ai-led-transformation/",
+      "published": "2025-06-18",
+      "status": "PRIMARY_VERIFIED",
+      "verified_quotes": [
+        "Since our Play Protect pilot rolled out in October 2024 in India, it has blocked nearly 6 crore (60 million) attempts to install high-risk apps"
+      ],
+      "discrepancy": "D4 — published June 2025, not 2026. The figure itself is accurate and correctly characterised as pilot-period."
+    },
+    {
+      "id": "SRC-011",
+      "issuing_body": "Europol",
+      "authority": "FOREIGN_OFFICIAL",
+      "title": "Online Fraud Schemes: A Web of Deceit",
+      "url": "https://www.europol.europa.eu/cms/sites/default/files/documents/Spotlight-Report_Online-fraud-schemes.pdf",
+      "status": "RETRIEVAL_FAILED",
+      "note": "Partial download; text extraction failed. Cited only for background AI-threat context, so impact is low."
+    },
+    {
+      "id": "SRC-012",
+      "issuing_body": "NITI Aayog",
+      "authority": "OFFICIAL_GOVERNMENT",
+      "title": "Digital Arrest: The Modern-Day Cyber Scam",
+      "url": "https://www.niti.gov.in/sites/default/files/2025-04/Digital_Arrest_The_Modern_Day_Cyber_Scam.pdf",
+      "published": "2025-04",
+      "status": "PRIMARY_VERIFIED",
+      "retrieved": "2026-07-31",
+      "sha256": "9138fa81cd72a5b0634cb33d3979548fc91f74e62ba22828fd0b6b5f6b69b9ac",
+      "bytes": 264336,
+      "verified_quotes": [
+        "Digital arrest is a scam designed to extort money from victims using fear, deceit, and intimidation. Fraudsters impersonate law enforcement officials, using threats of arrest, frozen bank accounts, and passport cancellations to coerce victims into paying a 'fine' or 'security deposit' to avoid legal action.",
+        "Coercion: Victims are threatened with arrest, freezing of bank accounts, or passport cancellation. They are instructed not to involve family or lawyers, and are asked to pay a 'security deposit' or 'fine.'",
+        "With fake documents, doctored videos, and even spoofed phone numbers, the scammers create an air of legitimacy",
+        "claiming that the victim is involved in serious crimes like money laundering, cybercrime, or drug trafficking"
+      ],
+      "discrepancy": "D6 — the source does not use the word 'secrecy'. Its actual wording is 'instructed not to involve family or lawyers'. Encode the source wording, not the paraphrase.",
+      "note": "Fully verifies the two highest-severity rules in the starter set."
+    },
+    {
+      "id": "SRC-013",
+      "issuing_body": "I4C",
+      "authority": "OFFICIAL_GOVERNMENT",
+      "title": "Advisory - USSD based call forwarding / account takeover (TAU_ADV_007)",
+      "url": "https://i4c.mha.gov.in/theme/resources/advisories/Advisory-USSD based account takeover-TAU_ADV_007.pdf",
+      "status": "RETRIEVAL_FAILED",
+      "http": "timeout / connection reset",
+      "claim_under_test": "Courier/delivery pretext leading to a request to dial a USSD short code, silently enabling call forwarding",
+      "blocks_rules": ["TL-TEL-001"],
+      "note": "Sole basis for TL-TEL-001. Unsupported until retrieved (G-01)."
+    },
+    {
+      "id": "SRC-014",
+      "issuing_body": "CERT-In",
+      "authority": "OFFICIAL_GOVERNMENT",
+      "title": "Cyber Security Awareness Booklet for Digital Nagriks and Digital Enterprises (NCSAM 2023)",
+      "url": "https://www.cert-in.org.in/PDF/CSA_Booklet.pdf",
+      "published": "2023-10",
+      "status": "PRIMARY_VERIFIED",
+      "retrieved": "2026-07-31",
+      "sha256": "8709d68342a4824b39d61d7720ebd060e5d698980612c4aa80b7929dc807cea2",
+      "bytes": 5174032,
+      "verified_quotes": [
+        "Scammers use 'bots' to trick unsuspecting users into making online payments to accounts under their control",
+        "Fraudsters use Fake Profile of the victim"
+      ],
+      "note": "Contains a 'Social Media Frauds' section. Does NOT contain job-offer or urgent-transfer guidance — those belong to SRC-021."
+    },
+    {
+      "id": "SRC-015",
+      "issuing_body": "I4C",
+      "authority": "OFFICIAL_GOVERNMENT",
+      "title": "Cyber Crime Information - 135 (part-time job / Ponzi advisory)",
+      "url": "https://i4c.mha.gov.in/theme/resources/advisories/CybercrimeInformation-135.pdf",
+      "status": "RETRIEVAL_FAILED",
+      "http": "000",
+      "claim_under_test": "Part-time task app sequence: small deposit, fake displayed earnings, withdrawal blocked pending further payment",
+      "blocks_rules": ["TL-JOB-003"],
+      "note": "Sole basis for TL-JOB-003. Unsupported until retrieved (G-01)."
+    },
+    {
+      "id": "SRC-016",
+      "issuing_body": "Meta",
+      "authority": "INDUSTRY",
+      "title": "Meta Launches New Anti-Scam Tools, Deploys AI Technology to Fight Scammers and Protect People",
+      "url": "https://about.fb.com/news/2026/03/meta-launches-new-anti-scam-tools-deploys-ai-technology-to-fight-scammers-and-protect-people/",
+      "published": "2026-03-11",
+      "status": "PRIMARY_VERIFIED",
+      "verified_quotes": [
+        "they may urge you to share your phone number, followed by a device linking code on your WhatsApp or try to trick you into scanning a QR code under false pretenses, which would then link the scammer's device to your account"
+      ]
+    },
+    {
+      "id": "SRC-017",
+      "issuing_body": "CERT-In",
+      "authority": "OFFICIAL_GOVERNMENT",
+      "title": "WhatsApp Account takeover campaign (GhostPairing)",
+      "reference": "CIAD-2025-0055",
+      "url": "https://www.cert-in.org.in/s2cMainServlet?VLCODE=CIAD-2025-0055&pageid=PUBVLNOTES02",
+      "published": "2025-12-19",
+      "status": "PRIMARY_VERIFIED",
+      "verified_quotes": [
+        "This newly identified cyber campaign, called GhostPairing enables cybercriminals to take complete control of WhatsApp accounts without needing passwords or SIM swaps.",
+        "The message contains a link with a Facebook-style preview. The link leads to a fake Facebook viewer that prompts users to 'verify' to see the content."
+      ]
+    },
+    {
+      "id": "SRC-018",
+      "issuing_body": "NPCI",
+      "authority": "OFFICIAL_PAYMENT_OPERATOR",
+      "title": "Fraud Awareness",
+      "url": "https://www.npci.org.in/fraud-awareness",
+      "status": "RETRIEVAL_FAILED",
+      "http": "403",
+      "claim_under_test": "'Scan a QR code to receive money' is fraudulent — scanning a QR authorises a payment out, never a credit in",
+      "blocks_rules": ["TL-PAY-002"],
+      "note": "Substantially mitigated by SRC-021, which states categorically that no UPI PIN or OTP is needed to receive money (G-02)."
+    },
+    {
+      "id": "SRC-019",
+      "issuing_body": "I4C",
+      "authority": "OFFICIAL_GOVERNMENT",
+      "title": "Advisory TAU-ADV-012 - Android GOD Mode (accessibility permission abuse)",
+      "url": "https://i4c.mha.gov.in/theme/resources/advisories/ADVISORY TAU-ADV-012- Android GOD Mode Advisory.pdf",
+      "status": "RETRIEVAL_FAILED",
+      "http": "000",
+      "claim_under_test": "Android accessibility permission requested out of context, granting an app screen-reading and input-injection control",
+      "blocks_rules": ["TL-MAL-002"],
+      "note": "Sole basis for TL-MAL-002. Unsupported until retrieved (G-01)."
+    },
+    {
+      "id": "SRC-020",
+      "issuing_body": "Reserve Bank of India",
+      "authority": "OFFICIAL_REGULATOR",
+      "title": "FAME - Financial Awareness Messages booklet",
+      "url": "https://www.rbi.org.in/commonman/images/FAME202426022024.pdf",
+      "status": "PRIMARY_VERIFIED",
+      "retrieved": "2026-07-31",
+      "sha256": "7acec04a8e3e3ad6428dfb50f5586136f30e1e991cd32dd8472c97b15129bd80",
+      "bytes": 6908732,
+      "verified_quotes": [
+        "120% returns assured! Zero risk!",
+        "Invest with or deposit only with entities registered with or regulated"
+      ],
+      "note": "Presented as a fraud cue in the source, exactly as the research package characterises it."
+    },
+    {
+      "id": "SRC-021",
+      "issuing_body": "CERT-In",
+      "authority": "OFFICIAL_GOVERNMENT",
+      "title": "Preventing Online scams",
+      "reference": "CIAD-2024-0050",
+      "url": "https://www.cert-in.org.in/s2cMainServlet?VLCODE=CIAD-2024-0050&pageid=PUBVLNOTES02",
+      "published": "2024-10-24",
+      "status": "PRIMARY_VERIFIED",
+      "verified_quotes": [
+        "Verify the sender's banking name before making payments using QR codes.",
+        "Always remember, you don't need a UPI PIN or OTP to receive money.",
+        "Verify requests for urgent money transfers by calling directly your relatives/friends.",
+        "Never pay for job offers. Verify job postings and companies before applying or providing personal data."
+      ],
+      "note": "Highest-value verification of the pass. Independently substantiates the receive-vs-pay boundary that NPCI (SRC-005, SRC-018) could not be retrieved to confirm, plus three further rule bases."
+    },
+    {
+      "id": "SRC-022",
+      "issuing_body": "PIB",
+      "authority": "OFFICIAL_GOVERNMENT",
+      "title": "Regulatory and Executive Impersonation for WhatsApp Account takeover",
+      "url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2276809",
+      "status": "RETRIEVAL_FAILED",
+      "http": "403",
+      "claim_under_test": "Executive/regulator impersonation ('boss scam') issuing an urgent payment order over a messaging app",
+      "blocks_rules": ["TL-AUTH-003"],
+      "note": "Sole basis for TL-AUTH-003. Unsupported until retrieved (G-03)."
+    },
+    {
+      "id": "SRC-023",
+      "issuing_body": "SEBI",
+      "authority": "OFFICIAL_REGULATOR",
+      "title": "Caution to Investors on Stock Market Scams through Social Media Platforms",
+      "reference": "PR No. 27/2025",
+      "url": "https://www.sebi.gov.in/media-and-notifications/press-releases/may-2025/caution-to-investors-on-stock-market-scams-through-social-media-platforms_94064.html",
+      "published": "2025-05-21",
+      "status": "PRIMARY_CITED_UNVERIFIED",
+      "note": "Title, reference number and date confirmed. Body content was not present in the retrieved page, so the specific deepfake/celebrity-endorsement claim remains unverified."
+    },
+    {
+      "id": "SRC-024",
+      "issuing_body": "I4C",
+      "authority": "OFFICIAL_GOVERNMENT",
+      "title": "Advisory TAU-ADV-013 - Rising crypto scams targeting Trust Wallet users",
+      "url": "https://i4c.mha.gov.in/theme/resources/advisories/MJ-ADVISORY TAU-ADV-013- Trust Wallet -Final V4.pdf",
+      "status": "RETRIEVAL_FAILED",
+      "http": "000",
+      "claim_under_test": "'Connect your wallet to verify your assets' as a crypto-drain pretext targeting Trust Wallet users",
+      "blocks_rules": ["TL-CRYP-001"],
+      "note": "Sole basis for TL-CRYP-001. Unsupported until retrieved (G-01)."
+    },
+    {
+      "id": "SRC-025",
+      "issuing_body": "I4C",
+      "authority": "OFFICIAL_GOVERNMENT",
+      "title": "Advisory - iOS/Apple Malicious Side-Loading",
+      "url": "https://i4c.mha.gov.in/theme/resources/advisories/iOS-Apple-Malicious-Side-Loading-Advisory.pdf",
+      "status": "RETRIEVAL_FAILED",
+      "http": "000",
+      "claim_under_test": "Prompt to sideload an app or install a configuration profile outside the official store as a malware delivery vector",
+      "blocks_rules": ["TL-MAL-001"],
+      "note": "TL-MAL-001 retains PARTIAL support from SRC-010 (Play Protect install-attempt prevalence), which evidences the vector's scale but not this advisory's specific guidance (G-01)."
+    },
+    {
+      "id": "SRC-026",
+      "issuing_body": "HDFC Bank",
+      "authority": "INDUSTRY",
+      "title": "Security Threat Detected",
+      "url": "https://www.hdfcbank.com/personal/useful-links/important-messages/security-threat-detected",
+      "status": "RETRIEVAL_FAILED",
+      "note": "Same domain migration as SRC-008. Commercial source; not an authority."
+    }
+  ],
+  "organisation_level_findings": [
+    {
+      "organisation": "I4C",
+      "urls_cited": 5,
+      "urls_retrieved": 0,
+      "finding": "Entirely unreachable from this environment. I4C is ranked 'Very high' research priority by the research package and underpins roughly 12 of the 30 starter rules. This is the single largest evidence gap in the programme."
+    },
+    {
+      "organisation": "NPCI",
+      "urls_cited": 2,
+      "urls_retrieved": 0,
+      "finding": "Entirely unreachable. Underpins the three highest-scored rules in the starter set. Substance survives via CERT-In SRC-021, which independently states the receive-vs-pay boundary."
+    },
+    {
+      "organisation": "CERT-In",
+      "urls_cited": 4,
+      "urls_retrieved": 3,
+      "finding": "Most reliably verifiable official source. Two specific advisories and the awareness booklet all retrieved and quoted."
+    },
+    {
+      "organisation": "HDFC Bank",
+      "urls_cited": 2,
+      "urls_retrieved": 0,
+      "finding": "Link rot confirmed — cited domain now redirects and content was not located. Commercial source; five rules depend on it."
+    }
+  ]
+}

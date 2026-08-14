@@ -1,0 +1,45 @@
+# Build output
+target/
+build/
+dist/
+out/
+*.class
+*.jar
+!.mvn/wrapper/maven-wrapper.jar
+
+# Node
+node_modules/
+.vite/
+*.tsbuildinfo
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+
+# Environment and secrets — never commit real credentials (MP §18)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets/
+
+# Evidence and user-submitted artifacts must never enter version control (MP §21)
+/evidence-store/
+/uploads/
+*.evidence
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+
+# Logs and local databases
+*.log
+logs/
+*.sqlite
+*.db

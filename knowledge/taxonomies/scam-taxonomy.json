@@ -1,0 +1,109 @@
+{
+  "$comment": "TrustLens canonical scam taxonomy. Machine-readable companion to docs/01-research/RESEARCH-002-scam-taxonomy.md. evidence: VERIFIED | PARTIAL | UNVERIFIED, derived from the RESEARCH-001 verification pass. Categories are NOT mutually exclusive.",
+  "taxonomy_version": "1.0",
+  "generated": "2026-07-31",
+  "locale_scope": "IN",
+  "usage_rules": [
+    "A rule may only claim a VERIFIED or PARTIAL category as officially supported.",
+    "An UNVERIFIED category may carry rules only when those rules are explicitly graded HEURISTIC.",
+    "Multiple category assignment is expected; severity must not be double-counted across categories.",
+    "Category IDs are permanent. Deprecation sets a flag and never reuses an ID."
+  ],
+  "categories": [
+    {
+      "id": "TAX-01", "name": "Financial fraud", "evidence": "VERIFIED", "sources": ["SRC-021", "SRC-004"],
+      "subcategories": [
+        {"id": "TAX-01-01", "name": "Banking credential theft", "evidence": "VERIFIED", "sources": ["SRC-004"]},
+        {"id": "TAX-01-02", "name": "UPI PIN fraud", "evidence": "VERIFIED", "sources": ["SRC-021"]},
+        {"id": "TAX-01-03", "name": "QR-code payment misuse", "evidence": "VERIFIED", "sources": ["SRC-021"]},
+        {"id": "TAX-01-04", "name": "Fake refund or false-credit claim", "evidence": "UNVERIFIED", "sources": ["SRC-008"], "note": "HDFC only; link rot D5"},
+        {"id": "TAX-01-05", "name": "Loan-app abuse", "evidence": "UNVERIFIED", "sources": []},
+        {"id": "TAX-01-06", "name": "Mule account and illegal payment gateway", "evidence": "UNVERIFIED", "sources": []},
+        {"id": "TAX-01-07", "name": "Card, CVV and OTP fraud", "evidence": "VERIFIED", "sources": ["SRC-004"]}
+      ]
+    },
+    {
+      "id": "TAX-02", "name": "Identity and KYC fraud", "evidence": "VERIFIED", "sources": ["SRC-007"],
+      "subcategories": [
+        {"id": "TAX-02-01", "name": "Fake KYC-update link", "evidence": "PARTIAL", "sources": ["SRC-007"]},
+        {"id": "TAX-02-02", "name": "KYC verification call", "evidence": "PARTIAL", "sources": ["SRC-007", "SRC-012"]},
+        {"id": "TAX-02-03", "name": "SIM binding or SIM swap", "evidence": "PARTIAL", "sources": ["SRC-007"]},
+        {"id": "TAX-02-04", "name": "Customer-care impersonation", "evidence": "UNVERIFIED", "sources": ["SRC-008"]}
+      ]
+    },
+    {
+      "id": "TAX-03", "name": "Government and authority impersonation", "evidence": "VERIFIED", "sources": ["SRC-012", "SRC-007"],
+      "subcategories": [
+        {"id": "TAX-03-01", "name": "Digital arrest", "evidence": "VERIFIED", "sources": ["SRC-012"], "note": "Complete modus operandi quoted in source"},
+        {"id": "TAX-03-02", "name": "Law-enforcement impersonation", "evidence": "VERIFIED", "sources": ["SRC-012"]},
+        {"id": "TAX-03-03", "name": "Government-official impersonation", "evidence": "VERIFIED", "sources": ["SRC-007"]},
+        {"id": "TAX-03-04", "name": "Executive impersonation (boss scam)", "evidence": "UNVERIFIED", "sources": ["SRC-022"]}
+      ]
+    },
+    {
+      "id": "TAX-04", "name": "Telecom and device hijack fraud", "evidence": "PARTIAL", "sources": ["SRC-007"],
+      "subcategories": [
+        {"id": "TAX-04-01", "name": "USSD call forwarding", "evidence": "UNVERIFIED", "sources": ["SRC-013"]},
+        {"id": "TAX-04-02", "name": "Caller-ID spoofing", "evidence": "PARTIAL", "sources": ["SRC-012"]},
+        {"id": "TAX-04-03", "name": "SIM misuse", "evidence": "PARTIAL", "sources": ["SRC-007"]}
+      ]
+    },
+    {
+      "id": "TAX-05", "name": "Investment and wealth-building fraud", "evidence": "VERIFIED", "sources": ["SRC-006", "SRC-020"],
+      "subcategories": [
+        {"id": "TAX-05-01", "name": "Assured or guaranteed returns", "evidence": "VERIFIED", "sources": ["SRC-006", "SRC-020"]},
+        {"id": "TAX-05-02", "name": "Unregistered investment adviser", "evidence": "VERIFIED", "sources": ["SRC-006"]},
+        {"id": "TAX-05-03", "name": "Fake trading platform or app", "evidence": "PARTIAL", "sources": ["SRC-006"]},
+        {"id": "TAX-05-04", "name": "Deepfake or social-media trading tip", "evidence": "PARTIAL", "sources": ["SRC-023"]},
+        {"id": "TAX-05-05", "name": "Crypto wallet-verification drain", "evidence": "UNVERIFIED", "sources": ["SRC-024"]}
+      ]
+    },
+    {
+      "id": "TAX-06", "name": "Employment and income scams", "evidence": "VERIFIED", "sources": ["SRC-021"],
+      "subcategories": [
+        {"id": "TAX-06-01", "name": "Fake job or placement fee", "evidence": "VERIFIED", "sources": ["SRC-021"]},
+        {"id": "TAX-06-02", "name": "CAPTCHA-filling work scam", "evidence": "UNVERIFIED", "sources": ["SRC-002"]},
+        {"id": "TAX-06-03", "name": "Part-time task app or Ponzi", "evidence": "UNVERIFIED", "sources": ["SRC-015"]},
+        {"id": "TAX-06-04", "name": "Overseas job racket", "evidence": "PARTIAL", "sources": ["SRC-021"]}
+      ]
+    },
+    {
+      "id": "TAX-07", "name": "Courier, delivery and utility scams", "evidence": "PARTIAL", "sources": ["SRC-007", "SRC-012"],
+      "subcategories": [
+        {"id": "TAX-07-01", "name": "Fake parcel or customs payment", "evidence": "PARTIAL", "sources": ["SRC-012"]},
+        {"id": "TAX-07-02", "name": "Utility disconnection threat", "evidence": "PARTIAL", "sources": ["SRC-007"]},
+        {"id": "TAX-07-03", "name": "Delivery-agent impersonation", "evidence": "UNVERIFIED", "sources": ["SRC-013"]}
+      ]
+    },
+    {
+      "id": "TAX-08", "name": "Social and relationship-enabled scams", "evidence": "VERIFIED", "sources": ["SRC-014"],
+      "subcategories": [
+        {"id": "TAX-08-01", "name": "Romance or matrimonial pivot to investment", "evidence": "UNVERIFIED", "sources": ["SRC-002"]},
+        {"id": "TAX-08-02", "name": "Fake profile or trusted-contact abuse", "evidence": "VERIFIED", "sources": ["SRC-014"]},
+        {"id": "TAX-08-03", "name": "Account renting", "evidence": "UNVERIFIED", "sources": ["SRC-002"]},
+        {"id": "TAX-08-04", "name": "Urgent-transfer request from claimed relative", "evidence": "VERIFIED", "sources": ["SRC-021"]}
+      ]
+    },
+    {
+      "id": "TAX-09", "name": "Account-takeover scams", "evidence": "VERIFIED", "sources": ["SRC-017", "SRC-016"],
+      "subcategories": [
+        {"id": "TAX-09-01", "name": "Messaging-app device linking", "evidence": "VERIFIED", "sources": ["SRC-017", "SRC-016"]},
+        {"id": "TAX-09-02", "name": "Fake media preview leading to verification page", "evidence": "VERIFIED", "sources": ["SRC-017"]},
+        {"id": "TAX-09-03", "name": "Phishing page impersonating a platform", "evidence": "VERIFIED", "sources": ["SRC-017"]}
+      ]
+    },
+    {
+      "id": "TAX-10", "name": "Malware-enabled scams", "evidence": "PARTIAL", "sources": ["SRC-010"],
+      "subcategories": [
+        {"id": "TAX-10-01", "name": "APK or sideload distribution", "evidence": "PARTIAL", "sources": ["SRC-010", "SRC-025"]},
+        {"id": "TAX-10-02", "name": "Accessibility permission abuse", "evidence": "UNVERIFIED", "sources": ["SRC-019"]},
+        {"id": "TAX-10-03", "name": "Screen sharing or remote control", "evidence": "UNVERIFIED", "sources": ["SRC-008"]},
+        {"id": "TAX-10-04", "name": "Browser extension abuse", "evidence": "UNVERIFIED", "sources": ["SRC-002"]}
+      ]
+    }
+  ],
+  "coverage": {
+    "top_level": {"total": 10, "verified": 7, "partial": 3, "unverified": 0},
+    "subcategories": {"total": 41, "verified": 15, "partial": 11, "unverified": 15}
+  }
+}
