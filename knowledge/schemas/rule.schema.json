@@ -1,0 +1,376 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://trustlens/schemas/rule.schema.json",
+  "title": "TrustLens Detection Rule",
+  "description": "A versioned, declarative, source-referenced statement that a named combination of indicators constitutes a recognised scam pattern. Rules are DATA, never code (FR-020). Any rule failing this schema is rejected at load time (FR-021). What this schema cannot express — referential integrity, evidence-class diversity, and agreement with the Phase 1 evidence grades — is enforced by knowledge/validation/validate_rules.py, which is part of the same gate. See ADR-0003.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "id",
+    "name",
+    "description",
+    "kind",
+    "taxonomy_refs",
+    "evidence",
+    "logic",
+    "lifecycle",
+    "language_scope",
+    "explanation"
+  ],
+
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0",
+      "description": "Version of THIS schema the rule was authored against."
+    },
+    "rule_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semantic version of the rule content itself. Changing logic or severity is a minor bump at minimum."
+    },
+
+    "id": {
+      "type": "string",
+      "pattern": "^TL-[A-Z]{3,5}-\\d{3}$",
+      "description": "Neutral canonical identifier (CONF-005, DEC-005). Never contains a brand, an issuing body, or a source name. Permanent: deprecation sets a lifecycle flag, it never reuses an ID."
+    },
+    "legacy_id": {
+      "type": "string",
+      "description": "Identifier used by the Phase One Research Foundation, retained for traceability back to RP only (DEC-005). Carries no authority."
+    },
+
+    "name": { "type": "string", "minLength": 8, "maxLength": 120 },
+    "description": { "type": "string", "minLength": 20 },
+
+    "kind": {
+      "enum": ["COMPOSITE", "SUPPRESSION"],
+      "description": "COMPOSITE rules assert a scam pattern from a combination of positive indicators. SUPPRESSION rules reduce or cancel a finding on negative evidence. There is deliberately no SINGLE_INDICATOR kind — CONF-002 forbids a finding resting on one signal."
+    },
+
+    "taxonomy_refs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^TAX-\\d{2}(-\\d{2})?$" },
+      "description": "Categories this rule assigns. Multiple assignment is expected and correct (RESEARCH-002 principle 3)."
+    },
+
+    "severity": {
+      "enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL"],
+      "description": "ORDINAL ONLY (CONF-001). How much harm this pattern causes IF the finding is correct — a property of the scam class, not of this submission. It is not a probability, not a score, and must never be rendered as a number. Risk is derived at evaluation time from severity and matched-evidence strength; it is not stored here."
+    },
+
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["verdict", "implementability", "source_references"],
+      "properties": {
+        "verdict": {
+          "enum": ["SUPPORTED", "PARTIAL", "UNSUPPORTED", "HEURISTIC"],
+          "description": "Evidential standing, carried forward from RESEARCH-004. SUPPORTED: a PRIMARY_VERIFIED source substantiates it. PARTIAL: substantiated only partially or only by a corroborating/industry source. UNSUPPORTED: the cited source could not be retrieved — the concept may well be sound, but it is not evidenced. HEURISTIC: a programme judgement with no source claim, and honest about it."
+        },
+        "implementability": {
+          "enum": ["YES", "PARTIAL", "DEFERRED"],
+          "description": "Independent of evidence (CONF-003). DEFERRED means TrustLens cannot observe what the rule needs — a well-evidenced rule can still be unobservable."
+        },
+        "blocked_by": {
+          "enum": ["INPUT_MODALITY", "DEVICE_STATE", "LIVE_TRANSACTION_CONTEXT", "USER_JOURNEY_CONTEXT"],
+          "description": "Required when implementability is DEFERRED. Records WHY, so the rule becomes live automatically if TrustLens ever gains that input."
+        },
+        "severity_cap": {
+          "enum": ["LOW", "MEDIUM", "HIGH"],
+          "description": "Required when verdict is PARTIAL. Ceiling on this rule's severity contribution (RESEARCH-004 section 7). CRITICAL is deliberately absent — a partially-evidenced rule may never reach the top band alone."
+        },
+        "source_references": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/sourceReference" },
+          "description": "Sources as DATA (CONF-005), never hardcoded. At least one is required unless the verdict is HEURISTIC (FR-025)."
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "implementability": { "const": "DEFERRED" } }, "required": ["implementability"] },
+          "then": { "required": ["blocked_by"] }
+        },
+        {
+          "if": { "properties": { "verdict": { "const": "PARTIAL" } }, "required": ["verdict"] },
+          "then": { "required": ["severity_cap"] }
+        },
+        {
+          "if": { "properties": { "verdict": { "enum": ["SUPPORTED", "PARTIAL", "UNSUPPORTED"] } }, "required": ["verdict"] },
+          "then": { "properties": { "source_references": { "minItems": 1 } } }
+        }
+      ]
+    },
+
+    "logic": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "require": {
+          "$ref": "#/$defs/condition",
+          "description": "The indicator combination that must hold."
+        },
+        "min_evidence_classes": {
+          "type": "integer",
+          "minimum": 2,
+          "default": 2,
+          "description": "How many DISTINCT evidence classes the satisfying set must span. Minimum 2, enforced by the schema and checked structurally by the linter. This single field is what stops a rule degenerating into a keyword matcher (CONF-002)."
+        },
+        "suppressed_by": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/indicatorId" },
+          "description": "Negative indicators that cancel this rule outright (FR-032, FR-038)."
+        },
+        "suppresses": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^(TL-[A-Z]{3,5}-\\d{3}|TAX-\\d{2}(-\\d{2})?|\\*)$" },
+          "description": "SUPPRESSION rules only. Rule IDs, taxonomy scopes, or * for all."
+        },
+        "effect": {
+          "enum": ["SUPPRESS", "REDUCE"],
+          "description": "SUPPRESSION rules only. SUPPRESS cancels the finding; REDUCE lowers its contribution. Both must appear in the explanation as negative evidence (FR-042)."
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "effect": { "const": "REDUCE" } }, "required": ["effect"] },
+          "then": { "required": ["reduce_by"] }
+        }
+      ],
+      "$comment": "reduce_by is intentionally NOT defined as a numeric weight here. DET-001 (Phase 3) specifies the reduction mathematics; until then a REDUCE rule cannot validate, which is the correct failure — it prevents magnitudes being invented ahead of the model that gives them meaning."
+    },
+
+    "lifecycle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "created", "last_reviewed", "review_due", "authored_by_role"],
+      "properties": {
+        "status": {
+          "enum": ["DRAFT", "PEER_REVIEW", "SECURITY_REVIEW", "APPROVED", "PUBLISHED", "DEPRECATED", "RETIRED"],
+          "description": "FR-023 lifecycle. Only PUBLISHED rules are evaluated against live submissions."
+        },
+        "created": { "$ref": "#/$defs/date" },
+        "last_reviewed": { "$ref": "#/$defs/date" },
+        "review_due": {
+          "$ref": "#/$defs/date",
+          "description": "Set from source age (G-14). A rule built on a 2020 advisory needs review sooner than one built on a 2025 advisory."
+        },
+        "authored_by_role": { "type": "string" },
+        "approved_by_role": { "type": "string" },
+        "deprecation_reason": { "type": "string" },
+        "supersedes": { "type": "string", "pattern": "^TL-[A-Z]{3,5}-\\d{3}$" },
+        "$comment_separation_of_duties": { "type": "string" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "enum": ["APPROVED", "PUBLISHED"] } }, "required": ["status"] },
+          "then": { "required": ["approved_by_role"] }
+        },
+        {
+          "if": { "properties": { "status": { "enum": ["DEPRECATED", "RETIRED"] } }, "required": ["status"] },
+          "then": { "required": ["deprecation_reason"] }
+        }
+      ]
+    },
+
+    "language_scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["languages", "scripts", "on_unsupported_input"],
+      "description": "Present from schema v1.0.0 even though MVP content is English-only, so that resolving OI-04 is a data change rather than a schema migration. G-08 records that no verified source supplies non-English cues.",
+      "properties": {
+        "languages": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^[a-z]{2,3}$" },
+          "description": "ISO 639 codes this rule's cues are authored for."
+        },
+        "scripts": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^[A-Z][a-z]{3}$" },
+          "description": "ISO 15924 codes, e.g. Latn, Deva, Taml, Telu."
+        },
+        "on_unsupported_input": {
+          "const": "FLAG_UNSUPPORTED",
+          "description": "NFR-009: the system states what it does not support rather than silently degrading. Const, not enum — silent degradation is not an option an author may select."
+        }
+      }
+    },
+
+    "explanation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["plain", "technical"],
+      "description": "Explainability is a rule property, not an afterthought (FR-046). A rule that cannot explain itself cannot publish.",
+      "properties": {
+        "plain": {
+          "type": "string",
+          "minLength": 20,
+          "description": "Plain-language, for a user under pressure. No jargon, no hedging into meaninglessness."
+        },
+        "technical": {
+          "type": "string",
+          "minLength": 20,
+          "description": "Analyst-facing account of what matched and why."
+        },
+        "verification_steps": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "How a person can independently confirm the conclusion (FR-047)."
+        },
+        "why_confidence_limited": {
+          "type": "string",
+          "description": "What context is missing (FR-044). Expected on PARTIAL and HEURISTIC rules."
+        }
+      }
+    },
+
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Quarantine for values that exist only as history. Nothing here may reach an evaluation.",
+      "properties": {
+        "source_severity_hint": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["value", "label", "cited_as", "operational_use"],
+          "description": "The research package's 0-100 number, preserved as provenance ONLY (CONF-001). RP p.6 concedes these are 'not official numeric scores published by the agencies themselves'.",
+          "properties": {
+            "value": { "type": "integer", "minimum": 0, "maximum": 100 },
+            "label": { "type": "string" },
+            "cited_as": { "type": "string" },
+            "operational_use": {
+              "const": false,
+              "description": "Const false. An author cannot promote this number to operational use by editing a flag; doing so requires changing the schema and the ADR that justifies it."
+            }
+          }
+        },
+        "notes": { "type": "string" }
+      }
+    }
+  },
+
+  "allOf": [
+    {
+      "$comment": "CONF-002: a COMPOSITE rule must state a combination and how many evidence classes it spans. SUPPRESSION rules state what they suppress and how.",
+      "if": { "properties": { "kind": { "const": "COMPOSITE" } }, "required": ["kind"] },
+      "then": {
+        "required": ["severity"],
+        "properties": {
+          "logic": { "required": ["require", "min_evidence_classes"] }
+        }
+      },
+      "else": {
+        "properties": {
+          "logic": { "required": ["require", "suppresses", "effect"] }
+        }
+      }
+    },
+    {
+      "$comment": "RESEARCH-004 section 7: a rule with no verified basis must not reach the published rule set, however plausible it seems. This is the constraint that makes evidence quality change behaviour rather than merely be documented.",
+      "if": {
+        "properties": { "evidence": { "properties": { "verdict": { "enum": ["UNSUPPORTED", "HEURISTIC"] } }, "required": ["verdict"] } },
+        "required": ["evidence"]
+      },
+      "then": {
+        "properties": { "lifecycle": { "properties": { "status": { "not": { "const": "PUBLISHED" } } } } }
+      }
+    },
+    {
+      "$comment": "CONF-003: an unobservable rule cannot publish either. It is retained as knowledge and becomes live if TrustLens ever gains the input.",
+      "if": {
+        "properties": { "evidence": { "properties": { "implementability": { "const": "DEFERRED" } }, "required": ["implementability"] } },
+        "required": ["evidence"]
+      },
+      "then": {
+        "properties": { "lifecycle": { "properties": { "status": { "not": { "const": "PUBLISHED" } } } } }
+      }
+    }
+  ],
+
+  "$defs": {
+    "date": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+
+    "indicatorId": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Z0-9_]{2,63}$",
+      "description": "Must resolve in the indicator registry — checked by the linter, not expressible here."
+    },
+
+    "condition": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "maxProperties": 1,
+      "description": "Exactly one operator per node. Nesting is permitted; depth is bounded by the linter.",
+      "properties": {
+        "all_of": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/operand" }
+        },
+        "any_of": {
+          "type": "array",
+          "minItems": 2,
+          "items": { "$ref": "#/$defs/operand" },
+          "description": "minItems 2 — a one-branch any_of is a disguised single-indicator rule."
+        },
+        "n_of": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["n", "of"],
+          "properties": {
+            "n": { "type": "integer", "minimum": 2 },
+            "of": { "type": "array", "minItems": 3, "items": { "$ref": "#/$defs/operand" } }
+          },
+          "description": "n minimum 2 — n_of with n=1 is an any_of, and n_of with n=1 over one operand is a keyword matcher."
+        }
+      }
+    },
+
+    "operand": {
+      "oneOf": [
+        { "$ref": "#/$defs/indicatorId" },
+        { "$ref": "#/$defs/condition" }
+      ]
+    },
+
+    "sourceReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_id", "issuing_body", "authority", "verification_status"],
+      "properties": {
+        "source_id": { "type": "string", "pattern": "^SRC-\\d{3}$" },
+        "issuing_body": { "type": "string" },
+        "authority": {
+          "enum": [
+            "OFFICIAL_REGULATOR",
+            "OFFICIAL_GOVERNMENT",
+            "OFFICIAL_PAYMENT_OPERATOR",
+            "FOREIGN_OFFICIAL",
+            "INDUSTRY"
+          ],
+          "description": "CONF-005: commercial bodies are INDUSTRY. They corroborate; they do not authorise."
+        },
+        "verification_status": {
+          "enum": ["PRIMARY_VERIFIED", "PRIMARY_CITED_UNVERIFIED", "INDEX_ONLY", "RETRIEVAL_FAILED"],
+          "description": "Must equal the grade recorded in the verification manifest. The linter fails any rule that overstates it."
+        },
+        "document_ref": { "type": "string" },
+        "quote": {
+          "type": "string",
+          "description": "Short verbatim quotation locating the claim in the source. Required in practice on PRIMARY_VERIFIED references — enforced by the linter."
+        }
+      }
+    }
+  }
+}

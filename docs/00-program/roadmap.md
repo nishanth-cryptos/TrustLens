@@ -95,9 +95,11 @@ score), [CONF-002](conflict-register.md) (three-layer indicator/composite/suppre
 [CONF-005](conflict-register.md) (neutral IDs, sources as data).
 
 **Work packages, in dependency order.**
-1. **Rule JSON Schema** — makes a malformed rule impossible to load (FR-021), enforces a graded
+1. ✅ **Rule JSON Schema** — makes a malformed rule impossible to load (FR-021), enforces a graded
    source reference on every non-heuristic rule (FR-025), carries `verdict` and `implementability`
-   from [RESEARCH-004](../01-research/RESEARCH-004-evidence-matrix.md). → ADR-0003.
+   from [RESEARCH-004](../01-research/RESEARCH-004-evidence-matrix.md). →
+   [ADR-0003](../../adr/ADR-0003-rule-representation-format.md). Delivered with 7 reference rules,
+   a cross-file linter and 23 negative fixtures; `30/30`.
 2. **Indicator families** — formalise the 12 positive families with IDs and extraction contracts.
 3. **Negative-indicator library** — [G-07](../01-research/RESEARCH-005-gap-register.md), the
    highest-priority gap. None exist in the research package and CONF-002's architecture does not

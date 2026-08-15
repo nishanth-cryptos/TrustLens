@@ -1,0 +1,61 @@
+{
+  "schema_version": "1.0.0",
+  "rule_version": "1.0.0",
+  "id": "TL-SUP-001",
+  "name": "Legitimate credential delivery — institutional security message",
+  "description": "A message that DELIVERS a credential to the recipient and warns them to protect it is anti-fraud infrastructure, not fraud. This rule cancels credential-request findings on that pattern. It exists because flagging a bank's own warning is the single most harmful false positive TrustLens can produce: it teaches users to ignore the warnings that protect them.",
+  "kind": "SUPPRESSION",
+  "taxonomy_refs": ["TAX-01-01"],
+
+  "evidence": {
+    "verdict": "HEURISTIC",
+    "implementability": "YES",
+    "source_references": [
+      {
+        "source_id": "SRC-004",
+        "issuing_body": "Reserve Bank of India",
+        "authority": "OFFICIAL_REGULATOR",
+        "verification_status": "PRIMARY_VERIFIED",
+        "document_ref": "Reserve Bank sensitises members of public on safe use of digital transactions (2020-06-22)",
+        "quote": "banks and other payment systems operators never ask for details such as password, PIN, OTP, CVV number"
+      }
+    ]
+  },
+
+  "logic": {
+    "require": {
+      "any_of": [
+        "OTP_DELIVERED_NOT_REQUESTED",
+        "SELF_PROTECTIVE_WARNING",
+        "NEGATED_CREDENTIAL_REQUEST"
+      ]
+    },
+    "suppresses": ["TL-CRED-001", "TL-CRED-002", "TL-CRED-003"],
+    "effect": "SUPPRESS"
+  },
+
+  "lifecycle": {
+    "status": "APPROVED",
+    "created": "2026-08-15",
+    "last_reviewed": "2026-08-15",
+    "review_due": "2026-12-01",
+    "authored_by_role": "Knowledge Editor",
+    "approved_by_role": "Knowledge Approver"
+  },
+
+  "language_scope": {
+    "languages": ["en"],
+    "scripts": ["Latn"],
+    "on_unsupported_input": "FLAG_UNSUPPORTED"
+  },
+
+  "explanation": {
+    "plain": "This message is giving you a code and telling you to keep it private. That is what a genuine bank or service does.",
+    "technical": "Negative evidence matched: the credential is delivered rather than solicited, or named inside a negation. Suppresses the credential-request family and is reported as negative evidence (FR-042), never silently.",
+    "why_confidence_limited": "HEURISTIC by construction. No source publishes suppression logic — RBI's 'never ask' statement implies the inverse but does not state it. Validated against benign seed cases, not against a labelled corpus (G-07, G-09)."
+  },
+
+  "provenance": {
+    "notes": "Authored as part of Phase 2 WP1 to prove the three-layer model end to end. The full negative-indicator library is WP3, which closes G-07. Graded HEURISTIC honestly: suppression logic is programme judgement derived from the inverse of verified guidance."
+  }
+}

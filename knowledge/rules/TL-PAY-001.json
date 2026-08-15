@@ -1,0 +1,66 @@
+{
+  "schema_version": "1.0.0",
+  "rule_version": "1.0.0",
+  "id": "TL-PAY-001",
+  "legacy_id": "NPCI-RECV-003",
+  "name": "Credential or PIN entry demanded in order to receive money",
+  "description": "An authorising action — entering a UPI PIN, sharing an OTP, scanning a QR — is framed as necessary to RECEIVE a payment. Receiving money never requires authorisation; the action would send money out. This is a directional contradiction, not a keyword match.",
+  "kind": "COMPOSITE",
+  "taxonomy_refs": ["TAX-01-02", "TAX-01-03"],
+  "severity": "CRITICAL",
+
+  "evidence": {
+    "verdict": "SUPPORTED",
+    "implementability": "YES",
+    "source_references": [
+      {
+        "source_id": "SRC-021",
+        "issuing_body": "CERT-In",
+        "authority": "OFFICIAL_GOVERNMENT",
+        "verification_status": "PRIMARY_VERIFIED",
+        "document_ref": "CIAD-2024-0050, Preventing Online scams (2024-10-24)",
+        "quote": "Always remember, you don't need a UPI PIN or OTP to receive money."
+      }
+    ]
+  },
+
+  "logic": {
+    "require": {
+      "all_of": [
+        "RECEIVE_FRAMING",
+        { "any_of": ["UPI_PIN_PROMPT", "CREDENTIAL_REQUEST_OTP", "VERIFICATION_PROMPT"] }
+      ]
+    },
+    "min_evidence_classes": 2,
+    "suppressed_by": ["TRANSACTION_NOTIFICATION", "EDUCATIONAL_CONTENT"]
+  },
+
+  "lifecycle": {
+    "status": "PUBLISHED",
+    "created": "2026-08-15",
+    "last_reviewed": "2026-08-15",
+    "review_due": "2027-04-01",
+    "authored_by_role": "Knowledge Editor",
+    "approved_by_role": "Knowledge Approver"
+  },
+
+  "language_scope": {
+    "languages": ["en"],
+    "scripts": ["Latn"],
+    "on_unsupported_input": "FLAG_UNSUPPORTED"
+  },
+
+  "explanation": {
+    "plain": "You have been asked to enter a PIN, share a code, or scan a QR in order to RECEIVE money. Receiving money never needs any of these. Anything you approve here would send your money out, not bring money in.",
+    "technical": "RECEIVE_FRAMING combined with a credential or payment-authorisation prompt, spanning payment-action and credential-action classes. CERT-In states the boundary categorically.",
+    "verification_steps": [
+      "Open your UPI app directly. Incoming payments appear without any action from you.",
+      "If someone insists a PIN is needed to receive, that alone settles it."
+    ]
+  },
+
+  "provenance": {
+    "source_severity_hint": { "value": 98, "label": "High", "cited_as": "RP p.7", "operational_use": false },
+    "notes": "Originally cited to NPCI (SRC-005, SRC-018), both unreachable (G-02). Re-anchored to CERT-In, which is arguably a stronger basis: national CERT, categorical wording (RESEARCH-004 section 5). QR_SCAN_REQUEST was removed from the trigger set at validation: the linter flagged that RECEIVE_FRAMING + QR_SCAN_REQUEST spans a single evidence class, and on inspection the rule was also reaching past its own quotation — SRC-021's wording here concerns a UPI PIN or OTP, not QR. The 'scan QR to receive' pattern is TL-PAY-002's subject."
+  }
+}

@@ -1,0 +1,237 @@
+{
+  "$comment": "Negative test corpus. Every entry MUST be rejected. A schema is only as good as the things it refuses, so these are the real proof of FR-021 — without them, 'malformed rules are impossible' is an untested claim. Each fixture applies a JSON Merge Patch (RFC 7386) to `base`, changing exactly one thing, so the rejection is attributable to that one thing. `expect_rejected_by` records which layer must catch it: SCHEMA (structurally expressible) or LINT (needs cross-file knowledge). If a fixture is ever rejected by the wrong layer, the split documented in ADR-0003 has drifted.",
+  "fixtures_version": "1.0.0",
+
+  "base": {
+    "schema_version": "1.0.0",
+    "rule_version": "1.0.0",
+    "id": "TL-TEST-001",
+    "name": "Fixture base rule — otherwise valid",
+    "description": "Minimal valid rule. Each fixture below breaks exactly one property of it.",
+    "kind": "COMPOSITE",
+    "taxonomy_refs": ["TAX-01-01"],
+    "severity": "HIGH",
+    "evidence": {
+      "verdict": "SUPPORTED",
+      "implementability": "YES",
+      "source_references": [
+        {
+          "source_id": "SRC-004",
+          "issuing_body": "Reserve Bank of India",
+          "authority": "OFFICIAL_REGULATOR",
+          "verification_status": "PRIMARY_VERIFIED",
+          "quote": "banks and other payment systems operators never ask for details such as password, PIN, OTP, CVV number"
+        }
+      ]
+    },
+    "logic": {
+      "require": { "all_of": ["CREDENTIAL_REQUEST_OTP", "KYC_PRETEXT"] },
+      "min_evidence_classes": 2
+    },
+    "lifecycle": {
+      "status": "DRAFT",
+      "created": "2026-08-15",
+      "last_reviewed": "2026-08-15",
+      "review_due": "2027-01-01",
+      "authored_by_role": "Knowledge Editor"
+    },
+    "language_scope": { "languages": ["en"], "scripts": ["Latn"], "on_unsupported_input": "FLAG_UNSUPPORTED" },
+    "explanation": {
+      "plain": "Base fixture explanation for the user, long enough to satisfy minLength.",
+      "technical": "Base fixture explanation for the analyst, long enough to satisfy minLength."
+    }
+  },
+
+  "fixtures": [
+    {
+      "name": "keyword-matcher-single-indicator",
+      "expect_rejected_by": "LINT",
+      "reason": "CONF-002. A rule resting on one indicator is a keyword matcher. Spans one evidence class, so the min_evidence_classes contract is violated even though the schema shape is legal.",
+      "patch": { "logic": { "require": { "all_of": ["CREDENTIAL_REQUEST_OTP"] } } }
+    },
+    {
+      "name": "min-evidence-classes-below-two",
+      "expect_rejected_by": "SCHEMA",
+      "reason": "CONF-002. An author cannot opt out of the combination requirement by declaring a lower threshold.",
+      "patch": { "logic": { "min_evidence_classes": 1 } }
+    },
+    {
+      "name": "weak-indicators-only",
+      "expect_rejected_by": "LINT",
+      "reason": "RP p.13 — 'One weak indicator such as urgency should not be enough on its own.' Two weak indicators across two classes is still not enough.",
+      "patch": { "logic": { "require": { "all_of": ["URGENCY", "LINK_PRESENT"] }, "min_evidence_classes": 2 } }
+    },
+    {
+      "name": "unsupported-rule-published",
+      "expect_rejected_by": "SCHEMA",
+      "reason": "RESEARCH-004 section 7. A rule with no verified basis must not reach the published rule set, however plausible.",
+      "patch": {
+        "evidence": { "verdict": "UNSUPPORTED" },
+        "lifecycle": { "status": "PUBLISHED", "approved_by_role": "Knowledge Approver" }
+      }
+    },
+    {
+      "name": "deferred-rule-published",
+      "expect_rejected_by": "SCHEMA",
+      "reason": "CONF-003. A rule TrustLens cannot observe must not publish, however well evidenced.",
+      "patch": {
+        "evidence": { "implementability": "DEFERRED", "blocked_by": "INPUT_MODALITY" },
+        "lifecycle": { "status": "PUBLISHED", "approved_by_role": "Knowledge Approver" }
+      }
+    },
+    {
+      "name": "deferred-without-blocked-by",
+      "expect_rejected_by": "SCHEMA",
+      "reason": "CONF-003. Deferring without recording WHY loses the condition that would make the rule live again.",
+      "patch": { "evidence": { "implementability": "DEFERRED" } }
+    },
+    {
+      "name": "partial-without-severity-cap",
+      "expect_rejected_by": "SCHEMA",
+      "reason": "RESEARCH-004 section 7. Partially-evidenced rules publish only with a capped severity contribution.",
+      "patch": { "evidence": { "verdict": "PARTIAL" } }
+    },
+    {
+      "name": "non-heuristic-without-source",
+      "expect_rejected_by": "SCHEMA",
+      "reason": "FR-025. Every non-heuristic rule carries at least one graded source reference.",
+      "patch": { "evidence": { "source_references": [] } }
+    },
+    {
+      "name": "numeric-risk-score",
+      "expect_rejected_by": "SCHEMA",
+      "reason": "CONF-001 and MP section 10. Risk is derived at evaluation time and is never stored on a rule. additionalProperties:false makes the field unrepresentable.",
+      "patch": { "risk": 95, "confidence": "High" }
+    },
+    {
+      "name": "severity-as-number",
+      "expect_rejected_by": "SCHEMA",
+      "reason": "CONF-001. Severity is an ordinal. A numeric severity manufactures precision the evidence cannot carry.",
+      "patch": { "severity": 95 }
+    },
+    {
+      "name": "severity-hint-promoted-to-operational",
+      "expect_rejected_by": "SCHEMA",
+      "reason": "CONF-001. The research package's 0-100 values are provenance only. operational_use is const false so the quarantine cannot be lifted by editing a rule.",
+      "patch": {
+        "provenance": { "source_severity_hint": { "value": 95, "label": "High", "cited_as": "RP p.6", "operational_use": true } }
+      }
+    },
+    {
+      "name": "overstated-source-grade",
+      "expect_rejected_by": "LINT",
+      "reason": "The most dangerous defect this validator catches: a rule claiming its source is verified when the manifest records RETRIEVAL_FAILED. Silently converts an unevidenced rule into an authoritative one.",
+      "patch": {
+        "evidence": {
+          "source_references": [
+            {
+              "source_id": "SRC-013",
+              "issuing_body": "I4C",
+              "authority": "OFFICIAL_GOVERNMENT",
+              "verification_status": "PRIMARY_VERIFIED"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "unknown-source-id",
+      "expect_rejected_by": "LINT",
+      "reason": "A source reference that resolves to nothing is an unfalsifiable citation.",
+      "patch": {
+        "evidence": {
+          "source_references": [
+            {
+              "source_id": "SRC-999",
+              "issuing_body": "Invented Authority",
+              "authority": "OFFICIAL_GOVERNMENT",
+              "verification_status": "PRIMARY_VERIFIED"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "dangling-indicator-reference",
+      "expect_rejected_by": "LINT",
+      "reason": "An indicator nothing extracts can never match. The rule would sit in the set looking like coverage while being dead.",
+      "patch": { "logic": { "require": { "all_of": ["CREDENTIAL_REQUEST_OTP", "TOTALLY_MADE_UP_INDICATOR"] } } }
+    },
+    {
+      "name": "negative-indicator-in-positive-condition",
+      "expect_rejected_by": "LINT",
+      "reason": "Polarity inversion. Requiring a suppressor to fire a rule means a protective signal raises risk — the exact failure CONF-002 exists to prevent.",
+      "patch": { "logic": { "require": { "all_of": ["CREDENTIAL_REQUEST_OTP", "SELF_PROTECTIVE_WARNING"] } } }
+    },
+    {
+      "name": "positive-indicator-as-suppressor",
+      "expect_rejected_by": "LINT",
+      "reason": "Polarity inversion in the other direction: a scam signal would cancel the finding.",
+      "patch": { "logic": { "suppressed_by": ["ARREST_THREAT"] } }
+    },
+    {
+      "name": "unknown-taxonomy-reference",
+      "expect_rejected_by": "LINT",
+      "reason": "RESEARCH-002 rule 3: adding a category requires a source and an evidence grade. A rule may not invent one by referencing it.",
+      "patch": { "taxonomy_refs": ["TAX-99-99"] }
+    },
+    {
+      "name": "brand-in-rule-identifier",
+      "expect_rejected_by": "SCHEMA",
+      "reason": "CONF-005 and DEC-005. Identifiers are neutral; the issuing body is data, not part of the key.",
+      "patch": { "id": "HDFC-KYC-006" }
+    },
+    {
+      "name": "published-without-approver",
+      "expect_rejected_by": "SCHEMA",
+      "reason": "FR-023. The lifecycle models separation of duties even where ASM-019 means one person performs both roles.",
+      "patch": { "lifecycle": { "status": "PUBLISHED", "approved_by_role": null } }
+    },
+    {
+      "name": "silent-degradation-on-unsupported-language",
+      "expect_rejected_by": "SCHEMA",
+      "reason": "NFR-009. The system states what it does not support. Silent degradation is not an option an author may select — the field is a const, not an enum.",
+      "patch": { "language_scope": { "on_unsupported_input": "BEST_EFFORT" } }
+    },
+    {
+      "name": "missing-explanation",
+      "expect_rejected_by": "SCHEMA",
+      "reason": "FR-046 and MP section 3. A rule that cannot explain itself cannot exist, let alone publish.",
+      "patch": { "explanation": null }
+    },
+    {
+      "name": "evidence-verdict-upgraded-against-phase-1",
+      "expect_rejected_by": "LINT",
+      "reason": "A rule graded UNSUPPORTED by the Phase 1 evidence matrix cannot re-grade itself as SUPPORTED. Verdicts flow from RESEARCH-004, not from the rule author.",
+      "patch": {
+        "id": "TL-TEL-001",
+        "evidence": {
+          "verdict": "SUPPORTED",
+          "source_references": [
+            {
+              "source_id": "SRC-013",
+              "issuing_body": "I4C",
+              "authority": "OFFICIAL_GOVERNMENT",
+              "verification_status": "RETRIEVAL_FAILED"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "reduce-effect-without-magnitude",
+      "expect_rejected_by": "SCHEMA",
+      "reason": "A REDUCE suppression cannot validate until DET-001 defines the reduction mathematics. Correct failure: it prevents magnitudes being invented ahead of the model that gives them meaning.",
+      "patch": {
+        "kind": "SUPPRESSION",
+        "severity": null,
+        "logic": {
+          "require": { "any_of": ["SELF_PROTECTIVE_WARNING", "EDUCATIONAL_CONTENT"] },
+          "min_evidence_classes": null,
+          "suppresses": ["TL-CRED-001"],
+          "effect": "REDUCE"
+        }
+      }
+    }
+  ]
+}

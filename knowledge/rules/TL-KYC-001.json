@@ -1,0 +1,76 @@
+{
+  "schema_version": "1.0.0",
+  "rule_version": "1.0.0",
+  "id": "TL-KYC-001",
+  "legacy_id": "HDFC-KYC-006",
+  "name": "KYC update demanded through a link or inbound call",
+  "description": "A KYC update is demanded via a link or an inbound call, under time pressure or a suspension threat. Legitimate institutions do reference KYC, so the pretext alone carries no weight — the combination with pressure and an off-channel action does.",
+  "kind": "COMPOSITE",
+  "taxonomy_refs": ["TAX-02-01", "TAX-02-02"],
+  "severity": "HIGH",
+
+  "evidence": {
+    "verdict": "PARTIAL",
+    "implementability": "YES",
+    "severity_cap": "MEDIUM",
+    "source_references": [
+      {
+        "source_id": "SRC-007",
+        "issuing_body": "DoT / Sanchar Saathi (Chakshu)",
+        "authority": "OFFICIAL_GOVERNMENT",
+        "verification_status": "PRIMARY_VERIFIED",
+        "document_ref": "Suspected Fraud Communication Reporting (Chakshu)",
+        "quote": "Bank Account / Payment Wallet / SIM / Gas / Electricity / KYC update, impersonation as Government official, sextortion"
+      },
+      {
+        "source_id": "SRC-008",
+        "issuing_body": "HDFC Bank",
+        "authority": "INDUSTRY",
+        "verification_status": "RETRIEVAL_FAILED",
+        "document_ref": "Beware of Fraud / SIM swap"
+      }
+    ]
+  },
+
+  "logic": {
+    "require": {
+      "all_of": [
+        "KYC_PRETEXT",
+        { "any_of": ["LINK_PRESENT", "SHORTENED_URL", "LOOKALIKE_DOMAIN", "VERIFICATION_PROMPT"] },
+        { "any_of": ["URGENCY_DEADLINE", "ACCOUNT_BLOCK_THREAT", "SUSPENSION_THREAT", "AUTHORITY_IMPERSONATION_BANK"] }
+      ]
+    },
+    "min_evidence_classes": 3,
+    "suppressed_by": ["OFFICIAL_CHANNEL_REDIRECT", "EDUCATIONAL_CONTENT", "NO_ACTION_REQUESTED"]
+  },
+
+  "lifecycle": {
+    "status": "PUBLISHED",
+    "created": "2026-08-15",
+    "last_reviewed": "2026-08-15",
+    "review_due": "2027-02-01",
+    "authored_by_role": "Knowledge Editor",
+    "approved_by_role": "Knowledge Approver"
+  },
+
+  "language_scope": {
+    "languages": ["en"],
+    "scripts": ["Latn"],
+    "on_unsupported_input": "FLAG_UNSUPPORTED"
+  },
+
+  "explanation": {
+    "plain": "You have been asked to complete a KYC update through a link or a call you did not initiate, with a deadline attached. Banks do ask for KYC, but they do not force it through a link under threat of your account being blocked.",
+    "technical": "KYC_PRETEXT with an off-channel action and a pressure indicator, spanning three evidence classes. Severity is capped at MEDIUM: the 'banks never ask via link or call' phrasing traces only to a commercial source whose page no longer resolves (D5).",
+    "verification_steps": [
+      "Open your bank's own app, or visit a branch. A genuine KYC requirement will be visible there.",
+      "Do not use any number or link from the message itself."
+    ],
+    "why_confidence_limited": "Only the Chakshu category listing is verified — it confirms KYC fraud is a recognised reporting category, not the specific 'never via link' guidance this rule leans on. Severity is capped accordingly until an official equivalent is retrieved (G-04)."
+  },
+
+  "provenance": {
+    "source_severity_hint": { "value": 92, "label": "High", "cited_as": "RP p.7", "operational_use": false },
+    "notes": "PARTIAL under RESEARCH-004. The HDFC reference is retained as data with its true RETRIEVAL_FAILED grade rather than being deleted, so the gap stays visible and the rule promotes automatically if an official source is found."
+  }
+}

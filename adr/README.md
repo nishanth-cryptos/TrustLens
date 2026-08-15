@@ -25,6 +25,7 @@ Programme-level scope, process and evidence decisions live in the
 |---|---|---|---|---|
 | [ADR-0001](ADR-0001-adopt-technical-baseline.md) | Adopt the supplied technical baseline | Accepted | 2026-07-31 | Medium |
 | [ADR-0002](ADR-0002-defer-python-intelligence-service.md) | Defer the Python intelligence service to the AI phase | Accepted | 2026-07-31 | Very low |
+| [ADR-0003](ADR-0003-rule-representation-format.md) | Rule representation — JSON Schema plus a cross-file linter | Accepted | 2026-08-15 | Low |
 
 ## Planned
 
@@ -33,7 +34,6 @@ analysis that belongs to a later phase. Recording them now prevents them being m
 
 | ID | Decision needed | Phase | Depends on |
 |---|---|---|---|
-| ADR-0003 | Rule representation format — JSON Schema vs alternative declarative contract | 2 | KB-001 |
 | ADR-0004 | Knowledge storage — relational, graph database, or hybrid, with migration path | 2 | KB-001, `MP §9` |
 | ADR-0005 | Rule execution model — interpreter design, dependency resolution, determinism guarantees | 3 | DET-001 |
 | ADR-0006 | Risk and confidence aggregation mathematics | 3 | DET-001, [CONF-001](../docs/00-program/conflict-register.md) |

@@ -56,6 +56,21 @@ Check that the documents and the machine-readable files still agree:
 python3 knowledge/validation/phase1_consistency_check.py   # 35/35 checks passed
 ```
 
+## Rules (Phase 2, in progress)
+
+Rules are versioned JSON data validated by a real schema — never engine code ([ADR-0003](adr/ADR-0003-rule-representation-format.md)).
+
+```bash
+python3 -m venv .venv && .venv/bin/pip install jsonschema
+.venv/bin/python knowledge/validation/validate_rules.py    # 30/30 checks passed
+```
+
+The validator loads every rule in [knowledge/rules/](knowledge/rules/) against
+[rule.schema.json](knowledge/schemas/rule.schema.json), then applies cross-file lint the schema
+cannot express — indicator resolution, evidence-class diversity, trigger/suppressor polarity, and
+agreement with the Phase 1 source grades. It then runs a negative corpus of **23 deliberately
+malformed rules that must all be rejected**, each declaring which layer should catch it.
+
 ## Repository layout
 
 ```

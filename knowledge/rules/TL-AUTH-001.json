@@ -1,0 +1,74 @@
+{
+  "schema_version": "1.0.0",
+  "rule_version": "1.0.0",
+  "id": "TL-AUTH-001",
+  "legacy_id": "I4C-DARREST-010",
+  "name": "Digital arrest — authority impersonation with legal threat and payment demand",
+  "description": "A sender claiming law-enforcement or government identity accuses the recipient of a crime, threatens arrest or asset seizure, and demands an immediate payment framed as a fine, security deposit or verification transfer. The combination is the pattern; no single element is decisive.",
+  "kind": "COMPOSITE",
+  "taxonomy_refs": ["TAX-03-01", "TAX-03-02"],
+  "severity": "CRITICAL",
+
+  "evidence": {
+    "verdict": "SUPPORTED",
+    "implementability": "YES",
+    "source_references": [
+      {
+        "source_id": "SRC-012",
+        "issuing_body": "NITI Aayog",
+        "authority": "OFFICIAL_GOVERNMENT",
+        "verification_status": "PRIMARY_VERIFIED",
+        "document_ref": "Digital Arrest: The Modern-Day Cyber Scam (2025-04)",
+        "quote": "Digital arrest is a scam designed to extort money from victims using fear, deceit, and intimidation."
+      }
+    ]
+  },
+
+  "logic": {
+    "require": {
+      "all_of": [
+        "AUTHORITY_IMPERSONATION",
+        { "any_of": ["LEGAL_ACCUSATION", "ARREST_THREAT", "ACCOUNT_BLOCK_THREAT"] },
+        { "any_of": ["IMMEDIATE_PAYMENT_DEMAND", "PAYMENT_DEMAND"] }
+      ]
+    },
+    "min_evidence_classes": 3,
+    "suppressed_by": ["EDUCATIONAL_CONTENT", "OFFICIAL_CHANNEL_REDIRECT"]
+  },
+
+  "lifecycle": {
+    "status": "PUBLISHED",
+    "created": "2026-08-15",
+    "last_reviewed": "2026-08-15",
+    "review_due": "2027-04-01",
+    "authored_by_role": "Knowledge Editor",
+    "approved_by_role": "Knowledge Approver",
+    "$comment_separation_of_duties": "Authoring and approval are the same person at team size 1 (ASM-019). The workflow is modelled and tested with distinct roles; it is not organisationally enforced during development."
+  },
+
+  "language_scope": {
+    "languages": ["en"],
+    "scripts": ["Latn"],
+    "on_unsupported_input": "FLAG_UNSUPPORTED"
+  },
+
+  "explanation": {
+    "plain": "Someone claiming to be from the police or a government department has accused you of a crime and asked you to pay money. Indian law-enforcement agencies do not arrest people over a video call, and they never ask for a payment to clear your name. You are not required to pay, and you are allowed to tell your family.",
+    "technical": "Matched AUTHORITY_IMPERSONATION with a coercion indicator and a payment demand, spanning three evidence classes (identity claim, pressure, payment action). NITI Aayog documents this exact sequence as extortion.",
+    "verification_steps": [
+      "No Indian agency conducts arrests, interrogations or fine collection over a video or phone call.",
+      "Call the National Cyber Crime Helpline on 1930 to check any claim made against you.",
+      "Tell a family member now — isolation from family is part of the method, not a legal requirement."
+    ]
+  },
+
+  "provenance": {
+    "source_severity_hint": {
+      "value": 99,
+      "label": "High",
+      "cited_as": "RP p.9",
+      "operational_use": false
+    },
+    "notes": "SRC-012's own wording is 'instructed not to involve family or lawyers'; the paraphrase 'secrecy' is not used by the source (D6) and is not encoded. Isolation is handled by TL-AUTH-002."
+  }
+}

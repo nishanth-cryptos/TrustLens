@@ -1,0 +1,62 @@
+{
+  "schema_version": "1.0.0",
+  "rule_version": "0.1.0",
+  "id": "TL-TEL-001",
+  "legacy_id": "I4C-USSD-013",
+  "name": "Courier pretext leading to a request to dial a USSD code",
+  "description": "A delivery or courier pretext is used to persuade the recipient to dial a short code, silently enabling call forwarding and enabling account takeover. Encoded and retained, but not published: the advisory that substantiates it could not be retrieved.",
+  "kind": "COMPOSITE",
+  "taxonomy_refs": ["TAX-04-01", "TAX-07-03"],
+  "severity": "HIGH",
+
+  "evidence": {
+    "verdict": "UNSUPPORTED",
+    "implementability": "YES",
+    "source_references": [
+      {
+        "source_id": "SRC-013",
+        "issuing_body": "I4C",
+        "authority": "OFFICIAL_GOVERNMENT",
+        "verification_status": "RETRIEVAL_FAILED",
+        "document_ref": "Advisory TAU_ADV_007 — USSD based call forwarding / account takeover"
+      }
+    ]
+  },
+
+  "logic": {
+    "require": {
+      "all_of": [
+        "PARCEL_PRETEXT",
+        "USSD_CODE_DIAL_REQUEST",
+        { "any_of": ["URGENCY", "URGENCY_DEADLINE", "DISCOURAGES_VERIFICATION"] }
+      ]
+    },
+    "min_evidence_classes": 3,
+    "suppressed_by": ["NO_CODE_DIAL_REQUEST", "TRANSACTION_NOTIFICATION", "EDUCATIONAL_CONTENT"]
+  },
+
+  "lifecycle": {
+    "status": "DRAFT",
+    "created": "2026-08-15",
+    "last_reviewed": "2026-08-15",
+    "review_due": "2026-11-01",
+    "authored_by_role": "Knowledge Editor"
+  },
+
+  "language_scope": {
+    "languages": ["en"],
+    "scripts": ["Latn"],
+    "on_unsupported_input": "FLAG_UNSUPPORTED"
+  },
+
+  "explanation": {
+    "plain": "You have been asked to dial a short code to resolve a delivery problem. Dialling codes of that kind can quietly forward your calls to someone else, which lets them take over accounts secured by phone verification.",
+    "technical": "Parcel pretext with a vague technical action request and a pressure indicator. Held at DRAFT: the sole supporting advisory (I4C TAU_ADV_007) returned a connection reset on both retrieval methods.",
+    "why_confidence_limited": "No verified source. The concept is plausible and I4C is a genuine national authority, but plausibility is not evidence — the rule stays out of the published set until the advisory is retrieved (G-01)."
+  },
+
+  "provenance": {
+    "source_severity_hint": { "value": 88, "label": "High", "cited_as": "RP p.8", "operational_use": false },
+    "notes": "One of seven rules blocked solely by I4C being unreachable. Not disproven — unretrievable. Promotes to APPROVED review the moment the source is obtained (RESEARCH-004 section 4). First encoding used PARCEL_PRETEXT + VAGUE_ACTION_REQUEST + urgency, which the linter correctly rejected as satisfiable by weak indicators alone. The actual discriminator — being asked to dial a code — had no positive indicator in the registry at all, only the benign guard NO_CODE_DIAL_REQUEST. USSD_CODE_DIAL_REQUEST was added and is now required."
+  }
+}

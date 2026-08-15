@@ -1,0 +1,64 @@
+{
+  "schema_version": "1.0.0",
+  "rule_version": "0.1.0",
+  "id": "TL-PAY-003",
+  "legacy_id": "CERT-QR-005",
+  "name": "QR payment made without verifying the payee's banking name",
+  "description": "CERT-In directs users to verify the payee's registered banking name before paying by QR. Well evidenced, and unobservable: TrustLens sees a submitted artifact after the fact, not the live payment flow. Retained as knowledge against a future device-side or payment-integrated component.",
+  "kind": "COMPOSITE",
+  "taxonomy_refs": ["TAX-01-03"],
+  "severity": "HIGH",
+
+  "evidence": {
+    "verdict": "SUPPORTED",
+    "implementability": "DEFERRED",
+    "blocked_by": "LIVE_TRANSACTION_CONTEXT",
+    "source_references": [
+      {
+        "source_id": "SRC-021",
+        "issuing_body": "CERT-In",
+        "authority": "OFFICIAL_GOVERNMENT",
+        "verification_status": "PRIMARY_VERIFIED",
+        "document_ref": "CIAD-2024-0050, Preventing Online scams (2024-10-24)",
+        "quote": "Verify the sender's banking name before making payments using QR codes."
+      }
+    ]
+  },
+
+  "logic": {
+    "require": {
+      "all_of": [
+        "QR_PRESENT",
+        "PAYMENT_CONTEXT",
+        { "any_of": ["QR_SCAN_REQUEST", "IMMEDIATE_PAYMENT_DEMAND"] }
+      ]
+    },
+    "min_evidence_classes": 2,
+    "suppressed_by": ["TRANSACTION_NOTIFICATION", "EDUCATIONAL_CONTENT"]
+  },
+
+  "lifecycle": {
+    "status": "DRAFT",
+    "created": "2026-08-15",
+    "last_reviewed": "2026-08-15",
+    "review_due": "2027-04-01",
+    "authored_by_role": "Knowledge Editor"
+  },
+
+  "language_scope": {
+    "languages": ["en"],
+    "scripts": ["Latn"],
+    "on_unsupported_input": "FLAG_UNSUPPORTED"
+  },
+
+  "explanation": {
+    "plain": "Before paying any QR code, check that the name shown is the person or business you mean to pay.",
+    "technical": "Deferred, not weak. The evidence is a verified CERT-In instruction; what is missing is the observation point — TrustLens is not inside the payment flow and cannot see whether the payee name was checked (CONF-003, NG-05).",
+    "why_confidence_limited": "TrustLens can observe that a QR and a payment context are present in submitted content. It cannot observe the user's verification behaviour, which is the actual subject of the rule."
+  },
+
+  "provenance": {
+    "source_severity_hint": { "value": 90, "label": "High", "cited_as": "RP p.7", "operational_use": false },
+    "notes": "Demonstrates that evidence and implementability are independent filters: this rule is better evidenced than several published ones and still cannot run."
+  }
+}
