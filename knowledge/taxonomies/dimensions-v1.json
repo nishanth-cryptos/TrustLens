@@ -1,0 +1,967 @@
+{
+  "$comment": "TrustLens taxonomy DIMENSION registries (WP5). Separate, non-collapsed axes that describe a scam beyond its category/subcategory. Consumed by the scam taxonomy (per-subcategory dimension tags) and validated by validate_taxonomy.py. IDs are stable. evidence_maturity records how well each term is grounded (PRIMARY / OFFICIAL_ALTERNATE / OFFICIAL_REPLACEMENT / INDUSTRY / HEURISTIC). Language/script are English/Latn for MVP; the structure reserves multilingual labels without inventing untranslated ones.",
+  "dimensions_version": "1.0.0",
+  "generated": "2026-08-28",
+  "status": "ACTIVE",
+  "language": [
+    "en"
+  ],
+  "script": [
+    "Latn"
+  ],
+  "dimensions": {
+    "channel": {
+      "id_prefix": "CH",
+      "description": "The communication channel the scam arrives on.",
+      "terms": [
+        {
+          "id": "CH-01",
+          "name": "SMS",
+          "definition": "Short message service / text.",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "evidence_maturity": "HEURISTIC",
+          "source_basis": [],
+          "change_history": [
+            {
+              "version": "1.0.0",
+              "date": "2026-08-28",
+              "change": "Authored in WP5 taxonomy completion."
+            }
+          ],
+          "examples": [
+            "bank SMS",
+            "OTP SMS"
+          ]
+        },
+        {
+          "id": "CH-02",
+          "name": "WhatsApp / messaging",
+          "definition": "Over-the-top messaging apps (WhatsApp, Signal, Telegram).",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "evidence_maturity": "HEURISTIC",
+          "source_basis": [],
+          "change_history": [
+            {
+              "version": "1.0.0",
+              "date": "2026-08-28",
+              "change": "Authored in WP5 taxonomy completion."
+            }
+          ],
+          "examples": [
+            "WhatsApp forward",
+            "Telegram group"
+          ]
+        },
+        {
+          "id": "CH-03",
+          "name": "Email",
+          "definition": "Electronic mail.",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "evidence_maturity": "HEURISTIC",
+          "source_basis": [],
+          "change_history": [
+            {
+              "version": "1.0.0",
+              "date": "2026-08-28",
+              "change": "Authored in WP5 taxonomy completion."
+            }
+          ],
+          "examples": [
+            "phishing email"
+          ]
+        },
+        {
+          "id": "CH-04",
+          "name": "Social media",
+          "definition": "Public/DM social platforms.",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "evidence_maturity": "HEURISTIC",
+          "source_basis": [],
+          "change_history": [
+            {
+              "version": "1.0.0",
+              "date": "2026-08-28",
+              "change": "Authored in WP5 taxonomy completion."
+            }
+          ],
+          "examples": [
+            "Instagram DM",
+            "Facebook post"
+          ]
+        },
+        {
+          "id": "CH-05",
+          "name": "Voice call",
+          "definition": "Inbound/outbound telephone call.",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "evidence_maturity": "HEURISTIC",
+          "source_basis": [
+            "SRC-012"
+          ],
+          "change_history": [
+            {
+              "version": "1.0.0",
+              "date": "2026-08-28",
+              "change": "Authored in WP5 taxonomy completion."
+            }
+          ],
+          "examples": [
+            "vishing call",
+            "digital-arrest call"
+          ]
+        },
+        {
+          "id": "CH-06",
+          "name": "Video call",
+          "definition": "Video telephony.",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "evidence_maturity": "HEURISTIC",
+          "source_basis": [
+            "SRC-012"
+          ],
+          "change_history": [
+            {
+              "version": "1.0.0",
+              "date": "2026-08-28",
+              "change": "Authored in WP5 taxonomy completion."
+            }
+          ],
+          "examples": [
+            "digital-arrest video call"
+          ]
+        },
+        {
+          "id": "CH-07",
+          "name": "Web / link destination",
+          "definition": "A web page the user is driven to.",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "evidence_maturity": "HEURISTIC",
+          "source_basis": [],
+          "change_history": [
+            {
+              "version": "1.0.0",
+              "date": "2026-08-28",
+              "change": "Authored in WP5 taxonomy completion."
+            }
+          ],
+          "examples": [
+            "fake verification page"
+          ]
+        },
+        {
+          "id": "CH-08",
+          "name": "In-app / QR",
+          "definition": "In-app prompt or a scanned QR artifact.",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "evidence_maturity": "HEURISTIC",
+          "source_basis": [],
+          "change_history": [
+            {
+              "version": "1.0.0",
+              "date": "2026-08-28",
+              "change": "Authored in WP5 taxonomy completion."
+            }
+          ],
+          "examples": [
+            "UPI QR"
+          ]
+        }
+      ]
+    },
+    "fraud_objective": {
+      "id_prefix": "FO",
+      "description": "What the attacker is ultimately trying to achieve.",
+      "terms": [
+        {
+          "id": "FO-01",
+          "name": "Credential theft",
+          "definition": "Obtain a secret (OTP/PIN/CVV/card/password).",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "evidence_maturity": "HEURISTIC",
+          "source_basis": [
+            "SRC-004"
+          ],
+          "change_history": [
+            {
+              "version": "1.0.0",
+              "date": "2026-08-28",
+              "change": "Authored in WP5 taxonomy completion."
+            }
+          ]
+        },
+        {
+          "id": "FO-02",
+          "name": "Unauthorised payment",
+          "definition": "Induce the victim to send money or authorise a debit.",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "evidence_maturity": "HEURISTIC",
+          "source_basis": [
+            "SRC-021"
+          ],
+          "change_history": [
+            {
+              "version": "1.0.0",
+              "date": "2026-08-28",
+              "change": "Authored in WP5 taxonomy completion."
+            }
+          ]
+        },
+        {
+          "id": "FO-03",
+          "name": "Account takeover",
+          "definition": "Gain control of an account without the credential (device linking, session).",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "evidence_maturity": "HEURISTIC",
+          "source_basis": [
+            "SRC-017",
+            "SRC-016"
+          ],
+          "change_history": [
+            {
+              "version": "1.0.0",
+              "date": "2026-08-28",
+              "change": "Authored in WP5 taxonomy completion."
+            }
+          ]
+        },
+        {
+          "id": "FO-04",
+          "name": "Device compromise",
+          "definition": "Gain control of the device (remote access, malware, permissions).",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "evidence_maturity": "HEURISTIC",
+          "source_basis": [
+            "SRC-010"
+          ],
+          "change_history": [
+            {
+              "version": "1.0.0",
+              "date": "2026-08-28",
+              "change": "Authored in WP5 taxonomy completion."
+            }
+          ]
+        },
+        {
+          "id": "FO-05",
+          "name": "Investment loss",
+          "definition": "Extract funds via a fraudulent investment/return promise.",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "evidence_maturity": "HEURISTIC",
+          "source_basis": [
+            "SRC-006",
+            "SRC-020"
+          ],
+          "change_history": [
+            {
+              "version": "1.0.0",
+              "date": "2026-08-28",
+              "change": "Authored in WP5 taxonomy completion."
+            }
+          ]
+        },
+        {
+          "id": "FO-06",
+          "name": "Extortion",
+          "definition": "Coerce payment through threat (arrest, exposure).",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "evidence_maturity": "HEURISTIC",
+          "source_basis": [
+            "SRC-012",
+            "SRC-007"
+          ],
+          "change_history": [
+            {
+              "version": "1.0.0",
+              "date": "2026-08-28",
+              "change": "Authored in WP5 taxonomy completion."
+            }
+          ]
+        },
+        {
+          "id": "FO-07",
+          "name": "Identity / KYC data harvest",
+          "definition": "Collect identity documents or KYC data.",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "evidence_maturity": "HEURISTIC",
+          "source_basis": [
+            "SRC-007"
+          ],
+          "change_history": [
+            {
+              "version": "1.0.0",
+              "date": "2026-08-28",
+              "change": "Authored in WP5 taxonomy completion."
+            }
+          ]
+        }
+      ]
+    },
+    "technical_mechanism": {
+      "id_prefix": "TM",
+      "description": "The technical method used.",
+      "terms": [
+        {
+          "id": "TM-01",
+          "name": "Phishing link",
+          "definition": "A link to a credential/data-harvesting page.",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "evidence_maturity": "HEURISTIC",
+          "source_basis": [
+            "SRC-017"
+          ],
+          "change_history": [
+            {
+              "version": "1.0.0",
+              "date": "2026-08-28",
+              "change": "Authored in WP5 taxonomy completion."
+            }
+          ]
+        },
+        {
+          "id": "TM-02",
+          "name": "QR payment misuse",
+          "definition": "A QR whose scan authorises an outbound payment.",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "evidence_maturity": "HEURISTIC",
+          "source_basis": [
+            "SRC-021"
+          ],
+          "change_history": [
+            {
+              "version": "1.0.0",
+              "date": "2026-08-28",
+              "change": "Authored in WP5 taxonomy completion."
+            }
+          ]
+        },
+        {
+          "id": "TM-03",
+          "name": "Device linking",
+          "definition": "Linking the attacker's device via a code/QR.",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "evidence_maturity": "HEURISTIC",
+          "source_basis": [
+            "SRC-017",
+            "SRC-016"
+          ],
+          "change_history": [
+            {
+              "version": "1.0.0",
+              "date": "2026-08-28",
+              "change": "Authored in WP5 taxonomy completion."
+            }
+          ]
+        },
+        {
+          "id": "TM-04",
+          "name": "Remote-access app",
+          "definition": "Screen-share/remote-control app (AnyDesk/TeamViewer).",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "evidence_maturity": "HEURISTIC",
+          "source_basis": [
+            "SRC-026"
+          ],
+          "change_history": [
+            {
+              "version": "1.0.0",
+              "date": "2026-08-28",
+              "change": "Authored in WP5 taxonomy completion."
+            }
+          ]
+        },
+        {
+          "id": "TM-05",
+          "name": "Accessibility abuse",
+          "definition": "Android Accessibility permission granting screen-read/input control.",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "evidence_maturity": "OFFICIAL_ALTERNATE",
+          "source_basis": [
+            "SRC-019"
+          ],
+          "change_history": [
+            {
+              "version": "1.0.0",
+              "date": "2026-08-28",
+              "change": "Authored in WP5 taxonomy completion."
+            }
+          ]
+        },
+        {
+          "id": "TM-06",
+          "name": "APK / untrusted install",
+          "definition": "Installing an app from a non-store source.",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "evidence_maturity": "OFFICIAL_REPLACEMENT",
+          "source_basis": [
+            "SRC-025",
+            "SRC-010"
+          ],
+          "change_history": [
+            {
+              "version": "1.0.0",
+              "date": "2026-08-28",
+              "change": "Authored in WP5 taxonomy completion."
+            }
+          ]
+        },
+        {
+          "id": "TM-07",
+          "name": "Wallet connect",
+          "definition": "Connecting a crypto wallet to a malicious site.",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "evidence_maturity": "OFFICIAL_ALTERNATE",
+          "source_basis": [
+            "SRC-024"
+          ],
+          "change_history": [
+            {
+              "version": "1.0.0",
+              "date": "2026-08-28",
+              "change": "Authored in WP5 taxonomy completion."
+            }
+          ]
+        },
+        {
+          "id": "TM-08",
+          "name": "USSD call forwarding",
+          "definition": "Dialling a USSD code that enables call forwarding.",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "evidence_maturity": "OFFICIAL_ALTERNATE",
+          "source_basis": [
+            "SRC-013"
+          ],
+          "change_history": [
+            {
+              "version": "1.0.0",
+              "date": "2026-08-28",
+              "change": "Authored in WP5 taxonomy completion."
+            }
+          ]
+        },
+        {
+          "id": "TM-09",
+          "name": "Fake verification page",
+          "definition": "A page imitating a platform/service 'verify' flow.",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "evidence_maturity": "HEURISTIC",
+          "source_basis": [
+            "SRC-017"
+          ],
+          "change_history": [
+            {
+              "version": "1.0.0",
+              "date": "2026-08-28",
+              "change": "Authored in WP5 taxonomy completion."
+            }
+          ]
+        },
+        {
+          "id": "TM-10",
+          "name": "Impersonation",
+          "definition": "Claiming a false identity (authority/bank/contact/celebrity).",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "evidence_maturity": "HEURISTIC",
+          "source_basis": [
+            "SRC-012",
+            "SRC-014"
+          ],
+          "change_history": [
+            {
+              "version": "1.0.0",
+              "date": "2026-08-28",
+              "change": "Authored in WP5 taxonomy completion."
+            }
+          ]
+        },
+        {
+          "id": "TM-11",
+          "name": "Credential prompt",
+          "definition": "Directly asking the user to disclose a secret.",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "evidence_maturity": "HEURISTIC",
+          "source_basis": [
+            "SRC-004"
+          ],
+          "change_history": [
+            {
+              "version": "1.0.0",
+              "date": "2026-08-28",
+              "change": "Authored in WP5 taxonomy completion."
+            }
+          ]
+        }
+      ]
+    },
+    "social_engineering_tactic": {
+      "id_prefix": "SE",
+      "description": "The psychological lever applied.",
+      "terms": [
+        {
+          "id": "SE-01",
+          "name": "Authority",
+          "definition": "Invoking an official/senior identity.",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "evidence_maturity": "HEURISTIC",
+          "source_basis": [
+            "SRC-012"
+          ],
+          "change_history": [
+            {
+              "version": "1.0.0",
+              "date": "2026-08-28",
+              "change": "Authored in WP5 taxonomy completion."
+            }
+          ]
+        },
+        {
+          "id": "SE-02",
+          "name": "Urgency / time pressure",
+          "definition": "Imposing a deadline or immediacy.",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "evidence_maturity": "HEURISTIC",
+          "source_basis": [
+            "SRC-021"
+          ],
+          "change_history": [
+            {
+              "version": "1.0.0",
+              "date": "2026-08-28",
+              "change": "Authored in WP5 taxonomy completion."
+            }
+          ]
+        },
+        {
+          "id": "SE-03",
+          "name": "Fear / threat",
+          "definition": "Threat of arrest, block, exposure, disconnection.",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "evidence_maturity": "HEURISTIC",
+          "source_basis": [
+            "SRC-012"
+          ],
+          "change_history": [
+            {
+              "version": "1.0.0",
+              "date": "2026-08-28",
+              "change": "Authored in WP5 taxonomy completion."
+            }
+          ]
+        },
+        {
+          "id": "SE-04",
+          "name": "Scarcity",
+          "definition": "Limited slots/seats/time.",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "evidence_maturity": "HEURISTIC",
+          "source_basis": [],
+          "change_history": [
+            {
+              "version": "1.0.0",
+              "date": "2026-08-28",
+              "change": "Authored in WP5 taxonomy completion."
+            }
+          ]
+        },
+        {
+          "id": "SE-05",
+          "name": "Trust / relationship",
+          "definition": "Trading on a known/claimed relationship.",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "evidence_maturity": "HEURISTIC",
+          "source_basis": [
+            "SRC-014",
+            "SRC-021"
+          ],
+          "change_history": [
+            {
+              "version": "1.0.0",
+              "date": "2026-08-28",
+              "change": "Authored in WP5 taxonomy completion."
+            }
+          ]
+        },
+        {
+          "id": "SE-06",
+          "name": "Secrecy / isolation",
+          "definition": "Discouraging verification or contact with family/lawyers.",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "evidence_maturity": "HEURISTIC",
+          "source_basis": [
+            "SRC-012"
+          ],
+          "change_history": [
+            {
+              "version": "1.0.0",
+              "date": "2026-08-28",
+              "change": "Authored in WP5 taxonomy completion."
+            }
+          ]
+        },
+        {
+          "id": "SE-07",
+          "name": "Benign pretext",
+          "definition": "An innocuous cover story for a consequential action.",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "evidence_maturity": "HEURISTIC",
+          "source_basis": [
+            "SRC-017"
+          ],
+          "change_history": [
+            {
+              "version": "1.0.0",
+              "date": "2026-08-28",
+              "change": "Authored in WP5 taxonomy completion."
+            }
+          ]
+        },
+        {
+          "id": "SE-08",
+          "name": "Greed / reward",
+          "definition": "Promised prize, refund, airdrop, high return.",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "evidence_maturity": "HEURISTIC",
+          "source_basis": [
+            "SRC-020"
+          ],
+          "change_history": [
+            {
+              "version": "1.0.0",
+              "date": "2026-08-28",
+              "change": "Authored in WP5 taxonomy completion."
+            }
+          ]
+        }
+      ]
+    },
+    "requested_user_action": {
+      "id_prefix": "UA",
+      "description": "The concrete action the victim is asked to take.",
+      "terms": [
+        {
+          "id": "UA-01",
+          "name": "Share credential",
+          "definition": "Disclose OTP/PIN/CVV/card/password.",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "evidence_maturity": "HEURISTIC",
+          "source_basis": [
+            "SRC-004"
+          ],
+          "change_history": [
+            {
+              "version": "1.0.0",
+              "date": "2026-08-28",
+              "change": "Authored in WP5 taxonomy completion."
+            }
+          ]
+        },
+        {
+          "id": "UA-02",
+          "name": "Enter UPI PIN",
+          "definition": "Enter a UPI PIN.",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "evidence_maturity": "HEURISTIC",
+          "source_basis": [
+            "SRC-021"
+          ],
+          "change_history": [
+            {
+              "version": "1.0.0",
+              "date": "2026-08-28",
+              "change": "Authored in WP5 taxonomy completion."
+            }
+          ]
+        },
+        {
+          "id": "UA-03",
+          "name": "Make payment / transfer",
+          "definition": "Send money or authorise a debit.",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "evidence_maturity": "HEURISTIC",
+          "source_basis": [
+            "SRC-021"
+          ],
+          "change_history": [
+            {
+              "version": "1.0.0",
+              "date": "2026-08-28",
+              "change": "Authored in WP5 taxonomy completion."
+            }
+          ]
+        },
+        {
+          "id": "UA-04",
+          "name": "Scan QR",
+          "definition": "Scan a QR code.",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "evidence_maturity": "HEURISTIC",
+          "source_basis": [
+            "SRC-021"
+          ],
+          "change_history": [
+            {
+              "version": "1.0.0",
+              "date": "2026-08-28",
+              "change": "Authored in WP5 taxonomy completion."
+            }
+          ]
+        },
+        {
+          "id": "UA-05",
+          "name": "Install app / APK",
+          "definition": "Install an application.",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "evidence_maturity": "HEURISTIC",
+          "source_basis": [
+            "SRC-025"
+          ],
+          "change_history": [
+            {
+              "version": "1.0.0",
+              "date": "2026-08-28",
+              "change": "Authored in WP5 taxonomy completion."
+            }
+          ]
+        },
+        {
+          "id": "UA-06",
+          "name": "Grant permission",
+          "definition": "Grant a device permission (Accessibility, etc.).",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "evidence_maturity": "OFFICIAL_ALTERNATE",
+          "source_basis": [
+            "SRC-019"
+          ],
+          "change_history": [
+            {
+              "version": "1.0.0",
+              "date": "2026-08-28",
+              "change": "Authored in WP5 taxonomy completion."
+            }
+          ]
+        },
+        {
+          "id": "UA-07",
+          "name": "Dial code",
+          "definition": "Dial a USSD/short code.",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "evidence_maturity": "OFFICIAL_ALTERNATE",
+          "source_basis": [
+            "SRC-013"
+          ],
+          "change_history": [
+            {
+              "version": "1.0.0",
+              "date": "2026-08-28",
+              "change": "Authored in WP5 taxonomy completion."
+            }
+          ]
+        },
+        {
+          "id": "UA-08",
+          "name": "Connect wallet",
+          "definition": "Connect a crypto wallet.",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "evidence_maturity": "OFFICIAL_ALTERNATE",
+          "source_basis": [
+            "SRC-024"
+          ],
+          "change_history": [
+            {
+              "version": "1.0.0",
+              "date": "2026-08-28",
+              "change": "Authored in WP5 taxonomy completion."
+            }
+          ]
+        },
+        {
+          "id": "UA-09",
+          "name": "Click link / open page",
+          "definition": "Open a link or page.",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "evidence_maturity": "HEURISTIC",
+          "source_basis": [],
+          "change_history": [
+            {
+              "version": "1.0.0",
+              "date": "2026-08-28",
+              "change": "Authored in WP5 taxonomy completion."
+            }
+          ]
+        },
+        {
+          "id": "UA-10",
+          "name": "Share device-linking code",
+          "definition": "Share a linking code or scan a linking QR.",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "evidence_maturity": "HEURISTIC",
+          "source_basis": [
+            "SRC-017"
+          ],
+          "change_history": [
+            {
+              "version": "1.0.0",
+              "date": "2026-08-28",
+              "change": "Authored in WP5 taxonomy completion."
+            }
+          ]
+        }
+      ]
+    },
+    "potential_harm": {
+      "id_prefix": "PH",
+      "description": "The harm that results if the scam succeeds.",
+      "terms": [
+        {
+          "id": "PH-01",
+          "name": "Financial loss",
+          "definition": "Direct loss of funds.",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "evidence_maturity": "HEURISTIC",
+          "source_basis": [
+            "SRC-021"
+          ],
+          "change_history": [
+            {
+              "version": "1.0.0",
+              "date": "2026-08-28",
+              "change": "Authored in WP5 taxonomy completion."
+            }
+          ]
+        },
+        {
+          "id": "PH-02",
+          "name": "Account takeover",
+          "definition": "Loss of account control.",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "evidence_maturity": "HEURISTIC",
+          "source_basis": [
+            "SRC-017"
+          ],
+          "change_history": [
+            {
+              "version": "1.0.0",
+              "date": "2026-08-28",
+              "change": "Authored in WP5 taxonomy completion."
+            }
+          ]
+        },
+        {
+          "id": "PH-03",
+          "name": "Device compromise",
+          "definition": "Attacker control of the device.",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "evidence_maturity": "HEURISTIC",
+          "source_basis": [
+            "SRC-010"
+          ],
+          "change_history": [
+            {
+              "version": "1.0.0",
+              "date": "2026-08-28",
+              "change": "Authored in WP5 taxonomy completion."
+            }
+          ]
+        },
+        {
+          "id": "PH-04",
+          "name": "Identity theft",
+          "definition": "Misuse of identity/KYC data.",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "evidence_maturity": "HEURISTIC",
+          "source_basis": [
+            "SRC-007"
+          ],
+          "change_history": [
+            {
+              "version": "1.0.0",
+              "date": "2026-08-28",
+              "change": "Authored in WP5 taxonomy completion."
+            }
+          ]
+        },
+        {
+          "id": "PH-05",
+          "name": "Data exposure",
+          "definition": "Exposure of personal/sensitive data.",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "evidence_maturity": "HEURISTIC",
+          "source_basis": [],
+          "change_history": [
+            {
+              "version": "1.0.0",
+              "date": "2026-08-28",
+              "change": "Authored in WP5 taxonomy completion."
+            }
+          ]
+        },
+        {
+          "id": "PH-06",
+          "name": "Coerced payment",
+          "definition": "Payment extracted under threat.",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "evidence_maturity": "HEURISTIC",
+          "source_basis": [
+            "SRC-012"
+          ],
+          "change_history": [
+            {
+              "version": "1.0.0",
+              "date": "2026-08-28",
+              "change": "Authored in WP5 taxonomy completion."
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

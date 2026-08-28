@@ -203,6 +203,35 @@ auto-publishes; all existing rule-QA gates still apply.
 
 ---
 
+## DEC-007 — Sextortion in the taxonomy; detection deferred for safeguarding
+
+| | |
+|---|---|
+| **Date** | 2026-08-28 |
+| **Decided by** | Programme (scope + evidence-policy decision) |
+| **Status** | Accepted |
+| **Related** | [RESEARCH-002 §6.3](../01-research/RESEARCH-002-scam-taxonomy.md), [G-10](../01-research/RESEARCH-005-gap-register.md), [KB-001](../02-knowledge/KB-001-knowledge-governance.md) |
+
+**Decision.** Add sextortion to the taxonomy as `TAX-11` (category existence `PRIMARY_VERIFIED` via
+SRC-007 / Chakshu), but author **no executable detection rule** in the MVP —
+`detection_status: DEFERRED_SAFEGUARDING`.
+
+**Justification.** The source verifies the *category*, not a modus operandi (unlike SRC-012 for digital
+arrest). More importantly, a submitted sextortion message is frequently a victim in acute distress; a
+fraud score is the wrong response and risks harm. Detection needs a safeguarding/referral design that is
+out of MVP scope. Including the category keeps the taxonomy nationally complete without manufacturing
+unsafe detection (MP §3, §21).
+
+**Alternatives considered.** Build a sextortion rule now (rejected — unsafe, weak modus-operandi
+evidence); scope sextortion out entirely (rejected — it is an official, nationally-recognised category).
+
+**Consequences.** `validate_taxonomy.py` fails any rule authored on `TAX-11`. G-10 moves from open to
+"taxonomy resolved, detection deferred". A future increment must design safeguarding-aware handling.
+
+**Reversal cost.** Low — the category is data; a future rule can be added once safeguarding is designed.
+
+---
+
 ## Summary
 
 | ID | Decision | Decided by | Status |
@@ -213,6 +242,7 @@ auto-publishes; all existing rule-QA gates still apply.
 | DEC-004 | Follow master prompt phase order | Sponsor (implied) | Accepted — revisitable |
 | DEC-005 | Neutral rule identifiers | Programme | Accepted |
 | DEC-006 | Evidence hierarchy (official-alternate + replacement) | Programme | Accepted |
+| DEC-007 | Sextortion in taxonomy; detection deferred (safeguarding) | Programme | Accepted |
 
 ## Change history
 
@@ -220,3 +250,4 @@ auto-publishes; all existing rule-QA gates still apply.
 |---|---|---|---|
 | 1.0 | 2026-07-31 | Log opened with five Phase 0 decisions. | Technical Program Director |
 | 1.1 | 2026-08-28 | DEC-006 added — evidence hierarchy admitting official-alternate and replacement provenance, arising from the RESEARCH-006 manual retrieval reconciliation. Points to ADR-0015. | Chief Architect |
+| 1.2 | 2026-08-28 | DEC-007 added — sextortion added to the taxonomy (TAX-11) with detection deferred for safeguarding (WP5). | Threat Intelligence Lead |

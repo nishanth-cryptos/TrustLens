@@ -109,12 +109,14 @@ score), [CONF-002](conflict-register.md) (three-layer indicator/composite/suppre
 4. 🟡 **Rule encoding** — **25 of 30 starter rules encoded, 18 PUBLISHED** (+ TL-SUP-001, non-starter).
    The 5 unencoded are intentional: 4 UNSUPPORTED + 1 DEFERRED. Full reconciliation in
    [GATE-003 §3](GATE-003-phase-2-g07-and-encoding.md).
-5. **Taxonomy completion** — sextortion as `TAX-11` or a recorded decision to scope it out
-   ([G-10](../01-research/RESEARCH-005-gap-register.md)); research pass on loan apps and mule
-   accounts (G-12).
-6. **KB-001** — ontology, rule lifecycle (FR-023), knowledge governance.
-7. **Schema validation in CI**, replacing the interim
-   [Phase 1 consistency checker](../../knowledge/validation/phase1_consistency_check.py).
+5. ✅ **Taxonomy completion** — `TAX-11` sextortion added, detection **deferred** ([DEC-007](decision-log.md));
+   six-axis multidimensional model ([`dimensions-v1.json`](../../knowledge/taxonomies/dimensions-v1.json));
+   `evidence_maturity` layer; loan-app/mule (G-12) preserved with no fabricated rule. Taxonomy v2.0.
+6. ✅ **KB-001** — [knowledge governance, lifecycle, provenance, versioning](../02-knowledge/KB-001-knowledge-governance.md);
+   storage deferred to ADR-0004.
+7. 🟡 **Schema validation in CI** — seven validators exist (`manual_evidence_check`,
+   `phase1_consistency_check`, `validate_taxonomy`, `validate_kb`, `validate_negative_library`,
+   `validate_rules`, `rule_runner`); wiring into a CI workflow remains.
 8. **ADR-0004** (knowledge storage) · **ADR-0014** (language and script strategy).
 
 **⚠ Partial blocker.** Work package 8's ADR-0014 is blocked on
@@ -246,3 +248,4 @@ and when the sources are retrieved. The rest have runway.
 | 1.1 | 2026-08-14 | Phase 1 closed at `PARTIAL`, matching forecast ([GATE-001](GATE-001-phase-1-assessment.md)). Phase 2 expanded into eight dependency-ordered work packages and marked next; OI-04 restated as blocking ADR-0014 only, not the whole phase; G-01 added to open blockers. | Technical Program Director |
 | 1.2 | 2026-08-28 | RESEARCH-006 manual retrieval reconciliation completed; Phase 2 marked **in progress** (WP1 done; WP2/3/4 partial — 14/30 starter rules encoded). Checkpoint recorded in [GATE-002](GATE-002-phase-2-checkpoint.md). | Technical Program Director |
 | 1.3 | 2026-08-28 | **WP3 done (G-07 closed)**; WP4 advanced to **25/30 encoded, 18 published**. Checkpoint [GATE-003](GATE-003-phase-2-g07-and-encoding.md). WP2/5/6/8 remain open. | Technical Program Director |
+| 1.4 | 2026-08-28 | **WP5 done (taxonomy v2.0, TAX-11 deferred, multidimensional model, KB-001)** and **WP6 done (KB-001)**. Checkpoint [GATE-004](GATE-004-phase-2-taxonomy-kb.md). WP2 + CI wiring + ADR-0004/0014 remain. | Technical Program Director |
