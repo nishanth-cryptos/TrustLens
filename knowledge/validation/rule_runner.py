@@ -1,22 +1,27 @@
-"""TrustLens rule-runner — Phase 2 work package 8.
+"""TrustLens rule-runner — Phase 2 WP8, upgraded for the WP3/G-07 negative-indicator library.
 
-Deterministic evaluation of the encoded rule set against the seed corpus and the
-reconciliation cases. This is NOT an extraction test: indicator extraction is a
-Phase-9 deliverable. The runner takes each case's DECLARED indicator set
-(`expected_indicators` + `expected_negative_indicators`) as the ground-truth signal
-an extractor would produce, and checks that the rule LOGIC — composite conditions,
-own suppressors, and SUPPRESSION rules — behaves as the corpus specifies:
+Deterministic evaluation of the encoded rule set against the seed corpus, the reconciliation
+cases and the suppression tests. NOT an extraction test: extraction is Phase 9. Each case's
+DECLARED indicator set (`expected_indicators` + `expected_negative_indicators`) is treated as the
+signal an extractor would produce, and the runner checks that the rule LOGIC plus the formal
+suppression semantics behave as specified.
 
-  * malicious cases: every encoded expected rule fires;
-  * benign cases: no must_not_match rule fires, and no PUBLISHED rule fires at all
-    (the false-positive guard, CONF-002 / RSK-002);
-  * ambiguous cases: no PUBLISHED composite rule fires (INSUFFICIENT_EVIDENCE).
+Suppression semantics (from knowledge/indicators/negative-indicator-library-v1.json):
 
-It also prints coverage (which live rules are exercised, which corpus-referenced
-rules are not yet encoded) and a traceability summary (every published rule resolves
-to real evidence). Exit code 0 = every case behaves as specified.
+  1. Hard-risk OVERRIDES are computed on the RAW signal set, per applicable rule.
+  2. If an override is active for a rule, directional neutralisation is skipped (the live pattern is
+     trusted) and soft suppressor categories are BLOCKED.
+  3. Otherwise, SUPPRESS_INDICATOR (directional negation) neutralises its target positives; the
+     rule's `require` is evaluated on the reduced set.
+  4. If the rule still matches, SUPPRESS_RULE cancels it and CAP_SEVERITY caps its severity —
+     unless the suppressor's category is blocked by an active override.
+  5. CONTEXT_ONLY indicators are recorded as benign evidence and never change the finding.
+  6. Numeric score-reduction magnitudes are deliberately absent (deferred to DET-001, CONF-001).
 
-Usage:  .venv/bin/python knowledge/validation/rule_runner.py [--quiet]
+Every suppression decision is explainable (`--explain`).
+
+Usage:  .venv/bin/python knowledge/validation/rule_runner.py [--quiet] [--explain]
+Exit 0 = every case behaves as specified AND traceability holds.
 """
 
 from __future__ import annotations
@@ -27,13 +32,18 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 RULES_DIR = ROOT / "knowledge" / "rules"
-CORPUS_PATH = ROOT / "knowledge" / "seed-data" / "seed-corpus-v1.json"
-RECON_PATH = ROOT / "knowledge" / "seed-data" / "reconciliation-cases-v1.json"
+NEG_LIBRARY_PATH = ROOT / "knowledge" / "indicators" / "negative-indicator-library-v1.json"
 MANIFEST_PATH = ROOT / "knowledge" / "sources" / "verification-manifest.json"
 EVIDENCE_RECORDS_PATH = ROOT / "knowledge" / "sources" / "manual-retrieval" / "evidence-records.json"
+CASE_FILES = [
+    ("seed-corpus-v1", ROOT / "knowledge" / "seed-data" / "seed-corpus-v1.json"),
+    ("reconciliation-cases-v1", ROOT / "knowledge" / "seed-data" / "reconciliation-cases-v1.json"),
+    ("suppression-tests-v1", ROOT / "knowledge" / "seed-data" / "suppression-tests-v1.json"),
+]
 
-LIVE_STATUSES = {"PUBLISHED"}          # FR-023: only PUBLISHED is evaluated live
-ENCODED_EVALUATED = {"PUBLISHED", "APPROVED", "PEER_REVIEW"}  # exercised in tests
+LIVE_STATUSES = {"PUBLISHED"}
+ENCODED_EVALUATED = {"PUBLISHED", "APPROVED", "PEER_REVIEW"}
+SEVERITY_ORDER = ["LOW", "MEDIUM", "HIGH", "CRITICAL"]
 
 
 def load(p):
@@ -52,27 +62,116 @@ def eval_condition(cond, signals):
     if "any_of" in cond:
         return any(eval_condition(x, signals) for x in cond["any_of"])
     if "n_of" in cond:
-        n = cond["n_of"]["n"]
-        return sum(1 for x in cond["n_of"]["of"] if eval_condition(x, signals)) >= n
+        return sum(1 for x in cond["n_of"]["of"] if eval_condition(x, signals)) >= cond["n_of"]["n"]
     return False
 
 
-def composite_matches(rule, signals):
-    """Require holds AND no own suppressor is present."""
-    logic = rule["logic"]
-    if not eval_condition(logic.get("require"), signals):
-        return False
-    for s in logic.get("suppressed_by", []):
-        if s in signals:
-            return False
-    return True
+def family_match(families, rule):
+    if "*" in families:
+        return True
+    for f in families:
+        for t in rule.get("taxonomy_refs", []):
+            if t == f or t.startswith(f + "-") or f.startswith(t + "-"):
+                return True
+    return False
 
 
-def suppression_active(rule, signals):
-    return eval_condition(rule["logic"].get("require"), signals)
+def override_applicable(ov, rule):
+    if rule["id"] in ov.get("applies_to_rules", []):
+        return True
+    return family_match(ov.get("applies_to_families", []), rule)
 
 
-def targets_rule(suppresses, rule):
+def lang_applies(rule, case_lang):
+    return case_lang.split("-")[0] in rule["language_scope"]["languages"]
+
+
+# --------------------------------------------------------------- evaluation core
+
+def evaluate(case, rules, neg, overrides):
+    """Return (final, explain) where final maps rid -> effective severity, explain maps rid -> dict."""
+    raw = set(case.get("expected_indicators", []) or [])
+    raw |= set(case.get("expected_negative_indicators", []) or [])
+    lang = case.get("language", "en")
+
+    present_neg = {n: neg[n] for n in raw if n in neg}
+    positives = {s for s in raw if s not in neg}
+
+    composites = [r for r in rules if r["kind"] == "COMPOSITE"
+                  and lang_applies(r, lang) and r["lifecycle"]["status"] in ENCODED_EVALUATED]
+    suppression_rules = [r for r in rules if r["kind"] == "SUPPRESSION"
+                         and lang_applies(r, lang) and r["lifecycle"]["status"] in {"APPROVED", "PUBLISHED"}]
+
+    final, explain = {}, {}
+    for r in composites:
+        active_ovs = [ov for ov in overrides if override_applicable(ov, r) and eval_condition(ov["condition"], raw)]
+        blocked_cats = set()
+        for ov in active_ovs:
+            blocked_cats |= set(ov["blocks_suppression_categories"])
+
+        # directional neutralisation (skipped when a hard-risk override is active)
+        neutralised = set()
+        if not active_ovs:
+            for nid, ni in present_neg.items():
+                if ni["suppression_effect"] == "SUPPRESS_INDICATOR":
+                    neutralised |= set(ni.get("suppresses_indicators", []))
+        eff = (positives - neutralised) | set(present_neg)
+
+        if not eval_condition(r["logic"].get("require"), eff):
+            continue  # rule does not match
+
+        matched_pos = sorted(p for p in positives - neutralised)
+        # gather suppressors that apply to this rule
+        cancelled_by = None
+        caps = []
+        blocked = []
+        for nid, ni in present_neg.items():
+            eff_kind = ni["suppression_effect"]
+            if eff_kind not in ("SUPPRESS_RULE", "CAP_SEVERITY"):
+                continue
+            applies = nid in set(r["logic"].get("suppressed_by", [])) or family_match(ni["applicable_rule_families"], r)
+            if not applies:
+                continue
+            if ni["category"] in blocked_cats:
+                blocked.append(nid)
+                continue
+            if eff_kind == "SUPPRESS_RULE":
+                cancelled_by = nid
+                break
+            caps.append(ni.get("severity_cap"))
+
+        # legacy SUPPRESSION-kind rules (also override-aware)
+        if cancelled_by is None:
+            for s in suppression_rules:
+                if eval_condition(s["logic"].get("require"), raw) and _targets(s["logic"].get("suppresses", []), r):
+                    if active_ovs:
+                        blocked.append(s["id"])
+                    else:
+                        cancelled_by = s["id"]
+                        break
+
+        exp = {
+            "matched_positives": matched_pos,
+            "negatives_present": sorted(present_neg),
+            "neutralised": sorted(neutralised),
+            "overrides_active": [ov["override_id"] for ov in active_ovs],
+            "blocked_suppressors": blocked,
+            "cancelled_by": cancelled_by,
+            "severity_caps": [c for c in caps if c],
+        }
+        if cancelled_by:
+            explain[r["id"]] = {**exp, "outcome": "suppressed"}
+            continue
+        sev = r.get("severity", "LOW")
+        for cap in caps:
+            if cap and SEVERITY_ORDER.index(cap) < SEVERITY_ORDER.index(sev):
+                sev = cap
+        final[r["id"]] = sev
+        explain[r["id"]] = {**exp, "outcome": "fired", "severity": sev}
+    return final, explain
+
+
+def _targets(suppresses, rule):
     for t in suppresses:
         if t == "*" or t == rule["id"]:
             return True
@@ -83,92 +182,64 @@ def targets_rule(suppresses, rule):
     return False
 
 
-def lang_applies(rule, case_lang):
-    base = case_lang.split("-")[0]
-    return base in rule["language_scope"]["languages"]
-
-
-def evaluate(case, rules):
-    """Return (final_findings, matched_before_suppression) for PUBLISHED+APPROVED+PEER_REVIEW rules."""
-    signals = set(case.get("expected_indicators", []) or [])
-    signals |= set(case.get("expected_negative_indicators", []) or [])
-    case_lang = case.get("language", "en")
-
-    applicable = [r for r in rules if lang_applies(r, case_lang)
-                  and r["lifecycle"]["status"] in ENCODED_EVALUATED]
-    composites = [r for r in applicable if r["kind"] == "COMPOSITE"]
-    suppressions = [r for r in rules if r["kind"] == "SUPPRESSION"
-                    and lang_applies(r, case_lang)
-                    and r["lifecycle"]["status"] in {"APPROVED", "PUBLISHED"}]
-
-    matched = {r["id"]: r for r in composites if composite_matches(r, signals)}
-    active_suppr = [r for r in suppressions if suppression_active(r, signals)]
-
-    final = {}
-    suppressed_out = {}
-    for rid, r in matched.items():
-        killed = next((s for s in active_suppr if targets_rule(s["logic"]["suppresses"], r)), None)
-        if killed:
-            suppressed_out[rid] = killed["id"]
-        else:
-            final[rid] = r
-    return final, matched, suppressed_out
-
-
 # --------------------------------------------------------------- main
 
 def main() -> int:
     quiet = "--quiet" in sys.argv
-    rules = []
-    for p in sorted(RULES_DIR.glob("*.json")):
-        rules.append(load(p))
+    do_explain = "--explain" in sys.argv
+    rules = [load(p) for p in sorted(RULES_DIR.glob("*.json"))]
     by_id = {r["id"]: r for r in rules}
     live_ids = {r["id"] for r in rules if r["lifecycle"]["status"] in LIVE_STATUSES}
 
+    library = load(NEG_LIBRARY_PATH)
+    neg = {n["negative_indicator_id"]: n for n in library["negative_indicators"]}
+    overrides = library["overrides"]
+
     cases = []
-    corpus = load(CORPUS_PATH)
-    for bucket in ("benign", "malicious", "ambiguous"):
-        for c in corpus.get(bucket, []):
-            cases.append({**c, "_bucket": bucket, "_src": "seed-corpus-v1"})
-    if RECON_PATH.exists():
-        recon = load(RECON_PATH)
+    for label, path in CASE_FILES:
+        if not path.exists():
+            continue
+        data = load(path)
         for bucket in ("benign", "malicious", "ambiguous"):
-            for c in recon.get(bucket, []):
-                cases.append({**c, "_bucket": bucket, "_src": "reconciliation-cases-v1"})
+            for c in data.get(bucket, []):
+                cases.append({**c, "_bucket": bucket, "_src": label})
 
     failures = []
-    exercised = set()          # live/approved rules that fired on a malicious case
-    not_encoded = set()        # corpus-referenced rules not present as files
+    exercised = set()
+    not_encoded = set()
+    override_hits = set()
 
-    print(f"Rule-runner — {len(rules)} rules ({len(live_ids)} PUBLISHED), {len(cases)} cases\n")
+    print(f"Rule-runner — {len(rules)} rules ({len(live_ids)} PUBLISHED), "
+          f"{len(neg)} negative indicators, {len(overrides)} overrides, {len(cases)} cases\n")
 
     for case in cases:
-        final, matched, suppressed = evaluate(case, rules)
+        final, explain = evaluate(case, rules, neg, overrides)
         fired = set(final)
-        bucket = case["_bucket"]
-        cid = case["id"]
+        for e in explain.values():
+            override_hits.update(e["overrides_active"])
+        bucket, cid = case["_bucket"], case["id"]
         problems = []
 
         if bucket == "malicious":
             for rid in case.get("expected_rules", []):
                 if rid not in by_id:
                     not_encoded.add(rid)
-                    continue
-                if rid not in fired:
-                    problems.append(f"expected {rid} to fire; fired={sorted(fired)} suppressed={suppressed}")
+                elif rid not in fired:
+                    e = explain.get(rid, {})
+                    problems.append(f"expected {rid} to fire; got {e.get('outcome','no-match')} {e}")
                 else:
                     exercised.add(rid)
         elif bucket == "benign":
             for rid in case.get("must_not_match", []):
                 if rid in fired:
-                    problems.append(f"{rid} FIRED on benign case (false positive)")
-            live_fp = [rid for rid in fired if rid in live_ids]
+                    problems.append(f"{rid} FIRED on benign case — {explain[rid]}")
+            live_fp = sorted(rid for rid in fired if rid in live_ids)
             if live_fp:
-                problems.append(f"PUBLISHED rule(s) fired on benign case: {sorted(live_fp)}")
+                problems.append(f"PUBLISHED rule(s) fired on benign case: {live_fp}")
         else:  # ambiguous
-            live_fp = [rid for rid in fired if rid in live_ids]
+            live_fp = sorted(rid for rid in fired if rid in live_ids)
             if live_fp:
-                problems.append(f"PUBLISHED rule(s) fired on ambiguous case (expected INSUFFICIENT_EVIDENCE): {sorted(live_fp)}")
+                problems.append(f"PUBLISHED rule(s) fired on ambiguous case: {live_fp}")
 
         tag = f"{cid} [{case['_src']}]"
         if problems:
@@ -178,24 +249,27 @@ def main() -> int:
                 print(f"          {p}")
         elif not quiet:
             detail = f"fired={sorted(fired)}" if fired else "no finding"
-            if suppressed:
-                detail += f" suppressed={suppressed}"
-            print(f"  ok    {tag:<34} {detail}")
+            supp = {rid: e["cancelled_by"] for rid, e in explain.items() if e["outcome"] == "suppressed"}
+            if supp:
+                detail += f" suppressed={supp}"
+            print(f"  ok    {tag:<36} {detail}")
+            if do_explain:
+                for rid, e in explain.items():
+                    print(f"           · {rid}: {e}")
 
     # ---- coverage
-    print("\nCoverage")
-    live_and_approved = sorted(r["id"] for r in rules
-                               if r["lifecycle"]["status"] in {"PUBLISHED", "APPROVED"}
-                               and r["kind"] == "COMPOSITE")
-    for rid in live_and_approved:
+    print("\nCoverage (COMPOSITE rules, PUBLISHED/APPROVED)")
+    for rid in sorted(r["id"] for r in rules
+                      if r["kind"] == "COMPOSITE" and r["lifecycle"]["status"] in {"PUBLISHED", "APPROVED"}):
         mark = "exercised" if rid in exercised else "NOT exercised by any malicious case"
-        print(f"  {rid:<14} {by_id[rid]['lifecycle']['status']:<11} {mark}")
+        print(f"  {rid:<14} {by_id[rid]['lifecycle']['status']:<10} {mark}")
+    print(f"\n  Hard-risk overrides exercised: {sorted(override_hits) or 'NONE'}")
     if not_encoded:
-        print(f"\n  Corpus-referenced rules not yet encoded ({len(not_encoded)}): {sorted(not_encoded)}")
+        print(f"  Corpus-referenced rules not yet encoded ({len(not_encoded)}): {sorted(not_encoded)}")
 
-    # ---- traceability: every PUBLISHED rule resolves to real evidence
+    # ---- traceability
     print("\nTraceability (PUBLISHED rules resolve to evidence)")
-    manifest = {s["id"]: s for s in load(MANIFEST_PATH)["sources"]}
+    manifest = {s["id"] for s in load(MANIFEST_PATH)["sources"]}
     mr_records = {r["evidence_id"] for r in load(EVIDENCE_RECORDS_PATH)["records"]} \
         if EVIDENCE_RECORDS_PATH.exists() else set()
     trace_fail = []
@@ -203,30 +277,24 @@ def main() -> int:
         if r["lifecycle"]["status"] != "PUBLISHED":
             continue
         for ref in r["evidence"]["source_references"]:
-            sid = ref["source_id"]
-            if sid not in manifest:
-                trace_fail.append(f"{r['id']}: source {sid} missing from manifest")
-            mr = ref.get("manual_retrieval")
-            if mr:
-                for eid in mr["evidence_ids"]:
-                    if eid not in mr_records:
-                        trace_fail.append(f"{r['id']}: manual evidence {eid} missing from records")
+            if ref["source_id"] not in manifest:
+                trace_fail.append(f"{r['id']}: source {ref['source_id']} missing from manifest")
+            for eid in ref.get("manual_retrieval", {}).get("evidence_ids", []):
+                if eid not in mr_records:
+                    trace_fail.append(f"{r['id']}: manual evidence {eid} missing")
     if trace_fail:
         for t in trace_fail:
             print(f"  FAIL  {t}")
         failures.append(("traceability", trace_fail))
     else:
-        print(f"  ok    all {len(live_ids)} PUBLISHED rules trace to manifest sources / evidence records")
+        print(f"  ok    all {len(live_ids)} PUBLISHED rules trace to manifest/evidence")
 
-    # ---- report
     print()
-    total = len(cases)
     if failures:
-        print(f"{len(failures)} FAILURES across {total} cases + checks")
+        print(f"{len(failures)} FAILURES across {len(cases)} cases + checks")
         return 1
-    print(f"{total}/{total} cases behave as specified — "
-          f"{len(exercised)} live/approved rules exercised, "
-          f"{len(not_encoded)} corpus rules await encoding")
+    print(f"{len(cases)}/{len(cases)} cases behave as specified — {len(exercised)} rules exercised, "
+          f"{len(override_hits)} overrides exercised, {len(not_encoded)} rules await encoding")
     return 0
 
 

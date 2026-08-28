@@ -6,9 +6,10 @@
   "name": "Executive or regulator impersonation issuing an urgent payment order",
   "description": "A message impersonates a senior executive ('boss scam') or a regulator and instructs the recipient — typically finance staff — to make an urgent transfer, often after an account/WhatsApp takeover. The combination of a senior-identity claim, an out-of-band payment order and urgency is the signal; none of the three alone is.",
   "kind": "COMPOSITE",
-  "taxonomy_refs": ["TAX-03-04"],
+  "taxonomy_refs": [
+    "TAX-03-04"
+  ],
   "severity": "HIGH",
-
   "evidence": {
     "verdict": "SUPPORTED",
     "implementability": "YES",
@@ -22,7 +23,9 @@
         "manual_retrieval": {
           "evidence_class": "PRIMARY",
           "manual_retrieval_status": "EXACT_PRIMARY_VERIFIED",
-          "evidence_ids": ["MR-EVID-004"],
+          "evidence_ids": [
+            "MR-EVID-004"
+          ],
           "retrieved_on": "2026-08-15",
           "canonical_url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2276809",
           "locator": "PIB_PRID-2276809_Boss_Scam.pdf p.1",
@@ -34,19 +37,34 @@
       }
     ]
   },
-
   "logic": {
     "require": {
       "all_of": [
-        { "any_of": ["EXECUTIVE_IMPERSONATION", "AUTHORITY_IMPERSONATION"] },
-        { "any_of": ["IMMEDIATE_PAYMENT_DEMAND", "PAYMENT_DEMAND"] },
-        { "any_of": ["URGENCY", "URGENCY_DEADLINE", "DISCOURAGES_VERIFICATION", "SECRECY_REQUEST"] }
+        {
+          "any_of": [
+            "EXECUTIVE_IMPERSONATION",
+            "AUTHORITY_IMPERSONATION"
+          ]
+        },
+        {
+          "any_of": [
+            "IMMEDIATE_PAYMENT_DEMAND",
+            "PAYMENT_DEMAND"
+          ]
+        },
+        {
+          "any_of": [
+            "URGENCY",
+            "URGENCY_DEADLINE",
+            "DISCOURAGES_VERIFICATION",
+            "SECRECY_REQUEST"
+          ]
+        }
       ]
     },
     "min_evidence_classes": 3,
-    "suppressed_by": ["EDUCATIONAL_CONTENT", "TRANSACTION_NOTIFICATION", "OFFICIAL_CHANNEL_REDIRECT"]
+    "suppressed_by": []
   },
-
   "lifecycle": {
     "status": "PUBLISHED",
     "created": "2026-08-28",
@@ -55,13 +73,15 @@
     "authored_by_role": "Knowledge Editor",
     "approved_by_role": "Knowledge Approver"
   },
-
   "language_scope": {
-    "languages": ["en"],
-    "scripts": ["Latn"],
+    "languages": [
+      "en"
+    ],
+    "scripts": [
+      "Latn"
+    ],
     "on_unsupported_input": "FLAG_UNSUPPORTED"
   },
-
   "explanation": {
     "plain": "Someone claiming to be your boss or a regulator is telling you to transfer money urgently. Genuine executives and regulators do not order urgent transfers through chat messages. Verify by contacting the person on a number you already trust before doing anything.",
     "technical": "Senior-identity claim (executive/regulator) + payment order + urgency/secrecy, spanning identity, payment and pressure classes. PIB/MHA documents this 'boss scam' pattern including WhatsApp takeover and immediate transfer instructions.",
@@ -70,9 +90,13 @@
       "Confirm any transfer request through your organisation's established finance-approval channel."
     ]
   },
-
   "provenance": {
-    "source_severity_hint": { "value": 90, "label": "High", "cited_as": "RP p.8", "operational_use": false },
-    "notes": "Sole basis SRC-022 was HTTP 403 under automated retrieval (G-03) and the rule was UNSUPPORTED at Phase 1. Manually retrieved 2026-08-15 (MR-EVID-004) and verified as exact PIB primary under DEC-006 / ADR-0015. Promoted from UNSUPPORTED to SUPPORTED (RESEARCH-004 §9)."
+    "source_severity_hint": {
+      "value": 90,
+      "label": "High",
+      "cited_as": "RP p.8",
+      "operational_use": false
+    },
+    "notes": "Sole basis SRC-022 was HTTP 403 under automated retrieval (G-03) and the rule was UNSUPPORTED at Phase 1. Manually retrieved 2026-08-15 (MR-EVID-004) and verified as exact PIB primary under DEC-006 / ADR-0015. Promoted from UNSUPPORTED to SUPPORTED (RESEARCH-004 §9). | WP3/G-07: globally-scoped suppressors removed from suppressed_by (now auto-applied from negative-indicator-library-v1.json); only family-specific guards remain."
   }
 }

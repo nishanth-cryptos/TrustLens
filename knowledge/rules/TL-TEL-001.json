@@ -6,9 +6,10 @@
   "name": "Request to dial an unverified call-forwarding/USSD code",
   "description": "The recipient is pushed to dial a short/USSD code from an unsolicited or pressured contact. Dialling such a code can silently enable call forwarding and enable account takeover. NARROWED (2026-08-28): the courier/delivery pretext is no longer required, because the only available official evidence (I4C CyberDost) substantiates call-forwarding/code abuse but NOT the delivery pretext.",
   "kind": "COMPOSITE",
-  "taxonomy_refs": ["TAX-04-01"],
+  "taxonomy_refs": [
+    "TAX-04-01"
+  ],
   "severity": "HIGH",
-
   "evidence": {
     "verdict": "PARTIAL",
     "implementability": "YES",
@@ -23,7 +24,9 @@
         "manual_retrieval": {
           "evidence_class": "OFFICIAL_ALTERNATE",
           "manual_retrieval_status": "OFFICIAL_ALTERNATE_PARTIAL",
-          "evidence_ids": ["MR-EVID-008"],
+          "evidence_ids": [
+            "MR-EVID-008"
+          ],
           "retrieved_on": "2026-08-28",
           "canonical_url": "https://www.t.me/s/cyberdosti4c?q=%23CallForwarding",
           "locator": "I4C_USSD_Call_Forwarding_CyberDost.pdf p.3",
@@ -36,18 +39,25 @@
       }
     ]
   },
-
   "logic": {
     "require": {
       "all_of": [
         "USSD_CODE_DIAL_REQUEST",
-        { "any_of": ["DISCOURAGES_VERIFICATION", "URGENCY", "URGENCY_DEADLINE", "UNSOLICITED_OFFER"] }
+        {
+          "any_of": [
+            "DISCOURAGES_VERIFICATION",
+            "URGENCY",
+            "URGENCY_DEADLINE",
+            "UNSOLICITED_OFFER"
+          ]
+        }
       ]
     },
     "min_evidence_classes": 2,
-    "suppressed_by": ["NO_CODE_DIAL_REQUEST", "TRANSACTION_NOTIFICATION", "EDUCATIONAL_CONTENT"]
+    "suppressed_by": [
+      "NO_CODE_DIAL_REQUEST"
+    ]
   },
-
   "lifecycle": {
     "status": "PEER_REVIEW",
     "created": "2026-08-15",
@@ -55,13 +65,15 @@
     "review_due": "2026-11-28",
     "authored_by_role": "Knowledge Editor"
   },
-
   "language_scope": {
-    "languages": ["en"],
-    "scripts": ["Latn"],
+    "languages": [
+      "en"
+    ],
+    "scripts": [
+      "Latn"
+    ],
     "on_unsupported_input": "FLAG_UNSUPPORTED"
   },
-
   "explanation": {
     "plain": "You were asked to dial a short code. Dialling codes like that can quietly forward your calls to someone else, letting them take over accounts secured by phone verification. Do not dial codes sent by people you cannot verify.",
     "technical": "USSD_CODE_DIAL_REQUEST (device-action) with a pressure or unsolicited-contact indicator. Narrowed from the original courier-pretext form, which the available official evidence does not support.",
@@ -71,9 +83,13 @@
     ],
     "why_confidence_limited": "Evidence is an official I4C CyberDost channel post (OFFICIAL_ALTERNATE) covering the call-forwarding mechanism only; the courier/delivery pretext of the original rule is unverified and was removed. Held at PEER_REVIEW pending a malicious USSD test case and human sign-off."
   },
-
   "provenance": {
-    "source_severity_hint": { "value": 88, "label": "High", "cited_as": "RP p.8", "operational_use": false },
-    "notes": "Was UNSUPPORTED/DRAFT (SRC-013 unreachable, G-01). Rebound to the official CyberDost/I4C call-forwarding post (MR-EVID-008) under DEC-006 / ADR-0015 and NARROWED: PARCEL_PRETEXT dropped as a required trigger because the evidence does not support the courier pretext. Verdict PARTIAL (capped). First encoding also lacked a positive USSD indicator; USSD_CODE_DIAL_REQUEST supplies it."
+    "source_severity_hint": {
+      "value": 88,
+      "label": "High",
+      "cited_as": "RP p.8",
+      "operational_use": false
+    },
+    "notes": "Was UNSUPPORTED/DRAFT (SRC-013 unreachable, G-01). Rebound to the official CyberDost/I4C call-forwarding post (MR-EVID-008) under DEC-006 / ADR-0015 and NARROWED: PARCEL_PRETEXT dropped as a required trigger because the evidence does not support the courier pretext. Verdict PARTIAL (capped). First encoding also lacked a positive USSD indicator; USSD_CODE_DIAL_REQUEST supplies it. | WP3/G-07: globally-scoped suppressors removed from suppressed_by (now auto-applied from negative-indicator-library-v1.json); only family-specific guards remain."
   }
 }

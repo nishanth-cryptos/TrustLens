@@ -9,7 +9,7 @@
     "MUST NOT be used to compute or claim precision, recall, or false-positive rate — a synthetic corpus cannot support an accuracy claim (RSK-003, G-09).",
     "Expected outcomes encode design intent, not measured behaviour. They are the specification the engine must satisfy."
   ],
-  "composition": {"benign": 13, "malicious": 14, "ambiguous": 6, "total": 33},
+  "composition": {"benign": 13, "malicious": 16, "ambiguous": 6, "total": 35},
 
   "benign": [
     {
@@ -31,7 +31,7 @@
       "language": "en",
       "text": "Dear Customer, your KYC is due for periodic update. Please visit your nearest Example Bank branch or use the official Example Bank app. We will never ask for your PIN, OTP or password.",
       "expected_outcome": "NO_FINDING",
-      "must_not_match": ["TL-KYC-001"],
+      "must_not_match": ["TL-KYC-001", "TL-CRED-002"],
       "expected_negative_indicators": ["SELF_PROTECTIVE_WARNING", "OFFICIAL_CHANNEL_REDIRECT", "NO_LINK_PRESENT"],
       "rationale": "Legitimate KYC communication. Banks DO legitimately mention KYC. The scam signal is a link or call demanding credentials — not the word KYC. Directing to a branch or official app is the opposite of the scam pattern.",
       "guards": ["CONF-002", "RSK-002"]
@@ -156,9 +156,9 @@
       "text": "#CyberDost Alert from I4C/MHA: Fraudsters may ask you to install an APK, switch on Accessibility permission, or connect your crypto wallet at a 'verification' link. Official agencies will NEVER ask this. Never share your OTP. Report on 1930.",
       "expected_outcome": "NO_FINDING",
       "must_not_match": ["TL-CRYP-001", "TL-MAL-002", "TL-CRED-001"],
-      "expected_indicators": ["ACCESSIBILITY_PERMISSION_REQUEST", "WALLET_CONNECT_REQUEST", "VERIFICATION_PRETEXT", "FAKE_APP_IMPERSONATION", "LINK_PRESENT"],
-      "expected_negative_indicators": ["EDUCATIONAL_CONTENT", "SELF_PROTECTIVE_WARNING", "NEGATED_CREDENTIAL_REQUEST"],
-      "rationale": "Adversarial-benign: an official government awareness post that legitimately names every high-risk device/crypto action at once. A keyword or even a naive composite engine would flag it. The EDUCATIONAL_CONTENT suppressor must cancel TL-CRYP-001 and TL-MAL-002 even though their positive conditions are satisfied. This is the 'official educational/advisory language must be suppressible' requirement made into a test.",
+      "expected_indicators": [],
+      "expected_negative_indicators": ["EDUCATIONAL_CONTENT", "SELF_PROTECTIVE_WARNING", "NEGATED_CREDENTIAL_REQUEST", "NEGATED_ACTION_REQUEST", "REPORTED_SCAM_NARRATIVE"],
+      "rationale": "Adversarial-benign: an official government awareness post that names every high-risk device/crypto action. Under the WP3 negation model the extractor scopes these as REPORTED/NEGATED, not as live directives, so NO live positive is emitted and nothing matches — the correct outcome. This is important: the hard-risk overrides (ADR/G-07) deliberately REFUSE to let a live wallet-connect/accessibility pattern be cancelled by educational wording, so official educational posts must be represented as reported/negated (family 7 + 9), NOT as a live pattern that EDUCATIONAL_CONTENT then 'undoes'. The paired suppression-tests-v1 cases prove both directions (safety wording ≠ live directive; and a live decoy is NOT suppressed).",
       "guards": ["CONF-002", "RSK-002", "G-07"]
     }
   ],
@@ -280,9 +280,10 @@
       "language": "en",
       "text": "Hey! It's me, I made a new account because my old one got hacked. I'm stuck and need Rs 12,000 sent to this UPI right now. Please don't tell anyone, it's embarrassing.",
       "expected_outcome": "HIGH",
-      "expected_rules": ["TL-SOC-002", "TL-SOC-003"],
+      "expected_rules": ["TL-SOC-002"],
       "expected_indicators": ["FAKE_PROFILE_CLAIM", "PAYMENT_DEMAND", "URGENCY", "SECRECY_REQUEST"],
-      "source_basis": ["SRC-014", "SRC-021"],
+      "source_basis": ["SRC-014"],
+      "rationale": "Fake-profile impersonation of a generic contact ('it's me, new account'). Matches TL-SOC-002. Corrected 2026-08-28: TL-SOC-003 was removed from the expectation because this case does not claim a RELATIVE and carries no CLAIMED_RELATIVE indicator — the claimed-relative variant is M-009.",
       "guards": ["FR-031"]
     },
     {
@@ -333,6 +334,30 @@
       "expected_indicators": ["USSD_CODE_DIAL_REQUEST", "URGENCY", "ACCOUNT_BLOCK_THREAT"],
       "source_basis": ["SRC-013"],
       "rationale": "The narrowed TL-TEL-001: a pressured request to dial a call-forwarding/USSD code, verified by I4C CyberDost (SRC-013, MR-EVID-008). Note there is NO courier pretext — that clause was removed as unsupported. Contrast with B-010, which is a plain delivery notice with no code to dial.",
+      "guards": ["FR-031", "CONF-002"]
+    },
+    {
+      "id": "M-015",
+      "channel": "SMS",
+      "language": "en",
+      "text": "Example Bank: complete your pending KYC now. Enter your UPI PIN in the linked form to verify your account or it will be suspended.",
+      "expected_outcome": "HIGH",
+      "expected_rules": ["TL-CRED-002"],
+      "expected_indicators": ["UPI_PIN_PROMPT", "KYC_PRETEXT", "ACCOUNT_BLOCK_THREAT"],
+      "source_basis": ["SRC-005"],
+      "rationale": "A UPI PIN demanded for 'KYC verification' — outside any payment the user is making. NPCI (SRC-005, MR-EVID-002): only sending money requires a UPI PIN. Fires TL-CRED-002.",
+      "guards": ["FR-031", "CONF-002"]
+    },
+    {
+      "id": "M-016",
+      "channel": "SMS",
+      "language": "en",
+      "text": "URGENT: your electricity will be disconnected tonight due to a pending due. Pay Rs 1,240 immediately at http://ex-power-bill.example/pay to avoid disconnection.",
+      "expected_outcome": "HIGH",
+      "expected_rules": ["TL-UTIL-001"],
+      "expected_indicators": ["SUSPENSION_THREAT", "IMMEDIATE_PAYMENT_DEMAND", "URGENCY", "LINK_PRESENT"],
+      "source_basis": ["SRC-007"],
+      "rationale": "Same-day disconnection threat plus an urgent unofficial payment link. Contrast with B-005, a genuine bill with an official biller and a reasonable deadline. Fires TL-UTIL-001.",
       "guards": ["FR-031", "CONF-002"]
     }
   ],

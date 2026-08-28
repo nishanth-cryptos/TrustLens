@@ -1,0 +1,140 @@
+{
+  "$comment": "SYNTHETIC suppression test suite for the WP3 / G-07 negative-indicator library. Each case exercises a specific suppression behaviour: directional negation, educational/safety SUPPRESS_RULE, reported-scam, legitimate payment direction, IT-support vs banking override, and hard-risk override (decoy resistance). NONE is a real-world sample. Extraction is a Phase-9 concern; these cases assert RULE + SUPPRESSION logic given declared indicators. 'Belt-and-braces' cases posit a naive extractor over-tagging a benign message so the soft suppressor's safety-net role can be tested where NO hard-risk override applies.",
+  "corpus_version": "1.0",
+  "generated": "2026-08-28",
+  "provenance": "SYNTHETIC",
+
+  "benign": [
+    {
+      "id": "S-B-direct-negated-otp",
+      "scenario": "B — benign near-miss / directional negation",
+      "channel": "SMS", "language": "en",
+      "text": "Your OTP is 8842 for your transaction. Never share it with anyone. -Example Bank",
+      "expected_outcome": "NO_FINDING",
+      "must_not_match": ["TL-CRED-001"],
+      "expected_negative_indicators": ["OTP_DELIVERED_NOT_REQUESTED", "SELF_PROTECTIVE_WARNING", "NEGATED_CREDENTIAL_REQUEST"],
+      "rationale": "OTP delivered, not requested; no live CREDENTIAL_REQUEST_OTP is emitted, so nothing matches. No hard-risk override (no live disclosure request)."
+    },
+    {
+      "id": "S-C-educational-suppress-rule",
+      "scenario": "C — safety/educational SUPPRESS_RULE where NO override exists (job family)",
+      "channel": "SOCIAL", "language": "en",
+      "text": "AWARENESS: fake part-time task jobs make you deposit money to 'unlock earnings', then block your withdrawal until you pay a tax. Do not fall for it.",
+      "expected_outcome": "NO_FINDING",
+      "must_not_match": ["TL-JOB-003"],
+      "expected_indicators": ["TASK_EARNING_LURE", "DEPOSIT_FOR_EARNINGS", "WITHDRAWAL_BLOCKED_PRETEXT"],
+      "expected_negative_indicators": ["EDUCATIONAL_CONTENT"],
+      "rationale": "Belt-and-braces: even if extraction over-tags the described chain as live, EDUCATIONAL_CONTENT (SUPPRESS_RULE) cancels TL-JOB-003 because the job family has no hard-risk override. Proves soft SUPPRESS_RULE works where safe."
+    },
+    {
+      "id": "S-D-negated-action",
+      "scenario": "D — negated malicious phrase (device action)",
+      "channel": "SOCIAL", "language": "en",
+      "text": "Safety tip: never connect your wallet to a link you were sent, and do not install APKs from messages.",
+      "expected_outcome": "NO_FINDING",
+      "must_not_match": ["TL-CRYP-001", "TL-MAL-001"],
+      "expected_negative_indicators": ["NEGATED_ACTION_REQUEST", "EDUCATIONAL_CONTENT"],
+      "rationale": "The risky actions appear inside a negation, so no live positive is emitted; nothing matches."
+    },
+    {
+      "id": "S-E-reported-scam",
+      "scenario": "E — quoted/reported scam narrative SUPPRESS_RULE (investment family, no override)",
+      "channel": "WHATSAPP", "language": "en",
+      "text": "My uncle fell for a scheme where a celebrity supposedly guaranteed 200% returns. How do I report it?",
+      "expected_outcome": "NO_FINDING",
+      "must_not_match": ["TL-INV-003"],
+      "expected_indicators": ["CELEBRITY_IMPERSONATION", "RETURN_GUARANTEE"],
+      "expected_negative_indicators": ["REPORTED_SCAM_NARRATIVE"],
+      "rationale": "The user is reporting a past scam, not receiving a live pitch. REPORTED_SCAM_NARRATIVE (SUPPRESS_RULE) cancels TL-INV-003; investment family has no hard-risk override. Preserves the reporter from being classified as attacker text."
+    },
+    {
+      "id": "S-F-legit-pay-direction",
+      "scenario": "F — legitimate payment direction",
+      "channel": "SMS", "language": "en",
+      "text": "You will enter your UPI PIN in your bank app to PAY the merchant Rs 5,000. This is a normal outgoing payment.",
+      "expected_outcome": "NO_FINDING",
+      "must_not_match": ["TL-PAY-001", "TL-PAY-002"],
+      "expected_indicators": ["UPI_PIN_PROMPT"],
+      "expected_negative_indicators": ["PAY_MERCHANT_DIRECTION"],
+      "rationale": "Paying a merchant with a UPI PIN is legitimate outbound payment. No RECEIVE_FRAMING, so the receive-fraud rules never match; PAY_MERCHANT_DIRECTION is the belt-and-braces guard."
+    },
+    {
+      "id": "S-K-it-support-nonbanking",
+      "scenario": "H(contrast) — legitimate IT support, non-banking",
+      "channel": "EMAIL", "language": "en",
+      "text": "As you requested, corporate IT will start a TeamViewer session at 3pm to fix your laptop display. Do not open banking apps during the session.",
+      "expected_outcome": "NO_FINDING",
+      "must_not_match": ["TL-MAL-003"],
+      "expected_indicators": ["SCREEN_SHARE_APP_REQUEST", "BENIGN_PRETEXT_FOR_TECHNICAL_ACTION"],
+      "expected_negative_indicators": ["IT_SUPPORT_CONTEXT"],
+      "rationale": "Screen-share in a non-banking, user-expected support context. No banking override → IT_SUPPORT_CONTEXT (SUPPRESS_RULE) cancels TL-MAL-003."
+    }
+  ],
+
+  "malicious": [
+    {
+      "id": "S-A-direct-otp-request",
+      "scenario": "A — direct malicious positive",
+      "channel": "SMS", "language": "en",
+      "text": "Example Bank: unusual activity. Share the OTP you just received with our officer now to stop the block.",
+      "expected_outcome": "HIGH",
+      "expected_rules": ["TL-CRED-001"],
+      "expected_indicators": ["CREDENTIAL_REQUEST_OTP", "AUTHORITY_IMPERSONATION_BANK", "ACCOUNT_BLOCK_THREAT", "URGENCY"],
+      "rationale": "A live OTP-disclosure request with bank-impersonation context. Fires TL-CRED-001; HR_OTP_DISCLOSURE_REQUEST override is active."
+    },
+    {
+      "id": "S-G-receive-pin-critical",
+      "scenario": "G — legitimate-looking but critical: UPI PIN to RECEIVE",
+      "channel": "SMS", "language": "en",
+      "text": "Your refund is pending. Enter your UPI PIN to RECEIVE Rs 5,000 now.",
+      "expected_outcome": "CRITICAL",
+      "expected_rules": ["TL-PAY-001"],
+      "expected_indicators": ["RECEIVE_FRAMING", "UPI_PIN_PROMPT"],
+      "rationale": "Contrast with S-F: a PIN to RECEIVE money is the fraud. Fires TL-PAY-001; HR_UPI_PIN_TO_RECEIVE override active."
+    },
+    {
+      "id": "S-H-banking-remote-access",
+      "scenario": "H — suppression conflict: banking override beats IT-support wording",
+      "channel": "WHATSAPP", "language": "en",
+      "text": "Example Bank support here. Install AnyDesk and share the 9-digit code so our IT team can verify your KYC and fix your account.",
+      "expected_outcome": "HIGH",
+      "expected_rules": ["TL-MAL-003"],
+      "expected_indicators": ["SCREEN_SHARE_APP_REQUEST", "AUTHORITY_IMPERSONATION_BANK", "KYC_PRETEXT", "IT_SUPPORT_CONTEXT"],
+      "rationale": "Even though IT-support wording is present, HR_BANKING_REMOTE_ACCESS is active (screen-share + bank impersonation) and BLOCKS IT_SUPPORT_CONTEXT. Fires TL-MAL-003. This is the over-suppression fix."
+    },
+    {
+      "id": "S-L-refund-remote-access",
+      "scenario": "H(variant) — refund/payment context override",
+      "channel": "WHATSAPP", "language": "en",
+      "text": "To process your refund I need to guide you — install AnyDesk and give me the code so I can complete the payment on your screen.",
+      "expected_outcome": "HIGH",
+      "expected_rules": ["TL-MAL-003"],
+      "expected_indicators": ["SCREEN_SHARE_APP_REQUEST", "PAYMENT_CONTEXT", "BENIGN_PRETEXT_FOR_TECHNICAL_ACTION"],
+      "rationale": "Screen-share in a payment context. HR_BANKING_REMOTE_ACCESS active via PAYMENT_CONTEXT. Fires TL-MAL-003."
+    },
+    {
+      "id": "S-I-decoy-override",
+      "scenario": "I — hard-risk override defeats a safety-wording decoy",
+      "channel": "SMS", "language": "en",
+      "text": "We will NEVER ask for your OTP. That said, confirm the OTP you just received now to avoid your account being blocked.",
+      "expected_outcome": "HIGH",
+      "expected_rules": ["TL-CRED-001"],
+      "expected_indicators": ["CREDENTIAL_REQUEST_OTP", "ACCOUNT_BLOCK_THREAT", "URGENCY"],
+      "expected_negative_indicators": ["NEGATED_CREDENTIAL_REQUEST", "EDUCATIONAL_CONTENT", "SUPPORT_NEVER_ASKS"],
+      "rationale": "A live OTP request wrapped in decoy safety wording. HR_OTP_DISCLOSURE_REQUEST is computed on the raw set (live CREDENTIAL_REQUEST_OTP present), so directional neutralisation is skipped and EDUCATIONAL_SAFETY/CUSTOMER_SUPPORT_SAFETY suppressors are blocked. Fires TL-CRED-001. Decoy resistance."
+    },
+    {
+      "id": "S-J-combo-override",
+      "scenario": "J — multiple positives + negatives, override wins",
+      "channel": "SMS", "language": "en",
+      "text": "Refund pending. Scan the QR and enter your UPI PIN to RECEIVE Rs 8,750. (Remember: never share your OTP.)",
+      "expected_outcome": "CRITICAL",
+      "expected_rules": ["TL-PAY-001", "TL-PAY-002"],
+      "expected_indicators": ["RECEIVE_FRAMING", "QR_SCAN_REQUEST", "UPI_PIN_PROMPT"],
+      "expected_negative_indicators": ["SELF_PROTECTIVE_WARNING"],
+      "rationale": "Receive-framing + QR + PIN is the fraud; the trailing safety line does not cancel it because HR_UPI_PIN_TO_RECEIVE blocks EDUCATIONAL_SAFETY. Fires TL-PAY-001 and TL-PAY-002."
+    }
+  ],
+
+  "ambiguous": []
+}

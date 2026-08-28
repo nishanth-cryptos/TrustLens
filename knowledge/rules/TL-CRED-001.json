@@ -6,9 +6,11 @@
   "name": "OTP solicited from the recipient under a pretext",
   "description": "The sender asks the recipient to disclose an OTP, supported by a pretext, pressure or an identity claim. The discriminating feature is direction: a message DELIVERING an OTP is legitimate infrastructure and must never match. Suppression carries that distinction.",
   "kind": "COMPOSITE",
-  "taxonomy_refs": ["TAX-01-01", "TAX-01-07"],
+  "taxonomy_refs": [
+    "TAX-01-01",
+    "TAX-01-07"
+  ],
   "severity": "CRITICAL",
-
   "evidence": {
     "verdict": "SUPPORTED",
     "implementability": "YES",
@@ -23,7 +25,6 @@
       }
     ]
   },
-
   "logic": {
     "require": {
       "all_of": [
@@ -42,14 +43,8 @@
       ]
     },
     "min_evidence_classes": 2,
-    "suppressed_by": [
-      "OTP_DELIVERED_NOT_REQUESTED",
-      "SELF_PROTECTIVE_WARNING",
-      "NEGATED_CREDENTIAL_REQUEST",
-      "EDUCATIONAL_CONTENT"
-    ]
+    "suppressed_by": []
   },
-
   "lifecycle": {
     "status": "PUBLISHED",
     "created": "2026-08-15",
@@ -59,13 +54,15 @@
     "approved_by_role": "Knowledge Approver",
     "$comment_separation_of_duties": "Early review_due set deliberately: SRC-004 is from 2020 and is the oldest source underpinning any published rule (G-14)."
   },
-
   "language_scope": {
-    "languages": ["en"],
-    "scripts": ["Latn"],
+    "languages": [
+      "en"
+    ],
+    "scripts": [
+      "Latn"
+    ],
     "on_unsupported_input": "FLAG_UNSUPPORTED"
   },
-
   "explanation": {
     "plain": "Someone has asked you to share a one-time password. No bank, payment company or government body will ever ask you for an OTP — the Reserve Bank of India says so directly. Sharing it lets them act on your account.",
     "technical": "CREDENTIAL_REQUEST_OTP matched together with a pretext, identity claim or pressure indicator, spanning at least two evidence classes. Four suppressors guard the legitimate-delivery case; the rule cannot fire on a message that merely contains the word OTP.",
@@ -75,9 +72,13 @@
     ],
     "why_confidence_limited": "Confidence is reduced when the pretext is generic and no institution is named, since ordinary users do sometimes relay codes to family."
   },
-
   "provenance": {
-    "source_severity_hint": { "value": 95, "label": "High", "cited_as": "RP p.6", "operational_use": false },
-    "notes": "The research package specified this as a keyword trigger on 'OTP, one-time password, share code, verification code', which fires on a bank's own anti-fraud SMS (CONF-002, seed case B-001). Encoded here as a combination with explicit suppression instead."
+    "source_severity_hint": {
+      "value": 95,
+      "label": "High",
+      "cited_as": "RP p.6",
+      "operational_use": false
+    },
+    "notes": "The research package specified this as a keyword trigger on 'OTP, one-time password, share code, verification code', which fires on a bank's own anti-fraud SMS (CONF-002, seed case B-001). Encoded here as a combination with explicit suppression instead. | WP3/G-07: globally-scoped suppressors removed from suppressed_by (now auto-applied from negative-indicator-library-v1.json); only family-specific guards remain."
   }
 }

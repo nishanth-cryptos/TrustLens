@@ -1,0 +1,76 @@
+{
+  "schema_version": "1.0.0",
+  "rule_version": "1.0.0",
+  "id": "TL-SOC-002",
+  "legacy_id": "I4C-SOCIAL-025",
+  "name": "Fake profile of a contact requesting money",
+  "description": "A message from an unrecognised account claims to be a known contact ('I made a new account') and asks for money urgently.",
+  "kind": "COMPOSITE",
+  "taxonomy_refs": [
+    "TAX-08-02"
+  ],
+  "severity": "HIGH",
+  "evidence": {
+    "verdict": "SUPPORTED",
+    "implementability": "YES",
+    "source_references": [
+      {
+        "source_id": "SRC-014",
+        "issuing_body": "CERT-In",
+        "authority": "OFFICIAL_GOVERNMENT",
+        "verification_status": "PRIMARY_VERIFIED",
+        "document_ref": "CERT-In Awareness Booklet (2023-10)",
+        "quote": "Fraudsters use Fake Profile of the victim"
+      }
+    ]
+  },
+  "logic": {
+    "require": {
+      "all_of": [
+        "FAKE_PROFILE_CLAIM",
+        {
+          "any_of": [
+            "PAYMENT_DEMAND",
+            "URGENCY",
+            "SECRECY_REQUEST"
+          ]
+        }
+      ]
+    },
+    "min_evidence_classes": 2
+  },
+  "lifecycle": {
+    "status": "PUBLISHED",
+    "created": "2026-08-28",
+    "last_reviewed": "2026-08-28",
+    "review_due": "2027-02-28",
+    "authored_by_role": "Knowledge Editor",
+    "approved_by_role": "Knowledge Approver"
+  },
+  "language_scope": {
+    "languages": [
+      "en"
+    ],
+    "scripts": [
+      "Latn"
+    ],
+    "on_unsupported_input": "FLAG_UNSUPPORTED"
+  },
+  "explanation": {
+    "plain": "An account claiming to be someone you know is asking for money. Impersonating a contact with a new account is a common scam. Verify on a number you already have.",
+    "technical": "FAKE_PROFILE_CLAIM (identity) with a payment demand/urgency/secrecy. CERT-In: fraudsters use fake profiles of the victim's contacts.",
+    "verification_steps": [
+      "Call the person on a number you already have saved.",
+      "Do not send money based on a new or unrecognised account."
+    ]
+  },
+  "provenance": {
+    "source_severity_hint": {
+      "value": 85,
+      "label": "High",
+      "cited_as": "RP p.7",
+      "operational_use": false
+    },
+    "notes": "Encoded in the WP3 rule-encoding pass; suppression via negative-indicator-library-v1.json."
+  }
+}

@@ -6,9 +6,10 @@
   "name": "Connect your wallet to verify assets — crypto-drain pretext",
   "description": "A crypto approach moves the target off-platform, sends them to a fake verification website, and asks them to connect their wallet to 'verify assets'. Connecting the wallet and approving a permission is what drains it. The signal is the wallet-connect request combined with a verification pretext and an off-platform or fake-site vector.",
   "kind": "COMPOSITE",
-  "taxonomy_refs": ["TAX-05-05"],
+  "taxonomy_refs": [
+    "TAX-05-05"
+  ],
   "severity": "HIGH",
-
   "evidence": {
     "verdict": "PARTIAL",
     "implementability": "YES",
@@ -23,7 +24,9 @@
         "manual_retrieval": {
           "evidence_class": "OFFICIAL_ALTERNATE",
           "manual_retrieval_status": "OFFICIAL_ALTERNATE_VERIFIED",
-          "evidence_ids": ["MR-EVID-010"],
+          "evidence_ids": [
+            "MR-EVID-010"
+          ],
           "retrieved_on": "2026-08-28",
           "canonical_url": "https://www.t.me/s/cyberdosti4c?before=4348",
           "locator": "I4C_Trust_Wallet_CyberDost.pdf pp.49-50",
@@ -36,19 +39,28 @@
       }
     ]
   },
-
   "logic": {
     "require": {
       "all_of": [
         "WALLET_CONNECT_REQUEST",
-        { "any_of": ["VERIFICATION_PRETEXT", "FAKE_VERIFICATION_SITE"] },
-        { "any_of": ["OFF_PLATFORM_HANDOFF", "LINK_PRESENT", "LOOKALIKE_DOMAIN"] }
+        {
+          "any_of": [
+            "VERIFICATION_PRETEXT",
+            "FAKE_VERIFICATION_SITE"
+          ]
+        },
+        {
+          "any_of": [
+            "OFF_PLATFORM_HANDOFF",
+            "LINK_PRESENT",
+            "LOOKALIKE_DOMAIN"
+          ]
+        }
       ]
     },
     "min_evidence_classes": 2,
-    "suppressed_by": ["EDUCATIONAL_CONTENT", "NO_ACTION_REQUESTED", "TRANSACTION_NOTIFICATION"]
+    "suppressed_by": []
   },
-
   "lifecycle": {
     "status": "PUBLISHED",
     "created": "2026-08-28",
@@ -57,13 +69,15 @@
     "authored_by_role": "Knowledge Editor",
     "approved_by_role": "Knowledge Approver"
   },
-
   "language_scope": {
-    "languages": ["en"],
-    "scripts": ["Latn"],
+    "languages": [
+      "en"
+    ],
+    "scripts": [
+      "Latn"
+    ],
     "on_unsupported_input": "FLAG_UNSUPPORTED"
   },
-
   "explanation": {
     "plain": "You were asked to connect your crypto wallet to a website to 'verify' your assets. Connecting your wallet and approving the request can let a scammer move your funds out. Legitimate verification never needs you to connect your wallet to an unfamiliar site.",
     "technical": "WALLET_CONNECT_REQUEST (device-action) + a verification pretext or fake verification site + an off-platform/link vector. Matches the I4C CyberDost Trust Wallet chain.",
@@ -73,9 +87,13 @@
     ],
     "why_confidence_limited": "Evidence is an official I4C CyberDost channel post (OFFICIAL_ALTERNATE), not the formal advisory PDF, which remains unreachable. The rule is capped at PARTIAL and needs a stronger indicator combination to reach the same risk band as a fully-primary rule."
   },
-
   "provenance": {
-    "source_severity_hint": { "value": 85, "label": "High", "cited_as": "RP p.8", "operational_use": false },
-    "notes": "UNSUPPORTED at Phase 1 (SRC-024 unreachable, G-01). Rebound to the official CyberDost/I4C post (MR-EVID-010) under DEC-006 / ADR-0015; verdict PARTIAL (capped), published with the seven official-alternate conditions recorded."
+    "source_severity_hint": {
+      "value": 85,
+      "label": "High",
+      "cited_as": "RP p.8",
+      "operational_use": false
+    },
+    "notes": "UNSUPPORTED at Phase 1 (SRC-024 unreachable, G-01). Rebound to the official CyberDost/I4C post (MR-EVID-010) under DEC-006 / ADR-0015; verdict PARTIAL (capped), published with the seven official-alternate conditions recorded. | WP3/G-07: globally-scoped suppressors removed from suppressed_by (now auto-applied from negative-indicator-library-v1.json); only family-specific guards remain."
   }
 }

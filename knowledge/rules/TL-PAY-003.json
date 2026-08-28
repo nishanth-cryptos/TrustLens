@@ -6,9 +6,10 @@
   "name": "QR payment made without verifying the payee's banking name",
   "description": "CERT-In directs users to verify the payee's registered banking name before paying by QR. Well evidenced, and unobservable: TrustLens sees a submitted artifact after the fact, not the live payment flow. Retained as knowledge against a future device-side or payment-integrated component.",
   "kind": "COMPOSITE",
-  "taxonomy_refs": ["TAX-01-03"],
+  "taxonomy_refs": [
+    "TAX-01-03"
+  ],
   "severity": "HIGH",
-
   "evidence": {
     "verdict": "SUPPORTED",
     "implementability": "DEFERRED",
@@ -24,19 +25,22 @@
       }
     ]
   },
-
   "logic": {
     "require": {
       "all_of": [
         "QR_PRESENT",
         "PAYMENT_CONTEXT",
-        { "any_of": ["QR_SCAN_REQUEST", "IMMEDIATE_PAYMENT_DEMAND"] }
+        {
+          "any_of": [
+            "QR_SCAN_REQUEST",
+            "IMMEDIATE_PAYMENT_DEMAND"
+          ]
+        }
       ]
     },
     "min_evidence_classes": 2,
-    "suppressed_by": ["TRANSACTION_NOTIFICATION", "EDUCATIONAL_CONTENT"]
+    "suppressed_by": []
   },
-
   "lifecycle": {
     "status": "DRAFT",
     "created": "2026-08-15",
@@ -44,21 +48,27 @@
     "review_due": "2027-04-01",
     "authored_by_role": "Knowledge Editor"
   },
-
   "language_scope": {
-    "languages": ["en"],
-    "scripts": ["Latn"],
+    "languages": [
+      "en"
+    ],
+    "scripts": [
+      "Latn"
+    ],
     "on_unsupported_input": "FLAG_UNSUPPORTED"
   },
-
   "explanation": {
     "plain": "Before paying any QR code, check that the name shown is the person or business you mean to pay.",
     "technical": "Deferred, not weak. The evidence is a verified CERT-In instruction; what is missing is the observation point — TrustLens is not inside the payment flow and cannot see whether the payee name was checked (CONF-003, NG-05).",
     "why_confidence_limited": "TrustLens can observe that a QR and a payment context are present in submitted content. It cannot observe the user's verification behaviour, which is the actual subject of the rule."
   },
-
   "provenance": {
-    "source_severity_hint": { "value": 90, "label": "High", "cited_as": "RP p.7", "operational_use": false },
-    "notes": "Demonstrates that evidence and implementability are independent filters: this rule is better evidenced than several published ones and still cannot run."
+    "source_severity_hint": {
+      "value": 90,
+      "label": "High",
+      "cited_as": "RP p.7",
+      "operational_use": false
+    },
+    "notes": "Demonstrates that evidence and implementability are independent filters: this rule is better evidenced than several published ones and still cannot run. | WP3/G-07: globally-scoped suppressors removed from suppressed_by (now auto-applied from negative-indicator-library-v1.json); only family-specific guards remain."
   }
 }

@@ -41,6 +41,7 @@ ROOT = Path(__file__).resolve().parents[2]
 RULES_DIR = ROOT / "knowledge" / "rules"
 SCHEMA_PATH = ROOT / "knowledge" / "schemas" / "rule.schema.json"
 REGISTRY_PATH = ROOT / "knowledge" / "indicators" / "indicator-registry-v0.json"
+NEG_LIBRARY_PATH = ROOT / "knowledge" / "indicators" / "negative-indicator-library-v1.json"
 MANIFEST_PATH = ROOT / "knowledge" / "sources" / "verification-manifest.json"
 TAXONOMY_PATH = ROOT / "knowledge" / "taxonomies" / "scam-taxonomy.json"
 MATRIX_PATH = ROOT / "docs" / "01-research" / "RESEARCH-004-evidence-matrix.md"
@@ -64,6 +65,18 @@ def load(path: Path):
 def load_reference_data():
     registry = load(REGISTRY_PATH)
     indicators = {i["id"]: i for i in registry["indicators"]}
+
+    # WP3 / G-07: negative (SUPPRESSIVE) indicators now live in the formal library.
+    # Merge them back into the indicator namespace so L1 (resolution) and L2 (polarity) work.
+    library = load(NEG_LIBRARY_PATH)
+    for ni in library["negative_indicators"]:
+        indicators[ni["negative_indicator_id"]] = {
+            "id": ni["negative_indicator_id"],
+            "polarity": "NEGATIVE",
+            "evidence_class": "SUPPRESSIVE",
+            "strength": ni["strength"],
+            "_library": ni,
+        }
 
     manifest = load(MANIFEST_PATH)
     sources = {s["id"]: s for s in manifest["sources"]}
@@ -161,6 +174,12 @@ def lint(rule, indicators, sources, taxa, matrix, mr_records):
             errs.append(f"unknown indicator {ind!r} — nothing extracts it, so the rule is dead")
 
     known = {i for i in referenced if i in indicators}
+
+    # L1b — a rule may not depend on a DEPRECATED negative indicator (WP3 / G-07)
+    for ind in sorted(set(logic.get("suppressed_by", [])) & known):
+        lib = indicators[ind].get("_library")
+        if lib and lib.get("status") == "DEPRECATED":
+            errs.append(f"suppressed_by references DEPRECATED negative indicator {ind!r} — migrate it")
 
     # L2 — polarity discipline
     trigger_ids = set(operands(require))

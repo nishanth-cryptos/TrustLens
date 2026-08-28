@@ -1,0 +1,70 @@
+{
+  "schema_version": "1.0.0",
+  "rule_version": "1.0.0",
+  "id": "TL-AUTH-002",
+  "legacy_id": "I4C-DARREST-011",
+  "name": "Authority impersonation with isolation from family or lawyer",
+  "description": "An authority impersonator instructs the recipient not to contact family or a lawyer while under threat of arrest — the isolation tactic of the digital-arrest scam.",
+  "kind": "COMPOSITE",
+  "taxonomy_refs": [
+    "TAX-03-01"
+  ],
+  "severity": "CRITICAL",
+  "evidence": {
+    "verdict": "SUPPORTED",
+    "implementability": "YES",
+    "source_references": [
+      {
+        "source_id": "SRC-012",
+        "issuing_body": "NITI Aayog",
+        "authority": "OFFICIAL_GOVERNMENT",
+        "verification_status": "PRIMARY_VERIFIED",
+        "document_ref": "Digital Arrest (2025-04)",
+        "quote": "They are instructed not to involve family or lawyers"
+      }
+    ]
+  },
+  "logic": {
+    "require": {
+      "all_of": [
+        "ISOLATION_FROM_FAMILY_OR_LAWYER",
+        "AUTHORITY_IMPERSONATION"
+      ]
+    },
+    "min_evidence_classes": 2
+  },
+  "lifecycle": {
+    "status": "PUBLISHED",
+    "created": "2026-08-28",
+    "last_reviewed": "2026-08-28",
+    "review_due": "2027-02-28",
+    "authored_by_role": "Knowledge Editor",
+    "approved_by_role": "Knowledge Approver"
+  },
+  "language_scope": {
+    "languages": [
+      "en"
+    ],
+    "scripts": [
+      "Latn"
+    ],
+    "on_unsupported_input": "FLAG_UNSUPPORTED"
+  },
+  "explanation": {
+    "plain": "Someone claiming to be an official told you not to tell your family or a lawyer. That isolation is a scam tactic — real authorities never demand secrecy from your family.",
+    "technical": "ISOLATION_FROM_FAMILY_OR_LAWYER (pressure) with an authority/threat identity or accusation. NITI Aayog documents the isolation instruction verbatim.",
+    "verification_steps": [
+      "Hang up and call a trusted family member now.",
+      "No real investigation forbids you from contacting a lawyer."
+    ]
+  },
+  "provenance": {
+    "source_severity_hint": {
+      "value": 95,
+      "label": "High",
+      "cited_as": "RP p.6",
+      "operational_use": false
+    },
+    "notes": "Encoded in the WP3 rule-encoding pass; suppression via negative-indicator-library-v1.json."
+  }
+}

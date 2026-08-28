@@ -3,8 +3,8 @@
 | Field | Value |
 |---|---|
 | Document ID | RESEARCH-005 |
-| Version | 1.2 |
-| Status | **Approved** (v1.1) · **Reconciled** at v1.2 after RESEARCH-006. The register stays **live**: gaps close in later phases. |
+| Version | 1.3 |
+| Status | **Approved** (v1.1) · **Reconciled** at v1.2 · **G-07 closed** at v1.3 (WP3). The register stays **live**: gaps close in later phases. |
 | Owner role | Threat Intelligence Lead |
 | Dependencies | RESEARCH-001…004, [RESEARCH-006](RESEARCH-006-manual-retrieval-reconciliation.md) |
 | Feeds | KB-001, DET-001, PLAN-001 |
@@ -63,7 +63,7 @@ original PDF is never recorded as retrieved because a replacement exists.
 
 | ID | Gap | Severity | Impact | Path to closure |
 |---|---|---|---|---|
-| **G-07** | **No negative indicators exist anywhere in the research package.** It supplies 12 positive indicator families and zero suppressive signals. | 🔴 | [CONF-002](../00-program/conflict-register.md)'s architecture *requires* negative indicators. Without them, the false-positive problem is unsolvable. | **Author them in Phase 2 as `HEURISTIC`**, derived from the inverse of verified guidance (e.g. SRC-004's "banks never ask" implies a message *telling you not to share* is protective, not threatening). Validate against the benign corpus. |
+| **G-07** | **No negative indicators exist anywhere in the research package.** It supplies 12 positive indicator families and zero suppressive signals. | 🟢 **CLOSED 2026-08-28** | [CONF-002](../00-program/conflict-register.md)'s architecture *requires* negative indicators. | **Closed by the WP3 formal negative-indicator & suppression library** (`knowledge/indicators/negative-indicator-library-v1.json`): 29 reusable negative indicators (HEURISTIC, from the inverse of verified guidance) with graded, explainable effects (`SUPPRESS_RULE`/`SUPPRESS_INDICATOR`/`CAP_SEVERITY`/`CONTEXT_ONLY`) and 6 hard-risk overrides that stop over-suppression. Checked by `validate_negative_library.py`, executed by `rule_runner.py`, exercised by 53 cases incl. adversarial decoys. See §7 for the closure evidence. Extraction of these cues is a Phase-9 concern; the *knowledge* gap is closed. |
 | **G-08** | **Zero non-English content.** Every trigger cue in all 30 rules is English; no Devanagari, Tamil, Telugu or transliterated Hinglish. | 🔴 | Product claims multilingual; knowledge base cannot deliver it ([CONF-004](../00-program/conflict-register.md)). | Sponsor decision on [OI-04](../00-program/PROGRAM-001-program-charter.md#11-open-issues). No verified source supplies non-English cues, so any added would be `HEURISTIC`. |
 | **G-09** | **No labelled real-world corpus**, and none obtainable. | 🔴 | Precision, recall and calibration **cannot be measured** ([RSK-003](../00-program/risk-register.md)). | **Unclosable within this programme.** Synthetic corpus supports determinism and regression only. Must be disclosed in every quality claim. |
 | **G-10** | **Sextortion is missing from the research taxonomy** despite appearing in Chakshu's official reporting categories (SRC-007 ✅). | 🟠 | A nationally-recognised fraud category is absent from our taxonomy. | Add as `TAX-11` in Phase 2, or consciously scope out — it carries distinct victim-harm and safeguarding considerations that may warrant separate handling. |
@@ -116,12 +116,34 @@ Required by `MP §8`. The programme's position, stated plainly:
 
 | Priority | Gaps | Action | Owner |
 |---|---|---|---|
-| 1 | G-07 | Author negative-indicator library in Phase 2, validated against the benign corpus | Chief Architect |
+| ✅ done | **G-07** | **CLOSED** — formal negative-indicator & suppression library authored and validated (see §6a) | Chief Architect |
 | 2 | G-01, G-03, G-04 | Manual retrieval of I4C, PIB and current HDFC-equivalent official sources | Sponsor + TI Lead |
 | 3 | G-08 | Sponsor decision on OI-04 language scope | Sponsor |
 | 4 | G-10, G-12 | Taxonomy completion — sextortion, loan apps, mule accounts | TI Lead |
 | 5 | G-09 | Permanent disclosure in TEST-001 and PRR-001 | QA Lead |
 | — | G-16…G-22 | Backlog for a second research pass | TI Lead |
+
+### 6a. G-07 closure evidence (2026-08-28)
+
+G-07 is moved from OPEN to CLOSED against all eight acceptance criteria — not merely because
+indicators exist in a file:
+
+| # | Criterion | Evidence |
+|---|---|---|
+| 1 | Formal reusable library exists | `knowledge/indicators/negative-indicator-library-v1.json` — 29 negative indicators, 10 categories, 6 overrides |
+| 2 | Schema / model supports it | Rich model (effect, category, `applicable_rule_families`, overrides, examples, false-negative risk, review, change history); rule schema's SUPPRESSION/`suppressed_by` mechanism preserved |
+| 3 | Rules reference it | 14 rules; global suppressors auto-applied, family-specific ones explicit; registry negatives migrated to the library |
+| 4 | Validator checks it | `validate_negative_library.py` (static integrity + cross-refs) + `validate_rules.py` L1/L1b (resolution + no DEPRECATED) |
+| 5 | Runner executes it | `rule_runner.py` consumes effects + overrides deterministically, with explanations |
+| 6 | Benign / adversarial tests exercise it | 53 cases incl. `suppression-tests-v1.json` scenarios A–J |
+| 7 | False-negative / override behaviour tested | S-H (banking beats IT-support), S-I / S-J (decoy safety-wording does not cancel a live hard-risk pattern), all 6 overrides exercised |
+| 8 | Documentation updated | This register, roadmap WP3, GATE-002, the library's own metadata |
+
+**Honesty note.** The negative indicators remain `HEURISTIC` (programme judgements from the inverse of
+verified guidance — no source publishes suppression logic), and *extraction* of these cues is a
+Phase-9 concern. What is closed is the **knowledge-engineering** gap: a reusable, explainable,
+tested suppression layer now exists. The library carries per-indicator `false_negative_risk` so the
+riskier suppressors (educational, reported-scam, allowlist) are visible.
 
 ## 7. Change history
 
@@ -130,3 +152,4 @@ Required by `MP §8`. The programme's position, stated plainly:
 | 1.0 | 2026-07-31 | Register opened with 22 gaps: 6 source-access, 9 knowledge, 7 carried forward. Fact/assumption separation stated explicitly. | Threat Intelligence Lead |
 | 1.1 | 2026-08-14 | Approved at the Phase 1 gate ([GATE-001](../00-program/GATE-001-phase-1-assessment.md)). All 22 gaps remain **open** — approval covers the register's completeness, not gap closure. G-01, G-03 and G-04 now carry an explicit per-source work list in the [verification manifest](../../knowledge/sources/verification-manifest.json) (`claim_under_test`, `blocks_rules`). G-07 is the highest-priority Phase 2 work package. | Technical Program Director |
 | 1.2 | 2026-08-28 | Reconciled with RESEARCH-006 (§2a). **G-02 and G-03 closed; G-01, G-04, G-06 partially closed; G-05 open (low impact).** SRC-002 and SRC-011 stay open. Deepfake-specific gap folded into G-16. Original failed statuses preserved (durable-truth guard). | Threat Intelligence Lead |
+| 1.3 | 2026-08-28 | **G-07 CLOSED** by the WP3 formal negative-indicator & suppression library, against all eight acceptance criteria (§6a). Negative indicators remain HEURISTIC; extraction is Phase 9. | Chief Architect |
