@@ -1,0 +1,4027 @@
+{
+  "_type": "Project",
+  "_id": "TL-PROJECT",
+  "name": "TrustLens",
+  "author": "TrustLens programme",
+  "documentation": "Level 0 data flow diagram for the TrustLens platform.",
+  "ownedElements": [
+    {
+      "_type": "UMLModel",
+      "_id": "TL-MODEL",
+      "_parent": {
+        "$ref": "TL-PROJECT"
+      },
+      "name": "TrustLens DFD",
+      "ownedElements": [
+        {
+          "_type": "UMLClassDiagram",
+          "_id": "TL-DIAGRAM-L0",
+          "_parent": {
+            "$ref": "TL-MODEL"
+          },
+          "name": "DFD Level 0 — Context Diagram",
+          "defaultDiagram": true,
+          "documentation": "TrustLens level 0 DFD. 1 process, 9 external entities, 18 flows (9 in, 9 out), no data stores. Derived from PROGRAM-001 v1.1, RESEARCH-001…005 and ADR-0003 — not the Phase 5 ARCH-001 artifact.",
+          "ownedViews": [
+            {
+              "_type": "UMLClassView",
+              "_id": "V-TL-P0",
+              "_parent": {
+                "$ref": "TL-DIAGRAM-L0"
+              },
+              "model": {
+                "$ref": "TL-P0"
+              },
+              "subViews": [
+                {
+                  "_type": "UMLNameCompartmentView",
+                  "_id": "V-TL-P0-NC",
+                  "_parent": {
+                    "$ref": "V-TL-P0"
+                  },
+                  "model": {
+                    "$ref": "TL-P0"
+                  },
+                  "subViews": [
+                    {
+                      "_type": "LabelView",
+                      "_id": "V-TL-P0-NC-name",
+                      "_parent": {
+                        "$ref": "V-TL-P0-NC"
+                      },
+                      "model": {
+                        "$ref": "TL-P0"
+                      },
+                      "font": "Arial;13;1",
+                      "text": "0. TrustLens",
+                      "horizontalAlignment": 2,
+                      "visible": true
+                    },
+                    {
+                      "_type": "LabelView",
+                      "_id": "V-TL-P0-NC-stereo",
+                      "_parent": {
+                        "$ref": "V-TL-P0-NC"
+                      },
+                      "model": {
+                        "$ref": "TL-P0"
+                      },
+                      "font": "Arial;13;0",
+                      "text": "«process»",
+                      "horizontalAlignment": 2,
+                      "visible": true
+                    },
+                    {
+                      "_type": "LabelView",
+                      "_id": "V-TL-P0-NC-namespace",
+                      "_parent": {
+                        "$ref": "V-TL-P0-NC"
+                      },
+                      "model": {
+                        "$ref": "TL-P0"
+                      },
+                      "font": "Arial;13;0",
+                      "text": "",
+                      "horizontalAlignment": 2,
+                      "visible": false
+                    },
+                    {
+                      "_type": "LabelView",
+                      "_id": "V-TL-P0-NC-property",
+                      "_parent": {
+                        "$ref": "V-TL-P0-NC"
+                      },
+                      "model": {
+                        "$ref": "TL-P0"
+                      },
+                      "font": "Arial;13;0",
+                      "text": "",
+                      "horizontalAlignment": 2,
+                      "visible": false
+                    }
+                  ],
+                  "nameLabel": {
+                    "$ref": "V-TL-P0-NC-name"
+                  },
+                  "stereotypeLabel": {
+                    "$ref": "V-TL-P0-NC-stereo"
+                  },
+                  "namespaceLabel": {
+                    "$ref": "V-TL-P0-NC-namespace"
+                  },
+                  "propertyLabel": {
+                    "$ref": "V-TL-P0-NC-property"
+                  }
+                },
+                {
+                  "_type": "UMLAttributeCompartmentView",
+                  "_id": "V-TL-P0-AC",
+                  "_parent": {
+                    "$ref": "V-TL-P0"
+                  },
+                  "model": {
+                    "$ref": "TL-P0"
+                  },
+                  "subViews": []
+                },
+                {
+                  "_type": "UMLOperationCompartmentView",
+                  "_id": "V-TL-P0-OC",
+                  "_parent": {
+                    "$ref": "V-TL-P0"
+                  },
+                  "model": {
+                    "$ref": "TL-P0"
+                  },
+                  "subViews": []
+                },
+                {
+                  "_type": "UMLReceptionCompartmentView",
+                  "_id": "V-TL-P0-RC",
+                  "_parent": {
+                    "$ref": "V-TL-P0"
+                  },
+                  "model": {
+                    "$ref": "TL-P0"
+                  },
+                  "subViews": []
+                },
+                {
+                  "_type": "UMLTemplateParameterCompartmentView",
+                  "_id": "V-TL-P0-TC",
+                  "_parent": {
+                    "$ref": "V-TL-P0"
+                  },
+                  "model": {
+                    "$ref": "TL-P0"
+                  },
+                  "subViews": []
+                }
+              ],
+              "left": 520,
+              "top": 250,
+              "width": 250,
+              "height": 190,
+              "nameCompartment": {
+                "$ref": "V-TL-P0-NC"
+              },
+              "attributeCompartment": {
+                "$ref": "V-TL-P0-AC"
+              },
+              "operationCompartment": {
+                "$ref": "V-TL-P0-OC"
+              },
+              "receptionCompartment": {
+                "$ref": "V-TL-P0-RC"
+              },
+              "templateParameterCompartment": {
+                "$ref": "V-TL-P0-TC"
+              },
+              "suppressAttributes": true,
+              "suppressOperations": true,
+              "stereotypeDisplay": "label",
+              "showVisibility": false
+            },
+            {
+              "_type": "UMLClassView",
+              "_id": "V-E1",
+              "_parent": {
+                "$ref": "TL-DIAGRAM-L0"
+              },
+              "model": {
+                "$ref": "E1"
+              },
+              "subViews": [
+                {
+                  "_type": "UMLNameCompartmentView",
+                  "_id": "V-E1-NC",
+                  "_parent": {
+                    "$ref": "V-E1"
+                  },
+                  "model": {
+                    "$ref": "E1"
+                  },
+                  "subViews": [
+                    {
+                      "_type": "LabelView",
+                      "_id": "V-E1-NC-name",
+                      "_parent": {
+                        "$ref": "V-E1-NC"
+                      },
+                      "model": {
+                        "$ref": "E1"
+                      },
+                      "font": "Arial;13;1",
+                      "text": "Reporting user",
+                      "horizontalAlignment": 2,
+                      "visible": true
+                    },
+                    {
+                      "_type": "LabelView",
+                      "_id": "V-E1-NC-stereo",
+                      "_parent": {
+                        "$ref": "V-E1-NC"
+                      },
+                      "model": {
+                        "$ref": "E1"
+                      },
+                      "font": "Arial;13;0",
+                      "text": "«external entity»",
+                      "horizontalAlignment": 2,
+                      "visible": true
+                    },
+                    {
+                      "_type": "LabelView",
+                      "_id": "V-E1-NC-namespace",
+                      "_parent": {
+                        "$ref": "V-E1-NC"
+                      },
+                      "model": {
+                        "$ref": "E1"
+                      },
+                      "font": "Arial;13;0",
+                      "text": "",
+                      "horizontalAlignment": 2,
+                      "visible": false
+                    },
+                    {
+                      "_type": "LabelView",
+                      "_id": "V-E1-NC-property",
+                      "_parent": {
+                        "$ref": "V-E1-NC"
+                      },
+                      "model": {
+                        "$ref": "E1"
+                      },
+                      "font": "Arial;13;0",
+                      "text": "",
+                      "horizontalAlignment": 2,
+                      "visible": false
+                    }
+                  ],
+                  "nameLabel": {
+                    "$ref": "V-E1-NC-name"
+                  },
+                  "stereotypeLabel": {
+                    "$ref": "V-E1-NC-stereo"
+                  },
+                  "namespaceLabel": {
+                    "$ref": "V-E1-NC-namespace"
+                  },
+                  "propertyLabel": {
+                    "$ref": "V-E1-NC-property"
+                  }
+                },
+                {
+                  "_type": "UMLAttributeCompartmentView",
+                  "_id": "V-E1-AC",
+                  "_parent": {
+                    "$ref": "V-E1"
+                  },
+                  "model": {
+                    "$ref": "E1"
+                  },
+                  "subViews": []
+                },
+                {
+                  "_type": "UMLOperationCompartmentView",
+                  "_id": "V-E1-OC",
+                  "_parent": {
+                    "$ref": "V-E1"
+                  },
+                  "model": {
+                    "$ref": "E1"
+                  },
+                  "subViews": []
+                },
+                {
+                  "_type": "UMLReceptionCompartmentView",
+                  "_id": "V-E1-RC",
+                  "_parent": {
+                    "$ref": "V-E1"
+                  },
+                  "model": {
+                    "$ref": "E1"
+                  },
+                  "subViews": []
+                },
+                {
+                  "_type": "UMLTemplateParameterCompartmentView",
+                  "_id": "V-E1-TC",
+                  "_parent": {
+                    "$ref": "V-E1"
+                  },
+                  "model": {
+                    "$ref": "E1"
+                  },
+                  "subViews": []
+                }
+              ],
+              "left": 90,
+              "top": 70,
+              "width": 190,
+              "height": 54,
+              "nameCompartment": {
+                "$ref": "V-E1-NC"
+              },
+              "attributeCompartment": {
+                "$ref": "V-E1-AC"
+              },
+              "operationCompartment": {
+                "$ref": "V-E1-OC"
+              },
+              "receptionCompartment": {
+                "$ref": "V-E1-RC"
+              },
+              "templateParameterCompartment": {
+                "$ref": "V-E1-TC"
+              },
+              "suppressAttributes": true,
+              "suppressOperations": true,
+              "stereotypeDisplay": "label",
+              "showVisibility": false
+            },
+            {
+              "_type": "UMLClassView",
+              "_id": "V-E2",
+              "_parent": {
+                "$ref": "TL-DIAGRAM-L0"
+              },
+              "model": {
+                "$ref": "E2"
+              },
+              "subViews": [
+                {
+                  "_type": "UMLNameCompartmentView",
+                  "_id": "V-E2-NC",
+                  "_parent": {
+                    "$ref": "V-E2"
+                  },
+                  "model": {
+                    "$ref": "E2"
+                  },
+                  "subViews": [
+                    {
+                      "_type": "LabelView",
+                      "_id": "V-E2-NC-name",
+                      "_parent": {
+                        "$ref": "V-E2-NC"
+                      },
+                      "model": {
+                        "$ref": "E2"
+                      },
+                      "font": "Arial;13;1",
+                      "text": "Analyst",
+                      "horizontalAlignment": 2,
+                      "visible": true
+                    },
+                    {
+                      "_type": "LabelView",
+                      "_id": "V-E2-NC-stereo",
+                      "_parent": {
+                        "$ref": "V-E2-NC"
+                      },
+                      "model": {
+                        "$ref": "E2"
+                      },
+                      "font": "Arial;13;0",
+                      "text": "«external entity»",
+                      "horizontalAlignment": 2,
+                      "visible": true
+                    },
+                    {
+                      "_type": "LabelView",
+                      "_id": "V-E2-NC-namespace",
+                      "_parent": {
+                        "$ref": "V-E2-NC"
+                      },
+                      "model": {
+                        "$ref": "E2"
+                      },
+                      "font": "Arial;13;0",
+                      "text": "",
+                      "horizontalAlignment": 2,
+                      "visible": false
+                    },
+                    {
+                      "_type": "LabelView",
+                      "_id": "V-E2-NC-property",
+                      "_parent": {
+                        "$ref": "V-E2-NC"
+                      },
+                      "model": {
+                        "$ref": "E2"
+                      },
+                      "font": "Arial;13;0",
+                      "text": "",
+                      "horizontalAlignment": 2,
+                      "visible": false
+                    }
+                  ],
+                  "nameLabel": {
+                    "$ref": "V-E2-NC-name"
+                  },
+                  "stereotypeLabel": {
+                    "$ref": "V-E2-NC-stereo"
+                  },
+                  "namespaceLabel": {
+                    "$ref": "V-E2-NC-namespace"
+                  },
+                  "propertyLabel": {
+                    "$ref": "V-E2-NC-property"
+                  }
+                },
+                {
+                  "_type": "UMLAttributeCompartmentView",
+                  "_id": "V-E2-AC",
+                  "_parent": {
+                    "$ref": "V-E2"
+                  },
+                  "model": {
+                    "$ref": "E2"
+                  },
+                  "subViews": []
+                },
+                {
+                  "_type": "UMLOperationCompartmentView",
+                  "_id": "V-E2-OC",
+                  "_parent": {
+                    "$ref": "V-E2"
+                  },
+                  "model": {
+                    "$ref": "E2"
+                  },
+                  "subViews": []
+                },
+                {
+                  "_type": "UMLReceptionCompartmentView",
+                  "_id": "V-E2-RC",
+                  "_parent": {
+                    "$ref": "V-E2"
+                  },
+                  "model": {
+                    "$ref": "E2"
+                  },
+                  "subViews": []
+                },
+                {
+                  "_type": "UMLTemplateParameterCompartmentView",
+                  "_id": "V-E2-TC",
+                  "_parent": {
+                    "$ref": "V-E2"
+                  },
+                  "model": {
+                    "$ref": "E2"
+                  },
+                  "subViews": []
+                }
+              ],
+              "left": 90,
+              "top": 230,
+              "width": 190,
+              "height": 54,
+              "nameCompartment": {
+                "$ref": "V-E2-NC"
+              },
+              "attributeCompartment": {
+                "$ref": "V-E2-AC"
+              },
+              "operationCompartment": {
+                "$ref": "V-E2-OC"
+              },
+              "receptionCompartment": {
+                "$ref": "V-E2-RC"
+              },
+              "templateParameterCompartment": {
+                "$ref": "V-E2-TC"
+              },
+              "suppressAttributes": true,
+              "suppressOperations": true,
+              "stereotypeDisplay": "label",
+              "showVisibility": false
+            },
+            {
+              "_type": "UMLClassView",
+              "_id": "V-E3",
+              "_parent": {
+                "$ref": "TL-DIAGRAM-L0"
+              },
+              "model": {
+                "$ref": "E3"
+              },
+              "subViews": [
+                {
+                  "_type": "UMLNameCompartmentView",
+                  "_id": "V-E3-NC",
+                  "_parent": {
+                    "$ref": "V-E3"
+                  },
+                  "model": {
+                    "$ref": "E3"
+                  },
+                  "subViews": [
+                    {
+                      "_type": "LabelView",
+                      "_id": "V-E3-NC-name",
+                      "_parent": {
+                        "$ref": "V-E3-NC"
+                      },
+                      "model": {
+                        "$ref": "E3"
+                      },
+                      "font": "Arial;13;1",
+                      "text": "Administrator",
+                      "horizontalAlignment": 2,
+                      "visible": true
+                    },
+                    {
+                      "_type": "LabelView",
+                      "_id": "V-E3-NC-stereo",
+                      "_parent": {
+                        "$ref": "V-E3-NC"
+                      },
+                      "model": {
+                        "$ref": "E3"
+                      },
+                      "font": "Arial;13;0",
+                      "text": "«external entity»",
+                      "horizontalAlignment": 2,
+                      "visible": true
+                    },
+                    {
+                      "_type": "LabelView",
+                      "_id": "V-E3-NC-namespace",
+                      "_parent": {
+                        "$ref": "V-E3-NC"
+                      },
+                      "model": {
+                        "$ref": "E3"
+                      },
+                      "font": "Arial;13;0",
+                      "text": "",
+                      "horizontalAlignment": 2,
+                      "visible": false
+                    },
+                    {
+                      "_type": "LabelView",
+                      "_id": "V-E3-NC-property",
+                      "_parent": {
+                        "$ref": "V-E3-NC"
+                      },
+                      "model": {
+                        "$ref": "E3"
+                      },
+                      "font": "Arial;13;0",
+                      "text": "",
+                      "horizontalAlignment": 2,
+                      "visible": false
+                    }
+                  ],
+                  "nameLabel": {
+                    "$ref": "V-E3-NC-name"
+                  },
+                  "stereotypeLabel": {
+                    "$ref": "V-E3-NC-stereo"
+                  },
+                  "namespaceLabel": {
+                    "$ref": "V-E3-NC-namespace"
+                  },
+                  "propertyLabel": {
+                    "$ref": "V-E3-NC-property"
+                  }
+                },
+                {
+                  "_type": "UMLAttributeCompartmentView",
+                  "_id": "V-E3-AC",
+                  "_parent": {
+                    "$ref": "V-E3"
+                  },
+                  "model": {
+                    "$ref": "E3"
+                  },
+                  "subViews": []
+                },
+                {
+                  "_type": "UMLOperationCompartmentView",
+                  "_id": "V-E3-OC",
+                  "_parent": {
+                    "$ref": "V-E3"
+                  },
+                  "model": {
+                    "$ref": "E3"
+                  },
+                  "subViews": []
+                },
+                {
+                  "_type": "UMLReceptionCompartmentView",
+                  "_id": "V-E3-RC",
+                  "_parent": {
+                    "$ref": "V-E3"
+                  },
+                  "model": {
+                    "$ref": "E3"
+                  },
+                  "subViews": []
+                },
+                {
+                  "_type": "UMLTemplateParameterCompartmentView",
+                  "_id": "V-E3-TC",
+                  "_parent": {
+                    "$ref": "V-E3"
+                  },
+                  "model": {
+                    "$ref": "E3"
+                  },
+                  "subViews": []
+                }
+              ],
+              "left": 90,
+              "top": 390,
+              "width": 190,
+              "height": 54,
+              "nameCompartment": {
+                "$ref": "V-E3-NC"
+              },
+              "attributeCompartment": {
+                "$ref": "V-E3-AC"
+              },
+              "operationCompartment": {
+                "$ref": "V-E3-OC"
+              },
+              "receptionCompartment": {
+                "$ref": "V-E3-RC"
+              },
+              "templateParameterCompartment": {
+                "$ref": "V-E3-TC"
+              },
+              "suppressAttributes": true,
+              "suppressOperations": true,
+              "stereotypeDisplay": "label",
+              "showVisibility": false
+            },
+            {
+              "_type": "UMLClassView",
+              "_id": "V-E4",
+              "_parent": {
+                "$ref": "TL-DIAGRAM-L0"
+              },
+              "model": {
+                "$ref": "E4"
+              },
+              "subViews": [
+                {
+                  "_type": "UMLNameCompartmentView",
+                  "_id": "V-E4-NC",
+                  "_parent": {
+                    "$ref": "V-E4"
+                  },
+                  "model": {
+                    "$ref": "E4"
+                  },
+                  "subViews": [
+                    {
+                      "_type": "LabelView",
+                      "_id": "V-E4-NC-name",
+                      "_parent": {
+                        "$ref": "V-E4-NC"
+                      },
+                      "model": {
+                        "$ref": "E4"
+                      },
+                      "font": "Arial;13;1",
+                      "text": "Report recipient",
+                      "horizontalAlignment": 2,
+                      "visible": true
+                    },
+                    {
+                      "_type": "LabelView",
+                      "_id": "V-E4-NC-stereo",
+                      "_parent": {
+                        "$ref": "V-E4-NC"
+                      },
+                      "model": {
+                        "$ref": "E4"
+                      },
+                      "font": "Arial;13;0",
+                      "text": "«external entity»",
+                      "horizontalAlignment": 2,
+                      "visible": true
+                    },
+                    {
+                      "_type": "LabelView",
+                      "_id": "V-E4-NC-namespace",
+                      "_parent": {
+                        "$ref": "V-E4-NC"
+                      },
+                      "model": {
+                        "$ref": "E4"
+                      },
+                      "font": "Arial;13;0",
+                      "text": "",
+                      "horizontalAlignment": 2,
+                      "visible": false
+                    },
+                    {
+                      "_type": "LabelView",
+                      "_id": "V-E4-NC-property",
+                      "_parent": {
+                        "$ref": "V-E4-NC"
+                      },
+                      "model": {
+                        "$ref": "E4"
+                      },
+                      "font": "Arial;13;0",
+                      "text": "",
+                      "horizontalAlignment": 2,
+                      "visible": false
+                    }
+                  ],
+                  "nameLabel": {
+                    "$ref": "V-E4-NC-name"
+                  },
+                  "stereotypeLabel": {
+                    "$ref": "V-E4-NC-stereo"
+                  },
+                  "namespaceLabel": {
+                    "$ref": "V-E4-NC-namespace"
+                  },
+                  "propertyLabel": {
+                    "$ref": "V-E4-NC-property"
+                  }
+                },
+                {
+                  "_type": "UMLAttributeCompartmentView",
+                  "_id": "V-E4-AC",
+                  "_parent": {
+                    "$ref": "V-E4"
+                  },
+                  "model": {
+                    "$ref": "E4"
+                  },
+                  "subViews": []
+                },
+                {
+                  "_type": "UMLOperationCompartmentView",
+                  "_id": "V-E4-OC",
+                  "_parent": {
+                    "$ref": "V-E4"
+                  },
+                  "model": {
+                    "$ref": "E4"
+                  },
+                  "subViews": []
+                },
+                {
+                  "_type": "UMLReceptionCompartmentView",
+                  "_id": "V-E4-RC",
+                  "_parent": {
+                    "$ref": "V-E4"
+                  },
+                  "model": {
+                    "$ref": "E4"
+                  },
+                  "subViews": []
+                },
+                {
+                  "_type": "UMLTemplateParameterCompartmentView",
+                  "_id": "V-E4-TC",
+                  "_parent": {
+                    "$ref": "V-E4"
+                  },
+                  "model": {
+                    "$ref": "E4"
+                  },
+                  "subViews": []
+                }
+              ],
+              "left": 90,
+              "top": 550,
+              "width": 190,
+              "height": 54,
+              "nameCompartment": {
+                "$ref": "V-E4-NC"
+              },
+              "attributeCompartment": {
+                "$ref": "V-E4-AC"
+              },
+              "operationCompartment": {
+                "$ref": "V-E4-OC"
+              },
+              "receptionCompartment": {
+                "$ref": "V-E4-RC"
+              },
+              "templateParameterCompartment": {
+                "$ref": "V-E4-TC"
+              },
+              "suppressAttributes": true,
+              "suppressOperations": true,
+              "stereotypeDisplay": "label",
+              "showVisibility": false
+            },
+            {
+              "_type": "UMLClassView",
+              "_id": "V-E5",
+              "_parent": {
+                "$ref": "TL-DIAGRAM-L0"
+              },
+              "model": {
+                "$ref": "E5"
+              },
+              "subViews": [
+                {
+                  "_type": "UMLNameCompartmentView",
+                  "_id": "V-E5-NC",
+                  "_parent": {
+                    "$ref": "V-E5"
+                  },
+                  "model": {
+                    "$ref": "E5"
+                  },
+                  "subViews": [
+                    {
+                      "_type": "LabelView",
+                      "_id": "V-E5-NC-name",
+                      "_parent": {
+                        "$ref": "V-E5-NC"
+                      },
+                      "model": {
+                        "$ref": "E5"
+                      },
+                      "font": "Arial;13;1",
+                      "text": "Guidance bodies",
+                      "horizontalAlignment": 2,
+                      "visible": true
+                    },
+                    {
+                      "_type": "LabelView",
+                      "_id": "V-E5-NC-stereo",
+                      "_parent": {
+                        "$ref": "V-E5-NC"
+                      },
+                      "model": {
+                        "$ref": "E5"
+                      },
+                      "font": "Arial;13;0",
+                      "text": "«external entity»",
+                      "horizontalAlignment": 2,
+                      "visible": true
+                    },
+                    {
+                      "_type": "LabelView",
+                      "_id": "V-E5-NC-namespace",
+                      "_parent": {
+                        "$ref": "V-E5-NC"
+                      },
+                      "model": {
+                        "$ref": "E5"
+                      },
+                      "font": "Arial;13;0",
+                      "text": "",
+                      "horizontalAlignment": 2,
+                      "visible": false
+                    },
+                    {
+                      "_type": "LabelView",
+                      "_id": "V-E5-NC-property",
+                      "_parent": {
+                        "$ref": "V-E5-NC"
+                      },
+                      "model": {
+                        "$ref": "E5"
+                      },
+                      "font": "Arial;13;0",
+                      "text": "",
+                      "horizontalAlignment": 2,
+                      "visible": false
+                    }
+                  ],
+                  "nameLabel": {
+                    "$ref": "V-E5-NC-name"
+                  },
+                  "stereotypeLabel": {
+                    "$ref": "V-E5-NC-stereo"
+                  },
+                  "namespaceLabel": {
+                    "$ref": "V-E5-NC-namespace"
+                  },
+                  "propertyLabel": {
+                    "$ref": "V-E5-NC-property"
+                  }
+                },
+                {
+                  "_type": "UMLAttributeCompartmentView",
+                  "_id": "V-E5-AC",
+                  "_parent": {
+                    "$ref": "V-E5"
+                  },
+                  "model": {
+                    "$ref": "E5"
+                  },
+                  "subViews": []
+                },
+                {
+                  "_type": "UMLOperationCompartmentView",
+                  "_id": "V-E5-OC",
+                  "_parent": {
+                    "$ref": "V-E5"
+                  },
+                  "model": {
+                    "$ref": "E5"
+                  },
+                  "subViews": []
+                },
+                {
+                  "_type": "UMLReceptionCompartmentView",
+                  "_id": "V-E5-RC",
+                  "_parent": {
+                    "$ref": "V-E5"
+                  },
+                  "model": {
+                    "$ref": "E5"
+                  },
+                  "subViews": []
+                },
+                {
+                  "_type": "UMLTemplateParameterCompartmentView",
+                  "_id": "V-E5-TC",
+                  "_parent": {
+                    "$ref": "V-E5"
+                  },
+                  "model": {
+                    "$ref": "E5"
+                  },
+                  "subViews": []
+                }
+              ],
+              "left": 1000,
+              "top": 70,
+              "width": 190,
+              "height": 54,
+              "nameCompartment": {
+                "$ref": "V-E5-NC"
+              },
+              "attributeCompartment": {
+                "$ref": "V-E5-AC"
+              },
+              "operationCompartment": {
+                "$ref": "V-E5-OC"
+              },
+              "receptionCompartment": {
+                "$ref": "V-E5-RC"
+              },
+              "templateParameterCompartment": {
+                "$ref": "V-E5-TC"
+              },
+              "suppressAttributes": true,
+              "suppressOperations": true,
+              "stereotypeDisplay": "label",
+              "showVisibility": false
+            },
+            {
+              "_type": "UMLClassView",
+              "_id": "V-E6",
+              "_parent": {
+                "$ref": "TL-DIAGRAM-L0"
+              },
+              "model": {
+                "$ref": "E6"
+              },
+              "subViews": [
+                {
+                  "_type": "UMLNameCompartmentView",
+                  "_id": "V-E6-NC",
+                  "_parent": {
+                    "$ref": "V-E6"
+                  },
+                  "model": {
+                    "$ref": "E6"
+                  },
+                  "subViews": [
+                    {
+                      "_type": "LabelView",
+                      "_id": "V-E6-NC-name",
+                      "_parent": {
+                        "$ref": "V-E6-NC"
+                      },
+                      "model": {
+                        "$ref": "E6"
+                      },
+                      "font": "Arial;13;1",
+                      "text": "Knowledge editor",
+                      "horizontalAlignment": 2,
+                      "visible": true
+                    },
+                    {
+                      "_type": "LabelView",
+                      "_id": "V-E6-NC-stereo",
+                      "_parent": {
+                        "$ref": "V-E6-NC"
+                      },
+                      "model": {
+                        "$ref": "E6"
+                      },
+                      "font": "Arial;13;0",
+                      "text": "«external entity»",
+                      "horizontalAlignment": 2,
+                      "visible": true
+                    },
+                    {
+                      "_type": "LabelView",
+                      "_id": "V-E6-NC-namespace",
+                      "_parent": {
+                        "$ref": "V-E6-NC"
+                      },
+                      "model": {
+                        "$ref": "E6"
+                      },
+                      "font": "Arial;13;0",
+                      "text": "",
+                      "horizontalAlignment": 2,
+                      "visible": false
+                    },
+                    {
+                      "_type": "LabelView",
+                      "_id": "V-E6-NC-property",
+                      "_parent": {
+                        "$ref": "V-E6-NC"
+                      },
+                      "model": {
+                        "$ref": "E6"
+                      },
+                      "font": "Arial;13;0",
+                      "text": "",
+                      "horizontalAlignment": 2,
+                      "visible": false
+                    }
+                  ],
+                  "nameLabel": {
+                    "$ref": "V-E6-NC-name"
+                  },
+                  "stereotypeLabel": {
+                    "$ref": "V-E6-NC-stereo"
+                  },
+                  "namespaceLabel": {
+                    "$ref": "V-E6-NC-namespace"
+                  },
+                  "propertyLabel": {
+                    "$ref": "V-E6-NC-property"
+                  }
+                },
+                {
+                  "_type": "UMLAttributeCompartmentView",
+                  "_id": "V-E6-AC",
+                  "_parent": {
+                    "$ref": "V-E6"
+                  },
+                  "model": {
+                    "$ref": "E6"
+                  },
+                  "subViews": []
+                },
+                {
+                  "_type": "UMLOperationCompartmentView",
+                  "_id": "V-E6-OC",
+                  "_parent": {
+                    "$ref": "V-E6"
+                  },
+                  "model": {
+                    "$ref": "E6"
+                  },
+                  "subViews": []
+                },
+                {
+                  "_type": "UMLReceptionCompartmentView",
+                  "_id": "V-E6-RC",
+                  "_parent": {
+                    "$ref": "V-E6"
+                  },
+                  "model": {
+                    "$ref": "E6"
+                  },
+                  "subViews": []
+                },
+                {
+                  "_type": "UMLTemplateParameterCompartmentView",
+                  "_id": "V-E6-TC",
+                  "_parent": {
+                    "$ref": "V-E6"
+                  },
+                  "model": {
+                    "$ref": "E6"
+                  },
+                  "subViews": []
+                }
+              ],
+              "left": 1000,
+              "top": 200,
+              "width": 190,
+              "height": 54,
+              "nameCompartment": {
+                "$ref": "V-E6-NC"
+              },
+              "attributeCompartment": {
+                "$ref": "V-E6-AC"
+              },
+              "operationCompartment": {
+                "$ref": "V-E6-OC"
+              },
+              "receptionCompartment": {
+                "$ref": "V-E6-RC"
+              },
+              "templateParameterCompartment": {
+                "$ref": "V-E6-TC"
+              },
+              "suppressAttributes": true,
+              "suppressOperations": true,
+              "stereotypeDisplay": "label",
+              "showVisibility": false
+            },
+            {
+              "_type": "UMLClassView",
+              "_id": "V-E7",
+              "_parent": {
+                "$ref": "TL-DIAGRAM-L0"
+              },
+              "model": {
+                "$ref": "E7"
+              },
+              "subViews": [
+                {
+                  "_type": "UMLNameCompartmentView",
+                  "_id": "V-E7-NC",
+                  "_parent": {
+                    "$ref": "V-E7"
+                  },
+                  "model": {
+                    "$ref": "E7"
+                  },
+                  "subViews": [
+                    {
+                      "_type": "LabelView",
+                      "_id": "V-E7-NC-name",
+                      "_parent": {
+                        "$ref": "V-E7-NC"
+                      },
+                      "model": {
+                        "$ref": "E7"
+                      },
+                      "font": "Arial;13;1",
+                      "text": "Knowledge approver",
+                      "horizontalAlignment": 2,
+                      "visible": true
+                    },
+                    {
+                      "_type": "LabelView",
+                      "_id": "V-E7-NC-stereo",
+                      "_parent": {
+                        "$ref": "V-E7-NC"
+                      },
+                      "model": {
+                        "$ref": "E7"
+                      },
+                      "font": "Arial;13;0",
+                      "text": "«external entity»",
+                      "horizontalAlignment": 2,
+                      "visible": true
+                    },
+                    {
+                      "_type": "LabelView",
+                      "_id": "V-E7-NC-namespace",
+                      "_parent": {
+                        "$ref": "V-E7-NC"
+                      },
+                      "model": {
+                        "$ref": "E7"
+                      },
+                      "font": "Arial;13;0",
+                      "text": "",
+                      "horizontalAlignment": 2,
+                      "visible": false
+                    },
+                    {
+                      "_type": "LabelView",
+                      "_id": "V-E7-NC-property",
+                      "_parent": {
+                        "$ref": "V-E7-NC"
+                      },
+                      "model": {
+                        "$ref": "E7"
+                      },
+                      "font": "Arial;13;0",
+                      "text": "",
+                      "horizontalAlignment": 2,
+                      "visible": false
+                    }
+                  ],
+                  "nameLabel": {
+                    "$ref": "V-E7-NC-name"
+                  },
+                  "stereotypeLabel": {
+                    "$ref": "V-E7-NC-stereo"
+                  },
+                  "namespaceLabel": {
+                    "$ref": "V-E7-NC-namespace"
+                  },
+                  "propertyLabel": {
+                    "$ref": "V-E7-NC-property"
+                  }
+                },
+                {
+                  "_type": "UMLAttributeCompartmentView",
+                  "_id": "V-E7-AC",
+                  "_parent": {
+                    "$ref": "V-E7"
+                  },
+                  "model": {
+                    "$ref": "E7"
+                  },
+                  "subViews": []
+                },
+                {
+                  "_type": "UMLOperationCompartmentView",
+                  "_id": "V-E7-OC",
+                  "_parent": {
+                    "$ref": "V-E7"
+                  },
+                  "model": {
+                    "$ref": "E7"
+                  },
+                  "subViews": []
+                },
+                {
+                  "_type": "UMLReceptionCompartmentView",
+                  "_id": "V-E7-RC",
+                  "_parent": {
+                    "$ref": "V-E7"
+                  },
+                  "model": {
+                    "$ref": "E7"
+                  },
+                  "subViews": []
+                },
+                {
+                  "_type": "UMLTemplateParameterCompartmentView",
+                  "_id": "V-E7-TC",
+                  "_parent": {
+                    "$ref": "V-E7"
+                  },
+                  "model": {
+                    "$ref": "E7"
+                  },
+                  "subViews": []
+                }
+              ],
+              "left": 1000,
+              "top": 330,
+              "width": 190,
+              "height": 54,
+              "nameCompartment": {
+                "$ref": "V-E7-NC"
+              },
+              "attributeCompartment": {
+                "$ref": "V-E7-AC"
+              },
+              "operationCompartment": {
+                "$ref": "V-E7-OC"
+              },
+              "receptionCompartment": {
+                "$ref": "V-E7-RC"
+              },
+              "templateParameterCompartment": {
+                "$ref": "V-E7-TC"
+              },
+              "suppressAttributes": true,
+              "suppressOperations": true,
+              "stereotypeDisplay": "label",
+              "showVisibility": false
+            },
+            {
+              "_type": "UMLClassView",
+              "_id": "V-E8",
+              "_parent": {
+                "$ref": "TL-DIAGRAM-L0"
+              },
+              "model": {
+                "$ref": "E8"
+              },
+              "subViews": [
+                {
+                  "_type": "UMLNameCompartmentView",
+                  "_id": "V-E8-NC",
+                  "_parent": {
+                    "$ref": "V-E8"
+                  },
+                  "model": {
+                    "$ref": "E8"
+                  },
+                  "subViews": [
+                    {
+                      "_type": "LabelView",
+                      "_id": "V-E8-NC-name",
+                      "_parent": {
+                        "$ref": "V-E8-NC"
+                      },
+                      "model": {
+                        "$ref": "E8"
+                      },
+                      "font": "Arial;13;1",
+                      "text": "URL & threat-intel providers",
+                      "horizontalAlignment": 2,
+                      "visible": true
+                    },
+                    {
+                      "_type": "LabelView",
+                      "_id": "V-E8-NC-stereo",
+                      "_parent": {
+                        "$ref": "V-E8-NC"
+                      },
+                      "model": {
+                        "$ref": "E8"
+                      },
+                      "font": "Arial;13;0",
+                      "text": "«external entity»",
+                      "horizontalAlignment": 2,
+                      "visible": true
+                    },
+                    {
+                      "_type": "LabelView",
+                      "_id": "V-E8-NC-namespace",
+                      "_parent": {
+                        "$ref": "V-E8-NC"
+                      },
+                      "model": {
+                        "$ref": "E8"
+                      },
+                      "font": "Arial;13;0",
+                      "text": "",
+                      "horizontalAlignment": 2,
+                      "visible": false
+                    },
+                    {
+                      "_type": "LabelView",
+                      "_id": "V-E8-NC-property",
+                      "_parent": {
+                        "$ref": "V-E8-NC"
+                      },
+                      "model": {
+                        "$ref": "E8"
+                      },
+                      "font": "Arial;13;0",
+                      "text": "",
+                      "horizontalAlignment": 2,
+                      "visible": false
+                    }
+                  ],
+                  "nameLabel": {
+                    "$ref": "V-E8-NC-name"
+                  },
+                  "stereotypeLabel": {
+                    "$ref": "V-E8-NC-stereo"
+                  },
+                  "namespaceLabel": {
+                    "$ref": "V-E8-NC-namespace"
+                  },
+                  "propertyLabel": {
+                    "$ref": "V-E8-NC-property"
+                  }
+                },
+                {
+                  "_type": "UMLAttributeCompartmentView",
+                  "_id": "V-E8-AC",
+                  "_parent": {
+                    "$ref": "V-E8"
+                  },
+                  "model": {
+                    "$ref": "E8"
+                  },
+                  "subViews": []
+                },
+                {
+                  "_type": "UMLOperationCompartmentView",
+                  "_id": "V-E8-OC",
+                  "_parent": {
+                    "$ref": "V-E8"
+                  },
+                  "model": {
+                    "$ref": "E8"
+                  },
+                  "subViews": []
+                },
+                {
+                  "_type": "UMLReceptionCompartmentView",
+                  "_id": "V-E8-RC",
+                  "_parent": {
+                    "$ref": "V-E8"
+                  },
+                  "model": {
+                    "$ref": "E8"
+                  },
+                  "subViews": []
+                },
+                {
+                  "_type": "UMLTemplateParameterCompartmentView",
+                  "_id": "V-E8-TC",
+                  "_parent": {
+                    "$ref": "V-E8"
+                  },
+                  "model": {
+                    "$ref": "E8"
+                  },
+                  "subViews": []
+                }
+              ],
+              "left": 1000,
+              "top": 460,
+              "width": 190,
+              "height": 54,
+              "nameCompartment": {
+                "$ref": "V-E8-NC"
+              },
+              "attributeCompartment": {
+                "$ref": "V-E8-AC"
+              },
+              "operationCompartment": {
+                "$ref": "V-E8-OC"
+              },
+              "receptionCompartment": {
+                "$ref": "V-E8-RC"
+              },
+              "templateParameterCompartment": {
+                "$ref": "V-E8-TC"
+              },
+              "suppressAttributes": true,
+              "suppressOperations": true,
+              "stereotypeDisplay": "label",
+              "showVisibility": false
+            },
+            {
+              "_type": "UMLClassView",
+              "_id": "V-E9",
+              "_parent": {
+                "$ref": "TL-DIAGRAM-L0"
+              },
+              "model": {
+                "$ref": "E9"
+              },
+              "subViews": [
+                {
+                  "_type": "UMLNameCompartmentView",
+                  "_id": "V-E9-NC",
+                  "_parent": {
+                    "$ref": "V-E9"
+                  },
+                  "model": {
+                    "$ref": "E9"
+                  },
+                  "subViews": [
+                    {
+                      "_type": "LabelView",
+                      "_id": "V-E9-NC-name",
+                      "_parent": {
+                        "$ref": "V-E9-NC"
+                      },
+                      "model": {
+                        "$ref": "E9"
+                      },
+                      "font": "Arial;13;1",
+                      "text": "AI assist provider",
+                      "horizontalAlignment": 2,
+                      "visible": true
+                    },
+                    {
+                      "_type": "LabelView",
+                      "_id": "V-E9-NC-stereo",
+                      "_parent": {
+                        "$ref": "V-E9-NC"
+                      },
+                      "model": {
+                        "$ref": "E9"
+                      },
+                      "font": "Arial;13;0",
+                      "text": "«external entity»",
+                      "horizontalAlignment": 2,
+                      "visible": true
+                    },
+                    {
+                      "_type": "LabelView",
+                      "_id": "V-E9-NC-namespace",
+                      "_parent": {
+                        "$ref": "V-E9-NC"
+                      },
+                      "model": {
+                        "$ref": "E9"
+                      },
+                      "font": "Arial;13;0",
+                      "text": "",
+                      "horizontalAlignment": 2,
+                      "visible": false
+                    },
+                    {
+                      "_type": "LabelView",
+                      "_id": "V-E9-NC-property",
+                      "_parent": {
+                        "$ref": "V-E9-NC"
+                      },
+                      "model": {
+                        "$ref": "E9"
+                      },
+                      "font": "Arial;13;0",
+                      "text": "",
+                      "horizontalAlignment": 2,
+                      "visible": false
+                    }
+                  ],
+                  "nameLabel": {
+                    "$ref": "V-E9-NC-name"
+                  },
+                  "stereotypeLabel": {
+                    "$ref": "V-E9-NC-stereo"
+                  },
+                  "namespaceLabel": {
+                    "$ref": "V-E9-NC-namespace"
+                  },
+                  "propertyLabel": {
+                    "$ref": "V-E9-NC-property"
+                  }
+                },
+                {
+                  "_type": "UMLAttributeCompartmentView",
+                  "_id": "V-E9-AC",
+                  "_parent": {
+                    "$ref": "V-E9"
+                  },
+                  "model": {
+                    "$ref": "E9"
+                  },
+                  "subViews": []
+                },
+                {
+                  "_type": "UMLOperationCompartmentView",
+                  "_id": "V-E9-OC",
+                  "_parent": {
+                    "$ref": "V-E9"
+                  },
+                  "model": {
+                    "$ref": "E9"
+                  },
+                  "subViews": []
+                },
+                {
+                  "_type": "UMLReceptionCompartmentView",
+                  "_id": "V-E9-RC",
+                  "_parent": {
+                    "$ref": "V-E9"
+                  },
+                  "model": {
+                    "$ref": "E9"
+                  },
+                  "subViews": []
+                },
+                {
+                  "_type": "UMLTemplateParameterCompartmentView",
+                  "_id": "V-E9-TC",
+                  "_parent": {
+                    "$ref": "V-E9"
+                  },
+                  "model": {
+                    "$ref": "E9"
+                  },
+                  "subViews": []
+                }
+              ],
+              "left": 1000,
+              "top": 590,
+              "width": 190,
+              "height": 54,
+              "nameCompartment": {
+                "$ref": "V-E9-NC"
+              },
+              "attributeCompartment": {
+                "$ref": "V-E9-AC"
+              },
+              "operationCompartment": {
+                "$ref": "V-E9-OC"
+              },
+              "receptionCompartment": {
+                "$ref": "V-E9-RC"
+              },
+              "templateParameterCompartment": {
+                "$ref": "V-E9-TC"
+              },
+              "suppressAttributes": true,
+              "suppressOperations": true,
+              "stereotypeDisplay": "label",
+              "showVisibility": false
+            },
+            {
+              "_type": "UMLAssociationView",
+              "_id": "V-A-F1",
+              "_parent": {
+                "$ref": "TL-DIAGRAM-L0"
+              },
+              "model": {
+                "$ref": "A-F1"
+              },
+              "tail": {
+                "$ref": "V-E1"
+              },
+              "head": {
+                "$ref": "V-TL-P0"
+              },
+              "points": "280:81;520:269",
+              "lineStyle": 0,
+              "subViews": [
+                {
+                  "_type": "EdgeLabelView",
+                  "_id": "V-A-F1-NAME",
+                  "_parent": {
+                    "$ref": "V-A-F1"
+                  },
+                  "model": {
+                    "$ref": "A-F1"
+                  },
+                  "font": "Arial;11;0",
+                  "text": "F1 submitted artifacts",
+                  "edgePosition": 1,
+                  "distance": 18,
+                  "alpha": 0.5,
+                  "hostEdge": {
+                    "$ref": "V-A-F1"
+                  }
+                },
+                {
+                  "_type": "EdgeLabelView",
+                  "_id": "V-A-F1-STEREO",
+                  "_parent": {
+                    "$ref": "V-A-F1"
+                  },
+                  "model": {
+                    "$ref": "A-F1"
+                  },
+                  "font": "Arial;11;0",
+                  "text": "",
+                  "edgePosition": 1,
+                  "distance": 34,
+                  "alpha": 0.5,
+                  "visible": false,
+                  "hostEdge": {
+                    "$ref": "V-A-F1"
+                  }
+                },
+                {
+                  "_type": "UMLAssociationEndView",
+                  "_id": "V-A-F1-END1",
+                  "_parent": {
+                    "$ref": "V-A-F1"
+                  },
+                  "model": {
+                    "$ref": "A-F1-e1"
+                  },
+                  "edgePosition": 0,
+                  "subViews": [],
+                  "visible": false
+                },
+                {
+                  "_type": "UMLAssociationEndView",
+                  "_id": "V-A-F1-END2",
+                  "_parent": {
+                    "$ref": "V-A-F1"
+                  },
+                  "model": {
+                    "$ref": "A-F1-e2"
+                  },
+                  "edgePosition": 0,
+                  "subViews": [],
+                  "visible": false
+                }
+              ],
+              "nameLabel": {
+                "$ref": "V-A-F1-NAME"
+              },
+              "stereotypeLabel": {
+                "$ref": "V-A-F1-STEREO"
+              },
+              "tailRoleEnd": {
+                "$ref": "V-A-F1-END1"
+              },
+              "headRoleEnd": {
+                "$ref": "V-A-F1-END2"
+              },
+              "showVisibility": false,
+              "showMultiplicity": false
+            },
+            {
+              "_type": "UMLAssociationView",
+              "_id": "V-A-F2",
+              "_parent": {
+                "$ref": "TL-DIAGRAM-L0"
+              },
+              "model": {
+                "$ref": "A-F2"
+              },
+              "tail": {
+                "$ref": "V-E1"
+              },
+              "head": {
+                "$ref": "V-TL-P0"
+              },
+              "points": "280:92;520:288",
+              "lineStyle": 0,
+              "subViews": [
+                {
+                  "_type": "EdgeLabelView",
+                  "_id": "V-A-F2-NAME",
+                  "_parent": {
+                    "$ref": "V-A-F2"
+                  },
+                  "model": {
+                    "$ref": "A-F2"
+                  },
+                  "font": "Arial;11;0",
+                  "text": "F2 correction · re-evaluate",
+                  "edgePosition": 1,
+                  "distance": 18,
+                  "alpha": 0.5,
+                  "hostEdge": {
+                    "$ref": "V-A-F2"
+                  }
+                },
+                {
+                  "_type": "EdgeLabelView",
+                  "_id": "V-A-F2-STEREO",
+                  "_parent": {
+                    "$ref": "V-A-F2"
+                  },
+                  "model": {
+                    "$ref": "A-F2"
+                  },
+                  "font": "Arial;11;0",
+                  "text": "",
+                  "edgePosition": 1,
+                  "distance": 34,
+                  "alpha": 0.5,
+                  "visible": false,
+                  "hostEdge": {
+                    "$ref": "V-A-F2"
+                  }
+                },
+                {
+                  "_type": "UMLAssociationEndView",
+                  "_id": "V-A-F2-END1",
+                  "_parent": {
+                    "$ref": "V-A-F2"
+                  },
+                  "model": {
+                    "$ref": "A-F2-e1"
+                  },
+                  "edgePosition": 0,
+                  "subViews": [],
+                  "visible": false
+                },
+                {
+                  "_type": "UMLAssociationEndView",
+                  "_id": "V-A-F2-END2",
+                  "_parent": {
+                    "$ref": "V-A-F2"
+                  },
+                  "model": {
+                    "$ref": "A-F2-e2"
+                  },
+                  "edgePosition": 0,
+                  "subViews": [],
+                  "visible": false
+                }
+              ],
+              "nameLabel": {
+                "$ref": "V-A-F2-NAME"
+              },
+              "stereotypeLabel": {
+                "$ref": "V-A-F2-STEREO"
+              },
+              "tailRoleEnd": {
+                "$ref": "V-A-F2-END1"
+              },
+              "headRoleEnd": {
+                "$ref": "V-A-F2-END2"
+              },
+              "showVisibility": false,
+              "showMultiplicity": false
+            },
+            {
+              "_type": "UMLAssociationView",
+              "_id": "V-A-F3",
+              "_parent": {
+                "$ref": "TL-DIAGRAM-L0"
+              },
+              "model": {
+                "$ref": "A-F3"
+              },
+              "tail": {
+                "$ref": "V-TL-P0"
+              },
+              "head": {
+                "$ref": "V-E1"
+              },
+              "points": "520:307;280:102",
+              "lineStyle": 0,
+              "subViews": [
+                {
+                  "_type": "EdgeLabelView",
+                  "_id": "V-A-F3-NAME",
+                  "_parent": {
+                    "$ref": "V-A-F3"
+                  },
+                  "model": {
+                    "$ref": "A-F3"
+                  },
+                  "font": "Arial;11;0",
+                  "text": "F3 verdict + evidence trace",
+                  "edgePosition": 1,
+                  "distance": 18,
+                  "alpha": 0.5,
+                  "hostEdge": {
+                    "$ref": "V-A-F3"
+                  }
+                },
+                {
+                  "_type": "EdgeLabelView",
+                  "_id": "V-A-F3-STEREO",
+                  "_parent": {
+                    "$ref": "V-A-F3"
+                  },
+                  "model": {
+                    "$ref": "A-F3"
+                  },
+                  "font": "Arial;11;0",
+                  "text": "",
+                  "edgePosition": 1,
+                  "distance": 34,
+                  "alpha": 0.5,
+                  "visible": false,
+                  "hostEdge": {
+                    "$ref": "V-A-F3"
+                  }
+                },
+                {
+                  "_type": "UMLAssociationEndView",
+                  "_id": "V-A-F3-END1",
+                  "_parent": {
+                    "$ref": "V-A-F3"
+                  },
+                  "model": {
+                    "$ref": "A-F3-e1"
+                  },
+                  "edgePosition": 0,
+                  "subViews": [],
+                  "visible": false
+                },
+                {
+                  "_type": "UMLAssociationEndView",
+                  "_id": "V-A-F3-END2",
+                  "_parent": {
+                    "$ref": "V-A-F3"
+                  },
+                  "model": {
+                    "$ref": "A-F3-e2"
+                  },
+                  "edgePosition": 0,
+                  "subViews": [],
+                  "visible": false
+                }
+              ],
+              "nameLabel": {
+                "$ref": "V-A-F3-NAME"
+              },
+              "stereotypeLabel": {
+                "$ref": "V-A-F3-STEREO"
+              },
+              "tailRoleEnd": {
+                "$ref": "V-A-F3-END1"
+              },
+              "headRoleEnd": {
+                "$ref": "V-A-F3-END2"
+              },
+              "showVisibility": false,
+              "showMultiplicity": false
+            },
+            {
+              "_type": "UMLAssociationView",
+              "_id": "V-A-F4",
+              "_parent": {
+                "$ref": "TL-DIAGRAM-L0"
+              },
+              "model": {
+                "$ref": "A-F4"
+              },
+              "tail": {
+                "$ref": "V-TL-P0"
+              },
+              "head": {
+                "$ref": "V-E1"
+              },
+              "points": "520:326;280:113",
+              "lineStyle": 0,
+              "subViews": [
+                {
+                  "_type": "EdgeLabelView",
+                  "_id": "V-A-F4-NAME",
+                  "_parent": {
+                    "$ref": "V-A-F4"
+                  },
+                  "model": {
+                    "$ref": "A-F4"
+                  },
+                  "font": "Arial;11;0",
+                  "text": "F4 report bundle + hashes",
+                  "edgePosition": 1,
+                  "distance": 18,
+                  "alpha": 0.5,
+                  "hostEdge": {
+                    "$ref": "V-A-F4"
+                  }
+                },
+                {
+                  "_type": "EdgeLabelView",
+                  "_id": "V-A-F4-STEREO",
+                  "_parent": {
+                    "$ref": "V-A-F4"
+                  },
+                  "model": {
+                    "$ref": "A-F4"
+                  },
+                  "font": "Arial;11;0",
+                  "text": "",
+                  "edgePosition": 1,
+                  "distance": 34,
+                  "alpha": 0.5,
+                  "visible": false,
+                  "hostEdge": {
+                    "$ref": "V-A-F4"
+                  }
+                },
+                {
+                  "_type": "UMLAssociationEndView",
+                  "_id": "V-A-F4-END1",
+                  "_parent": {
+                    "$ref": "V-A-F4"
+                  },
+                  "model": {
+                    "$ref": "A-F4-e1"
+                  },
+                  "edgePosition": 0,
+                  "subViews": [],
+                  "visible": false
+                },
+                {
+                  "_type": "UMLAssociationEndView",
+                  "_id": "V-A-F4-END2",
+                  "_parent": {
+                    "$ref": "V-A-F4"
+                  },
+                  "model": {
+                    "$ref": "A-F4-e2"
+                  },
+                  "edgePosition": 0,
+                  "subViews": [],
+                  "visible": false
+                }
+              ],
+              "nameLabel": {
+                "$ref": "V-A-F4-NAME"
+              },
+              "stereotypeLabel": {
+                "$ref": "V-A-F4-STEREO"
+              },
+              "tailRoleEnd": {
+                "$ref": "V-A-F4-END1"
+              },
+              "headRoleEnd": {
+                "$ref": "V-A-F4-END2"
+              },
+              "showVisibility": false,
+              "showMultiplicity": false
+            },
+            {
+              "_type": "UMLAssociationView",
+              "_id": "V-A-F5",
+              "_parent": {
+                "$ref": "TL-DIAGRAM-L0"
+              },
+              "model": {
+                "$ref": "A-F5"
+              },
+              "tail": {
+                "$ref": "V-TL-P0"
+              },
+              "head": {
+                "$ref": "V-E2"
+              },
+              "points": "520:345;280:248",
+              "lineStyle": 0,
+              "subViews": [
+                {
+                  "_type": "EdgeLabelView",
+                  "_id": "V-A-F5-NAME",
+                  "_parent": {
+                    "$ref": "V-A-F5"
+                  },
+                  "model": {
+                    "$ref": "A-F5"
+                  },
+                  "font": "Arial;11;0",
+                  "text": "F5 queued uncertain case",
+                  "edgePosition": 1,
+                  "distance": 18,
+                  "alpha": 0.5,
+                  "hostEdge": {
+                    "$ref": "V-A-F5"
+                  }
+                },
+                {
+                  "_type": "EdgeLabelView",
+                  "_id": "V-A-F5-STEREO",
+                  "_parent": {
+                    "$ref": "V-A-F5"
+                  },
+                  "model": {
+                    "$ref": "A-F5"
+                  },
+                  "font": "Arial;11;0",
+                  "text": "",
+                  "edgePosition": 1,
+                  "distance": 34,
+                  "alpha": 0.5,
+                  "visible": false,
+                  "hostEdge": {
+                    "$ref": "V-A-F5"
+                  }
+                },
+                {
+                  "_type": "UMLAssociationEndView",
+                  "_id": "V-A-F5-END1",
+                  "_parent": {
+                    "$ref": "V-A-F5"
+                  },
+                  "model": {
+                    "$ref": "A-F5-e1"
+                  },
+                  "edgePosition": 0,
+                  "subViews": [],
+                  "visible": false
+                },
+                {
+                  "_type": "UMLAssociationEndView",
+                  "_id": "V-A-F5-END2",
+                  "_parent": {
+                    "$ref": "V-A-F5"
+                  },
+                  "model": {
+                    "$ref": "A-F5-e2"
+                  },
+                  "edgePosition": 0,
+                  "subViews": [],
+                  "visible": false
+                }
+              ],
+              "nameLabel": {
+                "$ref": "V-A-F5-NAME"
+              },
+              "stereotypeLabel": {
+                "$ref": "V-A-F5-STEREO"
+              },
+              "tailRoleEnd": {
+                "$ref": "V-A-F5-END1"
+              },
+              "headRoleEnd": {
+                "$ref": "V-A-F5-END2"
+              },
+              "showVisibility": false,
+              "showMultiplicity": false
+            },
+            {
+              "_type": "UMLAssociationView",
+              "_id": "V-A-F6",
+              "_parent": {
+                "$ref": "TL-DIAGRAM-L0"
+              },
+              "model": {
+                "$ref": "A-F6"
+              },
+              "tail": {
+                "$ref": "V-E2"
+              },
+              "head": {
+                "$ref": "V-TL-P0"
+              },
+              "points": "280:266;520:364",
+              "lineStyle": 0,
+              "subViews": [
+                {
+                  "_type": "EdgeLabelView",
+                  "_id": "V-A-F6-NAME",
+                  "_parent": {
+                    "$ref": "V-A-F6"
+                  },
+                  "model": {
+                    "$ref": "A-F6"
+                  },
+                  "font": "Arial;11;0",
+                  "text": "F6 adjudication + rationale",
+                  "edgePosition": 1,
+                  "distance": 18,
+                  "alpha": 0.5,
+                  "hostEdge": {
+                    "$ref": "V-A-F6"
+                  }
+                },
+                {
+                  "_type": "EdgeLabelView",
+                  "_id": "V-A-F6-STEREO",
+                  "_parent": {
+                    "$ref": "V-A-F6"
+                  },
+                  "model": {
+                    "$ref": "A-F6"
+                  },
+                  "font": "Arial;11;0",
+                  "text": "",
+                  "edgePosition": 1,
+                  "distance": 34,
+                  "alpha": 0.5,
+                  "visible": false,
+                  "hostEdge": {
+                    "$ref": "V-A-F6"
+                  }
+                },
+                {
+                  "_type": "UMLAssociationEndView",
+                  "_id": "V-A-F6-END1",
+                  "_parent": {
+                    "$ref": "V-A-F6"
+                  },
+                  "model": {
+                    "$ref": "A-F6-e1"
+                  },
+                  "edgePosition": 0,
+                  "subViews": [],
+                  "visible": false
+                },
+                {
+                  "_type": "UMLAssociationEndView",
+                  "_id": "V-A-F6-END2",
+                  "_parent": {
+                    "$ref": "V-A-F6"
+                  },
+                  "model": {
+                    "$ref": "A-F6-e2"
+                  },
+                  "edgePosition": 0,
+                  "subViews": [],
+                  "visible": false
+                }
+              ],
+              "nameLabel": {
+                "$ref": "V-A-F6-NAME"
+              },
+              "stereotypeLabel": {
+                "$ref": "V-A-F6-STEREO"
+              },
+              "tailRoleEnd": {
+                "$ref": "V-A-F6-END1"
+              },
+              "headRoleEnd": {
+                "$ref": "V-A-F6-END2"
+              },
+              "showVisibility": false,
+              "showMultiplicity": false
+            },
+            {
+              "_type": "UMLAssociationView",
+              "_id": "V-A-F7",
+              "_parent": {
+                "$ref": "TL-DIAGRAM-L0"
+              },
+              "model": {
+                "$ref": "A-F7"
+              },
+              "tail": {
+                "$ref": "V-E3"
+              },
+              "head": {
+                "$ref": "V-TL-P0"
+              },
+              "points": "280:408;520:383",
+              "lineStyle": 0,
+              "subViews": [
+                {
+                  "_type": "EdgeLabelView",
+                  "_id": "V-A-F7-NAME",
+                  "_parent": {
+                    "$ref": "V-A-F7"
+                  },
+                  "model": {
+                    "$ref": "A-F7"
+                  },
+                  "font": "Arial;11;0",
+                  "text": "F7 config · retention policy",
+                  "edgePosition": 1,
+                  "distance": 18,
+                  "alpha": 0.5,
+                  "hostEdge": {
+                    "$ref": "V-A-F7"
+                  }
+                },
+                {
+                  "_type": "EdgeLabelView",
+                  "_id": "V-A-F7-STEREO",
+                  "_parent": {
+                    "$ref": "V-A-F7"
+                  },
+                  "model": {
+                    "$ref": "A-F7"
+                  },
+                  "font": "Arial;11;0",
+                  "text": "",
+                  "edgePosition": 1,
+                  "distance": 34,
+                  "alpha": 0.5,
+                  "visible": false,
+                  "hostEdge": {
+                    "$ref": "V-A-F7"
+                  }
+                },
+                {
+                  "_type": "UMLAssociationEndView",
+                  "_id": "V-A-F7-END1",
+                  "_parent": {
+                    "$ref": "V-A-F7"
+                  },
+                  "model": {
+                    "$ref": "A-F7-e1"
+                  },
+                  "edgePosition": 0,
+                  "subViews": [],
+                  "visible": false
+                },
+                {
+                  "_type": "UMLAssociationEndView",
+                  "_id": "V-A-F7-END2",
+                  "_parent": {
+                    "$ref": "V-A-F7"
+                  },
+                  "model": {
+                    "$ref": "A-F7-e2"
+                  },
+                  "edgePosition": 0,
+                  "subViews": [],
+                  "visible": false
+                }
+              ],
+              "nameLabel": {
+                "$ref": "V-A-F7-NAME"
+              },
+              "stereotypeLabel": {
+                "$ref": "V-A-F7-STEREO"
+              },
+              "tailRoleEnd": {
+                "$ref": "V-A-F7-END1"
+              },
+              "headRoleEnd": {
+                "$ref": "V-A-F7-END2"
+              },
+              "showVisibility": false,
+              "showMultiplicity": false
+            },
+            {
+              "_type": "UMLAssociationView",
+              "_id": "V-A-F8",
+              "_parent": {
+                "$ref": "TL-DIAGRAM-L0"
+              },
+              "model": {
+                "$ref": "A-F8"
+              },
+              "tail": {
+                "$ref": "V-TL-P0"
+              },
+              "head": {
+                "$ref": "V-E3"
+              },
+              "points": "520:402;280:426",
+              "lineStyle": 0,
+              "subViews": [
+                {
+                  "_type": "EdgeLabelView",
+                  "_id": "V-A-F8-NAME",
+                  "_parent": {
+                    "$ref": "V-A-F8"
+                  },
+                  "model": {
+                    "$ref": "A-F8"
+                  },
+                  "font": "Arial;11;0",
+                  "text": "F8 health · audit · metrics",
+                  "edgePosition": 1,
+                  "distance": 18,
+                  "alpha": 0.5,
+                  "hostEdge": {
+                    "$ref": "V-A-F8"
+                  }
+                },
+                {
+                  "_type": "EdgeLabelView",
+                  "_id": "V-A-F8-STEREO",
+                  "_parent": {
+                    "$ref": "V-A-F8"
+                  },
+                  "model": {
+                    "$ref": "A-F8"
+                  },
+                  "font": "Arial;11;0",
+                  "text": "",
+                  "edgePosition": 1,
+                  "distance": 34,
+                  "alpha": 0.5,
+                  "visible": false,
+                  "hostEdge": {
+                    "$ref": "V-A-F8"
+                  }
+                },
+                {
+                  "_type": "UMLAssociationEndView",
+                  "_id": "V-A-F8-END1",
+                  "_parent": {
+                    "$ref": "V-A-F8"
+                  },
+                  "model": {
+                    "$ref": "A-F8-e1"
+                  },
+                  "edgePosition": 0,
+                  "subViews": [],
+                  "visible": false
+                },
+                {
+                  "_type": "UMLAssociationEndView",
+                  "_id": "V-A-F8-END2",
+                  "_parent": {
+                    "$ref": "V-A-F8"
+                  },
+                  "model": {
+                    "$ref": "A-F8-e2"
+                  },
+                  "edgePosition": 0,
+                  "subViews": [],
+                  "visible": false
+                }
+              ],
+              "nameLabel": {
+                "$ref": "V-A-F8-NAME"
+              },
+              "stereotypeLabel": {
+                "$ref": "V-A-F8-STEREO"
+              },
+              "tailRoleEnd": {
+                "$ref": "V-A-F8-END1"
+              },
+              "headRoleEnd": {
+                "$ref": "V-A-F8-END2"
+              },
+              "showVisibility": false,
+              "showMultiplicity": false
+            },
+            {
+              "_type": "UMLAssociationView",
+              "_id": "V-A-F9",
+              "_parent": {
+                "$ref": "TL-DIAGRAM-L0"
+              },
+              "model": {
+                "$ref": "A-F9"
+              },
+              "tail": {
+                "$ref": "V-TL-P0"
+              },
+              "head": {
+                "$ref": "V-E4"
+              },
+              "points": "520:421;280:577",
+              "lineStyle": 0,
+              "subViews": [
+                {
+                  "_type": "EdgeLabelView",
+                  "_id": "V-A-F9-NAME",
+                  "_parent": {
+                    "$ref": "V-A-F9"
+                  },
+                  "model": {
+                    "$ref": "A-F9"
+                  },
+                  "font": "Arial;11;0",
+                  "text": "F9 access-controlled export",
+                  "edgePosition": 1,
+                  "distance": 18,
+                  "alpha": 0.5,
+                  "hostEdge": {
+                    "$ref": "V-A-F9"
+                  }
+                },
+                {
+                  "_type": "EdgeLabelView",
+                  "_id": "V-A-F9-STEREO",
+                  "_parent": {
+                    "$ref": "V-A-F9"
+                  },
+                  "model": {
+                    "$ref": "A-F9"
+                  },
+                  "font": "Arial;11;0",
+                  "text": "",
+                  "edgePosition": 1,
+                  "distance": 34,
+                  "alpha": 0.5,
+                  "visible": false,
+                  "hostEdge": {
+                    "$ref": "V-A-F9"
+                  }
+                },
+                {
+                  "_type": "UMLAssociationEndView",
+                  "_id": "V-A-F9-END1",
+                  "_parent": {
+                    "$ref": "V-A-F9"
+                  },
+                  "model": {
+                    "$ref": "A-F9-e1"
+                  },
+                  "edgePosition": 0,
+                  "subViews": [],
+                  "visible": false
+                },
+                {
+                  "_type": "UMLAssociationEndView",
+                  "_id": "V-A-F9-END2",
+                  "_parent": {
+                    "$ref": "V-A-F9"
+                  },
+                  "model": {
+                    "$ref": "A-F9-e2"
+                  },
+                  "edgePosition": 0,
+                  "subViews": [],
+                  "visible": false
+                }
+              ],
+              "nameLabel": {
+                "$ref": "V-A-F9-NAME"
+              },
+              "stereotypeLabel": {
+                "$ref": "V-A-F9-STEREO"
+              },
+              "tailRoleEnd": {
+                "$ref": "V-A-F9-END1"
+              },
+              "headRoleEnd": {
+                "$ref": "V-A-F9-END2"
+              },
+              "showVisibility": false,
+              "showMultiplicity": false
+            },
+            {
+              "_type": "UMLAssociationView",
+              "_id": "V-A-F10",
+              "_parent": {
+                "$ref": "TL-DIAGRAM-L0"
+              },
+              "model": {
+                "$ref": "A-F10"
+              },
+              "tail": {
+                "$ref": "V-E5"
+              },
+              "head": {
+                "$ref": "V-TL-P0"
+              },
+              "points": "1000:97;770:269",
+              "lineStyle": 0,
+              "subViews": [
+                {
+                  "_type": "EdgeLabelView",
+                  "_id": "V-A-F10-NAME",
+                  "_parent": {
+                    "$ref": "V-A-F10"
+                  },
+                  "model": {
+                    "$ref": "A-F10"
+                  },
+                  "font": "Arial;11;0",
+                  "text": "F10 published advisories",
+                  "edgePosition": 1,
+                  "distance": 18,
+                  "alpha": 0.5,
+                  "hostEdge": {
+                    "$ref": "V-A-F10"
+                  }
+                },
+                {
+                  "_type": "EdgeLabelView",
+                  "_id": "V-A-F10-STEREO",
+                  "_parent": {
+                    "$ref": "V-A-F10"
+                  },
+                  "model": {
+                    "$ref": "A-F10"
+                  },
+                  "font": "Arial;11;0",
+                  "text": "",
+                  "edgePosition": 1,
+                  "distance": 34,
+                  "alpha": 0.5,
+                  "visible": false,
+                  "hostEdge": {
+                    "$ref": "V-A-F10"
+                  }
+                },
+                {
+                  "_type": "UMLAssociationEndView",
+                  "_id": "V-A-F10-END1",
+                  "_parent": {
+                    "$ref": "V-A-F10"
+                  },
+                  "model": {
+                    "$ref": "A-F10-e1"
+                  },
+                  "edgePosition": 0,
+                  "subViews": [],
+                  "visible": false
+                },
+                {
+                  "_type": "UMLAssociationEndView",
+                  "_id": "V-A-F10-END2",
+                  "_parent": {
+                    "$ref": "V-A-F10"
+                  },
+                  "model": {
+                    "$ref": "A-F10-e2"
+                  },
+                  "edgePosition": 0,
+                  "subViews": [],
+                  "visible": false
+                }
+              ],
+              "nameLabel": {
+                "$ref": "V-A-F10-NAME"
+              },
+              "stereotypeLabel": {
+                "$ref": "V-A-F10-STEREO"
+              },
+              "tailRoleEnd": {
+                "$ref": "V-A-F10-END1"
+              },
+              "headRoleEnd": {
+                "$ref": "V-A-F10-END2"
+              },
+              "showVisibility": false,
+              "showMultiplicity": false
+            },
+            {
+              "_type": "UMLAssociationView",
+              "_id": "V-A-F11",
+              "_parent": {
+                "$ref": "TL-DIAGRAM-L0"
+              },
+              "model": {
+                "$ref": "A-F11"
+              },
+              "tail": {
+                "$ref": "V-E6"
+              },
+              "head": {
+                "$ref": "V-TL-P0"
+              },
+              "points": "1000:218;770:288",
+              "lineStyle": 0,
+              "subViews": [
+                {
+                  "_type": "EdgeLabelView",
+                  "_id": "V-A-F11-NAME",
+                  "_parent": {
+                    "$ref": "V-A-F11"
+                  },
+                  "model": {
+                    "$ref": "A-F11"
+                  },
+                  "font": "Arial;11;0",
+                  "text": "F11 draft rule + sources",
+                  "edgePosition": 1,
+                  "distance": 18,
+                  "alpha": 0.5,
+                  "hostEdge": {
+                    "$ref": "V-A-F11"
+                  }
+                },
+                {
+                  "_type": "EdgeLabelView",
+                  "_id": "V-A-F11-STEREO",
+                  "_parent": {
+                    "$ref": "V-A-F11"
+                  },
+                  "model": {
+                    "$ref": "A-F11"
+                  },
+                  "font": "Arial;11;0",
+                  "text": "",
+                  "edgePosition": 1,
+                  "distance": 34,
+                  "alpha": 0.5,
+                  "visible": false,
+                  "hostEdge": {
+                    "$ref": "V-A-F11"
+                  }
+                },
+                {
+                  "_type": "UMLAssociationEndView",
+                  "_id": "V-A-F11-END1",
+                  "_parent": {
+                    "$ref": "V-A-F11"
+                  },
+                  "model": {
+                    "$ref": "A-F11-e1"
+                  },
+                  "edgePosition": 0,
+                  "subViews": [],
+                  "visible": false
+                },
+                {
+                  "_type": "UMLAssociationEndView",
+                  "_id": "V-A-F11-END2",
+                  "_parent": {
+                    "$ref": "V-A-F11"
+                  },
+                  "model": {
+                    "$ref": "A-F11-e2"
+                  },
+                  "edgePosition": 0,
+                  "subViews": [],
+                  "visible": false
+                }
+              ],
+              "nameLabel": {
+                "$ref": "V-A-F11-NAME"
+              },
+              "stereotypeLabel": {
+                "$ref": "V-A-F11-STEREO"
+              },
+              "tailRoleEnd": {
+                "$ref": "V-A-F11-END1"
+              },
+              "headRoleEnd": {
+                "$ref": "V-A-F11-END2"
+              },
+              "showVisibility": false,
+              "showMultiplicity": false
+            },
+            {
+              "_type": "UMLAssociationView",
+              "_id": "V-A-F12",
+              "_parent": {
+                "$ref": "TL-DIAGRAM-L0"
+              },
+              "model": {
+                "$ref": "A-F12"
+              },
+              "tail": {
+                "$ref": "V-TL-P0"
+              },
+              "head": {
+                "$ref": "V-E6"
+              },
+              "points": "770:307;1000:236",
+              "lineStyle": 0,
+              "subViews": [
+                {
+                  "_type": "EdgeLabelView",
+                  "_id": "V-A-F12-NAME",
+                  "_parent": {
+                    "$ref": "V-A-F12"
+                  },
+                  "model": {
+                    "$ref": "A-F12"
+                  },
+                  "font": "Arial;11;0",
+                  "text": "F12 schema + lint verdict",
+                  "edgePosition": 1,
+                  "distance": 18,
+                  "alpha": 0.5,
+                  "hostEdge": {
+                    "$ref": "V-A-F12"
+                  }
+                },
+                {
+                  "_type": "EdgeLabelView",
+                  "_id": "V-A-F12-STEREO",
+                  "_parent": {
+                    "$ref": "V-A-F12"
+                  },
+                  "model": {
+                    "$ref": "A-F12"
+                  },
+                  "font": "Arial;11;0",
+                  "text": "",
+                  "edgePosition": 1,
+                  "distance": 34,
+                  "alpha": 0.5,
+                  "visible": false,
+                  "hostEdge": {
+                    "$ref": "V-A-F12"
+                  }
+                },
+                {
+                  "_type": "UMLAssociationEndView",
+                  "_id": "V-A-F12-END1",
+                  "_parent": {
+                    "$ref": "V-A-F12"
+                  },
+                  "model": {
+                    "$ref": "A-F12-e1"
+                  },
+                  "edgePosition": 0,
+                  "subViews": [],
+                  "visible": false
+                },
+                {
+                  "_type": "UMLAssociationEndView",
+                  "_id": "V-A-F12-END2",
+                  "_parent": {
+                    "$ref": "V-A-F12"
+                  },
+                  "model": {
+                    "$ref": "A-F12-e2"
+                  },
+                  "edgePosition": 0,
+                  "subViews": [],
+                  "visible": false
+                }
+              ],
+              "nameLabel": {
+                "$ref": "V-A-F12-NAME"
+              },
+              "stereotypeLabel": {
+                "$ref": "V-A-F12-STEREO"
+              },
+              "tailRoleEnd": {
+                "$ref": "V-A-F12-END1"
+              },
+              "headRoleEnd": {
+                "$ref": "V-A-F12-END2"
+              },
+              "showVisibility": false,
+              "showMultiplicity": false
+            },
+            {
+              "_type": "UMLAssociationView",
+              "_id": "V-A-F13",
+              "_parent": {
+                "$ref": "TL-DIAGRAM-L0"
+              },
+              "model": {
+                "$ref": "A-F13"
+              },
+              "tail": {
+                "$ref": "V-TL-P0"
+              },
+              "head": {
+                "$ref": "V-E7"
+              },
+              "points": "770:326;1000:348",
+              "lineStyle": 0,
+              "subViews": [
+                {
+                  "_type": "EdgeLabelView",
+                  "_id": "V-A-F13-NAME",
+                  "_parent": {
+                    "$ref": "V-A-F13"
+                  },
+                  "model": {
+                    "$ref": "A-F13"
+                  },
+                  "font": "Arial;11;0",
+                  "text": "F13 diff · impact · replay",
+                  "edgePosition": 1,
+                  "distance": 18,
+                  "alpha": 0.5,
+                  "hostEdge": {
+                    "$ref": "V-A-F13"
+                  }
+                },
+                {
+                  "_type": "EdgeLabelView",
+                  "_id": "V-A-F13-STEREO",
+                  "_parent": {
+                    "$ref": "V-A-F13"
+                  },
+                  "model": {
+                    "$ref": "A-F13"
+                  },
+                  "font": "Arial;11;0",
+                  "text": "",
+                  "edgePosition": 1,
+                  "distance": 34,
+                  "alpha": 0.5,
+                  "visible": false,
+                  "hostEdge": {
+                    "$ref": "V-A-F13"
+                  }
+                },
+                {
+                  "_type": "UMLAssociationEndView",
+                  "_id": "V-A-F13-END1",
+                  "_parent": {
+                    "$ref": "V-A-F13"
+                  },
+                  "model": {
+                    "$ref": "A-F13-e1"
+                  },
+                  "edgePosition": 0,
+                  "subViews": [],
+                  "visible": false
+                },
+                {
+                  "_type": "UMLAssociationEndView",
+                  "_id": "V-A-F13-END2",
+                  "_parent": {
+                    "$ref": "V-A-F13"
+                  },
+                  "model": {
+                    "$ref": "A-F13-e2"
+                  },
+                  "edgePosition": 0,
+                  "subViews": [],
+                  "visible": false
+                }
+              ],
+              "nameLabel": {
+                "$ref": "V-A-F13-NAME"
+              },
+              "stereotypeLabel": {
+                "$ref": "V-A-F13-STEREO"
+              },
+              "tailRoleEnd": {
+                "$ref": "V-A-F13-END1"
+              },
+              "headRoleEnd": {
+                "$ref": "V-A-F13-END2"
+              },
+              "showVisibility": false,
+              "showMultiplicity": false
+            },
+            {
+              "_type": "UMLAssociationView",
+              "_id": "V-A-F14",
+              "_parent": {
+                "$ref": "TL-DIAGRAM-L0"
+              },
+              "model": {
+                "$ref": "A-F14"
+              },
+              "tail": {
+                "$ref": "V-E7"
+              },
+              "head": {
+                "$ref": "V-TL-P0"
+              },
+              "points": "1000:366;770:345",
+              "lineStyle": 0,
+              "subViews": [
+                {
+                  "_type": "EdgeLabelView",
+                  "_id": "V-A-F14-NAME",
+                  "_parent": {
+                    "$ref": "V-A-F14"
+                  },
+                  "model": {
+                    "$ref": "A-F14"
+                  },
+                  "font": "Arial;11;0",
+                  "text": "F14 publish / reject",
+                  "edgePosition": 1,
+                  "distance": 18,
+                  "alpha": 0.5,
+                  "hostEdge": {
+                    "$ref": "V-A-F14"
+                  }
+                },
+                {
+                  "_type": "EdgeLabelView",
+                  "_id": "V-A-F14-STEREO",
+                  "_parent": {
+                    "$ref": "V-A-F14"
+                  },
+                  "model": {
+                    "$ref": "A-F14"
+                  },
+                  "font": "Arial;11;0",
+                  "text": "",
+                  "edgePosition": 1,
+                  "distance": 34,
+                  "alpha": 0.5,
+                  "visible": false,
+                  "hostEdge": {
+                    "$ref": "V-A-F14"
+                  }
+                },
+                {
+                  "_type": "UMLAssociationEndView",
+                  "_id": "V-A-F14-END1",
+                  "_parent": {
+                    "$ref": "V-A-F14"
+                  },
+                  "model": {
+                    "$ref": "A-F14-e1"
+                  },
+                  "edgePosition": 0,
+                  "subViews": [],
+                  "visible": false
+                },
+                {
+                  "_type": "UMLAssociationEndView",
+                  "_id": "V-A-F14-END2",
+                  "_parent": {
+                    "$ref": "V-A-F14"
+                  },
+                  "model": {
+                    "$ref": "A-F14-e2"
+                  },
+                  "edgePosition": 0,
+                  "subViews": [],
+                  "visible": false
+                }
+              ],
+              "nameLabel": {
+                "$ref": "V-A-F14-NAME"
+              },
+              "stereotypeLabel": {
+                "$ref": "V-A-F14-STEREO"
+              },
+              "tailRoleEnd": {
+                "$ref": "V-A-F14-END1"
+              },
+              "headRoleEnd": {
+                "$ref": "V-A-F14-END2"
+              },
+              "showVisibility": false,
+              "showMultiplicity": false
+            },
+            {
+              "_type": "UMLAssociationView",
+              "_id": "V-A-F15",
+              "_parent": {
+                "$ref": "TL-DIAGRAM-L0"
+              },
+              "model": {
+                "$ref": "A-F15"
+              },
+              "tail": {
+                "$ref": "V-TL-P0"
+              },
+              "head": {
+                "$ref": "V-E8"
+              },
+              "points": "770:364;1000:478",
+              "lineStyle": 0,
+              "subViews": [
+                {
+                  "_type": "EdgeLabelView",
+                  "_id": "V-A-F15-NAME",
+                  "_parent": {
+                    "$ref": "V-A-F15"
+                  },
+                  "model": {
+                    "$ref": "A-F15"
+                  },
+                  "font": "Arial;11;0",
+                  "text": "F15 reputation lookup",
+                  "edgePosition": 1,
+                  "distance": 18,
+                  "alpha": 0.5,
+                  "hostEdge": {
+                    "$ref": "V-A-F15"
+                  }
+                },
+                {
+                  "_type": "EdgeLabelView",
+                  "_id": "V-A-F15-STEREO",
+                  "_parent": {
+                    "$ref": "V-A-F15"
+                  },
+                  "model": {
+                    "$ref": "A-F15"
+                  },
+                  "font": "Arial;11;0",
+                  "text": "",
+                  "edgePosition": 1,
+                  "distance": 34,
+                  "alpha": 0.5,
+                  "visible": false,
+                  "hostEdge": {
+                    "$ref": "V-A-F15"
+                  }
+                },
+                {
+                  "_type": "UMLAssociationEndView",
+                  "_id": "V-A-F15-END1",
+                  "_parent": {
+                    "$ref": "V-A-F15"
+                  },
+                  "model": {
+                    "$ref": "A-F15-e1"
+                  },
+                  "edgePosition": 0,
+                  "subViews": [],
+                  "visible": false
+                },
+                {
+                  "_type": "UMLAssociationEndView",
+                  "_id": "V-A-F15-END2",
+                  "_parent": {
+                    "$ref": "V-A-F15"
+                  },
+                  "model": {
+                    "$ref": "A-F15-e2"
+                  },
+                  "edgePosition": 0,
+                  "subViews": [],
+                  "visible": false
+                }
+              ],
+              "nameLabel": {
+                "$ref": "V-A-F15-NAME"
+              },
+              "stereotypeLabel": {
+                "$ref": "V-A-F15-STEREO"
+              },
+              "tailRoleEnd": {
+                "$ref": "V-A-F15-END1"
+              },
+              "headRoleEnd": {
+                "$ref": "V-A-F15-END2"
+              },
+              "showVisibility": false,
+              "showMultiplicity": false
+            },
+            {
+              "_type": "UMLAssociationView",
+              "_id": "V-A-F16",
+              "_parent": {
+                "$ref": "TL-DIAGRAM-L0"
+              },
+              "model": {
+                "$ref": "A-F16"
+              },
+              "tail": {
+                "$ref": "V-E8"
+              },
+              "head": {
+                "$ref": "V-TL-P0"
+              },
+              "points": "1000:496;770:383",
+              "lineStyle": 0,
+              "subViews": [
+                {
+                  "_type": "EdgeLabelView",
+                  "_id": "V-A-F16-NAME",
+                  "_parent": {
+                    "$ref": "V-A-F16"
+                  },
+                  "model": {
+                    "$ref": "A-F16"
+                  },
+                  "font": "Arial;11;0",
+                  "text": "F16 provider verdict",
+                  "edgePosition": 1,
+                  "distance": 18,
+                  "alpha": 0.5,
+                  "hostEdge": {
+                    "$ref": "V-A-F16"
+                  }
+                },
+                {
+                  "_type": "EdgeLabelView",
+                  "_id": "V-A-F16-STEREO",
+                  "_parent": {
+                    "$ref": "V-A-F16"
+                  },
+                  "model": {
+                    "$ref": "A-F16"
+                  },
+                  "font": "Arial;11;0",
+                  "text": "",
+                  "edgePosition": 1,
+                  "distance": 34,
+                  "alpha": 0.5,
+                  "visible": false,
+                  "hostEdge": {
+                    "$ref": "V-A-F16"
+                  }
+                },
+                {
+                  "_type": "UMLAssociationEndView",
+                  "_id": "V-A-F16-END1",
+                  "_parent": {
+                    "$ref": "V-A-F16"
+                  },
+                  "model": {
+                    "$ref": "A-F16-e1"
+                  },
+                  "edgePosition": 0,
+                  "subViews": [],
+                  "visible": false
+                },
+                {
+                  "_type": "UMLAssociationEndView",
+                  "_id": "V-A-F16-END2",
+                  "_parent": {
+                    "$ref": "V-A-F16"
+                  },
+                  "model": {
+                    "$ref": "A-F16-e2"
+                  },
+                  "edgePosition": 0,
+                  "subViews": [],
+                  "visible": false
+                }
+              ],
+              "nameLabel": {
+                "$ref": "V-A-F16-NAME"
+              },
+              "stereotypeLabel": {
+                "$ref": "V-A-F16-STEREO"
+              },
+              "tailRoleEnd": {
+                "$ref": "V-A-F16-END1"
+              },
+              "headRoleEnd": {
+                "$ref": "V-A-F16-END2"
+              },
+              "showVisibility": false,
+              "showMultiplicity": false
+            },
+            {
+              "_type": "UMLAssociationView",
+              "_id": "V-A-F17",
+              "_parent": {
+                "$ref": "TL-DIAGRAM-L0"
+              },
+              "model": {
+                "$ref": "A-F17"
+              },
+              "tail": {
+                "$ref": "V-TL-P0"
+              },
+              "head": {
+                "$ref": "V-E9"
+              },
+              "points": "770:402;1000:608",
+              "lineStyle": 0,
+              "subViews": [
+                {
+                  "_type": "EdgeLabelView",
+                  "_id": "V-A-F17-NAME",
+                  "_parent": {
+                    "$ref": "V-A-F17"
+                  },
+                  "model": {
+                    "$ref": "A-F17"
+                  },
+                  "font": "Arial;11;0",
+                  "text": "F17 isolated content prompt",
+                  "edgePosition": 1,
+                  "distance": 18,
+                  "alpha": 0.5,
+                  "hostEdge": {
+                    "$ref": "V-A-F17"
+                  }
+                },
+                {
+                  "_type": "EdgeLabelView",
+                  "_id": "V-A-F17-STEREO",
+                  "_parent": {
+                    "$ref": "V-A-F17"
+                  },
+                  "model": {
+                    "$ref": "A-F17"
+                  },
+                  "font": "Arial;11;0",
+                  "text": "",
+                  "edgePosition": 1,
+                  "distance": 34,
+                  "alpha": 0.5,
+                  "visible": false,
+                  "hostEdge": {
+                    "$ref": "V-A-F17"
+                  }
+                },
+                {
+                  "_type": "UMLAssociationEndView",
+                  "_id": "V-A-F17-END1",
+                  "_parent": {
+                    "$ref": "V-A-F17"
+                  },
+                  "model": {
+                    "$ref": "A-F17-e1"
+                  },
+                  "edgePosition": 0,
+                  "subViews": [],
+                  "visible": false
+                },
+                {
+                  "_type": "UMLAssociationEndView",
+                  "_id": "V-A-F17-END2",
+                  "_parent": {
+                    "$ref": "V-A-F17"
+                  },
+                  "model": {
+                    "$ref": "A-F17-e2"
+                  },
+                  "edgePosition": 0,
+                  "subViews": [],
+                  "visible": false
+                }
+              ],
+              "nameLabel": {
+                "$ref": "V-A-F17-NAME"
+              },
+              "stereotypeLabel": {
+                "$ref": "V-A-F17-STEREO"
+              },
+              "tailRoleEnd": {
+                "$ref": "V-A-F17-END1"
+              },
+              "headRoleEnd": {
+                "$ref": "V-A-F17-END2"
+              },
+              "showVisibility": false,
+              "showMultiplicity": false
+            },
+            {
+              "_type": "UMLAssociationView",
+              "_id": "V-A-F18",
+              "_parent": {
+                "$ref": "TL-DIAGRAM-L0"
+              },
+              "model": {
+                "$ref": "A-F18"
+              },
+              "tail": {
+                "$ref": "V-E9"
+              },
+              "head": {
+                "$ref": "V-TL-P0"
+              },
+              "points": "1000:626;770:421",
+              "lineStyle": 0,
+              "subViews": [
+                {
+                  "_type": "EdgeLabelView",
+                  "_id": "V-A-F18-NAME",
+                  "_parent": {
+                    "$ref": "V-A-F18"
+                  },
+                  "model": {
+                    "$ref": "A-F18"
+                  },
+                  "font": "Arial;11;0",
+                  "text": "F18 schema-checked draft",
+                  "edgePosition": 1,
+                  "distance": 18,
+                  "alpha": 0.5,
+                  "hostEdge": {
+                    "$ref": "V-A-F18"
+                  }
+                },
+                {
+                  "_type": "EdgeLabelView",
+                  "_id": "V-A-F18-STEREO",
+                  "_parent": {
+                    "$ref": "V-A-F18"
+                  },
+                  "model": {
+                    "$ref": "A-F18"
+                  },
+                  "font": "Arial;11;0",
+                  "text": "",
+                  "edgePosition": 1,
+                  "distance": 34,
+                  "alpha": 0.5,
+                  "visible": false,
+                  "hostEdge": {
+                    "$ref": "V-A-F18"
+                  }
+                },
+                {
+                  "_type": "UMLAssociationEndView",
+                  "_id": "V-A-F18-END1",
+                  "_parent": {
+                    "$ref": "V-A-F18"
+                  },
+                  "model": {
+                    "$ref": "A-F18-e1"
+                  },
+                  "edgePosition": 0,
+                  "subViews": [],
+                  "visible": false
+                },
+                {
+                  "_type": "UMLAssociationEndView",
+                  "_id": "V-A-F18-END2",
+                  "_parent": {
+                    "$ref": "V-A-F18"
+                  },
+                  "model": {
+                    "$ref": "A-F18-e2"
+                  },
+                  "edgePosition": 0,
+                  "subViews": [],
+                  "visible": false
+                }
+              ],
+              "nameLabel": {
+                "$ref": "V-A-F18-NAME"
+              },
+              "stereotypeLabel": {
+                "$ref": "V-A-F18-STEREO"
+              },
+              "tailRoleEnd": {
+                "$ref": "V-A-F18-END1"
+              },
+              "headRoleEnd": {
+                "$ref": "V-A-F18-END2"
+              },
+              "showVisibility": false,
+              "showMultiplicity": false
+            }
+          ]
+        },
+        {
+          "_type": "UMLClass",
+          "_id": "TL-P0",
+          "_parent": {
+            "$ref": "TL-MODEL"
+          },
+          "name": "0. TrustLens",
+          "stereotype": "process",
+          "documentation": "Process 0 — the entire system as one process. Explainable scam detection, evidence preservation and assisted reporting. Rules-as-data decide; AI is never the decision authority. No data stores appear at level 0.",
+          "attributes": [],
+          "operations": []
+        },
+        {
+          "_type": "UMLClass",
+          "_id": "E1",
+          "_parent": {
+            "$ref": "TL-MODEL"
+          },
+          "name": "Reporting user",
+          "stereotype": "external entity",
+          "documentation": "P1 Priya, 34 · P2 Ramesh, 68. Submits suspicious artifacts and receives a verdict, an evidence trace and a report bundle.",
+          "attributes": [],
+          "operations": []
+        },
+        {
+          "_type": "UMLClass",
+          "_id": "E2",
+          "_parent": {
+            "$ref": "TL-MODEL"
+          },
+          "name": "Analyst",
+          "stereotype": "external entity",
+          "documentation": "P3 Anjali. Reviews cases routed past the uncertainty threshold and adjudicates them with recorded rationale.",
+          "attributes": [],
+          "operations": []
+        },
+        {
+          "_type": "UMLClass",
+          "_id": "E3",
+          "_parent": {
+            "$ref": "TL-MODEL"
+          },
+          "name": "Administrator",
+          "stereotype": "external entity",
+          "documentation": "P6. Operates the platform: thresholds, retention class, feature flags, rate limits.",
+          "attributes": [],
+          "operations": []
+        },
+        {
+          "_type": "UMLClass",
+          "_id": "E4",
+          "_parent": {
+            "$ref": "TL-MODEL"
+          },
+          "name": "Report recipient",
+          "stereotype": "external entity",
+          "documentation": "Authority, bank or reporting portal. Receives the bundle only through a user-initiated, access-controlled export (NG-01).",
+          "attributes": [],
+          "operations": []
+        },
+        {
+          "_type": "UMLClass",
+          "_id": "E5",
+          "_parent": {
+            "$ref": "TL-MODEL"
+          },
+          "name": "Guidance bodies",
+          "stereotype": "external entity",
+          "documentation": "I4C · CERT-In · RBI · NPCI · SEBI · DoT. Published material is consumed one way and graded before any rule may cite it.",
+          "attributes": [],
+          "operations": []
+        },
+        {
+          "_type": "UMLClass",
+          "_id": "E6",
+          "_parent": {
+            "$ref": "TL-MODEL"
+          },
+          "name": "Knowledge editor",
+          "stereotype": "external entity",
+          "documentation": "P4 Vikram. Authors versioned rule JSON with graded source references; never touches engine code (ADR-0003).",
+          "attributes": [],
+          "operations": []
+        },
+        {
+          "_type": "UMLClass",
+          "_id": "E7",
+          "_parent": {
+            "$ref": "TL-MODEL"
+          },
+          "name": "Knowledge approver",
+          "stereotype": "external entity",
+          "documentation": "P5 Meera. Gate-keeps publication on diff, impact analysis and regression evidence.",
+          "attributes": [],
+          "operations": []
+        },
+        {
+          "_type": "UMLClass",
+          "_id": "E8",
+          "_parent": {
+            "$ref": "TL-MODEL"
+          },
+          "name": "URL & threat-intel providers",
+          "stereotype": "external entity",
+          "documentation": "Post-MVP. Provider-agnostic reputation adapters; the core path completes with any single provider unavailable.",
+          "attributes": [],
+          "operations": []
+        },
+        {
+          "_type": "UMLClass",
+          "_id": "E9",
+          "_parent": {
+            "$ref": "TL-MODEL"
+          },
+          "name": "AI assist provider",
+          "stereotype": "external entity",
+          "documentation": "Post-MVP, feature-flagged. Non-authoritative: output is schema-validated, labelled model-derived, human-approved.",
+          "attributes": [],
+          "operations": []
+        },
+        {
+          "_type": "UMLAssociation",
+          "_id": "A-F1",
+          "_parent": {
+            "$ref": "E1"
+          },
+          "name": "F1 submitted artifacts",
+          "end1": {
+            "_type": "UMLAssociationEnd",
+            "_id": "A-F1-e1",
+            "_parent": {
+              "$ref": "A-F1"
+            },
+            "reference": {
+              "$ref": "E1"
+            },
+            "navigable": "notNavigable"
+          },
+          "end2": {
+            "_type": "UMLAssociationEnd",
+            "_id": "A-F1-e2",
+            "_parent": {
+              "$ref": "A-F1"
+            },
+            "reference": {
+              "$ref": "TL-P0"
+            },
+            "navigable": "navigable"
+          }
+        },
+        {
+          "_type": "UMLAssociation",
+          "_id": "A-F2",
+          "_parent": {
+            "$ref": "E1"
+          },
+          "name": "F2 correction · re-evaluate",
+          "end1": {
+            "_type": "UMLAssociationEnd",
+            "_id": "A-F2-e1",
+            "_parent": {
+              "$ref": "A-F2"
+            },
+            "reference": {
+              "$ref": "E1"
+            },
+            "navigable": "notNavigable"
+          },
+          "end2": {
+            "_type": "UMLAssociationEnd",
+            "_id": "A-F2-e2",
+            "_parent": {
+              "$ref": "A-F2"
+            },
+            "reference": {
+              "$ref": "TL-P0"
+            },
+            "navigable": "navigable"
+          }
+        },
+        {
+          "_type": "UMLAssociation",
+          "_id": "A-F3",
+          "_parent": {
+            "$ref": "TL-P0"
+          },
+          "name": "F3 verdict + evidence trace",
+          "end1": {
+            "_type": "UMLAssociationEnd",
+            "_id": "A-F3-e1",
+            "_parent": {
+              "$ref": "A-F3"
+            },
+            "reference": {
+              "$ref": "TL-P0"
+            },
+            "navigable": "notNavigable"
+          },
+          "end2": {
+            "_type": "UMLAssociationEnd",
+            "_id": "A-F3-e2",
+            "_parent": {
+              "$ref": "A-F3"
+            },
+            "reference": {
+              "$ref": "E1"
+            },
+            "navigable": "navigable"
+          }
+        },
+        {
+          "_type": "UMLAssociation",
+          "_id": "A-F4",
+          "_parent": {
+            "$ref": "TL-P0"
+          },
+          "name": "F4 report bundle + hashes",
+          "end1": {
+            "_type": "UMLAssociationEnd",
+            "_id": "A-F4-e1",
+            "_parent": {
+              "$ref": "A-F4"
+            },
+            "reference": {
+              "$ref": "TL-P0"
+            },
+            "navigable": "notNavigable"
+          },
+          "end2": {
+            "_type": "UMLAssociationEnd",
+            "_id": "A-F4-e2",
+            "_parent": {
+              "$ref": "A-F4"
+            },
+            "reference": {
+              "$ref": "E1"
+            },
+            "navigable": "navigable"
+          }
+        },
+        {
+          "_type": "UMLAssociation",
+          "_id": "A-F5",
+          "_parent": {
+            "$ref": "TL-P0"
+          },
+          "name": "F5 queued uncertain case",
+          "end1": {
+            "_type": "UMLAssociationEnd",
+            "_id": "A-F5-e1",
+            "_parent": {
+              "$ref": "A-F5"
+            },
+            "reference": {
+              "$ref": "TL-P0"
+            },
+            "navigable": "notNavigable"
+          },
+          "end2": {
+            "_type": "UMLAssociationEnd",
+            "_id": "A-F5-e2",
+            "_parent": {
+              "$ref": "A-F5"
+            },
+            "reference": {
+              "$ref": "E2"
+            },
+            "navigable": "navigable"
+          }
+        },
+        {
+          "_type": "UMLAssociation",
+          "_id": "A-F6",
+          "_parent": {
+            "$ref": "E2"
+          },
+          "name": "F6 adjudication + rationale",
+          "end1": {
+            "_type": "UMLAssociationEnd",
+            "_id": "A-F6-e1",
+            "_parent": {
+              "$ref": "A-F6"
+            },
+            "reference": {
+              "$ref": "E2"
+            },
+            "navigable": "notNavigable"
+          },
+          "end2": {
+            "_type": "UMLAssociationEnd",
+            "_id": "A-F6-e2",
+            "_parent": {
+              "$ref": "A-F6"
+            },
+            "reference": {
+              "$ref": "TL-P0"
+            },
+            "navigable": "navigable"
+          }
+        },
+        {
+          "_type": "UMLAssociation",
+          "_id": "A-F7",
+          "_parent": {
+            "$ref": "E3"
+          },
+          "name": "F7 config · retention policy",
+          "end1": {
+            "_type": "UMLAssociationEnd",
+            "_id": "A-F7-e1",
+            "_parent": {
+              "$ref": "A-F7"
+            },
+            "reference": {
+              "$ref": "E3"
+            },
+            "navigable": "notNavigable"
+          },
+          "end2": {
+            "_type": "UMLAssociationEnd",
+            "_id": "A-F7-e2",
+            "_parent": {
+              "$ref": "A-F7"
+            },
+            "reference": {
+              "$ref": "TL-P0"
+            },
+            "navigable": "navigable"
+          }
+        },
+        {
+          "_type": "UMLAssociation",
+          "_id": "A-F8",
+          "_parent": {
+            "$ref": "TL-P0"
+          },
+          "name": "F8 health · audit · metrics",
+          "end1": {
+            "_type": "UMLAssociationEnd",
+            "_id": "A-F8-e1",
+            "_parent": {
+              "$ref": "A-F8"
+            },
+            "reference": {
+              "$ref": "TL-P0"
+            },
+            "navigable": "notNavigable"
+          },
+          "end2": {
+            "_type": "UMLAssociationEnd",
+            "_id": "A-F8-e2",
+            "_parent": {
+              "$ref": "A-F8"
+            },
+            "reference": {
+              "$ref": "E3"
+            },
+            "navigable": "navigable"
+          }
+        },
+        {
+          "_type": "UMLAssociation",
+          "_id": "A-F9",
+          "_parent": {
+            "$ref": "TL-P0"
+          },
+          "name": "F9 access-controlled export",
+          "end1": {
+            "_type": "UMLAssociationEnd",
+            "_id": "A-F9-e1",
+            "_parent": {
+              "$ref": "A-F9"
+            },
+            "reference": {
+              "$ref": "TL-P0"
+            },
+            "navigable": "notNavigable"
+          },
+          "end2": {
+            "_type": "UMLAssociationEnd",
+            "_id": "A-F9-e2",
+            "_parent": {
+              "$ref": "A-F9"
+            },
+            "reference": {
+              "$ref": "E4"
+            },
+            "navigable": "navigable"
+          }
+        },
+        {
+          "_type": "UMLAssociation",
+          "_id": "A-F10",
+          "_parent": {
+            "$ref": "E5"
+          },
+          "name": "F10 published advisories",
+          "end1": {
+            "_type": "UMLAssociationEnd",
+            "_id": "A-F10-e1",
+            "_parent": {
+              "$ref": "A-F10"
+            },
+            "reference": {
+              "$ref": "E5"
+            },
+            "navigable": "notNavigable"
+          },
+          "end2": {
+            "_type": "UMLAssociationEnd",
+            "_id": "A-F10-e2",
+            "_parent": {
+              "$ref": "A-F10"
+            },
+            "reference": {
+              "$ref": "TL-P0"
+            },
+            "navigable": "navigable"
+          }
+        },
+        {
+          "_type": "UMLAssociation",
+          "_id": "A-F11",
+          "_parent": {
+            "$ref": "E6"
+          },
+          "name": "F11 draft rule + sources",
+          "end1": {
+            "_type": "UMLAssociationEnd",
+            "_id": "A-F11-e1",
+            "_parent": {
+              "$ref": "A-F11"
+            },
+            "reference": {
+              "$ref": "E6"
+            },
+            "navigable": "notNavigable"
+          },
+          "end2": {
+            "_type": "UMLAssociationEnd",
+            "_id": "A-F11-e2",
+            "_parent": {
+              "$ref": "A-F11"
+            },
+            "reference": {
+              "$ref": "TL-P0"
+            },
+            "navigable": "navigable"
+          }
+        },
+        {
+          "_type": "UMLAssociation",
+          "_id": "A-F12",
+          "_parent": {
+            "$ref": "TL-P0"
+          },
+          "name": "F12 schema + lint verdict",
+          "end1": {
+            "_type": "UMLAssociationEnd",
+            "_id": "A-F12-e1",
+            "_parent": {
+              "$ref": "A-F12"
+            },
+            "reference": {
+              "$ref": "TL-P0"
+            },
+            "navigable": "notNavigable"
+          },
+          "end2": {
+            "_type": "UMLAssociationEnd",
+            "_id": "A-F12-e2",
+            "_parent": {
+              "$ref": "A-F12"
+            },
+            "reference": {
+              "$ref": "E6"
+            },
+            "navigable": "navigable"
+          }
+        },
+        {
+          "_type": "UMLAssociation",
+          "_id": "A-F13",
+          "_parent": {
+            "$ref": "TL-P0"
+          },
+          "name": "F13 diff · impact · replay",
+          "end1": {
+            "_type": "UMLAssociationEnd",
+            "_id": "A-F13-e1",
+            "_parent": {
+              "$ref": "A-F13"
+            },
+            "reference": {
+              "$ref": "TL-P0"
+            },
+            "navigable": "notNavigable"
+          },
+          "end2": {
+            "_type": "UMLAssociationEnd",
+            "_id": "A-F13-e2",
+            "_parent": {
+              "$ref": "A-F13"
+            },
+            "reference": {
+              "$ref": "E7"
+            },
+            "navigable": "navigable"
+          }
+        },
+        {
+          "_type": "UMLAssociation",
+          "_id": "A-F14",
+          "_parent": {
+            "$ref": "E7"
+          },
+          "name": "F14 publish / reject",
+          "end1": {
+            "_type": "UMLAssociationEnd",
+            "_id": "A-F14-e1",
+            "_parent": {
+              "$ref": "A-F14"
+            },
+            "reference": {
+              "$ref": "E7"
+            },
+            "navigable": "notNavigable"
+          },
+          "end2": {
+            "_type": "UMLAssociationEnd",
+            "_id": "A-F14-e2",
+            "_parent": {
+              "$ref": "A-F14"
+            },
+            "reference": {
+              "$ref": "TL-P0"
+            },
+            "navigable": "navigable"
+          }
+        },
+        {
+          "_type": "UMLAssociation",
+          "_id": "A-F15",
+          "_parent": {
+            "$ref": "TL-P0"
+          },
+          "name": "F15 reputation lookup",
+          "end1": {
+            "_type": "UMLAssociationEnd",
+            "_id": "A-F15-e1",
+            "_parent": {
+              "$ref": "A-F15"
+            },
+            "reference": {
+              "$ref": "TL-P0"
+            },
+            "navigable": "notNavigable"
+          },
+          "end2": {
+            "_type": "UMLAssociationEnd",
+            "_id": "A-F15-e2",
+            "_parent": {
+              "$ref": "A-F15"
+            },
+            "reference": {
+              "$ref": "E8"
+            },
+            "navigable": "navigable"
+          }
+        },
+        {
+          "_type": "UMLAssociation",
+          "_id": "A-F16",
+          "_parent": {
+            "$ref": "E8"
+          },
+          "name": "F16 provider verdict",
+          "end1": {
+            "_type": "UMLAssociationEnd",
+            "_id": "A-F16-e1",
+            "_parent": {
+              "$ref": "A-F16"
+            },
+            "reference": {
+              "$ref": "E8"
+            },
+            "navigable": "notNavigable"
+          },
+          "end2": {
+            "_type": "UMLAssociationEnd",
+            "_id": "A-F16-e2",
+            "_parent": {
+              "$ref": "A-F16"
+            },
+            "reference": {
+              "$ref": "TL-P0"
+            },
+            "navigable": "navigable"
+          }
+        },
+        {
+          "_type": "UMLAssociation",
+          "_id": "A-F17",
+          "_parent": {
+            "$ref": "TL-P0"
+          },
+          "name": "F17 isolated content prompt",
+          "end1": {
+            "_type": "UMLAssociationEnd",
+            "_id": "A-F17-e1",
+            "_parent": {
+              "$ref": "A-F17"
+            },
+            "reference": {
+              "$ref": "TL-P0"
+            },
+            "navigable": "notNavigable"
+          },
+          "end2": {
+            "_type": "UMLAssociationEnd",
+            "_id": "A-F17-e2",
+            "_parent": {
+              "$ref": "A-F17"
+            },
+            "reference": {
+              "$ref": "E9"
+            },
+            "navigable": "navigable"
+          }
+        },
+        {
+          "_type": "UMLAssociation",
+          "_id": "A-F18",
+          "_parent": {
+            "$ref": "E9"
+          },
+          "name": "F18 schema-checked draft",
+          "end1": {
+            "_type": "UMLAssociationEnd",
+            "_id": "A-F18-e1",
+            "_parent": {
+              "$ref": "A-F18"
+            },
+            "reference": {
+              "$ref": "E9"
+            },
+            "navigable": "notNavigable"
+          },
+          "end2": {
+            "_type": "UMLAssociationEnd",
+            "_id": "A-F18-e2",
+            "_parent": {
+              "$ref": "A-F18"
+            },
+            "reference": {
+              "$ref": "TL-P0"
+            },
+            "navigable": "navigable"
+          }
+        }
+      ]
+    }
+  ]
+}

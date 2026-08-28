@@ -1,0 +1,86 @@
+{
+  "schema_version": "1.0.0",
+  "rule_version": "1.0.0",
+  "id": "TL-PAY-002",
+  "legacy_id": "NPCI-QR-004",
+  "name": "Scan a QR code framed as the way to RECEIVE money",
+  "description": "A QR scan combined with a UPI PIN entry is framed as necessary to RECEIVE a payment. Scanning a QR and entering a UPI PIN authorises money to go OUT — it never credits money in. This is the specific QR variant of the receive-vs-pay contradiction, distinct from TL-PAY-001's credential form.",
+  "kind": "COMPOSITE",
+  "taxonomy_refs": ["TAX-01-03"],
+  "severity": "HIGH",
+
+  "evidence": {
+    "verdict": "SUPPORTED",
+    "implementability": "YES",
+    "source_references": [
+      {
+        "source_id": "SRC-018",
+        "issuing_body": "NPCI",
+        "authority": "OFFICIAL_PAYMENT_OPERATOR",
+        "verification_status": "RETRIEVAL_FAILED",
+        "document_ref": "NPCI Fraud Awareness — receive-vs-pay guidance",
+        "manual_retrieval": {
+          "evidence_class": "PRIMARY",
+          "manual_retrieval_status": "EXACT_PRIMARY_VERIFIED",
+          "evidence_ids": ["MR-EVID-003"],
+          "retrieved_on": "2026-08-15",
+          "canonical_url": "https://www.npci.org.in/fraud-awareness",
+          "locator": "NPCI_Fraud_Awareness.pdf p.2",
+          "claim_match": "FULL",
+          "review_status": "REVIEWED",
+          "review_role": "Threat Intelligence Lead",
+          "notes": "Original automated retrieval was HTTP 403 (SRC-018 stays RETRIEVAL_FAILED). NPCI's own snapshot states that scanning a QR plus entering a UPI PIN is for making payments, not receiving them."
+        }
+      },
+      {
+        "source_id": "SRC-021",
+        "issuing_body": "CERT-In",
+        "authority": "OFFICIAL_GOVERNMENT",
+        "verification_status": "PRIMARY_VERIFIED",
+        "document_ref": "CIAD-2024-0050, Preventing Online scams (2024-10-24)",
+        "quote": "Always remember, you don't need a UPI PIN or OTP to receive money."
+      }
+    ]
+  },
+
+  "logic": {
+    "require": {
+      "all_of": [
+        "RECEIVE_FRAMING",
+        "QR_SCAN_REQUEST",
+        "UPI_PIN_PROMPT"
+      ]
+    },
+    "min_evidence_classes": 2,
+    "suppressed_by": ["TRANSACTION_NOTIFICATION", "EDUCATIONAL_CONTENT", "OTP_DELIVERED_NOT_REQUESTED"]
+  },
+
+  "lifecycle": {
+    "status": "PUBLISHED",
+    "created": "2026-08-28",
+    "last_reviewed": "2026-08-28",
+    "review_due": "2027-02-28",
+    "authored_by_role": "Knowledge Editor",
+    "approved_by_role": "Knowledge Approver"
+  },
+
+  "language_scope": {
+    "languages": ["en"],
+    "scripts": ["Latn"],
+    "on_unsupported_input": "FLAG_UNSUPPORTED"
+  },
+
+  "explanation": {
+    "plain": "You have been told to scan a QR code and enter your UPI PIN to RECEIVE money. Scanning a QR and entering a PIN always sends money out — it can never bring money in. If receiving is the reason given, this is a trick to make you pay.",
+    "technical": "RECEIVE_FRAMING + QR_SCAN_REQUEST (payment-action) combined with UPI_PIN_PROMPT (credential-action). NPCI states the QR+PIN act is a payment, not a receipt; CERT-In states categorically no PIN/OTP is needed to receive.",
+    "verification_steps": [
+      "Open your UPI app directly — incoming payments credit automatically with no scan or PIN.",
+      "If a PIN or QR scan is demanded to 'receive', stop: that action would debit your account."
+    ]
+  },
+
+  "provenance": {
+    "source_severity_hint": { "value": 96, "label": "High", "cited_as": "RP p.7", "operational_use": false },
+    "notes": "Originally cited to NPCI (SRC-018), HTTP 403 under automated retrieval (G-02). Manually retrieved 2026-08-15 (MR-EVID-003) and verified as exact NPCI primary under DEC-006 / ADR-0015; corroborated by CERT-In SRC-021. This is the rule the TL-PAY-001 provenance note names as the home for the 'scan QR to receive' pattern."
+  }
+}

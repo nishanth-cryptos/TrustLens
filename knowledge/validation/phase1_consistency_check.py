@@ -142,14 +142,14 @@ check("RESEARCH-004: 30 starter rules parsed", len(rules) == 30, f"{len(rules)} 
 verdicts = {}
 for r in rules.values():
     verdicts[r["verdict"]] = verdicts.get(r["verdict"], 0) + 1
-check("RESEARCH-004: verdict tally is 14/6/10 as stated in §3",
-      verdicts.get("SUPPORTED") == 14 and verdicts.get("PARTIAL") == 6
-      and verdicts.get("UNSUPPORTED") == 10, str(verdicts))
+check("RESEARCH-004: verdict tally is 17/9/4 as stated in §3 (v1.2, post-RESEARCH-006)",
+      verdicts.get("SUPPORTED") == 17 and verdicts.get("PARTIAL") == 9
+      and verdicts.get("UNSUPPORTED") == 4, str(verdicts))
 
 publishable = {rid for rid, r in rules.items() if r["verdict"] != "UNSUPPORTED"}
 implementable = {rid for rid, r in rules.items() if r["impl"].startswith("YES")}
-check("RESEARCH-004: 18 rules both evidenced and implementable",
-      len(publishable & implementable) == 18,
+check("RESEARCH-004: 22 rules both evidenced and implementable (v1.2, post-RESEARCH-006)",
+      len(publishable & implementable) == 22,
       f"{len(publishable & implementable)}")
 
 # ---------------------------------------------------------------- corpus

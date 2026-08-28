@@ -4,13 +4,18 @@
 |---|---|
 | Document ID | RESEARCH-001 |
 | Version | 1.1 |
-| Status | **Approved** — closed at the Phase 1 gate, [GATE-001](../00-program/GATE-001-phase-1-assessment.md) |
+| Status | **Approved** (v1.1) · **Reconciled** at v1.2 after RESEARCH-006 (see §6a) |
 | Owner role | Threat Intelligence Lead |
-| Dependencies | PROGRAM-001, BASELINE-001, [DEC-003](../00-program/decision-log.md) |
+| Dependencies | PROGRAM-001, BASELINE-001, [DEC-003](../00-program/decision-log.md), [DEC-006](../00-program/decision-log.md) |
 | Feeds | RESEARCH-002…005, KB-001 |
-| Machine-readable companion | [`knowledge/sources/verification-manifest.json`](../../knowledge/sources/verification-manifest.json) |
-| Assumptions | [ASM-016](../00-program/assumption-register.md) (source reachability) |
-| Last updated | 2026-08-14 |
+| Machine-readable companion | [`knowledge/sources/verification-manifest.json`](../../knowledge/sources/verification-manifest.json) (v1.2 — automated `status` preserved, additive `manual_retrieval` layer) |
+| Assumptions | [ASM-016](../00-program/assumption-register.md) (source reachability — disproved then partially recovered by manual retrieval) |
+| Last updated | 2026-08-28 |
+
+> **§2 headline grades are the automated pass and are UNCHANGED** (11 verified / 1 cited-unverified /
+> 1 index / 13 failed). The manual retrieval reconciliation is an **additive** layer recorded in §6a
+> and in the manifest's per-source `manual_retrieval` overlay — it does not restate the automated
+> grades.
 
 ---
 
@@ -119,6 +124,22 @@ Explicitly listed so no downstream artifact reuses them casually:
 | "I4C's 2021 advisory documents the part-time task sequence" | SRC-015 unretrievable |
 | Any HDFC-sourced rule basis | D5 — link rot, content not located, commercial authority |
 
+### 6a. Reconciliation (2026-08-28) — what the manual pass changed
+
+The table above is the **automated-pass** record and is preserved. The manual retrieval pass
+([RESEARCH-006](RESEARCH-006-manual-retrieval-reconciliation.md)) lifts several of these restrictions
+**with recorded manual-retrieval provenance** (DEC-006 / ADR-0015). Each item may now be cited *only*
+with its evidence ID and manual-retrieval class, never as a bare automated `PRIMARY_VERIFIED`:
+
+| Former restriction | Now | Provenance |
+|---|---|---|
+| ₹11,158 cr / 32.80 lakh CFCFRMS statistic | **Citable** with provenance | MR-EVID-001, PIB PRID 2287674 p.1 (PRIMARY, manual) |
+| Boss-scam release | **Citable** with provenance | MR-EVID-004, PIB PRID 2276809 p.1 (PRIMARY, manual) |
+| Part-time task sequence | **Concept citable** via replacement pair; the *original 2021 doc stays unavailable* | MR-EVID-012 / MR-EVID-013 (OFFICIAL_REPLACEMENT) |
+| Fake CAPTCHA-filling jobs advisory exists | **Advisory shown to exist** (retrieved for TL-JOB-003); not yet re-bound to TL-JOB-002 | MR-EVID-013, I4C TAU-ADV-004 |
+| **RBI never-ask UPI-PIN** | **Still stands** — contradicted by D1; no manual evidence changes this | — |
+| **SRC-002 index / SRC-011 Europol** | **Still stand** — remain unretrievable | — |
+
 ## 7. Evidence-quality scoring input
 
 For the DET-001 source-reliability term, authority level and verification status combine:
@@ -136,9 +157,15 @@ For the DET-001 source-reliability term, authority level and verification status
 These weights are **`HEURISTIC`** — no source publishes a reliability scale. They are programme
 judgements, are labelled as such, and are calibrated in DET-001 rather than treated as given.
 
+DET-001 should add an **evidence-class** term (DEC-006 / ADR-0015): PRIMARY and OFFICIAL_REPLACEMENT
+at full weight, OFFICIAL_ALTERNATE and INDUSTRY below them, so that manually-recovered evidence
+contributes in proportion to its class rather than being flattened to the automated `RETRIEVAL_FAILED`
+weight.
+
 ## 8. Change history
 
 | Version | Date | Change | Author role |
 |---|---|---|---|
 | 1.0 | 2026-07-31 | Initial inventory. 26 sources graded; 11 verified with located quotations; 6 discrepancies identified; I4C and NPCI found entirely unreachable. | Threat Intelligence Lead |
 | 1.1 | 2026-08-14 | Approved at the Phase 1 gate ([GATE-001](../00-program/GATE-001-phase-1-assessment.md)). No change to grades or findings. Companion manifest amended to v1.1: verified fraction restated as `PRIMARY_VERIFIED` only (11/26, matching §2), and `claim_under_test` recorded for the seven failed sources that carried none. | Technical Program Director |
+| 1.2 | 2026-08-28 | Reconciled with RESEARCH-006 (§6a). Automated §2 grades preserved unchanged; manual-retrieval provenance added as an additive layer; several "must-not-cite" claims lifted with recorded provenance. | Threat Intelligence Lead |

@@ -363,12 +363,39 @@
         },
         "verification_status": {
           "enum": ["PRIMARY_VERIFIED", "PRIMARY_CITED_UNVERIFIED", "INDEX_ONLY", "RETRIEVAL_FAILED"],
-          "description": "Must equal the grade recorded in the verification manifest. The linter fails any rule that overstates it."
+          "description": "The AUTOMATED Phase-1 grade. Must equal the grade recorded in the verification manifest's `status` field. The linter fails any rule that overstates it. Manual retrieval NEVER edits this — improvements are recorded in `manual_retrieval` below (DEC-006, ADR-0015)."
         },
         "document_ref": { "type": "string" },
         "quote": {
           "type": "string",
           "description": "Short verbatim quotation locating the claim in the source. Required in practice on PRIMARY_VERIFIED references — enforced by the linter."
+        },
+        "manual_retrieval": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "DEC-006 / ADR-0015. Additive manual-retrieval provenance, present when a rule relies on evidence obtained by the manual pass (RESEARCH-006) rather than the automated Phase-1 pass. `verification_status` above STILL records the automated grade; this block records the manual layer only. Every field is validated by the linter against knowledge/sources/manual-retrieval/evidence-records.json and the manifest's per-source `manual_retrieval` overlay.",
+          "required": ["evidence_class", "evidence_ids", "manual_retrieval_status", "retrieved_on", "locator", "claim_match", "review_status"],
+          "properties": {
+            "evidence_class": {
+              "enum": ["PRIMARY", "OFFICIAL_ALTERNATE", "OFFICIAL_REPLACEMENT", "INDUSTRY", "SECONDARY"],
+              "description": "ADR-0015 hierarchy. PRIMARY and OFFICIAL_REPLACEMENT can carry a lone SUPPORTED verdict; OFFICIAL_ALTERNATE and INDUSTRY cap the rule at PARTIAL; SECONDARY cannot support a published rule. The linter enforces the cap."
+            },
+            "manual_retrieval_status": { "type": "string", "description": "The manual outcome recorded in the manifest overlay (e.g. EXACT_PRIMARY_VERIFIED, OFFICIAL_ALTERNATE_VERIFIED)." },
+            "evidence_ids": {
+              "type": "array", "minItems": 1, "uniqueItems": true,
+              "items": { "type": "string", "pattern": "^MR-EVID-\\d{3}$" },
+              "description": "Durable evidence identifiers from evidence-records.json. Each must resolve, and must be a subset of the manifest source's overlay evidence_ids."
+            },
+            "retrieved_on": { "$ref": "#/$defs/date" },
+            "canonical_url": { "type": "string" },
+            "locator": { "type": "string", "minLength": 3, "description": "Where the claim sits — file plus page(s), e.g. 'NPCI_Fraud_Awareness.pdf p.2'." },
+            "claim_match": { "type": "string", "description": "FULL, PARTIAL, FULL_CONCEPT, etc. Must not exceed the referenced evidence record's claim_match." },
+            "review_status": { "enum": ["REVIEWED", "PENDING_REVIEW"], "description": "Published/approved rules require REVIEWED (ADR-0015 condition 7)." },
+            "review_role": { "type": "string" },
+            "replacement_source": { "type": "string" },
+            "official_alternate_source": { "type": "string" },
+            "notes": { "type": "string" }
+          }
         }
       }
     }

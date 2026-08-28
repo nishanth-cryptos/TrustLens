@@ -1,0 +1,156 @@
+@startuml TrustLens_SD_UC01_Submit_Analyse_Verdict
+
+title <b>TrustLens  —  Sequence Diagram UC-01</b>\nSubmit Artifact  ·  Analyse Submission  ·  View Verdict
+
+' keeps the PNG inside the public server's 4096px cap (SVG ignores this)
+scale max 3800 width
+
+skinparam backgroundColor #F8FAFC
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam shadowing false
+skinparam dpi 150
+skinparam maxMessageSize 210
+
+skinparam sequence {
+    ArrowColor                 #444444
+    ArrowFontSize              10
+    LifeLineBorderColor        #90A4AE
+    LifeLineBackgroundColor    #ECEFF1
+    ParticipantBackgroundColor #1F3864
+    ParticipantBorderColor     #0D2137
+    ParticipantFontColor       #FFFFFF
+    ParticipantFontSize        11
+    ActorBackgroundColor       #FFFFFF
+    ActorBorderColor           #0D2137
+    GroupBackgroundColor       #BBDEFB
+    GroupBorderColor           #1565C0
+    GroupBodyBackgroundColor   #FFFFFF
+    GroupFontColor             #0D2137
+    DividerBackgroundColor     #E3F2FD
+}
+
+skinparam database {
+    BackgroundColor #FFF8E1
+    BorderColor     #E65100
+    FontColor       #4E342E
+}
+
+skinparam note {
+    BackgroundColor #FFFDE7
+    BorderColor     #C0A050
+    FontSize        10
+}
+
+actor       "Reporting User"          as RU
+participant "S : SubmissionUI"        as S
+participant "IN : IngestService"      as IN
+database    "D1 : EvidenceStore"      as D1
+participant "EX : ExtractionService"  as EX
+participant "RE : RuleEngine"         as RE
+participant "TI : ThreatIntelAdapter" as TI
+participant "EC : ExplanationComposer" as EC
+database    "D5 : AnalysisRecord"     as D5
+
+autonumber
+
+ref over RU, S
+  UC-00  Authenticate
+  (returns principal + roles, UID)
+end ref
+
+== Submit and preserve (FR 4.1) ==
+
+RU -> S : SubmitArtifact(items, context)
+activate RU
+activate S
+S -> IN : CreateSubmission(items, UID)
+activate IN
+
+alt media type, size and structure valid
+    loop for each artifact in the submission
+        IN -> D1 : Preserve(artifact, SHA-256,\ncapturedAt, chain of custody)
+        activate D1
+        D1 --> IN : evidenceId
+        deactivate D1
+    end
+    IN --> S : submissionId, caseId  (ACCEPTED)
+else unsupported type or over size limit
+    IN --> S : Error(REJECTED, limit,\naccepted types)
+    S --> RU : Rejection notice; the rest of\nthe submission is kept
+end
+deactivate IN
+
+note over IN, D1
+  Preservation completes **before** any analysis
+  runs, so evidence integrity does not depend on
+  what the analysis later concludes  (SRS 4.1.1)
+end note
+
+== Analyse (FR 4.2, 4.3) ==
+
+S -> RE : AnalyseSubmission(submissionId, UID)
+activate RE
+
+RE -> EX : NormaliseAndExtract(evidenceIds)
+activate EX
+EX -> D1 : Read preserved artifacts
+activate D1
+D1 --> EX : original bytes + normalised form
+deactivate D1
+EX --> RE : entities, indicators,\nnegative indicators (unscored)
+deactivate EX
+
+opt URL or domain present  —  Post-MVP
+    RE -> TI : ReputationLookup(url, domain)
+    activate TI
+    TI --> RE : provider verdict\n(non-authoritative)
+    deactivate TI
+    note right of TI
+      Timeout + circuit breaker.
+      A provider failure degrades
+      the result, it does not fail
+      the submission  (SRS 3.4)
+    end note
+end
+
+RE -> RE : EvaluateRules(pinned ruleSetVersion)
+RE -> RE : ResolveSuppressions\nand precedence
+RE -> RE : ComputeScores(risk, confidence,\nseverity, evidenceQuality)
+RE -> D5 : PinAnalysis(ruleSetVersion, inputs,\noutcome)  — exact replay
+activate D5
+D5 --> RE : analysisId
+deactivate D5
+
+== Verdict (FR 4.4) ==
+
+alt evidence sufficient AND below uncertainty threshold
+    RE -> EC : Compose(matched rules, unmatched + reason,\nnegative evidence, score breakdown)
+    activate EC
+    EC --> S : verdict + evidence trace + graded citations
+    deactivate EC
+    S --> RU : Verdict view  (risk and confidence\nshown as two separate values)
+
+    opt user opens the detail view
+        RU -> S : ViewMatchedIndicators(analysisId)
+        S --> RU : matched rules with contributing indicators,\nwhy confidence is limited, source grades
+    end
+
+else INSUFFICIENT_EVIDENCE
+    RE --> S : INSUFFICIENT_EVIDENCE + missing context
+    S --> RU : "Not enough evidence to conclude" +\nwhat context would raise confidence
+
+else past the uncertainty threshold
+    RE --> S : QUEUED_FOR_REVIEW(caseId)
+    S --> RU : Case queued for analyst review
+    note right of RU : continues in **UC-02**
+end
+deactivate RE
+deactivate S
+deactivate RU
+
+note across
+  Every verdict view carries the "not an official determination of fraud" statement  (NFR 5.2.1)
+end note
+
+@enduml

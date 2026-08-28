@@ -45,6 +45,12 @@ MANIFEST_PATH = ROOT / "knowledge" / "sources" / "verification-manifest.json"
 TAXONOMY_PATH = ROOT / "knowledge" / "taxonomies" / "scam-taxonomy.json"
 MATRIX_PATH = ROOT / "docs" / "01-research" / "RESEARCH-004-evidence-matrix.md"
 FIXTURES_PATH = RULES_DIR / "_fixtures" / "invalid-rules.json"
+EVIDENCE_RECORDS_PATH = ROOT / "knowledge" / "sources" / "manual-retrieval" / "evidence-records.json"
+
+# ADR-0015 evidence hierarchy. Which classes can carry which lone verdict.
+SUPPORTED_CAPABLE = {"PRIMARY", "OFFICIAL_REPLACEMENT"}
+PUBLISHABLE_CLASSES = {"PRIMARY", "OFFICIAL_ALTERNATE", "OFFICIAL_REPLACEMENT", "INDUSTRY"}
+STRONG_CLAIM_MATCH = {"FULL", "FULL_CONCEPT", "FULL_FOR_SCREEN_SHARE_CONCEPT"}
 
 WEAK = "WEAK"
 
@@ -70,13 +76,20 @@ def load_reference_data():
             taxa.add(sub["id"])
 
     # Phase 1 verdicts are authoritative: a rule may not re-grade itself upward.
+    # The matrix is post-reconciliation (RESEARCH-004 v1.2); manual retrieval upgrades a
+    # rule's ceiling only where the evidence matrix records the upgrade.
     matrix = {}
     for rid, verdict in re.findall(
         r"\| `(TL-[A-Z]+-\d+)` \|(?:[^|]*\|){4} \*\*(\w+)\*\* \|", MATRIX_PATH.read_text()
     ):
         matrix[rid] = verdict
 
-    return indicators, sources, taxa, matrix
+    # Manual-retrieval evidence records (DEC-006, ADR-0015).
+    mr_records = {}
+    if EVIDENCE_RECORDS_PATH.exists():
+        mr_records = {r["evidence_id"]: r for r in load(EVIDENCE_RECORDS_PATH)["records"]}
+
+    return indicators, sources, taxa, matrix, mr_records
 
 
 # --------------------------------------------------------------- condition walk
@@ -134,7 +147,7 @@ def satisfying_sets(condition):
 
 # --------------------------------------------------------------- lint checks
 
-def lint(rule, indicators, sources, taxa, matrix):
+def lint(rule, indicators, sources, taxa, matrix, mr_records):
     """Return a list of lint failures. Empty means clean."""
     errs = []
     rid = rule.get("id", "<no id>")
@@ -228,6 +241,79 @@ def lint(rule, indicators, sources, taxa, matrix):
         if target.startswith("TAX-") and target not in taxa:
             errs.append(f"suppresses unknown taxonomy scope {target!r}")
 
+    refs = rule.get("evidence", {}).get("source_references", [])
+
+    # L10 — manual_retrieval provenance integrity (DEC-006, ADR-0015).
+    # The block is additive: verification_status still records the automated grade (L6), and
+    # everything the manual layer asserts must resolve to a real evidence record and agree with
+    # the manifest's per-source overlay. This is the check that stops manual evidence being invented.
+    for ref in refs:
+        mr = ref.get("manual_retrieval")
+        if not mr:
+            continue
+        sid = ref.get("source_id")
+        src = sources.get(sid, {})
+        for eid in mr.get("evidence_ids", []):
+            if eid not in mr_records:
+                errs.append(f"{sid} manual_retrieval cites unknown evidence id {eid!r}")
+            elif not mr_records[eid].get("sha256"):
+                errs.append(f"{sid} manual evidence {eid} has no sha256 recorded (ADR-0015 condition 4)")
+        overlay = src.get("manual_retrieval")
+        if not overlay:
+            errs.append(
+                f"{sid} carries a rule-level manual_retrieval block but the manifest records no "
+                f"manual overlay for it — manual evidence must be recorded at the source first"
+            )
+        else:
+            if mr.get("evidence_class") != overlay.get("evidence_class"):
+                errs.append(
+                    f"{sid} manual_retrieval evidence_class {mr.get('evidence_class')} disagrees with "
+                    f"the manifest overlay {overlay.get('evidence_class')}"
+                )
+            extra = set(mr.get("evidence_ids", [])) - set(overlay.get("evidence_ids", []))
+            if extra:
+                errs.append(
+                    f"{sid} manual_retrieval cites evidence not recorded in the manifest overlay: "
+                    f"{sorted(extra)}"
+                )
+        # wording may not exceed the source (ADR-0015 condition 6)
+        if mr.get("claim_match") in STRONG_CLAIM_MATCH:
+            for eid in mr.get("evidence_ids", []):
+                rec_cm = mr_records.get(eid, {}).get("claim_match", "")
+                if rec_cm.startswith("PARTIAL"):
+                    errs.append(
+                        f"{sid} manual_retrieval claims {mr.get('claim_match')} but evidence {eid} is "
+                        f"graded {rec_cm} — rule wording exceeds the source (ADR-0015 condition 6)"
+                    )
+        # published/approved rules require recorded human review (ADR-0015 condition 7)
+        if rule.get("lifecycle", {}).get("status") in ("APPROVED", "PUBLISHED") \
+                and mr.get("review_status") != "REVIEWED":
+            errs.append(f"{sid} manual_retrieval is not REVIEWED but the rule is {rule['lifecycle']['status']}")
+
+    # L11 — publication integrity and the ADR-0015 class caps.
+    verdict = rule.get("evidence", {}).get("verdict")
+    status = rule.get("lifecycle", {}).get("status")
+
+    def effective_class(ref):
+        if ref.get("verification_status") == "PRIMARY_VERIFIED":
+            return "PRIMARY"
+        mr = ref.get("manual_retrieval")
+        return mr.get("evidence_class") if mr else None
+
+    if verdict in ("SUPPORTED", "PARTIAL"):
+        supporting = [c for c in (effective_class(r) for r in refs) if c in PUBLISHABLE_CLASSES]
+        if status in ("APPROVED", "PUBLISHED") and not supporting:
+            errs.append(
+                f"verdict {verdict} at status {status} but no source_reference provides "
+                f"publishable-grade evidence — publication would rest on unverified sources "
+                f"with no manual evidence (ADR-0015)"
+            )
+        if verdict == "SUPPORTED" and supporting and not (set(supporting) & SUPPORTED_CAPABLE):
+            errs.append(
+                f"verdict SUPPORTED but the only publishable evidence is {sorted(set(supporting))} "
+                f"— OFFICIAL_ALTERNATE/INDUSTRY evidence caps a rule at PARTIAL (ADR-0015)"
+            )
+
     return errs
 
 
@@ -253,7 +339,7 @@ def main() -> int:
     schema = load(SCHEMA_PATH)
     Draft202012Validator.check_schema(schema)
     validator = Draft202012Validator(schema)
-    indicators, sources, taxa, matrix = load_reference_data()
+    indicators, sources, taxa, matrix, mr_records = load_reference_data()
 
     failures = []
     seen_ids = {}
@@ -267,7 +353,7 @@ def main() -> int:
         rid = rule.get("id", path.stem)
         errs = [f"schema: {e.json_path} {e.message}" for e in validator.iter_errors(rule)]
         if not errs:
-            errs = [f"lint: {m}" for m in lint(rule, indicators, sources, taxa, matrix)]
+            errs = [f"lint: {m}" for m in lint(rule, indicators, sources, taxa, matrix, mr_records)]
 
         if rid in seen_ids:
             errs.append(f"duplicate rule id, also defined in {seen_ids[rid]}")
@@ -297,7 +383,7 @@ def main() -> int:
     for fx in fixtures["fixtures"]:
         candidate = merge_patch(base, fx["patch"])
         schema_errs = list(validator.iter_errors(candidate))
-        lint_errs = lint(candidate, indicators, sources, taxa, matrix) if not schema_errs else []
+        lint_errs = lint(candidate, indicators, sources, taxa, matrix, mr_records) if not schema_errs else []
 
         if schema_errs:
             caught_by = "SCHEMA"

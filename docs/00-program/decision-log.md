@@ -6,7 +6,7 @@
 | Version | 1.0 |
 | Status | Active |
 | Owner role | Technical Program Director |
-| Last updated | 2026-07-31 |
+| Last updated | 2026-08-28 |
 
 Programme-level decisions. **Architecture** decisions live as numbered ADRs in
 [`adr/`](../../adr/README.md); this log records scope, process and evidence-policy decisions,
@@ -164,6 +164,45 @@ decided now.
 
 ---
 
+## DEC-006 — Evidence hierarchy admitting official-alternate and replacement provenance
+
+| | |
+|---|---|
+| **Date** | 2026-08-28 |
+| **Decided by** | Programme (evidence-policy decision) |
+| **Status** | Accepted |
+| **Related** | [ADR-0015](../../adr/ADR-0015-evidence-hierarchy-and-official-alternate-provenance.md), [DEC-003](#dec-003--verify-primary-sources-before-encoding-any-rule), [CONF-005](conflict-register.md), [RESEARCH-006](../01-research/RESEARCH-006-manual-retrieval-reconciliation.md) |
+
+**Decision.** The manual retrieval pass ([RESEARCH-006](../01-research/RESEARCH-006-manual-retrieval-reconciliation.md))
+produced evidence that the binary `DEC-003` grading cannot describe. TrustLens adopts a **five-class
+evidence hierarchy** — `PRIMARY`, `OFFICIAL_ALTERNATE`, `OFFICIAL_REPLACEMENT`, `INDUSTRY`,
+`SECONDARY` — recorded **additively** on the verification manifest without altering any automated
+`status`. Architectural mechanism, schema and linter enforcement are specified in
+[ADR-0015](../../adr/ADR-0015-evidence-hierarchy-and-official-alternate-provenance.md).
+
+An `OFFICIAL_ALTERNATE` source (an issuing body's own official channel/social-media publication,
+e.g. I4C CyberDost) may support a **published** rule only when all seven conditions hold:
+official channel identity established; archived evidence retained; canonical URL and retrieval date
+recorded; SHA-256 recorded; exact supporting claim located; rule wording does not exceed the source;
+human review recorded. `OFFICIAL_ALTERNATE` and `INDUSTRY` evidence cap a rule at `PARTIAL`.
+
+**Alternatives considered.** Promote channel posts to `PRIMARY_VERIFIED` (rejected — destroys the
+meaning of `DEC-003`); discard all non-PDF evidence (rejected — wastes genuine official evidence and
+needlessly strands five sound rules).
+
+**Justification.** `MP §3`'s evidence-first principle requires that evidence quality change behaviour
+rather than merely be documented. A hierarchy with caps does exactly that while keeping
+`PRIMARY_VERIFIED` honest.
+
+**Consequences.** TL-PAY-002 / TL-AUTH-003 reach `SUPPORTED` on manual PRIMARY evidence; TL-JOB-003
+on `OFFICIAL_REPLACEMENT` PRIMARY documents; TL-MAL-002 / TL-CRYP-001 reach `PARTIAL` (capped) on
+`OFFICIAL_ALTERNATE` evidence; TL-MAL-003 reaches `PARTIAL` (capped) on `INDUSTRY` evidence. No rule
+auto-publishes; all existing rule-QA gates still apply.
+
+**Reversal cost.** Low — the classes are data and two linter checks.
+
+---
+
 ## Summary
 
 | ID | Decision | Decided by | Status |
@@ -173,9 +212,11 @@ decided now.
 | DEC-003 | Verify primary sources before encoding | Sponsor | Accepted |
 | DEC-004 | Follow master prompt phase order | Sponsor (implied) | Accepted — revisitable |
 | DEC-005 | Neutral rule identifiers | Programme | Accepted |
+| DEC-006 | Evidence hierarchy (official-alternate + replacement) | Programme | Accepted |
 
 ## Change history
 
 | Version | Date | Change | Author role |
 |---|---|---|---|
 | 1.0 | 2026-07-31 | Log opened with five Phase 0 decisions. | Technical Program Director |
+| 1.1 | 2026-08-28 | DEC-006 added — evidence hierarchy admitting official-alternate and replacement provenance, arising from the RESEARCH-006 manual retrieval reconciliation. Points to ADR-0015. | Chief Architect |

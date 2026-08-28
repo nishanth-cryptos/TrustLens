@@ -1,0 +1,8 @@
+rule_id,decision,source_ids,evidence_ids,required_change
+TL-PAY-002,PUBLISHABLE_EXACT_PRIMARY,SRC-018,MR-EVID-003,Re-run rule validator and negative tests; source claim itself is now exact-primary verified.
+TL-AUTH-003,PUBLISHABLE_EXACT_PRIMARY,SRC-022,MR-EVID-004,Re-run rule validator and negative tests; source claim itself is now exact-primary verified.
+TL-JOB-003,PUBLISHABLE_AFTER_REBIND,SRC-015 + replacement sources,MR-EVID-012;MR-EVID-013,Rebind provenance to PIB PRID 1982936 + I4C TAU/ADV/004. Review wording so every clause is supported by the pair.
+TL-MAL-002,PUBLISHABLE_AFTER_REBIND,SRC-019 + official CyberDost alternate,MR-EVID-009,Adopt official CyberDost/I4C post as evidence source if governance accepts official-channel evidence; otherwise retain draft.
+TL-CRYP-001,PUBLISHABLE_AFTER_REBIND,SRC-024 + official CyberDost alternate,MR-EVID-010,Adopt official CyberDost/I4C post as evidence source if governance accepts official-channel evidence; otherwise retain draft.
+TL-TEL-001,KEEP_DRAFT_OR_NARROW,SRC-013 + official CyberDost alternate,MR-EVID-008,Remove/narrow the courier-delivery pretext unless a primary source for that element is archived.
+TL-MAL-001,KEEP_DRAFT_OR_NARROW,SRC-025 + CERT-In replacement support,MR-EVID-011,Generic untrusted/non-store app-install warning is supported; iOS configuration-profile clause is not.

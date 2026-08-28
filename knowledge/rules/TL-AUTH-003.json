@@ -1,0 +1,78 @@
+{
+  "schema_version": "1.0.0",
+  "rule_version": "1.0.0",
+  "id": "TL-AUTH-003",
+  "legacy_id": "I4C-BOSS-016",
+  "name": "Executive or regulator impersonation issuing an urgent payment order",
+  "description": "A message impersonates a senior executive ('boss scam') or a regulator and instructs the recipient — typically finance staff — to make an urgent transfer, often after an account/WhatsApp takeover. The combination of a senior-identity claim, an out-of-band payment order and urgency is the signal; none of the three alone is.",
+  "kind": "COMPOSITE",
+  "taxonomy_refs": ["TAX-03-04"],
+  "severity": "HIGH",
+
+  "evidence": {
+    "verdict": "SUPPORTED",
+    "implementability": "YES",
+    "source_references": [
+      {
+        "source_id": "SRC-022",
+        "issuing_body": "PIB",
+        "authority": "OFFICIAL_GOVERNMENT",
+        "verification_status": "RETRIEVAL_FAILED",
+        "document_ref": "PIB PRID 2276809 — regulatory/executive impersonation for WhatsApp takeover",
+        "manual_retrieval": {
+          "evidence_class": "PRIMARY",
+          "manual_retrieval_status": "EXACT_PRIMARY_VERIFIED",
+          "evidence_ids": ["MR-EVID-004"],
+          "retrieved_on": "2026-08-15",
+          "canonical_url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2276809",
+          "locator": "PIB_PRID-2276809_Boss_Scam.pdf p.1",
+          "claim_match": "FULL",
+          "review_status": "REVIEWED",
+          "review_role": "Threat Intelligence Lead",
+          "notes": "Original automated retrieval was HTTP 403 (SRC-022 stays RETRIEVAL_FAILED). The PIB/MHA release describes regulator impersonation, urgent compliance pretexts, WhatsApp takeover and immediate transfer instructions to finance staff."
+        }
+      }
+    ]
+  },
+
+  "logic": {
+    "require": {
+      "all_of": [
+        { "any_of": ["EXECUTIVE_IMPERSONATION", "AUTHORITY_IMPERSONATION"] },
+        { "any_of": ["IMMEDIATE_PAYMENT_DEMAND", "PAYMENT_DEMAND"] },
+        { "any_of": ["URGENCY", "URGENCY_DEADLINE", "DISCOURAGES_VERIFICATION", "SECRECY_REQUEST"] }
+      ]
+    },
+    "min_evidence_classes": 3,
+    "suppressed_by": ["EDUCATIONAL_CONTENT", "TRANSACTION_NOTIFICATION", "OFFICIAL_CHANNEL_REDIRECT"]
+  },
+
+  "lifecycle": {
+    "status": "PUBLISHED",
+    "created": "2026-08-28",
+    "last_reviewed": "2026-08-28",
+    "review_due": "2027-02-28",
+    "authored_by_role": "Knowledge Editor",
+    "approved_by_role": "Knowledge Approver"
+  },
+
+  "language_scope": {
+    "languages": ["en"],
+    "scripts": ["Latn"],
+    "on_unsupported_input": "FLAG_UNSUPPORTED"
+  },
+
+  "explanation": {
+    "plain": "Someone claiming to be your boss or a regulator is telling you to transfer money urgently. Genuine executives and regulators do not order urgent transfers through chat messages. Verify by contacting the person on a number you already trust before doing anything.",
+    "technical": "Senior-identity claim (executive/regulator) + payment order + urgency/secrecy, spanning identity, payment and pressure classes. PIB/MHA documents this 'boss scam' pattern including WhatsApp takeover and immediate transfer instructions.",
+    "verification_steps": [
+      "Call the executive or regulator back on a previously known official number — never the number in the message.",
+      "Confirm any transfer request through your organisation's established finance-approval channel."
+    ]
+  },
+
+  "provenance": {
+    "source_severity_hint": { "value": 90, "label": "High", "cited_as": "RP p.8", "operational_use": false },
+    "notes": "Sole basis SRC-022 was HTTP 403 under automated retrieval (G-03) and the rule was UNSUPPORTED at Phase 1. Manually retrieved 2026-08-15 (MR-EVID-004) and verified as exact PIB primary under DEC-006 / ADR-0015. Promoted from UNSUPPORTED to SUPPORTED (RESEARCH-004 §9)."
+  }
+}

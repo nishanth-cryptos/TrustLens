@@ -1,14 +1,15 @@
 {
   "$comment": "TrustLens seed corpus v1. EVERY case in this file is SYNTHETIC — authored by the programme for testing. NO case is a real-world sample, and none may be presented as evidence of real scam activity (MP §8, §21). Phone numbers, VPAs, URLs and names are deliberately fictitious. Benign cases were authored FIRST, per CONF-002, because they are the regression tests that prevent the engine degenerating into a keyword matcher.",
-  "corpus_version": "1.0",
+  "corpus_version": "1.1",
   "generated": "2026-07-31",
+  "amended": "2026-08-28 — 3 benign near-misses (B-011..B-013, incl. an adversarial official-educational post) and 3 malicious cases (M-012 boss scam, M-013 crypto wallet drain, M-014 USSD call-forwarding) added for the rules the RESEARCH-006 manual retrieval reconciliation made publishable. All remain SYNTHETIC.",
   "provenance": "SYNTHETIC",
   "usage_constraints": [
     "Supports determinism and regression testing ONLY.",
     "MUST NOT be used to compute or claim precision, recall, or false-positive rate — a synthetic corpus cannot support an accuracy claim (RSK-003, G-09).",
     "Expected outcomes encode design intent, not measured behaviour. They are the specification the engine must satisfy."
   ],
-  "composition": {"benign": 10, "malicious": 11, "ambiguous": 6, "total": 27},
+  "composition": {"benign": 13, "malicious": 14, "ambiguous": 6, "total": 33},
 
   "benign": [
     {
@@ -123,6 +124,42 @@
       "expected_negative_indicators": ["NO_PAYMENT_REQUESTED", "NO_CODE_DIAL_REQUEST", "OFFICIAL_CHANNEL_REDIRECT"],
       "rationale": "Ordinary delivery notification. The courier pretext only becomes a signal when combined with a payment demand or a request to dial a USSD code.",
       "guards": ["CONF-002"]
+    },
+    {
+      "id": "B-011",
+      "channel": "EMAIL",
+      "language": "en",
+      "text": "Hi team, great work this quarter. Please review the attached board deck before Friday's meeting. No payment or transfer is needed from anyone — just your feedback. Reach me on my usual desk extension.",
+      "expected_outcome": "NO_FINDING",
+      "must_not_match": ["TL-AUTH-003"],
+      "expected_indicators": ["URGENCY"],
+      "expected_negative_indicators": ["NO_PAYMENT_REQUESTED", "REASONABLE_DEADLINE", "OFFICIAL_CHANNEL_REDIRECT"],
+      "rationale": "Near-miss for TL-AUTH-003: a genuine internal note from a manager with mild time pressure but NO impersonation cue and NO payment order. The boss-scam signal is executive/regulator impersonation PLUS an urgent transfer — not seniority alone.",
+      "guards": ["CONF-002", "RSK-002"]
+    },
+    {
+      "id": "B-012",
+      "channel": "EMAIL",
+      "language": "en",
+      "text": "Security notice: a new device signed in to your exchange account. If this was you, no action is needed. If not, reset your password in the official app. We will never ask you to connect your wallet to 'verify' it.",
+      "expected_outcome": "NO_FINDING",
+      "must_not_match": ["TL-CRYP-001"],
+      "expected_negative_indicators": ["SECURITY_NOTIFICATION", "NO_ACTION_REQUESTED", "NO_PERMISSION_REQUEST"],
+      "rationale": "A genuine exchange security notice mentions wallets but requests no wallet connection and no action. TL-CRYP-001's signal is a wallet-connect request under a verification pretext — absent here.",
+      "guards": ["CONF-002"]
+    },
+    {
+      "id": "B-013",
+      "priority": "HIGH",
+      "channel": "SOCIAL",
+      "language": "en",
+      "text": "#CyberDost Alert from I4C/MHA: Fraudsters may ask you to install an APK, switch on Accessibility permission, or connect your crypto wallet at a 'verification' link. Official agencies will NEVER ask this. Never share your OTP. Report on 1930.",
+      "expected_outcome": "NO_FINDING",
+      "must_not_match": ["TL-CRYP-001", "TL-MAL-002", "TL-CRED-001"],
+      "expected_indicators": ["ACCESSIBILITY_PERMISSION_REQUEST", "WALLET_CONNECT_REQUEST", "VERIFICATION_PRETEXT", "FAKE_APP_IMPERSONATION", "LINK_PRESENT"],
+      "expected_negative_indicators": ["EDUCATIONAL_CONTENT", "SELF_PROTECTIVE_WARNING", "NEGATED_CREDENTIAL_REQUEST"],
+      "rationale": "Adversarial-benign: an official government awareness post that legitimately names every high-risk device/crypto action at once. A keyword or even a naive composite engine would flag it. The EDUCATIONAL_CONTENT suppressor must cancel TL-CRYP-001 and TL-MAL-002 even though their positive conditions are satisfied. This is the 'official educational/advisory language must be suppressible' requirement made into a test.",
+      "guards": ["CONF-002", "RSK-002", "G-07"]
     }
   ],
 
@@ -258,6 +295,44 @@
       "expected_indicators": ["KYC_PRETEXT", "ACCOUNT_BLOCK_THREAT", "URGENCY", "LOOKALIKE_DOMAIN", "CREDENTIAL_REQUEST_OTP", "CREDENTIAL_REQUEST_CARD"],
       "source_basis": ["SRC-004", "SRC-007"],
       "rationale": "The full KYC attack chain from RP p.12: pretext → link → credential request. Contrast with B-002, which shares the KYC pretext and nothing else.",
+      "guards": ["FR-031", "CONF-002"]
+    },
+    {
+      "id": "M-012",
+      "priority": "HIGH",
+      "channel": "WHATSAPP",
+      "language": "en",
+      "text": "This is your CEO. I'm in a board meeting and cannot take calls. I need you to urgently transfer Rs 4,50,000 to a vendor account I'll send now to close a deal. Keep this strictly confidential until it's done.",
+      "expected_outcome": "HIGH",
+      "expected_rules": ["TL-AUTH-003"],
+      "expected_indicators": ["EXECUTIVE_IMPERSONATION", "IMMEDIATE_PAYMENT_DEMAND", "URGENCY", "SECRECY_REQUEST"],
+      "source_basis": ["SRC-022"],
+      "rationale": "Boss-scam pattern verified by PIB/MHA (SRC-022, MR-EVID-004): senior-identity claim + urgent transfer + secrecy, over a messaging app. Contrast with B-011, which has seniority and urgency but no payment order.",
+      "guards": ["FR-031", "CONF-002"]
+    },
+    {
+      "id": "M-013",
+      "priority": "HIGH",
+      "channel": "SOCIAL",
+      "language": "en",
+      "text": "Your crypto airdrop is ready to claim! Verify your holdings at trust-wallet-verify.example and connect your wallet to confirm ownership. Continue with our agent on Telegram to release the funds.",
+      "expected_outcome": "HIGH",
+      "expected_rules": ["TL-CRYP-001"],
+      "expected_indicators": ["WALLET_CONNECT_REQUEST", "FAKE_VERIFICATION_SITE", "VERIFICATION_PRETEXT", "OFF_PLATFORM_HANDOFF", "LINK_PRESENT", "LOOKALIKE_DOMAIN"],
+      "source_basis": ["SRC-024"],
+      "rationale": "Matches the I4C CyberDost Trust Wallet chain (SRC-024, MR-EVID-010): fake verification site + wallet-connect request + off-platform handoff. Contrast with B-012, which mentions wallets but requests no connection.",
+      "guards": ["FR-031", "CONF-002"]
+    },
+    {
+      "id": "M-014",
+      "channel": "SMS",
+      "language": "en",
+      "text": "URGENT: Your SIM will be deactivated today due to incomplete verification. To keep your number active, dial *401*98765XXXXX# immediately from your phone. Act now to avoid disconnection.",
+      "expected_outcome": "HIGH",
+      "expected_rules": ["TL-TEL-001"],
+      "expected_indicators": ["USSD_CODE_DIAL_REQUEST", "URGENCY", "ACCOUNT_BLOCK_THREAT"],
+      "source_basis": ["SRC-013"],
+      "rationale": "The narrowed TL-TEL-001: a pressured request to dial a call-forwarding/USSD code, verified by I4C CyberDost (SRC-013, MR-EVID-008). Note there is NO courier pretext — that clause was removed as unsupported. Contrast with B-010, which is a plain delivery notice with no code to dial.",
       "guards": ["FR-031", "CONF-002"]
     }
   ],

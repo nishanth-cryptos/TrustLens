@@ -1,0 +1,81 @@
+{
+  "schema_version": "1.0.0",
+  "rule_version": "1.0.0",
+  "id": "TL-CRYP-001",
+  "legacy_id": "I4C-CRYPTO-023",
+  "name": "Connect your wallet to verify assets — crypto-drain pretext",
+  "description": "A crypto approach moves the target off-platform, sends them to a fake verification website, and asks them to connect their wallet to 'verify assets'. Connecting the wallet and approving a permission is what drains it. The signal is the wallet-connect request combined with a verification pretext and an off-platform or fake-site vector.",
+  "kind": "COMPOSITE",
+  "taxonomy_refs": ["TAX-05-05"],
+  "severity": "HIGH",
+
+  "evidence": {
+    "verdict": "PARTIAL",
+    "implementability": "YES",
+    "severity_cap": "HIGH",
+    "source_references": [
+      {
+        "source_id": "SRC-024",
+        "issuing_body": "I4C",
+        "authority": "OFFICIAL_GOVERNMENT",
+        "verification_status": "RETRIEVAL_FAILED",
+        "document_ref": "Advisory TAU-ADV-013 — Trust Wallet crypto scams (original PDF unavailable)",
+        "manual_retrieval": {
+          "evidence_class": "OFFICIAL_ALTERNATE",
+          "manual_retrieval_status": "OFFICIAL_ALTERNATE_VERIFIED",
+          "evidence_ids": ["MR-EVID-010"],
+          "retrieved_on": "2026-08-28",
+          "canonical_url": "https://www.t.me/s/cyberdosti4c?before=4348",
+          "locator": "I4C_Trust_Wallet_CyberDost.pdf pp.49-50",
+          "claim_match": "FULL_CONCEPT",
+          "review_status": "REVIEWED",
+          "review_role": "Threat Intelligence Lead",
+          "official_alternate_source": "CyberDost / I4C, Ministry of Home Affairs — https://www.t.me/s/cyberdosti4c",
+          "notes": "Original advisory PDF still unavailable (SRC-024 stays RETRIEVAL_FAILED). The official I4C CyberDost channel post matches the P2P contact -> WhatsApp/Telegram handoff -> fake verification site -> wallet connection -> permission -> fund transfer chain. OFFICIAL_ALTERNATE caps this rule at PARTIAL (ADR-0015)."
+        }
+      }
+    ]
+  },
+
+  "logic": {
+    "require": {
+      "all_of": [
+        "WALLET_CONNECT_REQUEST",
+        { "any_of": ["VERIFICATION_PRETEXT", "FAKE_VERIFICATION_SITE"] },
+        { "any_of": ["OFF_PLATFORM_HANDOFF", "LINK_PRESENT", "LOOKALIKE_DOMAIN"] }
+      ]
+    },
+    "min_evidence_classes": 2,
+    "suppressed_by": ["EDUCATIONAL_CONTENT", "NO_ACTION_REQUESTED", "TRANSACTION_NOTIFICATION"]
+  },
+
+  "lifecycle": {
+    "status": "PUBLISHED",
+    "created": "2026-08-28",
+    "last_reviewed": "2026-08-28",
+    "review_due": "2026-11-28",
+    "authored_by_role": "Knowledge Editor",
+    "approved_by_role": "Knowledge Approver"
+  },
+
+  "language_scope": {
+    "languages": ["en"],
+    "scripts": ["Latn"],
+    "on_unsupported_input": "FLAG_UNSUPPORTED"
+  },
+
+  "explanation": {
+    "plain": "You were asked to connect your crypto wallet to a website to 'verify' your assets. Connecting your wallet and approving the request can let a scammer move your funds out. Legitimate verification never needs you to connect your wallet to an unfamiliar site.",
+    "technical": "WALLET_CONNECT_REQUEST (device-action) + a verification pretext or fake verification site + an off-platform/link vector. Matches the I4C CyberDost Trust Wallet chain.",
+    "verification_steps": [
+      "Never connect your wallet to a site you reached from an unsolicited message.",
+      "Check the domain carefully; verification of holdings never requires a wallet connection."
+    ],
+    "why_confidence_limited": "Evidence is an official I4C CyberDost channel post (OFFICIAL_ALTERNATE), not the formal advisory PDF, which remains unreachable. The rule is capped at PARTIAL and needs a stronger indicator combination to reach the same risk band as a fully-primary rule."
+  },
+
+  "provenance": {
+    "source_severity_hint": { "value": 85, "label": "High", "cited_as": "RP p.8", "operational_use": false },
+    "notes": "UNSUPPORTED at Phase 1 (SRC-024 unreachable, G-01). Rebound to the official CyberDost/I4C post (MR-EVID-010) under DEC-006 / ADR-0015; verdict PARTIAL (capped), published with the seven official-alternate conditions recorded."
+  }
+}

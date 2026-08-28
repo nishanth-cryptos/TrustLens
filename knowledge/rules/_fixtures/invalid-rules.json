@@ -232,6 +232,52 @@
           "effect": "REDUCE"
         }
       }
+    },
+    {
+      "name": "published-on-failed-source-without-manual-evidence",
+      "expect_rejected_by": "LINT",
+      "reason": "DEC-006 / ADR-0015. A rule may not publish on a source the automated pass graded RETRIEVAL_FAILED unless a manual_retrieval block supplies real evidence. Honest verification_status (RETRIEVAL_FAILED) passes L6, but L11 refuses publication with no publishable-grade evidence behind it.",
+      "patch": {
+        "evidence": {
+          "verdict": "SUPPORTED",
+          "source_references": [
+            {
+              "source_id": "SRC-013",
+              "issuing_body": "I4C",
+              "authority": "OFFICIAL_GOVERNMENT",
+              "verification_status": "RETRIEVAL_FAILED"
+            }
+          ]
+        },
+        "lifecycle": { "status": "PUBLISHED", "approved_by_role": "Knowledge Approver" }
+      }
+    },
+    {
+      "name": "official-alternate-claiming-supported",
+      "expect_rejected_by": "LINT",
+      "reason": "DEC-006 / ADR-0015 class cap. Official-channel (OFFICIAL_ALTERNATE) evidence is genuine but a step below a formal advisory; it caps a rule at PARTIAL. A rule claiming SUPPORTED on it alone must be rejected.",
+      "patch": {
+        "evidence": {
+          "verdict": "SUPPORTED",
+          "source_references": [
+            {
+              "source_id": "SRC-019",
+              "issuing_body": "I4C",
+              "authority": "OFFICIAL_GOVERNMENT",
+              "verification_status": "RETRIEVAL_FAILED",
+              "manual_retrieval": {
+                "evidence_class": "OFFICIAL_ALTERNATE",
+                "manual_retrieval_status": "OFFICIAL_ALTERNATE_VERIFIED",
+                "evidence_ids": ["MR-EVID-009"],
+                "retrieved_on": "2026-08-28",
+                "locator": "I4C_Android_GOD_Mode_CyberDost.pdf p.11",
+                "claim_match": "FULL_CONCEPT",
+                "review_status": "REVIEWED"
+              }
+            }
+          ]
+        }
+      }
     }
   ]
 }

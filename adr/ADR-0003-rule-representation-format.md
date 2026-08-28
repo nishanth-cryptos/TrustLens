@@ -142,3 +142,23 @@ evidence that it does something:
 
 Outstanding for WP4: prove FR-028 by adding a new scam type through data alone, with zero engine
 lines changed, as an automated test.
+
+## Amendment — 2026-08-28 (manual-retrieval provenance)
+
+Following the RESEARCH-006 manual retrieval reconciliation and [DEC-006](../docs/00-program/decision-log.md) /
+[ADR-0015](ADR-0015-evidence-hierarchy-and-official-alternate-provenance.md), the two-layer model is
+extended, not changed:
+
+- **Schema.** `sourceReference` gains an optional additive `manual_retrieval` object. The automated
+  `verification_status` field is unchanged and still records the Phase-1 automated grade — so the
+  original manifest-agreement check (a rule may not overstate `verification_status`) is untouched.
+- **Linter, two new cross-file checks.** **L10** validates every `manual_retrieval` block against
+  `evidence-records.json` and the manifest's per-source overlay (evidence IDs resolve, SHA-256
+  recorded, evidence class agrees, claim wording does not exceed the source, review recorded when
+  published). **L11** enforces the ADR-0015 class caps: a rule may not publish on a failed source
+  with no manual evidence, and `OFFICIAL_ALTERNATE`/`INDUSTRY` evidence caps a rule at `PARTIAL`.
+- **Negative corpus** grows from 23 to 25: `published-on-failed-source-without-manual-evidence` and
+  `official-alternate-claiming-supported`, both LINT-caught.
+
+The layer split is preserved: schema shape stays in the schema, cross-file evidence knowledge stays
+in the linter.

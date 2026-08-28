@@ -1,0 +1,80 @@
+{
+  "schema_version": "1.0.0",
+  "rule_version": "1.0.0",
+  "id": "TL-MAL-002",
+  "legacy_id": "I4C-ACCESS-027",
+  "name": "Accessibility permission requested out of context after app/link delivery",
+  "description": "A message or app impersonating a trusted service asks the recipient to grant an Android Accessibility permission, which gives the app screen-reading and input-injection control. The signal is the out-of-context Accessibility request combined with a fake-app/link delivery vector.",
+  "kind": "COMPOSITE",
+  "taxonomy_refs": ["TAX-10-02"],
+  "severity": "HIGH",
+
+  "evidence": {
+    "verdict": "PARTIAL",
+    "implementability": "PARTIAL",
+    "severity_cap": "HIGH",
+    "source_references": [
+      {
+        "source_id": "SRC-019",
+        "issuing_body": "I4C",
+        "authority": "OFFICIAL_GOVERNMENT",
+        "verification_status": "RETRIEVAL_FAILED",
+        "document_ref": "Advisory TAU-ADV-012 — Android GOD Mode (original PDF unavailable)",
+        "manual_retrieval": {
+          "evidence_class": "OFFICIAL_ALTERNATE",
+          "manual_retrieval_status": "OFFICIAL_ALTERNATE_VERIFIED",
+          "evidence_ids": ["MR-EVID-009"],
+          "retrieved_on": "2026-08-28",
+          "canonical_url": "https://t.me/s/cyberdosti4c/4267",
+          "locator": "I4C_Android_GOD_Mode_CyberDost.pdf p.11",
+          "claim_match": "FULL_CONCEPT",
+          "review_status": "REVIEWED",
+          "review_role": "Threat Intelligence Lead",
+          "official_alternate_source": "CyberDost / I4C, Ministry of Home Affairs — https://t.me/s/cyberdosti4c/4267",
+          "notes": "Original advisory PDF still unavailable (SRC-019 stays RETRIEVAL_FAILED). The official I4C CyberDost post states Android God Mode abuses Accessibility permissions, impersonates trusted services, and is delivered via links/APKs/fake apps. OFFICIAL_ALTERNATE caps this rule at PARTIAL (ADR-0015)."
+        }
+      }
+    ]
+  },
+
+  "logic": {
+    "require": {
+      "all_of": [
+        "ACCESSIBILITY_PERMISSION_REQUEST",
+        { "any_of": ["FAKE_APP_IMPERSONATION", "LINK_PRESENT", "SHORTENED_URL", "BENIGN_PRETEXT_FOR_TECHNICAL_ACTION"] }
+      ]
+    },
+    "min_evidence_classes": 2,
+    "suppressed_by": ["EDUCATIONAL_CONTENT", "SECURITY_NOTIFICATION", "NO_PERMISSION_REQUEST", "OFFICIAL_APP_STORE_SOURCE"]
+  },
+
+  "lifecycle": {
+    "status": "APPROVED",
+    "created": "2026-08-28",
+    "last_reviewed": "2026-08-28",
+    "review_due": "2026-11-28",
+    "authored_by_role": "Knowledge Editor",
+    "approved_by_role": "Knowledge Approver"
+  },
+
+  "language_scope": {
+    "languages": ["en"],
+    "scripts": ["Latn"],
+    "on_unsupported_input": "FLAG_UNSUPPORTED"
+  },
+
+  "explanation": {
+    "plain": "An app or link asked you to switch on an Accessibility permission. That permission lets an app read your screen and tap for you — enough to empty your accounts. Do not enable it for an app you were sent through a message.",
+    "technical": "ACCESSIBILITY_PERMISSION_REQUEST (device-action) combined with a fake-app/link delivery vector. Matches the I4C CyberDost Android God Mode description.",
+    "verification_steps": [
+      "Never grant Accessibility to an app delivered by a link or message.",
+      "Uninstall the app and check Settings > Accessibility for anything you did not deliberately enable."
+    ],
+    "why_confidence_limited": "Evidence is an official I4C CyberDost channel post (OFFICIAL_ALTERNATE), not the formal advisory PDF. Implementability is PARTIAL: the permission grant itself is a device-side signal, so from text TrustLens sees the request but not the grant. Held at APPROVED, capped at PARTIAL."
+  },
+
+  "provenance": {
+    "source_severity_hint": { "value": 92, "label": "High", "cited_as": "RP p.8", "operational_use": false },
+    "notes": "UNSUPPORTED at Phase 1 (SRC-019 unreachable, G-01). Rebound to the official CyberDost/I4C post (MR-EVID-009) under DEC-006 / ADR-0015; PARTIAL (capped), APPROVED not PUBLISHED because the grant is a device-side signal."
+  }
+}

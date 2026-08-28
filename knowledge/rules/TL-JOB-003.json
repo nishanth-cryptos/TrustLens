@@ -1,0 +1,80 @@
+{
+  "schema_version": "1.0.0",
+  "rule_version": "1.0.0",
+  "id": "TL-JOB-003",
+  "legacy_id": "I4C-TASK-022",
+  "name": "Task/part-time job: deposit, fake earnings, blocked withdrawal, more payment",
+  "description": "An easy-income or task-completion lure leads to a deposit or commission, displays fake earnings, then blocks the withdrawal unless a further fee, tax or top-up is paid. The discriminating step is the blocked withdrawal tied to a further-payment demand — not the job framing.",
+  "kind": "COMPOSITE",
+  "taxonomy_refs": ["TAX-06-03"],
+  "severity": "HIGH",
+
+  "evidence": {
+    "verdict": "SUPPORTED",
+    "implementability": "PARTIAL",
+    "source_references": [
+      {
+        "source_id": "SRC-015",
+        "issuing_body": "I4C",
+        "authority": "OFFICIAL_GOVERNMENT",
+        "verification_status": "RETRIEVAL_FAILED",
+        "document_ref": "CybercrimeInformation-135 (original PDF unavailable) — rebound to official replacement pair",
+        "manual_retrieval": {
+          "evidence_class": "OFFICIAL_REPLACEMENT",
+          "manual_retrieval_status": "OFFICIAL_REPLACEMENT_COMPOSITE_VERIFIED",
+          "evidence_ids": ["MR-EVID-012", "MR-EVID-013"],
+          "retrieved_on": "2026-08-28",
+          "canonical_url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=1982936",
+          "locator": "PIB_MHA_Task_Based_Part_Time_Job_Fraud_2023.pdf p.1 (commission -> more investment -> frozen deposit); I4C_Fake_CAPTCHA_Filling_Jobs_2025.pdf p.1 (denied withdrawal -> further payment)",
+          "claim_match": "FULL_VIA_COMPOSITE",
+          "review_status": "REVIEWED",
+          "review_role": "Threat Intelligence Lead",
+          "replacement_source": "PIB/MHA PRID 1982936 (2023); I4C/NCTAU TAU-ADV-004 (2025)",
+          "notes": "Original SRC-015 PDF still unavailable — NOT resurrected. Two official issuing-body documents together substantiate the full chain; each individually is PARTIAL_OF_COMPOSITE, so claim_match records the pair, not an over-claimed FULL."
+        }
+      }
+    ]
+  },
+
+  "logic": {
+    "require": {
+      "all_of": [
+        { "any_of": ["TASK_EARNING_LURE", "JOB_CONTEXT"] },
+        { "any_of": ["DEPOSIT_FOR_EARNINGS", "UPFRONT_FEE_DEMAND", "PAYMENT_DEMAND"] },
+        "WITHDRAWAL_BLOCKED_PRETEXT"
+      ]
+    },
+    "min_evidence_classes": 2,
+    "suppressed_by": ["EXPLICIT_NO_FEE", "EDUCATIONAL_CONTENT", "NO_PAYMENT_REQUESTED"]
+  },
+
+  "lifecycle": {
+    "status": "APPROVED",
+    "created": "2026-08-28",
+    "last_reviewed": "2026-08-28",
+    "review_due": "2027-02-28",
+    "authored_by_role": "Knowledge Editor",
+    "approved_by_role": "Knowledge Approver"
+  },
+
+  "language_scope": {
+    "languages": ["en"],
+    "scripts": ["Latn"],
+    "on_unsupported_input": "FLAG_UNSUPPORTED"
+  },
+
+  "explanation": {
+    "plain": "A task or part-time job asked you to deposit money to earn more, then blocked your withdrawal until you pay a fee or tax. That is the trap: the 'earnings' are fake and every payment is lost. A real job never asks you to pay to get paid.",
+    "technical": "Task/earning lure + a deposit/fee + a blocked-withdrawal-with-further-payment pretext, spanning pretext, payment and pressure classes. Substantiated by the PIB-2023 + I4C-2025 official replacement pair.",
+    "verification_steps": [
+      "Stop paying immediately — a blocked withdrawal that needs another payment is the scam confirming itself.",
+      "Report to the 1930 cybercrime helpline; do not send the 'release fee'."
+    ],
+    "why_confidence_limited": "Held at APPROVED, not PUBLISHED: the full deposit -> fake-earnings -> blocked-withdrawal chain usually spans several messages, so TrustLens can only partially observe it from a single submission (implementability PARTIAL). Evidence itself is SUPPORTED via the official replacement pair."
+  },
+
+  "provenance": {
+    "source_severity_hint": { "value": 88, "label": "High", "cited_as": "RP p.8", "operational_use": false },
+    "notes": "UNSUPPORTED at Phase 1 (SRC-015 unreachable, G-01). Rebound to PIB-2023 + I4C-2025 official replacement documents (MR-EVID-012/013) under DEC-006 / ADR-0015; evidence SUPPORTED, but implementability remains PARTIAL because the full chain is multi-message. Kept out of the published set until journey context is available."
+  }
+}

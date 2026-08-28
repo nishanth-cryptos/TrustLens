@@ -7,7 +7,7 @@
 | Status | Draft |
 | Owner role | Technical Program Director |
 | Dependencies | PROGRAM-001, BASELINE-001 |
-| Last updated | 2026-08-14 |
+| Last updated | 2026-08-28 |
 
 The complete artifact plan across all eleven phases, with per-phase inputs, outputs, quality
 gates and **honest gate forecasts**. Forecasts are stated in advance so shortfalls are predicted
@@ -26,7 +26,7 @@ sequencing is by dependency. Relative sizing uses `S / M / L / XL` rather than f
 |---|---|---|---|---|---|
 | **0** | Program definition | PROGRAM-001, BASELINE-001, 4 registers, glossary, roadmap, ADR index + 2 ADRs | M | ✅ **Complete** | **`PARTIAL`** — achieved |
 | **1** | Research normalisation | RESEARCH-001…005, 3 knowledge files, seed corpus | L | ✅ **Complete** | **`PARTIAL`** — achieved ([GATE-001](GATE-001-phase-1-assessment.md)) |
-| 2 | Knowledge engineering | KB-001, rule JSON Schema, encoded rules, taxonomy | XL | ⬜ **Next** | `PASS` achievable |
+| 2 | Knowledge engineering | KB-001, rule JSON Schema, encoded rules, taxonomy | XL | 🟡 **In progress** | `PASS` achievable |
 | 3 | Detection engine design | DET-001 | XL | ⬜ | `PASS` achievable |
 | 4 | AI intelligence layer | AI-001 | L | ⬜ | `PASS` achievable |
 | 5 | Enterprise architecture | ARCH-001, ADR-0008…0013 | XL | ⬜ | `PASS` achievable |
@@ -100,13 +100,18 @@ score), [CONF-002](conflict-register.md) (three-layer indicator/composite/suppre
    from [RESEARCH-004](../01-research/RESEARCH-004-evidence-matrix.md). →
    [ADR-0003](../../adr/ADR-0003-rule-representation-format.md). Delivered with 7 reference rules,
    a cross-file linter and 23 negative fixtures; `30/30`.
-2. **Indicator families** — formalise the 12 positive families with IDs and extraction contracts.
-3. **Negative-indicator library** — [G-07](../01-research/RESEARCH-005-gap-register.md), the
-   highest-priority gap. None exist in the research package and CONF-002's architecture does not
-   function without them. Author as `HEURISTIC` from the inverse of verified guidance; validate
-   against the 10 benign seed cases.
-4. **Rule encoding** — 18 publishable, 10 `DRAFT`/`HEURISTIC` pending source access, 3 `DEFERRED`
-   with `blocked_by: INPUT_MODALITY`.
+2. 🟡 **Indicator families** — interim registry extended to v0.2.0 (86 indicators, +16 for the
+   reconciled rules); formal extraction contracts still outstanding.
+3. 🟡 **Negative-indicator library** — [G-07](../01-research/RESEARCH-005-gap-register.md), the
+   highest-priority gap. An interim suppressive set exists and is now **validated by the rule-runner**
+   against the benign corpus (incl. the adversarial official-educational post B-013); the full
+   authored library remains outstanding.
+4. 🟡 **Rule encoding** — **14 of 30 starter rules encoded** after the RESEARCH-006 reconciliation
+   (7 `PUBLISHED`, others `APPROVED`/`PEER_REVIEW`/`DRAFT`), plus 1 suppression rule (TL-SUP-001,
+   not a starter). **16 starter rules await encoding**: 11 eligible (SUPPORTED/PARTIAL, impl YES),
+   4 UNSUPPORTED, 1 DEFERRED — full reconciliation in [GATE-002 §5](GATE-002-phase-2-checkpoint.md).
+   The manual retrieval pass promoted 6 previously-blocked rules under [DEC-006](decision-log.md) /
+   [ADR-0015](../../adr/ADR-0015-evidence-hierarchy-and-official-alternate-provenance.md).
 5. **Taxonomy completion** — sextortion as `TAX-11` or a recorded decision to scope it out
    ([G-10](../01-research/RESEARCH-005-gap-register.md)); research pass on loan apps and mule
    accounts (G-12).
@@ -242,3 +247,4 @@ and when the sources are retrieved. The rest have runway.
 |---|---|---|---|
 | 1.0 | 2026-07-31 | Initial roadmap with per-phase gate forecasts. | Technical Program Director |
 | 1.1 | 2026-08-14 | Phase 1 closed at `PARTIAL`, matching forecast ([GATE-001](GATE-001-phase-1-assessment.md)). Phase 2 expanded into eight dependency-ordered work packages and marked next; OI-04 restated as blocking ADR-0014 only, not the whole phase; G-01 added to open blockers. | Technical Program Director |
+| 1.2 | 2026-08-28 | RESEARCH-006 manual retrieval reconciliation completed; Phase 2 marked **in progress** (WP1 done; WP2/3/4 partial — 15/30 rules encoded). Checkpoint recorded in [GATE-002](GATE-002-phase-2-checkpoint.md). | Technical Program Director |

@@ -11,7 +11,7 @@
 | Gate forecast | `PARTIAL` ([roadmap](roadmap.md#phase-1--official-threat-research-normalisation-)) |
 | **Gate result** | **`PARTIAL` — forecast achieved** |
 | Approved by | Programme, under [ASM-019](assumption-register.md) (authoring and approval are the same person at team size 1) |
-| Last updated | 2026-08-14 |
+| Last updated | 2026-08-28 (§7 reconciliation addendum) |
 
 ---
 
@@ -146,8 +146,38 @@ rule schema work that depends on language scope ([ADR-0014](../../adr/README.md)
 — rule JSON Schema, indicator families, negative-indicator library, rule encoding, taxonomy
 completion — are unblocked.
 
-## 7. Change history
+## 7. Addendum — RESEARCH-006 manual retrieval reconciliation (2026-08-28)
+
+A manual, human-in-the-loop retrieval pass ([RESEARCH-006](../01-research/RESEARCH-006-manual-retrieval-reconciliation.md))
+was executed after this gate closed — the exact closure path RESEARCH-001 §5 named for the structural
+retrieval block. It does not reopen the gate; it discharges residual risk that the gate accepted.
+
+**Effect on the three failed criteria:**
+
+| Criterion (from §3.3) | Was | Now | Note |
+|---|---|---|---|
+| All cited sources retrievable | ❌ 13/26 failed | ❌ **materially improved** | NPCI and PIB fully recovered; 3 of 4 rule-bearing I4C sources recovered via official channel/replacement. **SRC-002 (I4C index) and SRC-011 (Europol) still fail** — so the criterion is still not met, but the residual is now 2 low-impact sources, not 13. |
+| Knowledge base covers claimed language scope | ❌ zero non-English | ❌ **unchanged** | G-08 still open; blocked on OI-04. Manual retrieval added no non-English cues. |
+| Negative indicators available | ❌ none | 🟡 **in progress** | The interim indicator registry now carries a negative-indicator set (G-07); it is *validated* by the Phase-2 rule-runner against the benign corpus, not yet by this gate. |
+
+**Effect on residual risk (§5):**
+
+- **G-01** downgraded from "7 rules unsupported" to "2 rules unsupported (SRC-002 index)". Six blocked
+  rules recovered under DEC-006 / ADR-0015.
+- **ASM-016** (source reachability) — disproved for automated retrieval, **partially recovered** for
+  human-in-the-loop retrieval, exactly as RESEARCH-001 §5 predicted.
+
+**Gate result after reconciliation: remains `PARTIAL`.** Two gate criteria (full source
+retrievability, language scope) still genuinely fail, so `PASS` is still not honestly reachable. But
+the shortfall is now concentrated in an index page, a background report, and the language decision —
+not in half the source base. **Phase 2 continues from `PARTIAL`, which programme policy permits**
+([roadmap](roadmap.md): downstream work proceeds from a `PARTIAL` gate; G-01 was never a Phase-2
+blocker). The evidence-first discipline held throughout: no automated `RETRIEVAL_FAILED` status was
+overwritten, and every upgraded rule carries retained, hashed, human-reviewed provenance.
+
+## 8. Change history
 
 | Version | Date | Change | Author role |
 |---|---|---|---|
 | 1.0 | 2026-08-14 | Phase 1 gate assessed `PARTIAL`, matching forecast. Two manifest traceability defects found and fixed; consistency checker added as gate evidence; SM-10 charter amendment raised. | Technical Program Director |
+| 1.1 | 2026-08-28 | Addendum (§7) — RESEARCH-006 manual retrieval reconciliation discharged residual risk (G-01 6/8 rules recovered, NPCI/PIB fully recovered). Gate **remains `PARTIAL`**: language scope and full source retrievability still fail. Automated statuses preserved; DEC-006 / ADR-0015 govern the added evidence. | Technical Program Director |

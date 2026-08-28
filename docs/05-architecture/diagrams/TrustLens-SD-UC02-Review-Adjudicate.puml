@@ -1,0 +1,138 @@
+@startuml TrustLens_SD_UC02_Review_Adjudicate
+
+title <b>TrustLens  —  Sequence Diagram UC-02</b>\nReview Flagged Case  ·  Adjudicate Finding
+
+scale max 3800 width
+
+skinparam backgroundColor #F8FAFC
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam shadowing false
+skinparam dpi 150
+skinparam maxMessageSize 210
+
+skinparam sequence {
+    ArrowColor                 #444444
+    ArrowFontSize              10
+    LifeLineBorderColor        #90A4AE
+    LifeLineBackgroundColor    #ECEFF1
+    ParticipantBackgroundColor #1F3864
+    ParticipantBorderColor     #0D2137
+    ParticipantFontColor       #FFFFFF
+    ParticipantFontSize        11
+    ActorBackgroundColor       #FFFFFF
+    ActorBorderColor           #0D2137
+    GroupBackgroundColor       #BBDEFB
+    GroupBorderColor           #1565C0
+    GroupBodyBackgroundColor   #FFFFFF
+    GroupFontColor             #0D2137
+    DividerBackgroundColor     #E3F2FD
+}
+
+skinparam database {
+    BackgroundColor #FFF8E1
+    BorderColor     #E65100
+    FontColor       #4E342E
+}
+
+skinparam note {
+    BackgroundColor #FFFDE7
+    BorderColor     #C0A050
+    FontSize        10
+}
+
+actor       "Security Analyst"        as AN
+participant "Q : ReviewQueueUI"       as Q
+participant "CS : CaseService"        as CS
+participant "AS : AuthorizationService" as AS
+database    "D2 : CaseStore"          as D2
+database    "D5 : AnalysisRecord"     as D5
+database    "D6 : AuditLog"           as D6
+
+autonumber
+
+AN -> Q : OpenReviewQueue()
+activate AN
+activate Q
+Q -> CS : ListQueuedCases(UID)
+activate CS
+CS -> AS : Authorize(REVIEW_CASE, UID)
+activate AS
+AS --> CS : Authorization
+deactivate AS
+
+alt Authorisation OK
+    CS -> D2 : SelectCases(state = QUEUED_FOR_REVIEW)
+    activate D2
+    D2 --> CS : case list
+    deactivate D2
+    CS --> Q : queued cases (oldest first)
+else Authorisation Fail
+    CS --> Q : Error(NO_ACCESS)
+    Q --> AN : Access denied
+end
+deactivate CS
+
+== Open one case (FR 4.5.3.1) ==
+
+loop for each case the analyst takes
+    AN -> Q : OpenCase(caseId)
+    Q -> CS : GetCaseDecomposition(caseId, UID)
+    activate CS
+    CS -> D2 : Read case, artifacts, findings
+    activate D2
+    D2 --> CS : case + findings
+    deactivate D2
+    CS -> D5 : ReadPinnedAnalysis(caseId)
+    activate D5
+    D5 --> CS : ruleSetVersion, matched rules,\nrules considered but not matched + reason,\nnegative evidence, full score breakdown
+    deactivate D5
+    CS --> Q : full decomposition
+    deactivate CS
+    Q --> AN : Case view — risk, confidence, severity and\nevidence quality shown separately
+
+    note over AN, Q : **Adjudicate**  (FR 4.5.3.2)
+
+    alt Analyst agrees with the engine
+        AN -> Q : Adjudicate(caseId, AGREE, rationale)
+    else Analyst overrides the engine
+        AN -> Q : Adjudicate(caseId, OVERRIDE,\nnewOutcome, rationale)
+    else Evidence still insufficient
+        AN -> Q : Adjudicate(caseId,\nINSUFFICIENT_EVIDENCE, rationale)
+    end
+
+    Q -> CS : RecordAdjudication(caseId, decision,\nrationale, UID)
+    activate CS
+    CS -> AS : Authorize(ADJUDICATE, UID)
+    activate AS
+    AS --> CS : Authorization
+    deactivate AS
+
+    create participant "A : Adjudication" as A
+    CS -> A : «create» (decision, rationale,\nUID, analysisId, timestamp)
+    activate A
+    A --> CS : adjudicationId
+    deactivate A
+
+    CS -> D2 : Persist adjudication;\nupdate case state = ADJUDICATED
+    activate D2
+    D2 --> CS : OK
+    deactivate D2
+    CS -> D6 : Write audit event\n(every override is audited)
+    activate D6
+    D6 --> CS : OK
+    deactivate D6
+    CS --> Q : Message(OK, caseId, adjudicationId)
+    deactivate CS
+    Q --> AN : Case closed; next case presented
+end
+
+deactivate Q
+deactivate AN
+
+note across
+  An adjudication changes **this case only**. It never triggers an automatic change to
+  rules, thresholds or scoring — the rule set moves only through UC-03  (SRS 4.5.1, 4.5.3.3)
+end note
+
+@enduml

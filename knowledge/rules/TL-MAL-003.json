@@ -1,0 +1,79 @@
+{
+  "schema_version": "1.0.0",
+  "rule_version": "1.0.0",
+  "id": "TL-MAL-003",
+  "legacy_id": "HDFC-SHARE-028",
+  "name": "Screen-sharing / remote-control app requested during a banking interaction",
+  "description": "The recipient is asked to install a screen-sharing or remote-control app (AnyDesk, TeamViewer, AirDroid) in the context of a banking or payment interaction, letting an attacker watch the screen and drive the device. The signal is the screen-share app request combined with a banking/authority or payment context.",
+  "kind": "COMPOSITE",
+  "taxonomy_refs": ["TAX-10-03"],
+  "severity": "HIGH",
+
+  "evidence": {
+    "verdict": "PARTIAL",
+    "implementability": "YES",
+    "severity_cap": "HIGH",
+    "source_references": [
+      {
+        "source_id": "SRC-026",
+        "issuing_body": "HDFC Bank",
+        "authority": "INDUSTRY",
+        "verification_status": "RETRIEVAL_FAILED",
+        "document_ref": "HDFC 'Security Threat Detected' page (current canonical)",
+        "manual_retrieval": {
+          "evidence_class": "INDUSTRY",
+          "manual_retrieval_status": "CURRENT_CANONICAL_RETRIEVED",
+          "evidence_ids": ["MR-EVID-006"],
+          "retrieved_on": "2026-08-15",
+          "canonical_url": "https://www.hdfc.bank.in/important-messages/security-threat-detected",
+          "locator": "HDFC_Security_Threat_Detected.pdf p.1",
+          "claim_match": "FULL_FOR_SCREEN_SHARE_CONCEPT",
+          "review_status": "REVIEWED",
+          "review_role": "Threat Intelligence Lead",
+          "replacement_source": "HDFC Bank — https://www.hdfc.bank.in/important-messages/security-threat-detected",
+          "notes": "Original HDFC page (SRC-008) is dead (D5). Current HDFC page explicitly names AnyDesk/TeamViewer/AirDroid as screen-sharing threats. INDUSTRY evidence corroborates but does not authorise; caps this rule at PARTIAL (ADR-0015)."
+        }
+      }
+    ]
+  },
+
+  "logic": {
+    "require": {
+      "all_of": [
+        "SCREEN_SHARE_APP_REQUEST",
+        { "any_of": ["AUTHORITY_IMPERSONATION_BANK", "PAYMENT_CONTEXT", "KYC_PRETEXT", "BENIGN_PRETEXT_FOR_TECHNICAL_ACTION"] }
+      ]
+    },
+    "min_evidence_classes": 2,
+    "suppressed_by": ["IT_SUPPORT_CONTEXT", "EDUCATIONAL_CONTENT", "NO_PERMISSION_REQUEST", "SECURITY_NOTIFICATION"]
+  },
+
+  "lifecycle": {
+    "status": "PEER_REVIEW",
+    "created": "2026-08-28",
+    "last_reviewed": "2026-08-28",
+    "review_due": "2026-11-28",
+    "authored_by_role": "Knowledge Editor"
+  },
+
+  "language_scope": {
+    "languages": ["en"],
+    "scripts": ["Latn"],
+    "on_unsupported_input": "FLAG_UNSUPPORTED"
+  },
+
+  "explanation": {
+    "plain": "Someone helping you with a banking problem asked you to install AnyDesk, TeamViewer or a similar screen-sharing app. That lets them see your screen and control your phone while you bank. Your bank will never ask you to install one of these.",
+    "technical": "SCREEN_SHARE_APP_REQUEST (device-action) with a banking/authority or payment context. Named on HDFC's current security page and corroborated by NPCI's remote-access warning.",
+    "verification_steps": [
+      "Never install a screen-sharing app at the request of someone contacting you about your bank account.",
+      "If you already installed one, uninstall it and call your bank on the number on your card."
+    ],
+    "why_confidence_limited": "The strongest available evidence is a commercial bank page (INDUSTRY), corroborated by NPCI's official remote-access warning. Held at PEER_REVIEW and capped at PARTIAL; a legitimate, user-initiated IT-support session (IT_SUPPORT_CONTEXT) suppresses it."
+  },
+
+  "provenance": {
+    "source_severity_hint": { "value": 90, "label": "High", "cited_as": "RP p.8", "operational_use": false },
+    "notes": "UNSUPPORTED at Phase 1 (dead HDFC SRC-008, D5). Reconciled to the current HDFC page (SRC-026, MR-EVID-006) under DEC-006 / ADR-0015; INDUSTRY evidence, PARTIAL (capped). No manifest blocks_rules mapping was invented for SRC-026; the rule mapping is recorded in RESEARCH-004."
+  }
+}
