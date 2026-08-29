@@ -1,6 +1,6 @@
 {
   "$comment": "TrustLens canonical scam taxonomy. Machine-readable companion to docs/01-research/RESEARCH-002-scam-taxonomy.md. evidence: VERIFIED | PARTIAL | UNVERIFIED, derived from the RESEARCH-001 verification pass. Categories are NOT mutually exclusive.",
-  "taxonomy_version": "1.0",
+  "taxonomy_version": "2.0",
   "generated": "2026-07-31",
   "locale_scope": "IN",
   "usage_rules": [
@@ -11,99 +11,1562 @@
   ],
   "categories": [
     {
-      "id": "TAX-01", "name": "Financial fraud", "evidence": "VERIFIED", "sources": ["SRC-021", "SRC-004"],
+      "id": "TAX-01",
+      "name": "Financial fraud",
+      "evidence": "VERIFIED",
+      "sources": [
+        "SRC-021",
+        "SRC-004"
+      ],
       "subcategories": [
-        {"id": "TAX-01-01", "name": "Banking credential theft", "evidence": "VERIFIED", "sources": ["SRC-004"]},
-        {"id": "TAX-01-02", "name": "UPI PIN fraud", "evidence": "VERIFIED", "sources": ["SRC-021"]},
-        {"id": "TAX-01-03", "name": "QR-code payment misuse", "evidence": "VERIFIED", "sources": ["SRC-021"]},
-        {"id": "TAX-01-04", "name": "Fake refund or false-credit claim", "evidence": "UNVERIFIED", "sources": ["SRC-008"], "note": "HDFC only; link rot D5"},
-        {"id": "TAX-01-05", "name": "Loan-app abuse", "evidence": "UNVERIFIED", "sources": []},
-        {"id": "TAX-01-06", "name": "Mule account and illegal payment gateway", "evidence": "UNVERIFIED", "sources": []},
-        {"id": "TAX-01-07", "name": "Card, CVV and OTP fraud", "evidence": "VERIFIED", "sources": ["SRC-004"]}
-      ]
+        {
+          "id": "TAX-01-01",
+          "name": "Banking credential theft",
+          "evidence": "VERIFIED",
+          "sources": [
+            "SRC-004"
+          ],
+          "evidence_maturity": "PRIMARY",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "dimensions": {
+            "fraud_objective": [
+              "FO-01"
+            ],
+            "technical_mechanism": [
+              "TM-11",
+              "TM-01"
+            ],
+            "typical_channels": [
+              "CH-01",
+              "CH-03",
+              "CH-07"
+            ],
+            "social_engineering_tactics": [
+              "SE-01",
+              "SE-03"
+            ],
+            "requested_user_actions": [
+              "UA-01"
+            ],
+            "potential_harm": [
+              "PH-01",
+              "PH-04"
+            ]
+          }
+        },
+        {
+          "id": "TAX-01-02",
+          "name": "UPI PIN fraud",
+          "evidence": "VERIFIED",
+          "sources": [
+            "SRC-021"
+          ],
+          "evidence_maturity": "PRIMARY",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "dimensions": {
+            "fraud_objective": [
+              "FO-01",
+              "FO-02"
+            ],
+            "technical_mechanism": [
+              "TM-11",
+              "TM-02"
+            ],
+            "typical_channels": [
+              "CH-01",
+              "CH-08"
+            ],
+            "social_engineering_tactics": [
+              "SE-08",
+              "SE-02"
+            ],
+            "requested_user_actions": [
+              "UA-02"
+            ],
+            "potential_harm": [
+              "PH-01"
+            ]
+          }
+        },
+        {
+          "id": "TAX-01-03",
+          "name": "QR-code payment misuse",
+          "evidence": "VERIFIED",
+          "sources": [
+            "SRC-021"
+          ],
+          "evidence_maturity": "PRIMARY",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "dimensions": {
+            "fraud_objective": [
+              "FO-02"
+            ],
+            "technical_mechanism": [
+              "TM-02"
+            ],
+            "typical_channels": [
+              "CH-08",
+              "CH-02"
+            ],
+            "social_engineering_tactics": [
+              "SE-08"
+            ],
+            "requested_user_actions": [
+              "UA-04",
+              "UA-03"
+            ],
+            "potential_harm": [
+              "PH-01"
+            ]
+          }
+        },
+        {
+          "id": "TAX-01-04",
+          "name": "Fake refund or false-credit claim",
+          "evidence": "UNVERIFIED",
+          "sources": [
+            "SRC-008"
+          ],
+          "note": "HDFC only; link rot D5",
+          "evidence_maturity": "NO_PRIMARY_SOURCE",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "dimensions": {
+            "fraud_objective": [
+              "FO-02"
+            ],
+            "technical_mechanism": [
+              "TM-10"
+            ],
+            "typical_channels": [
+              "CH-01"
+            ],
+            "social_engineering_tactics": [
+              "SE-08"
+            ],
+            "requested_user_actions": [
+              "UA-03"
+            ],
+            "potential_harm": [
+              "PH-01"
+            ]
+          }
+        },
+        {
+          "id": "TAX-01-05",
+          "name": "Loan-app abuse",
+          "evidence": "UNVERIFIED",
+          "sources": [],
+          "evidence_maturity": "NO_PRIMARY_SOURCE",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "dimensions": {
+            "fraud_objective": [
+              "FO-02",
+              "FO-07"
+            ],
+            "technical_mechanism": [
+              "TM-06"
+            ],
+            "typical_channels": [
+              "CH-01",
+              "CH-04"
+            ],
+            "social_engineering_tactics": [
+              "SE-08",
+              "SE-03"
+            ],
+            "requested_user_actions": [
+              "UA-05"
+            ],
+            "potential_harm": [
+              "PH-01",
+              "PH-04"
+            ]
+          }
+        },
+        {
+          "id": "TAX-01-06",
+          "name": "Mule account and illegal payment gateway",
+          "evidence": "UNVERIFIED",
+          "sources": [],
+          "evidence_maturity": "NO_PRIMARY_SOURCE",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "dimensions": {
+            "fraud_objective": [
+              "FO-02"
+            ],
+            "technical_mechanism": [],
+            "typical_channels": [
+              "CH-02"
+            ],
+            "social_engineering_tactics": [
+              "SE-08"
+            ],
+            "requested_user_actions": [
+              "UA-03"
+            ],
+            "potential_harm": [
+              "PH-01"
+            ]
+          }
+        },
+        {
+          "id": "TAX-01-07",
+          "name": "Card, CVV and OTP fraud",
+          "evidence": "VERIFIED",
+          "sources": [
+            "SRC-004"
+          ],
+          "evidence_maturity": "PRIMARY",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "dimensions": {
+            "fraud_objective": [
+              "FO-01"
+            ],
+            "technical_mechanism": [
+              "TM-11",
+              "TM-01"
+            ],
+            "typical_channels": [
+              "CH-03",
+              "CH-07"
+            ],
+            "social_engineering_tactics": [
+              "SE-02",
+              "SE-03"
+            ],
+            "requested_user_actions": [
+              "UA-01"
+            ],
+            "potential_harm": [
+              "PH-01"
+            ]
+          }
+        }
+      ],
+      "status": "ACTIVE",
+      "version": "1.0.0"
     },
     {
-      "id": "TAX-02", "name": "Identity and KYC fraud", "evidence": "VERIFIED", "sources": ["SRC-007"],
+      "id": "TAX-02",
+      "name": "Identity and KYC fraud",
+      "evidence": "VERIFIED",
+      "sources": [
+        "SRC-007"
+      ],
       "subcategories": [
-        {"id": "TAX-02-01", "name": "Fake KYC-update link", "evidence": "PARTIAL", "sources": ["SRC-007"]},
-        {"id": "TAX-02-02", "name": "KYC verification call", "evidence": "PARTIAL", "sources": ["SRC-007", "SRC-012"]},
-        {"id": "TAX-02-03", "name": "SIM binding or SIM swap", "evidence": "PARTIAL", "sources": ["SRC-007"]},
-        {"id": "TAX-02-04", "name": "Customer-care impersonation", "evidence": "UNVERIFIED", "sources": ["SRC-008"]}
-      ]
+        {
+          "id": "TAX-02-01",
+          "name": "Fake KYC-update link",
+          "evidence": "PARTIAL",
+          "sources": [
+            "SRC-007"
+          ],
+          "evidence_maturity": "PARTIAL",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "dimensions": {
+            "fraud_objective": [
+              "FO-07",
+              "FO-01"
+            ],
+            "technical_mechanism": [
+              "TM-01",
+              "TM-11"
+            ],
+            "typical_channels": [
+              "CH-01"
+            ],
+            "social_engineering_tactics": [
+              "SE-01",
+              "SE-03"
+            ],
+            "requested_user_actions": [
+              "UA-09",
+              "UA-01"
+            ],
+            "potential_harm": [
+              "PH-04",
+              "PH-02"
+            ]
+          }
+        },
+        {
+          "id": "TAX-02-02",
+          "name": "KYC verification call",
+          "evidence": "PARTIAL",
+          "sources": [
+            "SRC-007",
+            "SRC-012"
+          ],
+          "evidence_maturity": "PARTIAL",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "dimensions": {
+            "fraud_objective": [
+              "FO-07"
+            ],
+            "technical_mechanism": [
+              "TM-10",
+              "TM-11"
+            ],
+            "typical_channels": [
+              "CH-05"
+            ],
+            "social_engineering_tactics": [
+              "SE-01"
+            ],
+            "requested_user_actions": [
+              "UA-01"
+            ],
+            "potential_harm": [
+              "PH-04"
+            ]
+          }
+        },
+        {
+          "id": "TAX-02-03",
+          "name": "SIM binding or SIM swap",
+          "evidence": "PARTIAL",
+          "sources": [
+            "SRC-007"
+          ],
+          "evidence_maturity": "PARTIAL",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "dimensions": {
+            "fraud_objective": [
+              "FO-03"
+            ],
+            "technical_mechanism": [
+              "TM-03"
+            ],
+            "typical_channels": [
+              "CH-05",
+              "CH-01"
+            ],
+            "social_engineering_tactics": [
+              "SE-01"
+            ],
+            "requested_user_actions": [
+              "UA-10"
+            ],
+            "potential_harm": [
+              "PH-02"
+            ]
+          }
+        },
+        {
+          "id": "TAX-02-04",
+          "name": "Customer-care impersonation",
+          "evidence": "UNVERIFIED",
+          "sources": [
+            "SRC-008"
+          ],
+          "evidence_maturity": "NO_PRIMARY_SOURCE",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "dimensions": {
+            "fraud_objective": [
+              "FO-01"
+            ],
+            "technical_mechanism": [
+              "TM-10"
+            ],
+            "typical_channels": [
+              "CH-05"
+            ],
+            "social_engineering_tactics": [
+              "SE-01"
+            ],
+            "requested_user_actions": [
+              "UA-01"
+            ],
+            "potential_harm": [
+              "PH-01"
+            ]
+          }
+        }
+      ],
+      "status": "ACTIVE",
+      "version": "1.0.0"
     },
     {
-      "id": "TAX-03", "name": "Government and authority impersonation", "evidence": "VERIFIED", "sources": ["SRC-012", "SRC-007"],
+      "id": "TAX-03",
+      "name": "Government and authority impersonation",
+      "evidence": "VERIFIED",
+      "sources": [
+        "SRC-012",
+        "SRC-007"
+      ],
       "subcategories": [
-        {"id": "TAX-03-01", "name": "Digital arrest", "evidence": "VERIFIED", "sources": ["SRC-012"], "note": "Complete modus operandi quoted in source"},
-        {"id": "TAX-03-02", "name": "Law-enforcement impersonation", "evidence": "VERIFIED", "sources": ["SRC-012"]},
-        {"id": "TAX-03-03", "name": "Government-official impersonation", "evidence": "VERIFIED", "sources": ["SRC-007"]},
-        {"id": "TAX-03-04", "name": "Executive impersonation (boss scam)", "evidence": "UNVERIFIED", "sources": ["SRC-022"]}
-      ]
+        {
+          "id": "TAX-03-01",
+          "name": "Digital arrest",
+          "evidence": "VERIFIED",
+          "sources": [
+            "SRC-012"
+          ],
+          "note": "Complete modus operandi quoted in source",
+          "evidence_maturity": "PRIMARY",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "dimensions": {
+            "fraud_objective": [
+              "FO-06"
+            ],
+            "technical_mechanism": [
+              "TM-10"
+            ],
+            "typical_channels": [
+              "CH-05",
+              "CH-06"
+            ],
+            "social_engineering_tactics": [
+              "SE-01",
+              "SE-03",
+              "SE-06"
+            ],
+            "requested_user_actions": [
+              "UA-03"
+            ],
+            "potential_harm": [
+              "PH-06"
+            ]
+          }
+        },
+        {
+          "id": "TAX-03-02",
+          "name": "Law-enforcement impersonation",
+          "evidence": "VERIFIED",
+          "sources": [
+            "SRC-012"
+          ],
+          "evidence_maturity": "PRIMARY",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "dimensions": {
+            "fraud_objective": [
+              "FO-06"
+            ],
+            "technical_mechanism": [
+              "TM-10"
+            ],
+            "typical_channels": [
+              "CH-05"
+            ],
+            "social_engineering_tactics": [
+              "SE-01",
+              "SE-03"
+            ],
+            "requested_user_actions": [
+              "UA-03"
+            ],
+            "potential_harm": [
+              "PH-06"
+            ]
+          }
+        },
+        {
+          "id": "TAX-03-03",
+          "name": "Government-official impersonation",
+          "evidence": "VERIFIED",
+          "sources": [
+            "SRC-007"
+          ],
+          "evidence_maturity": "PRIMARY",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "dimensions": {
+            "fraud_objective": [
+              "FO-06",
+              "FO-02"
+            ],
+            "technical_mechanism": [
+              "TM-10"
+            ],
+            "typical_channels": [
+              "CH-05"
+            ],
+            "social_engineering_tactics": [
+              "SE-01"
+            ],
+            "requested_user_actions": [
+              "UA-03"
+            ],
+            "potential_harm": [
+              "PH-06"
+            ]
+          }
+        },
+        {
+          "id": "TAX-03-04",
+          "name": "Executive impersonation (boss scam)",
+          "evidence": "UNVERIFIED",
+          "sources": [
+            "SRC-022"
+          ],
+          "evidence_maturity": "PRIMARY_MANUAL",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "dimensions": {
+            "fraud_objective": [
+              "FO-02"
+            ],
+            "technical_mechanism": [
+              "TM-10"
+            ],
+            "typical_channels": [
+              "CH-02"
+            ],
+            "social_engineering_tactics": [
+              "SE-01",
+              "SE-02",
+              "SE-06"
+            ],
+            "requested_user_actions": [
+              "UA-03"
+            ],
+            "potential_harm": [
+              "PH-01"
+            ]
+          }
+        }
+      ],
+      "status": "ACTIVE",
+      "version": "1.0.0"
     },
     {
-      "id": "TAX-04", "name": "Telecom and device hijack fraud", "evidence": "PARTIAL", "sources": ["SRC-007"],
+      "id": "TAX-04",
+      "name": "Telecom and device hijack fraud",
+      "evidence": "PARTIAL",
+      "sources": [
+        "SRC-007"
+      ],
       "subcategories": [
-        {"id": "TAX-04-01", "name": "USSD call forwarding", "evidence": "UNVERIFIED", "sources": ["SRC-013"]},
-        {"id": "TAX-04-02", "name": "Caller-ID spoofing", "evidence": "PARTIAL", "sources": ["SRC-012"]},
-        {"id": "TAX-04-03", "name": "SIM misuse", "evidence": "PARTIAL", "sources": ["SRC-007"]}
-      ]
+        {
+          "id": "TAX-04-01",
+          "name": "USSD call forwarding",
+          "evidence": "UNVERIFIED",
+          "sources": [
+            "SRC-013"
+          ],
+          "evidence_maturity": "OFFICIAL_ALTERNATE",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "dimensions": {
+            "fraud_objective": [
+              "FO-03"
+            ],
+            "technical_mechanism": [
+              "TM-08"
+            ],
+            "typical_channels": [
+              "CH-01",
+              "CH-05"
+            ],
+            "social_engineering_tactics": [
+              "SE-02",
+              "SE-03"
+            ],
+            "requested_user_actions": [
+              "UA-07"
+            ],
+            "potential_harm": [
+              "PH-02"
+            ]
+          }
+        },
+        {
+          "id": "TAX-04-02",
+          "name": "Caller-ID spoofing",
+          "evidence": "PARTIAL",
+          "sources": [
+            "SRC-012"
+          ],
+          "evidence_maturity": "PARTIAL",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "dimensions": {
+            "fraud_objective": [
+              "FO-06"
+            ],
+            "technical_mechanism": [
+              "TM-10"
+            ],
+            "typical_channels": [
+              "CH-05"
+            ],
+            "social_engineering_tactics": [
+              "SE-01"
+            ],
+            "requested_user_actions": [],
+            "potential_harm": [
+              "PH-06"
+            ]
+          }
+        },
+        {
+          "id": "TAX-04-03",
+          "name": "SIM misuse",
+          "evidence": "PARTIAL",
+          "sources": [
+            "SRC-007"
+          ],
+          "evidence_maturity": "PARTIAL",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "dimensions": {
+            "fraud_objective": [
+              "FO-03"
+            ],
+            "technical_mechanism": [
+              "TM-03"
+            ],
+            "typical_channels": [
+              "CH-05"
+            ],
+            "social_engineering_tactics": [
+              "SE-01"
+            ],
+            "requested_user_actions": [],
+            "potential_harm": [
+              "PH-02"
+            ]
+          }
+        }
+      ],
+      "status": "ACTIVE",
+      "version": "1.0.0"
     },
     {
-      "id": "TAX-05", "name": "Investment and wealth-building fraud", "evidence": "VERIFIED", "sources": ["SRC-006", "SRC-020"],
+      "id": "TAX-05",
+      "name": "Investment and wealth-building fraud",
+      "evidence": "VERIFIED",
+      "sources": [
+        "SRC-006",
+        "SRC-020"
+      ],
       "subcategories": [
-        {"id": "TAX-05-01", "name": "Assured or guaranteed returns", "evidence": "VERIFIED", "sources": ["SRC-006", "SRC-020"]},
-        {"id": "TAX-05-02", "name": "Unregistered investment adviser", "evidence": "VERIFIED", "sources": ["SRC-006"]},
-        {"id": "TAX-05-03", "name": "Fake trading platform or app", "evidence": "PARTIAL", "sources": ["SRC-006"]},
-        {"id": "TAX-05-04", "name": "Deepfake or social-media trading tip", "evidence": "PARTIAL", "sources": ["SRC-023"]},
-        {"id": "TAX-05-05", "name": "Crypto wallet-verification drain", "evidence": "UNVERIFIED", "sources": ["SRC-024"]}
-      ]
+        {
+          "id": "TAX-05-01",
+          "name": "Assured or guaranteed returns",
+          "evidence": "VERIFIED",
+          "sources": [
+            "SRC-006",
+            "SRC-020"
+          ],
+          "evidence_maturity": "PRIMARY",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "dimensions": {
+            "fraud_objective": [
+              "FO-05"
+            ],
+            "technical_mechanism": [
+              "TM-10"
+            ],
+            "typical_channels": [
+              "CH-02",
+              "CH-04"
+            ],
+            "social_engineering_tactics": [
+              "SE-08",
+              "SE-04"
+            ],
+            "requested_user_actions": [
+              "UA-03"
+            ],
+            "potential_harm": [
+              "PH-01"
+            ]
+          }
+        },
+        {
+          "id": "TAX-05-02",
+          "name": "Unregistered investment adviser",
+          "evidence": "VERIFIED",
+          "sources": [
+            "SRC-006"
+          ],
+          "evidence_maturity": "PRIMARY",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "dimensions": {
+            "fraud_objective": [
+              "FO-05"
+            ],
+            "technical_mechanism": [
+              "TM-10"
+            ],
+            "typical_channels": [
+              "CH-02",
+              "CH-04"
+            ],
+            "social_engineering_tactics": [
+              "SE-08"
+            ],
+            "requested_user_actions": [
+              "UA-03"
+            ],
+            "potential_harm": [
+              "PH-01"
+            ]
+          }
+        },
+        {
+          "id": "TAX-05-03",
+          "name": "Fake trading platform or app",
+          "evidence": "PARTIAL",
+          "sources": [
+            "SRC-006"
+          ],
+          "evidence_maturity": "PARTIAL",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "dimensions": {
+            "fraud_objective": [
+              "FO-05"
+            ],
+            "technical_mechanism": [
+              "TM-01"
+            ],
+            "typical_channels": [
+              "CH-07",
+              "CH-02"
+            ],
+            "social_engineering_tactics": [
+              "SE-08"
+            ],
+            "requested_user_actions": [
+              "UA-03",
+              "UA-09"
+            ],
+            "potential_harm": [
+              "PH-01"
+            ]
+          }
+        },
+        {
+          "id": "TAX-05-04",
+          "name": "Deepfake or social-media trading tip",
+          "evidence": "PARTIAL",
+          "sources": [
+            "SRC-023"
+          ],
+          "evidence_maturity": "PRIMARY_PARTIAL",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "dimensions": {
+            "fraud_objective": [
+              "FO-05"
+            ],
+            "technical_mechanism": [
+              "TM-10"
+            ],
+            "typical_channels": [
+              "CH-04"
+            ],
+            "social_engineering_tactics": [
+              "SE-08",
+              "SE-05"
+            ],
+            "requested_user_actions": [
+              "UA-03"
+            ],
+            "potential_harm": [
+              "PH-01"
+            ]
+          }
+        },
+        {
+          "id": "TAX-05-05",
+          "name": "Crypto wallet-verification drain",
+          "evidence": "UNVERIFIED",
+          "sources": [
+            "SRC-024"
+          ],
+          "evidence_maturity": "OFFICIAL_ALTERNATE",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "dimensions": {
+            "fraud_objective": [
+              "FO-02",
+              "FO-04"
+            ],
+            "technical_mechanism": [
+              "TM-07",
+              "TM-09"
+            ],
+            "typical_channels": [
+              "CH-04",
+              "CH-02"
+            ],
+            "social_engineering_tactics": [
+              "SE-08",
+              "SE-07"
+            ],
+            "requested_user_actions": [
+              "UA-08"
+            ],
+            "potential_harm": [
+              "PH-01"
+            ]
+          }
+        }
+      ],
+      "status": "ACTIVE",
+      "version": "1.0.0"
     },
     {
-      "id": "TAX-06", "name": "Employment and income scams", "evidence": "VERIFIED", "sources": ["SRC-021"],
+      "id": "TAX-06",
+      "name": "Employment and income scams",
+      "evidence": "VERIFIED",
+      "sources": [
+        "SRC-021"
+      ],
       "subcategories": [
-        {"id": "TAX-06-01", "name": "Fake job or placement fee", "evidence": "VERIFIED", "sources": ["SRC-021"]},
-        {"id": "TAX-06-02", "name": "CAPTCHA-filling work scam", "evidence": "UNVERIFIED", "sources": ["SRC-002"]},
-        {"id": "TAX-06-03", "name": "Part-time task app or Ponzi", "evidence": "UNVERIFIED", "sources": ["SRC-015"]},
-        {"id": "TAX-06-04", "name": "Overseas job racket", "evidence": "PARTIAL", "sources": ["SRC-021"]}
-      ]
+        {
+          "id": "TAX-06-01",
+          "name": "Fake job or placement fee",
+          "evidence": "VERIFIED",
+          "sources": [
+            "SRC-021"
+          ],
+          "evidence_maturity": "PRIMARY",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "dimensions": {
+            "fraud_objective": [
+              "FO-02"
+            ],
+            "technical_mechanism": [
+              "TM-10"
+            ],
+            "typical_channels": [
+              "CH-01",
+              "CH-03"
+            ],
+            "social_engineering_tactics": [
+              "SE-08",
+              "SE-02"
+            ],
+            "requested_user_actions": [
+              "UA-03"
+            ],
+            "potential_harm": [
+              "PH-01"
+            ]
+          }
+        },
+        {
+          "id": "TAX-06-02",
+          "name": "CAPTCHA-filling work scam",
+          "evidence": "UNVERIFIED",
+          "sources": [
+            "SRC-002"
+          ],
+          "evidence_maturity": "NO_PRIMARY_SOURCE",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "dimensions": {
+            "fraud_objective": [
+              "FO-02"
+            ],
+            "technical_mechanism": [
+              "TM-10"
+            ],
+            "typical_channels": [
+              "CH-02"
+            ],
+            "social_engineering_tactics": [
+              "SE-08"
+            ],
+            "requested_user_actions": [
+              "UA-03"
+            ],
+            "potential_harm": [
+              "PH-01"
+            ]
+          }
+        },
+        {
+          "id": "TAX-06-03",
+          "name": "Part-time task app or Ponzi",
+          "evidence": "UNVERIFIED",
+          "sources": [
+            "SRC-015"
+          ],
+          "evidence_maturity": "OFFICIAL_REPLACEMENT",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "dimensions": {
+            "fraud_objective": [
+              "FO-05",
+              "FO-02"
+            ],
+            "technical_mechanism": [
+              "TM-10"
+            ],
+            "typical_channels": [
+              "CH-02"
+            ],
+            "social_engineering_tactics": [
+              "SE-08",
+              "SE-05"
+            ],
+            "requested_user_actions": [
+              "UA-03"
+            ],
+            "potential_harm": [
+              "PH-01"
+            ]
+          }
+        },
+        {
+          "id": "TAX-06-04",
+          "name": "Overseas job racket",
+          "evidence": "PARTIAL",
+          "sources": [
+            "SRC-021"
+          ],
+          "evidence_maturity": "PARTIAL",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "dimensions": {
+            "fraud_objective": [
+              "FO-02"
+            ],
+            "technical_mechanism": [
+              "TM-10"
+            ],
+            "typical_channels": [
+              "CH-01"
+            ],
+            "social_engineering_tactics": [
+              "SE-08"
+            ],
+            "requested_user_actions": [
+              "UA-03"
+            ],
+            "potential_harm": [
+              "PH-01"
+            ]
+          }
+        }
+      ],
+      "status": "ACTIVE",
+      "version": "1.0.0"
     },
     {
-      "id": "TAX-07", "name": "Courier, delivery and utility scams", "evidence": "PARTIAL", "sources": ["SRC-007", "SRC-012"],
+      "id": "TAX-07",
+      "name": "Courier, delivery and utility scams",
+      "evidence": "PARTIAL",
+      "sources": [
+        "SRC-007",
+        "SRC-012"
+      ],
       "subcategories": [
-        {"id": "TAX-07-01", "name": "Fake parcel or customs payment", "evidence": "PARTIAL", "sources": ["SRC-012"]},
-        {"id": "TAX-07-02", "name": "Utility disconnection threat", "evidence": "PARTIAL", "sources": ["SRC-007"]},
-        {"id": "TAX-07-03", "name": "Delivery-agent impersonation", "evidence": "UNVERIFIED", "sources": ["SRC-013"]}
-      ]
+        {
+          "id": "TAX-07-01",
+          "name": "Fake parcel or customs payment",
+          "evidence": "PARTIAL",
+          "sources": [
+            "SRC-012"
+          ],
+          "evidence_maturity": "PARTIAL",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "dimensions": {
+            "fraud_objective": [
+              "FO-02"
+            ],
+            "technical_mechanism": [
+              "TM-10"
+            ],
+            "typical_channels": [
+              "CH-01",
+              "CH-05"
+            ],
+            "social_engineering_tactics": [
+              "SE-02",
+              "SE-07"
+            ],
+            "requested_user_actions": [
+              "UA-03"
+            ],
+            "potential_harm": [
+              "PH-01"
+            ]
+          }
+        },
+        {
+          "id": "TAX-07-02",
+          "name": "Utility disconnection threat",
+          "evidence": "PARTIAL",
+          "sources": [
+            "SRC-007"
+          ],
+          "evidence_maturity": "PARTIAL",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "dimensions": {
+            "fraud_objective": [
+              "FO-02"
+            ],
+            "technical_mechanism": [
+              "TM-10"
+            ],
+            "typical_channels": [
+              "CH-01"
+            ],
+            "social_engineering_tactics": [
+              "SE-03",
+              "SE-02"
+            ],
+            "requested_user_actions": [
+              "UA-03",
+              "UA-09"
+            ],
+            "potential_harm": [
+              "PH-01"
+            ]
+          }
+        },
+        {
+          "id": "TAX-07-03",
+          "name": "Delivery-agent impersonation",
+          "evidence": "UNVERIFIED",
+          "sources": [
+            "SRC-013"
+          ],
+          "evidence_maturity": "OFFICIAL_ALTERNATE",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "dimensions": {
+            "fraud_objective": [
+              "FO-03"
+            ],
+            "technical_mechanism": [
+              "TM-08"
+            ],
+            "typical_channels": [
+              "CH-05"
+            ],
+            "social_engineering_tactics": [
+              "SE-07"
+            ],
+            "requested_user_actions": [
+              "UA-07"
+            ],
+            "potential_harm": [
+              "PH-02"
+            ]
+          }
+        }
+      ],
+      "status": "ACTIVE",
+      "version": "1.0.0"
     },
     {
-      "id": "TAX-08", "name": "Social and relationship-enabled scams", "evidence": "VERIFIED", "sources": ["SRC-014"],
+      "id": "TAX-08",
+      "name": "Social and relationship-enabled scams",
+      "evidence": "VERIFIED",
+      "sources": [
+        "SRC-014"
+      ],
       "subcategories": [
-        {"id": "TAX-08-01", "name": "Romance or matrimonial pivot to investment", "evidence": "UNVERIFIED", "sources": ["SRC-002"]},
-        {"id": "TAX-08-02", "name": "Fake profile or trusted-contact abuse", "evidence": "VERIFIED", "sources": ["SRC-014"]},
-        {"id": "TAX-08-03", "name": "Account renting", "evidence": "UNVERIFIED", "sources": ["SRC-002"]},
-        {"id": "TAX-08-04", "name": "Urgent-transfer request from claimed relative", "evidence": "VERIFIED", "sources": ["SRC-021"]}
-      ]
+        {
+          "id": "TAX-08-01",
+          "name": "Romance or matrimonial pivot to investment",
+          "evidence": "UNVERIFIED",
+          "sources": [
+            "SRC-002"
+          ],
+          "evidence_maturity": "NO_PRIMARY_SOURCE",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "dimensions": {
+            "fraud_objective": [
+              "FO-05"
+            ],
+            "technical_mechanism": [
+              "TM-10"
+            ],
+            "typical_channels": [
+              "CH-04",
+              "CH-02"
+            ],
+            "social_engineering_tactics": [
+              "SE-05",
+              "SE-08"
+            ],
+            "requested_user_actions": [
+              "UA-03"
+            ],
+            "potential_harm": [
+              "PH-01"
+            ]
+          }
+        },
+        {
+          "id": "TAX-08-02",
+          "name": "Fake profile or trusted-contact abuse",
+          "evidence": "VERIFIED",
+          "sources": [
+            "SRC-014"
+          ],
+          "evidence_maturity": "PRIMARY",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "dimensions": {
+            "fraud_objective": [
+              "FO-02"
+            ],
+            "technical_mechanism": [
+              "TM-10"
+            ],
+            "typical_channels": [
+              "CH-04"
+            ],
+            "social_engineering_tactics": [
+              "SE-05"
+            ],
+            "requested_user_actions": [
+              "UA-03"
+            ],
+            "potential_harm": [
+              "PH-01"
+            ]
+          }
+        },
+        {
+          "id": "TAX-08-03",
+          "name": "Account renting",
+          "evidence": "UNVERIFIED",
+          "sources": [
+            "SRC-002"
+          ],
+          "evidence_maturity": "NO_PRIMARY_SOURCE",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "dimensions": {
+            "fraud_objective": [
+              "FO-03"
+            ],
+            "technical_mechanism": [],
+            "typical_channels": [
+              "CH-04"
+            ],
+            "social_engineering_tactics": [
+              "SE-05"
+            ],
+            "requested_user_actions": [],
+            "potential_harm": [
+              "PH-02"
+            ]
+          }
+        },
+        {
+          "id": "TAX-08-04",
+          "name": "Urgent-transfer request from claimed relative",
+          "evidence": "VERIFIED",
+          "sources": [
+            "SRC-021"
+          ],
+          "evidence_maturity": "PRIMARY",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "dimensions": {
+            "fraud_objective": [
+              "FO-02"
+            ],
+            "technical_mechanism": [
+              "TM-10"
+            ],
+            "typical_channels": [
+              "CH-02"
+            ],
+            "social_engineering_tactics": [
+              "SE-05",
+              "SE-02",
+              "SE-06"
+            ],
+            "requested_user_actions": [
+              "UA-03"
+            ],
+            "potential_harm": [
+              "PH-01"
+            ]
+          }
+        }
+      ],
+      "status": "ACTIVE",
+      "version": "1.0.0"
     },
     {
-      "id": "TAX-09", "name": "Account-takeover scams", "evidence": "VERIFIED", "sources": ["SRC-017", "SRC-016"],
+      "id": "TAX-09",
+      "name": "Account-takeover scams",
+      "evidence": "VERIFIED",
+      "sources": [
+        "SRC-017",
+        "SRC-016"
+      ],
       "subcategories": [
-        {"id": "TAX-09-01", "name": "Messaging-app device linking", "evidence": "VERIFIED", "sources": ["SRC-017", "SRC-016"]},
-        {"id": "TAX-09-02", "name": "Fake media preview leading to verification page", "evidence": "VERIFIED", "sources": ["SRC-017"]},
-        {"id": "TAX-09-03", "name": "Phishing page impersonating a platform", "evidence": "VERIFIED", "sources": ["SRC-017"]}
-      ]
+        {
+          "id": "TAX-09-01",
+          "name": "Messaging-app device linking",
+          "evidence": "VERIFIED",
+          "sources": [
+            "SRC-017",
+            "SRC-016"
+          ],
+          "evidence_maturity": "PRIMARY",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "dimensions": {
+            "fraud_objective": [
+              "FO-03"
+            ],
+            "technical_mechanism": [
+              "TM-03"
+            ],
+            "typical_channels": [
+              "CH-02"
+            ],
+            "social_engineering_tactics": [
+              "SE-05",
+              "SE-07"
+            ],
+            "requested_user_actions": [
+              "UA-10"
+            ],
+            "potential_harm": [
+              "PH-02"
+            ]
+          }
+        },
+        {
+          "id": "TAX-09-02",
+          "name": "Fake media preview leading to verification page",
+          "evidence": "VERIFIED",
+          "sources": [
+            "SRC-017"
+          ],
+          "evidence_maturity": "PRIMARY",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "dimensions": {
+            "fraud_objective": [
+              "FO-03"
+            ],
+            "technical_mechanism": [
+              "TM-09",
+              "TM-01"
+            ],
+            "typical_channels": [
+              "CH-02"
+            ],
+            "social_engineering_tactics": [
+              "SE-07"
+            ],
+            "requested_user_actions": [
+              "UA-09"
+            ],
+            "potential_harm": [
+              "PH-02"
+            ]
+          }
+        },
+        {
+          "id": "TAX-09-03",
+          "name": "Phishing page impersonating a platform",
+          "evidence": "VERIFIED",
+          "sources": [
+            "SRC-017"
+          ],
+          "evidence_maturity": "PRIMARY",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "dimensions": {
+            "fraud_objective": [
+              "FO-01",
+              "FO-03"
+            ],
+            "technical_mechanism": [
+              "TM-01",
+              "TM-09"
+            ],
+            "typical_channels": [
+              "CH-02",
+              "CH-07"
+            ],
+            "social_engineering_tactics": [
+              "SE-07"
+            ],
+            "requested_user_actions": [
+              "UA-09",
+              "UA-01"
+            ],
+            "potential_harm": [
+              "PH-02"
+            ]
+          }
+        }
+      ],
+      "status": "ACTIVE",
+      "version": "1.0.0"
     },
     {
-      "id": "TAX-10", "name": "Malware-enabled scams", "evidence": "PARTIAL", "sources": ["SRC-010"],
+      "id": "TAX-10",
+      "name": "Malware-enabled scams",
+      "evidence": "PARTIAL",
+      "sources": [
+        "SRC-010"
+      ],
       "subcategories": [
-        {"id": "TAX-10-01", "name": "APK or sideload distribution", "evidence": "PARTIAL", "sources": ["SRC-010", "SRC-025"]},
-        {"id": "TAX-10-02", "name": "Accessibility permission abuse", "evidence": "UNVERIFIED", "sources": ["SRC-019"]},
-        {"id": "TAX-10-03", "name": "Screen sharing or remote control", "evidence": "UNVERIFIED", "sources": ["SRC-008"]},
-        {"id": "TAX-10-04", "name": "Browser extension abuse", "evidence": "UNVERIFIED", "sources": ["SRC-002"]}
+        {
+          "id": "TAX-10-01",
+          "name": "APK or sideload distribution",
+          "evidence": "PARTIAL",
+          "sources": [
+            "SRC-010",
+            "SRC-025"
+          ],
+          "evidence_maturity": "OFFICIAL_REPLACEMENT",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "dimensions": {
+            "fraud_objective": [
+              "FO-04"
+            ],
+            "technical_mechanism": [
+              "TM-06"
+            ],
+            "typical_channels": [
+              "CH-01",
+              "CH-02"
+            ],
+            "social_engineering_tactics": [
+              "SE-07",
+              "SE-08"
+            ],
+            "requested_user_actions": [
+              "UA-05"
+            ],
+            "potential_harm": [
+              "PH-03"
+            ]
+          }
+        },
+        {
+          "id": "TAX-10-02",
+          "name": "Accessibility permission abuse",
+          "evidence": "UNVERIFIED",
+          "sources": [
+            "SRC-019"
+          ],
+          "evidence_maturity": "OFFICIAL_ALTERNATE",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "dimensions": {
+            "fraud_objective": [
+              "FO-04"
+            ],
+            "technical_mechanism": [
+              "TM-05"
+            ],
+            "typical_channels": [
+              "CH-01",
+              "CH-02"
+            ],
+            "social_engineering_tactics": [
+              "SE-07"
+            ],
+            "requested_user_actions": [
+              "UA-06"
+            ],
+            "potential_harm": [
+              "PH-03"
+            ]
+          }
+        },
+        {
+          "id": "TAX-10-03",
+          "name": "Screen sharing or remote control",
+          "evidence": "UNVERIFIED",
+          "sources": [
+            "SRC-008"
+          ],
+          "evidence_maturity": "INDUSTRY",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "dimensions": {
+            "fraud_objective": [
+              "FO-04"
+            ],
+            "technical_mechanism": [
+              "TM-04"
+            ],
+            "typical_channels": [
+              "CH-05",
+              "CH-02"
+            ],
+            "social_engineering_tactics": [
+              "SE-01",
+              "SE-07"
+            ],
+            "requested_user_actions": [
+              "UA-05"
+            ],
+            "potential_harm": [
+              "PH-03",
+              "PH-01"
+            ]
+          }
+        },
+        {
+          "id": "TAX-10-04",
+          "name": "Browser extension abuse",
+          "evidence": "UNVERIFIED",
+          "sources": [
+            "SRC-002"
+          ],
+          "evidence_maturity": "NO_PRIMARY_SOURCE",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "dimensions": {
+            "fraud_objective": [
+              "FO-04"
+            ],
+            "technical_mechanism": [
+              "TM-06"
+            ],
+            "typical_channels": [
+              "CH-07"
+            ],
+            "social_engineering_tactics": [
+              "SE-07"
+            ],
+            "requested_user_actions": [
+              "UA-05"
+            ],
+            "potential_harm": [
+              "PH-03"
+            ]
+          }
+        }
+      ],
+      "status": "ACTIVE",
+      "version": "1.0.0"
+    },
+    {
+      "id": "TAX-11",
+      "name": "Sextortion and intimate-content extortion",
+      "evidence": "VERIFIED",
+      "sources": [
+        "SRC-007"
+      ],
+      "status": "ACTIVE",
+      "version": "1.0.0",
+      "detection_status": "DEFERRED_SAFEGUARDING",
+      "scope_notes": "Recognised as an official fraud-communication category by SRC-007 (Chakshu). Detection is DEFERRED for MVP: the source verifies the category's existence, not a modus operandi (unlike SRC-012 for digital arrest), and sextortion carries distinct victim-safety/safeguarding considerations. No executable rule is authored; see RESEARCH-005 G-10 and the WP5 decision record.",
+      "subcategories": [
+        {
+          "id": "TAX-11-01",
+          "name": "Intimate-content extortion",
+          "evidence": "VERIFIED",
+          "sources": [
+            "SRC-007"
+          ],
+          "evidence_maturity": "PRIMARY",
+          "status": "ACTIVE",
+          "version": "1.0.0",
+          "detection_status": "DEFERRED_SAFEGUARDING",
+          "definition": "A threat to expose intimate images/recordings unless the victim pays.",
+          "scope_notes": "Category existence verified (SRC-007). Detection deferred: high false-positive/safeguarding risk; a submitted sextortion message is often a victim in crisis, warranting a referral path rather than a fraud score.",
+          "dimensions": {
+            "fraud_objective": [
+              "FO-06"
+            ],
+            "technical_mechanism": [
+              "TM-10"
+            ],
+            "typical_channels": [
+              "CH-02",
+              "CH-04",
+              "CH-03"
+            ],
+            "social_engineering_tactics": [
+              "SE-03",
+              "SE-06",
+              "SE-02"
+            ],
+            "requested_user_actions": [
+              "UA-03"
+            ],
+            "potential_harm": [
+              "PH-06",
+              "PH-05"
+            ]
+          }
+        }
       ]
     }
   ],
   "coverage": {
-    "top_level": {"total": 10, "verified": 7, "partial": 3, "unverified": 0},
-    "subcategories": {"total": 41, "verified": 15, "partial": 11, "unverified": 15}
-  }
+    "top_level": {
+      "total": 11,
+      "verified": 8,
+      "partial": 3,
+      "unverified": 0
+    },
+    "subcategories": {
+      "total": 42,
+      "verified": 16,
+      "partial": 11,
+      "unverified": 15
+    }
+  },
+  "amended": "2026-08-28 (WP5) — added evidence_maturity (post-RESEARCH-006 current grade; `evidence` preserved as the automated Phase-1 grade), per-subcategory multidimensional tags (see dimensions-v1.json), TAX-11 sextortion (detection DEFERRED), and rich status/version metadata.",
+  "dimensions_ref": "knowledge/taxonomies/dimensions-v1.json",
+  "language": [
+    "en"
+  ],
+  "script": [
+    "Latn"
+  ],
+  "evidence_maturity_legend": {
+    "PRIMARY": "Issuing-body document verified (automated).",
+    "PRIMARY_MANUAL": "Verified via manual retrieval of the issuing-body document.",
+    "PRIMARY_PARTIAL": "Issuing-body body verified but only part of the concept.",
+    "OFFICIAL_ALTERNATE": "Issuing body's official channel (caps rules at PARTIAL, ADR-0015).",
+    "OFFICIAL_REPLACEMENT": "Different official document substituting a dead source.",
+    "INDUSTRY": "Commercial source; corroborates only.",
+    "PARTIAL": "Corroborated but not fully substantiated.",
+    "NO_PRIMARY_SOURCE": "No primary source retrieved; category preserved, no executable rule."
+  },
+  "change_history": [
+    {
+      "version": "1.0",
+      "date": "2026-07-31",
+      "change": "Initial taxonomy: 10 categories, 41 subcategories, evidence-graded."
+    },
+    {
+      "version": "1.1",
+      "date": "2026-08-14",
+      "change": "Approved at the Phase 1 gate."
+    },
+    {
+      "version": "2.0",
+      "date": "2026-08-28",
+      "change": "WP5 completion: multidimensional tags + dimensions-v1.json, evidence_maturity layer, TAX-11 sextortion (detection deferred), rich metadata."
+    }
+  ]
 }

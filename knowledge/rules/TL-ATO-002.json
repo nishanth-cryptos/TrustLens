@@ -1,0 +1,75 @@
+{
+  "schema_version": "1.0.0",
+  "rule_version": "1.0.0",
+  "id": "TL-ATO-002",
+  "legacy_id": "CERT-WA-015",
+  "name": "Fake media preview leading to a verification page",
+  "description": "A teaser message with a fake platform media preview lures a click to a fake 'verification' page that harvests the account.",
+  "kind": "COMPOSITE",
+  "taxonomy_refs": [
+    "TAX-09-02"
+  ],
+  "severity": "HIGH",
+  "evidence": {
+    "verdict": "SUPPORTED",
+    "implementability": "YES",
+    "source_references": [
+      {
+        "source_id": "SRC-017",
+        "issuing_body": "CERT-In",
+        "authority": "OFFICIAL_GOVERNMENT",
+        "verification_status": "PRIMARY_VERIFIED",
+        "document_ref": "CERT-In GhostPairing (CIAD-2025-0055)",
+        "quote": "The link leads to a fake Facebook viewer that prompts users to 'verify' to see the content."
+      }
+    ]
+  },
+  "logic": {
+    "require": {
+      "all_of": [
+        {
+          "any_of": [
+            "FAKE_PLATFORM_PREVIEW",
+            "TEASER_BAIT"
+          ]
+        },
+        "VERIFICATION_PROMPT"
+      ]
+    },
+    "min_evidence_classes": 2
+  },
+  "lifecycle": {
+    "status": "PUBLISHED",
+    "created": "2026-08-28",
+    "last_reviewed": "2026-08-28",
+    "review_due": "2027-02-28",
+    "authored_by_role": "Knowledge Editor",
+    "approved_by_role": "Knowledge Approver"
+  },
+  "language_scope": {
+    "languages": [
+      "en"
+    ],
+    "scripts": [
+      "Latn"
+    ],
+    "on_unsupported_input": "FLAG_UNSUPPORTED"
+  },
+  "explanation": {
+    "plain": "A message with a photo/video preview asked you to tap and 'verify' to see it. The preview is fake and the verify page steals your account. Do not tap.",
+    "technical": "Fake preview / teaser bait (identity) with a verification prompt (credential-action). Matches CERT-In GhostPairing wording.",
+    "verification_steps": [
+      "Do not tap 'verify' pages reached from a message preview.",
+      "Open the real app directly to check any notification."
+    ]
+  },
+  "provenance": {
+    "source_severity_hint": {
+      "value": 88,
+      "label": "High",
+      "cited_as": "RP p.7",
+      "operational_use": false
+    },
+    "notes": "Encoded in the WP3 rule-encoding pass; suppression via negative-indicator-library-v1.json."
+  }
+}

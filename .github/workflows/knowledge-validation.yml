@@ -1,0 +1,86 @@
+# TrustLens knowledge quality gate (Phase 2 WP7).
+#
+# Runs the complete knowledge-validation suite (knowledge/validation/run_all.py) on every
+# change that can affect a validator's result, so evidence / taxonomy / indicator / rule /
+# suppression / extraction-contract / governance regressions cannot be merged.
+#
+# Offline: the only network step is `pip install` of the pinned deps in requirements.txt.
+# Validation itself reads only in-repo files and the committed evidence bundle — run_all.py's
+# preflight refuses to run if any validator imports a network module.
+name: knowledge-validation
+
+on:
+  push:
+    branches: [main]
+    paths: &knowledge-paths
+      - "knowledge/**"
+      - "docs/00-program/**"   # program / gate / governance docs affect publishability
+      - "docs/01-research/**"  # evidence matrix + source inventory feed the linters
+      - "docs/02-knowledge/**" # KB-001 / KB-002 governance + contract specs
+      - "adr/**"               # ADR-0003/0015 underpin the rule + evidence model
+      - "requirements.txt"
+      - ".github/workflows/knowledge-validation.yml"
+  pull_request:
+    paths: *knowledge-paths
+  workflow_dispatch: {}
+
+# Least privilege: the gate only reads the tree.
+permissions:
+  contents: read
+
+# One in-flight run per ref; supersede stale runs to keep CI quiet without dropping coverage.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Knowledge validation suite
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install pinned dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run knowledge quality gate
+        run: python knowledge/validation/run_all.py
+
+      - name: Write machine-readable summary to job summary
+        if: ${{ always() }}
+        run: |
+          python knowledge/validation/run_all.py --json > gate-summary.json || true
+          {
+            echo '### TrustLens knowledge quality gate'
+            echo '```json'
+            cat gate-summary.json
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  gate-selftest:
+    name: Quality-gate self-test (gate must bite)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install pinned dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Prove the gate catches representative defects
+        run: python knowledge/validation/ci_selftest.py

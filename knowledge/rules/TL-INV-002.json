@@ -1,0 +1,79 @@
+{
+  "schema_version": "1.0.0",
+  "rule_version": "1.0.0",
+  "id": "TL-INV-002",
+  "legacy_id": "SEBI-UNREG-018",
+  "name": "Unregistered adviser offering to handle client funds",
+  "description": "An entity offers to trade or hold funds on the recipient's behalf without disclosing SEBI registration — illegal advisory conduct.",
+  "kind": "COMPOSITE",
+  "taxonomy_refs": [
+    "TAX-05-02"
+  ],
+  "severity": "HIGH",
+  "evidence": {
+    "verdict": "SUPPORTED",
+    "implementability": "YES",
+    "source_references": [
+      {
+        "source_id": "SRC-006",
+        "issuing_body": "SEBI",
+        "authority": "OFFICIAL_REGULATOR",
+        "verification_status": "PRIMARY_VERIFIED",
+        "document_ref": "SEBI Caution to Investor",
+        "quote": "Investment Advisers have to limit themselves to giving advice and they should not handle cash or securities."
+      }
+    ]
+  },
+  "logic": {
+    "require": {
+      "all_of": [
+        "TRADING_ON_BEHALF_OF_CLIENT",
+        {
+          "any_of": [
+            "INVESTMENT_SOLICITATION",
+            "SCARCITY_PRESSURE",
+            "UNSOLICITED_OFFER"
+          ]
+        }
+      ]
+    },
+    "min_evidence_classes": 2,
+    "suppressed_by": [
+      "REGISTRATION_DISCLOSED"
+    ]
+  },
+  "lifecycle": {
+    "status": "PUBLISHED",
+    "created": "2026-08-28",
+    "last_reviewed": "2026-08-28",
+    "review_due": "2027-02-28",
+    "authored_by_role": "Knowledge Editor",
+    "approved_by_role": "Knowledge Approver"
+  },
+  "language_scope": {
+    "languages": [
+      "en"
+    ],
+    "scripts": [
+      "Latn"
+    ],
+    "on_unsupported_input": "FLAG_UNSUPPORTED"
+  },
+  "explanation": {
+    "plain": "Someone offered to trade or hold your money for you as an 'expert'. SEBI-registered advisers may only advise — they must never handle your funds. Check their registration.",
+    "technical": "TRADING_ON_BEHALF_OF_CLIENT (financial-claim) with an investment solicitation. SEBI: advisers must not handle client cash or securities; acting unregistered is illegal.",
+    "verification_steps": [
+      "Ask for and verify the SEBI registration number.",
+      "Never hand your funds to an 'expert' to trade for you."
+    ]
+  },
+  "provenance": {
+    "source_severity_hint": {
+      "value": 88,
+      "label": "High",
+      "cited_as": "RP p.7",
+      "operational_use": false
+    },
+    "notes": "Encoded in the WP3 rule-encoding pass; suppression via negative-indicator-library-v1.json."
+  }
+}

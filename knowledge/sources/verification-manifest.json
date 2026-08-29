@@ -1,6 +1,6 @@
 {
   "$comment": "TrustLens source verification manifest. Produced by the Phase 1 verification pass mandated by DEC-003. Machine-readable companion to docs/01-research/RESEARCH-001-source-inventory.md. Tracking parameters (utm_source) have been stripped from all URLs.",
-  "manifest_version": "1.1",
+  "manifest_version": "1.2",
   "generated": "2026-07-31",
   "amended": "2026-08-14 (GATE-001) — verified fraction restated as PRIMARY_VERIFIED only; claim_under_test and blocks_rules recorded for the seven failed sources that previously carried neither, so the manual re-retrieval work list is explicit.",
   "verification_method": "Automated retrieval (HTTPS GET) followed by targeted claim location within the retrieved document. No claim is graded PRIMARY_VERIFIED unless its specific wording was located in the issuing body's own document.",
@@ -29,7 +29,36 @@
       "status": "RETRIEVAL_FAILED",
       "http": "403",
       "claim_under_test": "CFCFRMS saved >Rs 11,158 crore across >32.80 lakh complaints by 30 June 2026; 1930 helpline",
-      "note": "Headline statistic of the research package. UNVERIFIED — must not be repeated as fact in any TrustLens artifact."
+      "note": "Headline statistic of the research package. UNVERIFIED — must not be repeated as fact in any TrustLens artifact.",
+      "manual_retrieval": {
+        "manual_retrieval_status": "EXACT_PRIMARY_VERIFIED",
+        "manual_retrieval_date": "2026-08-28",
+        "evidence_class": "PRIMARY",
+        "evidence_ids": [
+          "MR-EVID-001"
+        ],
+        "rule_impact": "SOURCE_FACT_CAN_NOW_BE_USED",
+        "review_status": "REVIEWED",
+        "review_notes": "Add manual retrieval metadata; source claim is now directly verified.",
+        "preserves_original_status": "RETRIEVAL_FAILED",
+        "evidence": [
+          {
+            "evidence_id": "MR-EVID-001",
+            "file": "PIB_PRID-2287674_National_Cybercrime_Response.pdf",
+            "issuer": "PIB / Ministry of Home Affairs",
+            "authority": "OFFICIAL_GOVERNMENT",
+            "canonical_url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2287674",
+            "retrieval_type": "EXACT_ORIGINAL",
+            "retrieved_on": "2026-08-15",
+            "pages": [
+              1
+            ],
+            "claim": "CFCFRMS saved more than Rs 11,158 crore across more than 32.80 lakh complaints by 30 June 2026; 1930 helpline operational.",
+            "claim_match": "FULL",
+            "sha256": "d47a72e6b63ee51b5e847e0cf2418b938e004d17d46d7c2ec5007955b609b32f"
+          }
+        ]
+      }
     },
     {
       "id": "SRC-002",
@@ -40,7 +69,18 @@
       "status": "RETRIEVAL_FAILED",
       "http": "ECONNRESET",
       "footnote_markers_in_rp": 13,
-      "note": "Carries more citation markers than any other source in the research package, and is an index page rather than a document. Highest-impact evidence gap."
+      "note": "Carries more citation markers than any other source in the research package, and is an index page rather than a document. Highest-impact evidence gap.",
+      "manual_retrieval": {
+        "manual_retrieval_status": "STILL_UNAVAILABLE",
+        "manual_retrieval_date": "2026-08-28",
+        "evidence_class": "NONE",
+        "evidence_ids": [],
+        "rule_impact": "NO_DIRECT_RULE_UNBLOCK_LISTED",
+        "review_status": "RE_CHECKED_STILL_UNAVAILABLE",
+        "review_notes": "Keep gap open. It is an index page; do not use it as claim evidence.",
+        "preserves_original_status": "RETRIEVAL_FAILED",
+        "evidence": []
+      }
     },
     {
       "id": "SRC-003",
@@ -75,7 +115,36 @@
       "status": "RETRIEVAL_FAILED",
       "http": "403",
       "claim_under_test": "UPI PIN must not be shared; only sending money requires UPI PIN",
-      "note": "Blocked via both WebFetch and direct curl. Substance independently verified through SRC-021 (CERT-In)."
+      "note": "Blocked via both WebFetch and direct curl. Substance independently verified through SRC-021 (CERT-In).",
+      "manual_retrieval": {
+        "manual_retrieval_status": "EXACT_PRIMARY_VERIFIED",
+        "manual_retrieval_date": "2026-08-28",
+        "evidence_class": "PRIMARY",
+        "evidence_ids": [
+          "MR-EVID-002"
+        ],
+        "rule_impact": "UPI_GROUND_TRUTH_STRENGTHENED",
+        "review_status": "REVIEWED",
+        "review_notes": "Add manual retrieval metadata; exact NPCI claim is verified.",
+        "preserves_original_status": "RETRIEVAL_FAILED",
+        "evidence": [
+          {
+            "evidence_id": "MR-EVID-002",
+            "file": "BHIM_UPI_Guidelines_2026_012a0b1bce.pdf",
+            "issuer": "NPCI",
+            "authority": "OFFICIAL_PAYMENT_OPERATOR",
+            "canonical_url": "https://www.npci.org.in/uploads/BHIM_UPI_Guidelines_2026_012a0b1bce.pdf",
+            "retrieval_type": "EXACT_ORIGINAL",
+            "retrieved_on": "2026-08-15",
+            "pages": [
+              77
+            ],
+            "claim": "UPI PIN must not be shared; only sending money requires UPI PIN.",
+            "claim_match": "FULL",
+            "sha256": "f40c7feeb40339bb8e56df85938f8d04f13d09fc3397804fc833095a16c64519"
+          }
+        ]
+      }
     },
     {
       "id": "SRC-006",
@@ -113,7 +182,51 @@
       "status": "RETRIEVAL_FAILED",
       "http": "302 -> https://www.hdfc.bank.in/security",
       "discrepancy": "D5 — LINK ROT CONFIRMED. The cited URL now redirects to a different host, and the destination page did not contain the cited fraud content. Five rules in the research package rest on this source.",
-      "note": "Commercial source; not an authority (CONF-005)."
+      "note": "Commercial source; not an authority (CONF-005).",
+      "manual_retrieval": {
+        "manual_retrieval_status": "OFFICIAL_REPLACEMENT_PARTIAL",
+        "manual_retrieval_date": "2026-08-28",
+        "evidence_class": "INDUSTRY",
+        "evidence_ids": [
+          "MR-EVID-007"
+        ],
+        "rule_impact": "DEPENDENT_HDFC_RULES_REQUIRE_PER_RULE_REVIEW",
+        "review_status": "REVIEWED",
+        "review_notes": "Do not mark the dead source verified. Rebind only individual rule claims actually present in the replacement snapshot or other official sources.",
+        "preserves_original_status": "RETRIEVAL_FAILED",
+        "evidence": [
+          {
+            "evidence_id": "MR-EVID-007",
+            "file": "HDFC_Beware_of_Fraud_FULL.pdf",
+            "issuer": "HDFC Bank",
+            "authority": "INDUSTRY",
+            "canonical_url": "https://www.hdfc.bank.in/security/beware-of-fraud",
+            "retrieval_type": "OFFICIAL_REPLACEMENT_WEB_SNAPSHOT",
+            "retrieved_on": "2026-08-15",
+            "pages": [
+              1,
+              2,
+              3
+            ],
+            "claim": "Replacement snapshot for the dead HDFC fraud page.",
+            "claim_match": "PARTIAL_UNKNOWN_ORIGINAL_CLAIM",
+            "supported_elements": [
+              "identity theft",
+              "vishing",
+              "smishing",
+              "money mule",
+              "phishing",
+              "trojan"
+            ],
+            "unsupported_elements": [
+              "the manifest does not list claim_under_test/blocks_rules for SRC-008",
+              "this snapshot does not by itself verify all five rules said to depend on the dead page"
+            ],
+            "sha256": "5d66c093933f56694011223ba5e1b230aa927e4977eaea129e0fafbeb2aa9d3d"
+          }
+        ],
+        "replacement_source": "HDFC Bank — https://www.hdfc.bank.in/security/beware-of-fraud"
+      }
     },
     {
       "id": "SRC-009",
@@ -147,7 +260,18 @@
       "title": "Online Fraud Schemes: A Web of Deceit",
       "url": "https://www.europol.europa.eu/cms/sites/default/files/documents/Spotlight-Report_Online-fraud-schemes.pdf",
       "status": "RETRIEVAL_FAILED",
-      "note": "Partial download; text extraction failed. Cited only for background AI-threat context, so impact is low."
+      "note": "Partial download; text extraction failed. Cited only for background AI-threat context, so impact is low.",
+      "manual_retrieval": {
+        "manual_retrieval_status": "STILL_UNAVAILABLE_LOW_IMPACT",
+        "manual_retrieval_date": "2026-08-28",
+        "evidence_class": "NONE",
+        "evidence_ids": [],
+        "rule_impact": "BACKGROUND_ONLY",
+        "review_status": "RE_CHECKED_STILL_UNAVAILABLE",
+        "review_notes": "Keep gap open; do not block Phase 2 execution.",
+        "preserves_original_status": "RETRIEVAL_FAILED",
+        "evidence": []
+      }
     },
     {
       "id": "SRC-012",
@@ -178,8 +302,49 @@
       "status": "RETRIEVAL_FAILED",
       "http": "timeout / connection reset",
       "claim_under_test": "Courier/delivery pretext leading to a request to dial a USSD short code, silently enabling call forwarding",
-      "blocks_rules": ["TL-TEL-001"],
-      "note": "Sole basis for TL-TEL-001. Unsupported until retrieved (G-01)."
+      "blocks_rules": [
+        "TL-TEL-001"
+      ],
+      "note": "Sole basis for TL-TEL-001. Unsupported until retrieved (G-01).",
+      "manual_retrieval": {
+        "manual_retrieval_status": "OFFICIAL_ALTERNATE_PARTIAL",
+        "manual_retrieval_date": "2026-08-28",
+        "evidence_class": "OFFICIAL_ALTERNATE",
+        "evidence_ids": [
+          "MR-EVID-008"
+        ],
+        "rule_impact": "TL-TEL-001_KEEP_DRAFT_OR_NARROW",
+        "review_status": "REVIEWED",
+        "review_notes": "If publishing now, narrow TL-TEL-001 to unverified-call-forwarding-code requests; retain delivery/courier pretext as unsupported until primary evidence is found.",
+        "preserves_original_status": "RETRIEVAL_FAILED",
+        "evidence": [
+          {
+            "evidence_id": "MR-EVID-008",
+            "file": "I4C_USSD_Call_Forwarding_CyberDost.pdf",
+            "issuer": "CyberDost / I4C, Ministry of Home Affairs",
+            "authority": "OFFICIAL_GOVERNMENT_CHANNEL",
+            "canonical_url": "https://www.t.me/s/cyberdosti4c?q=%23CallForwarding",
+            "retrieval_type": "OFFICIAL_ALTERNATE_CHANNEL",
+            "retrieved_on": "2026-08-28",
+            "pages": [
+              1,
+              3
+            ],
+            "claim": "Unknown callers can misuse call-forwarding codes; users should not dial unverified telecom codes.",
+            "claim_match": "PARTIAL",
+            "supported_elements": [
+              "call-forwarding abuse",
+              "warning not to dial unverified codes",
+              "links back to TAU_ADV_007"
+            ],
+            "unsupported_elements": [
+              "courier/delivery pretext is not present in the captured CyberDost post"
+            ],
+            "sha256": "c15e46e78573b2c9f39a094ad5194cb093ad9ed58828f8e9142ee6a329fc59c7"
+          }
+        ],
+        "official_alternate_source": "CyberDost / I4C, Ministry of Home Affairs — https://www.t.me/s/cyberdosti4c?q=%23CallForwarding"
+      }
     },
     {
       "id": "SRC-014",
@@ -207,8 +372,56 @@
       "status": "RETRIEVAL_FAILED",
       "http": "000",
       "claim_under_test": "Part-time task app sequence: small deposit, fake displayed earnings, withdrawal blocked pending further payment",
-      "blocks_rules": ["TL-JOB-003"],
-      "note": "Sole basis for TL-JOB-003. Unsupported until retrieved (G-01)."
+      "blocks_rules": [
+        "TL-JOB-003"
+      ],
+      "note": "Sole basis for TL-JOB-003. Unsupported until retrieved (G-01).",
+      "manual_retrieval": {
+        "manual_retrieval_status": "OFFICIAL_REPLACEMENT_COMPOSITE_VERIFIED",
+        "manual_retrieval_date": "2026-08-28",
+        "evidence_class": "OFFICIAL_REPLACEMENT",
+        "evidence_ids": [
+          "MR-EVID-012",
+          "MR-EVID-013"
+        ],
+        "rule_impact": "TL-JOB-003_PUBLISHABLE_AFTER_SOURCE_REBIND_AND_WORDING_REVIEW",
+        "review_status": "REVIEWED",
+        "review_notes": "Rebind TL-JOB-003 to the PIB 2023 + I4C 2025 pair. Preserve the original SRC-015 retrieval failure as audit history.",
+        "preserves_original_status": "RETRIEVAL_FAILED",
+        "evidence": [
+          {
+            "evidence_id": "MR-EVID-012",
+            "file": "PIB_MHA_Task_Based_Part_Time_Job_Fraud_2023.pdf",
+            "issuer": "PIB / Ministry of Home Affairs / I4C",
+            "authority": "OFFICIAL_GOVERNMENT",
+            "canonical_url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=1982936",
+            "retrieval_type": "OFFICIAL_REPLACEMENT_SUPPORT",
+            "retrieved_on": "2026-08-28",
+            "pages": [
+              1
+            ],
+            "claim": "Task-based part-time job scam progression from ad to WhatsApp/Telegram tasks, initial commission, larger investment and frozen deposits.",
+            "claim_match": "PARTIAL_OF_COMPOSITE",
+            "sha256": "8190b382feca637d620f4df20783dcf1eb9ff5121ffb3b905d3c02d821d8d222"
+          },
+          {
+            "evidence_id": "MR-EVID-013",
+            "file": "I4C_Fake_CAPTCHA_Filling_Jobs_2025.pdf",
+            "issuer": "NCTAU / I4C, Ministry of Home Affairs",
+            "authority": "OFFICIAL_GOVERNMENT",
+            "canonical_url": "https://cybercrime.gov.in/Webform/theme/resources/advisories/ADVISORY%20TAU-ADV-004_Captcha%20Filling%20Fraud_08.04.2025.pdf",
+            "retrieval_type": "OFFICIAL_REPLACEMENT_SUPPORT",
+            "retrieved_on": "2026-08-28",
+            "pages": [
+              1
+            ],
+            "claim": "Fake part-time task platforms can deny withdrawals and demand additional payments such as taxes, processing charges, commissions or membership upgrades.",
+            "claim_match": "PARTIAL_OF_COMPOSITE",
+            "sha256": "ddc3af554e0bf09cdf361a55f4b530cd0dcb820703198175851d8e31947f589d"
+          }
+        ],
+        "replacement_source": "PIB / Ministry of Home Affairs / I4C — https://www.pib.gov.in/PressReleasePage.aspx?PRID=1982936; NCTAU / I4C, Ministry of Home Affairs — https://cybercrime.gov.in/Webform/theme/resources/advisories/ADVISORY%20TAU-ADV-004_Captcha%20Filling%20Fraud_08.04.2025.pdf"
+      }
     },
     {
       "id": "SRC-016",
@@ -245,8 +458,40 @@
       "status": "RETRIEVAL_FAILED",
       "http": "403",
       "claim_under_test": "'Scan a QR code to receive money' is fraudulent — scanning a QR authorises a payment out, never a credit in",
-      "blocks_rules": ["TL-PAY-002"],
-      "note": "Substantially mitigated by SRC-021, which states categorically that no UPI PIN or OTP is needed to receive money (G-02)."
+      "blocks_rules": [
+        "TL-PAY-002"
+      ],
+      "note": "Substantially mitigated by SRC-021, which states categorically that no UPI PIN or OTP is needed to receive money (G-02).",
+      "manual_retrieval": {
+        "manual_retrieval_status": "EXACT_PRIMARY_VERIFIED",
+        "manual_retrieval_date": "2026-08-28",
+        "evidence_class": "PRIMARY",
+        "evidence_ids": [
+          "MR-EVID-003"
+        ],
+        "rule_impact": "TL-PAY-002_PUBLISHABLE",
+        "review_status": "REVIEWED",
+        "review_notes": "Update manual retrieval metadata and permit publication subject to existing rule QA.",
+        "preserves_original_status": "RETRIEVAL_FAILED",
+        "evidence": [
+          {
+            "evidence_id": "MR-EVID-003",
+            "file": "NPCI_Fraud_Awareness.pdf",
+            "issuer": "NPCI",
+            "authority": "OFFICIAL_PAYMENT_OPERATOR",
+            "canonical_url": "https://www.npci.org.in/fraud-awareness",
+            "retrieval_type": "EXACT_ORIGINAL_WEB_SNAPSHOT",
+            "retrieved_on": "2026-08-15",
+            "pages": [
+              2,
+              3
+            ],
+            "claim": "'Scan a QR code to receive money' is fraudulent when it is coupled with UPI PIN entry; QR+PIN is a payment act, not a receipt act.",
+            "claim_match": "FULL",
+            "sha256": "3dd289d4ac5a43ae08b1b9243269c569f9672f72e7da7c706f7cec5daaab9185"
+          }
+        ]
+      }
     },
     {
       "id": "SRC-019",
@@ -257,8 +502,40 @@
       "status": "RETRIEVAL_FAILED",
       "http": "000",
       "claim_under_test": "Android accessibility permission requested out of context, granting an app screen-reading and input-injection control",
-      "blocks_rules": ["TL-MAL-002"],
-      "note": "Sole basis for TL-MAL-002. Unsupported until retrieved (G-01)."
+      "blocks_rules": [
+        "TL-MAL-002"
+      ],
+      "note": "Sole basis for TL-MAL-002. Unsupported until retrieved (G-01).",
+      "manual_retrieval": {
+        "manual_retrieval_status": "OFFICIAL_ALTERNATE_VERIFIED",
+        "manual_retrieval_date": "2026-08-28",
+        "evidence_class": "OFFICIAL_ALTERNATE",
+        "evidence_ids": [
+          "MR-EVID-009"
+        ],
+        "rule_impact": "TL-MAL-002_PUBLISHABLE_AFTER_SOURCE_REBIND",
+        "review_status": "REVIEWED",
+        "review_notes": "Rebind rule evidence to the archived official CyberDost/I4C post if official-channel evidence is allowed by governance.",
+        "preserves_original_status": "RETRIEVAL_FAILED",
+        "evidence": [
+          {
+            "evidence_id": "MR-EVID-009",
+            "file": "I4C_Android_GOD_Mode_CyberDost.pdf",
+            "issuer": "CyberDost / I4C, Ministry of Home Affairs",
+            "authority": "OFFICIAL_GOVERNMENT_CHANNEL",
+            "canonical_url": "https://t.me/s/cyberdosti4c/4267",
+            "retrieval_type": "OFFICIAL_ALTERNATE_CHANNEL",
+            "retrieved_on": "2026-08-28",
+            "pages": [
+              11
+            ],
+            "claim": "Android malware can abuse Accessibility permissions to gain unauthorized control, with fake apps/APKs/links as delivery.",
+            "claim_match": "FULL_CONCEPT",
+            "sha256": "59bf5d348c88c02d76f3eb2f5e29bdad2db37e72c91e7483565f076cd4228adc"
+          }
+        ],
+        "official_alternate_source": "CyberDost / I4C, Ministry of Home Affairs — https://t.me/s/cyberdosti4c/4267"
+      }
     },
     {
       "id": "SRC-020",
@@ -302,8 +579,39 @@
       "status": "RETRIEVAL_FAILED",
       "http": "403",
       "claim_under_test": "Executive/regulator impersonation ('boss scam') issuing an urgent payment order over a messaging app",
-      "blocks_rules": ["TL-AUTH-003"],
-      "note": "Sole basis for TL-AUTH-003. Unsupported until retrieved (G-03)."
+      "blocks_rules": [
+        "TL-AUTH-003"
+      ],
+      "note": "Sole basis for TL-AUTH-003. Unsupported until retrieved (G-03).",
+      "manual_retrieval": {
+        "manual_retrieval_status": "EXACT_PRIMARY_VERIFIED",
+        "manual_retrieval_date": "2026-08-28",
+        "evidence_class": "PRIMARY",
+        "evidence_ids": [
+          "MR-EVID-004"
+        ],
+        "rule_impact": "TL-AUTH-003_PUBLISHABLE",
+        "review_status": "REVIEWED",
+        "review_notes": "Update manual retrieval metadata and permit publication subject to existing rule QA.",
+        "preserves_original_status": "RETRIEVAL_FAILED",
+        "evidence": [
+          {
+            "evidence_id": "MR-EVID-004",
+            "file": "PIB_PRID-2276809_Boss_Scam.pdf",
+            "issuer": "PIB / Ministry of Home Affairs",
+            "authority": "OFFICIAL_GOVERNMENT",
+            "canonical_url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2276809",
+            "retrieval_type": "EXACT_ORIGINAL_WEB_SNAPSHOT",
+            "retrieved_on": "2026-08-15",
+            "pages": [
+              1
+            ],
+            "claim": "Executive/regulator impersonation ('boss scam') can culminate in urgent payment instructions over messaging channels.",
+            "claim_match": "FULL",
+            "sha256": "a6184f9601e5e189cec1e89e2bab6012a4c094809388f670142599a12f76306e"
+          }
+        ]
+      }
     },
     {
       "id": "SRC-023",
@@ -314,7 +622,47 @@
       "url": "https://www.sebi.gov.in/media-and-notifications/press-releases/may-2025/caution-to-investors-on-stock-market-scams-through-social-media-platforms_94064.html",
       "published": "2025-05-21",
       "status": "PRIMARY_CITED_UNVERIFIED",
-      "note": "Title, reference number and date confirmed. Body content was not present in the retrieved page, so the specific deepfake/celebrity-endorsement claim remains unverified."
+      "note": "Title, reference number and date confirmed. Body content was not present in the retrieved page, so the specific deepfake/celebrity-endorsement claim remains unverified.",
+      "manual_retrieval": {
+        "manual_retrieval_status": "PRIMARY_BODY_RETRIEVED_PARTIAL_CLAIM",
+        "manual_retrieval_date": "2026-08-28",
+        "evidence_class": "PRIMARY",
+        "evidence_ids": [
+          "MR-EVID-005"
+        ],
+        "rule_impact": "CELEBRITY_IMPERSONATION_SUPPORTED_DEEPFAKE_NOT_SUPPORTED",
+        "review_status": "REVIEWED",
+        "review_notes": "Split or narrow any combined celebrity/deepfake rule. Do not mark the deepfake claim verified from this SEBI release.",
+        "preserves_original_status": "PRIMARY_CITED_UNVERIFIED",
+        "evidence": [
+          {
+            "evidence_id": "MR-EVID-005",
+            "file": "SEBI_PR-27-2025_Social_Media_Stock_Market_Scams.pdf",
+            "issuer": "SEBI",
+            "authority": "OFFICIAL_REGULATOR",
+            "canonical_url": "https://www.sebi.gov.in/media-and-notifications/press-releases/may-2025/caution-to-investors-on-stock-market-scams-through-social-media-platforms_94064.html",
+            "retrieval_type": "EXACT_ORIGINAL_BODY",
+            "retrieved_on": "2026-08-15",
+            "pages": [
+              1,
+              2
+            ],
+            "claim": "Social-media stock scams may impersonate public figures/celebrities and use fake testimonials and unreasonable-return promises.",
+            "claim_match": "PARTIAL",
+            "supported_elements": [
+              "celebrity/public-figure impersonation",
+              "fake expert profiles",
+              "fake testimonials",
+              "unreasonable-return promises",
+              "unsolicited WhatsApp groups"
+            ],
+            "unsupported_elements": [
+              "deepfake-specific mechanism"
+            ],
+            "sha256": "e6571d8b1f9ed1de394842aa776ded9f6e4ae4c73d3b5a09dc2f9316436ad2dd"
+          }
+        ]
+      }
     },
     {
       "id": "SRC-024",
@@ -325,8 +673,41 @@
       "status": "RETRIEVAL_FAILED",
       "http": "000",
       "claim_under_test": "'Connect your wallet to verify your assets' as a crypto-drain pretext targeting Trust Wallet users",
-      "blocks_rules": ["TL-CRYP-001"],
-      "note": "Sole basis for TL-CRYP-001. Unsupported until retrieved (G-01)."
+      "blocks_rules": [
+        "TL-CRYP-001"
+      ],
+      "note": "Sole basis for TL-CRYP-001. Unsupported until retrieved (G-01).",
+      "manual_retrieval": {
+        "manual_retrieval_status": "OFFICIAL_ALTERNATE_VERIFIED",
+        "manual_retrieval_date": "2026-08-28",
+        "evidence_class": "OFFICIAL_ALTERNATE",
+        "evidence_ids": [
+          "MR-EVID-010"
+        ],
+        "rule_impact": "TL-CRYP-001_PUBLISHABLE_AFTER_SOURCE_REBIND",
+        "review_status": "REVIEWED",
+        "review_notes": "Rebind rule evidence to the archived official CyberDost/I4C post if official-channel evidence is allowed by governance.",
+        "preserves_original_status": "RETRIEVAL_FAILED",
+        "evidence": [
+          {
+            "evidence_id": "MR-EVID-010",
+            "file": "I4C_Trust_Wallet_CyberDost.pdf",
+            "issuer": "CyberDost / I4C, Ministry of Home Affairs",
+            "authority": "OFFICIAL_GOVERNMENT_CHANNEL",
+            "canonical_url": "https://www.t.me/s/cyberdosti4c?before=4348",
+            "retrieval_type": "OFFICIAL_ALTERNATE_CHANNEL",
+            "retrieved_on": "2026-08-28",
+            "pages": [
+              49,
+              50
+            ],
+            "claim": "Trust Wallet users can be moved from P2P contact to WhatsApp/Telegram, sent to fake verification sites, asked to connect the wallet, and drained after permissions are approved.",
+            "claim_match": "FULL_CONCEPT",
+            "sha256": "5e3c112a231aad745809629787d725a7ba84b8a5fb955de8b521d53a771c9605"
+          }
+        ],
+        "official_alternate_source": "CyberDost / I4C, Ministry of Home Affairs — https://www.t.me/s/cyberdosti4c?before=4348"
+      }
     },
     {
       "id": "SRC-025",
@@ -337,8 +718,50 @@
       "status": "RETRIEVAL_FAILED",
       "http": "000",
       "claim_under_test": "Prompt to sideload an app or install a configuration profile outside the official store as a malware delivery vector",
-      "blocks_rules": ["TL-MAL-001"],
-      "note": "TL-MAL-001 retains PARTIAL support from SRC-010 (Play Protect install-attempt prevalence), which evidences the vector's scale but not this advisory's specific guidance (G-01)."
+      "blocks_rules": [
+        "TL-MAL-001"
+      ],
+      "note": "TL-MAL-001 retains PARTIAL support from SRC-010 (Play Protect install-attempt prevalence), which evidences the vector's scale but not this advisory's specific guidance (G-01).",
+      "manual_retrieval": {
+        "manual_retrieval_status": "OFFICIAL_REPLACEMENT_PARTIAL",
+        "manual_retrieval_date": "2026-08-28",
+        "evidence_class": "OFFICIAL_REPLACEMENT",
+        "evidence_ids": [
+          "MR-EVID-011"
+        ],
+        "rule_impact": "TL-MAL-001_KEEP_DRAFT_OR_NARROW",
+        "review_status": "REVIEWED",
+        "review_notes": "Narrow to untrusted/non-store app-install prompts if publishing; keep the iOS configuration-profile branch unsupported.",
+        "preserves_original_status": "RETRIEVAL_FAILED",
+        "evidence": [
+          {
+            "evidence_id": "MR-EVID-011",
+            "file": "CERTIn_Cyber_Security_Awareness_Booklet.pdf",
+            "issuer": "CERT-In",
+            "authority": "OFFICIAL_GOVERNMENT",
+            "canonical_url": "https://www.cert-in.org.in/PDF/CSA_Booklet.pdf",
+            "retrieval_type": "OFFICIAL_REPLACEMENT_SUPPORT",
+            "retrieved_on": "2026-08-28",
+            "pages": [
+              6,
+              7
+            ],
+            "claim": "Apps delivered through messages/links outside trusted sources are risky malware-delivery vectors.",
+            "claim_match": "PARTIAL",
+            "supported_elements": [
+              "authorized app-store/trusted-source guidance",
+              "avoid apps from SMS/email/social media",
+              "do not install apps from chat/social links"
+            ],
+            "unsupported_elements": [
+              "iOS configuration-profile installation mechanism",
+              "exact Apple/iOS side-loading advisory wording"
+            ],
+            "sha256": "8709d68342a4824b39d61d7720ebd060e5d698980612c4aa80b7929dc807cea2"
+          }
+        ],
+        "replacement_source": "CERT-In — https://www.cert-in.org.in/PDF/CSA_Booklet.pdf"
+      }
     },
     {
       "id": "SRC-026",
@@ -347,7 +770,37 @@
       "title": "Security Threat Detected",
       "url": "https://www.hdfcbank.com/personal/useful-links/important-messages/security-threat-detected",
       "status": "RETRIEVAL_FAILED",
-      "note": "Same domain migration as SRC-008. Commercial source; not an authority."
+      "note": "Same domain migration as SRC-008. Commercial source; not an authority.",
+      "manual_retrieval": {
+        "manual_retrieval_status": "CURRENT_CANONICAL_RETRIEVED",
+        "manual_retrieval_date": "2026-08-28",
+        "evidence_class": "INDUSTRY",
+        "evidence_ids": [
+          "MR-EVID-006"
+        ],
+        "rule_impact": "SCREEN_SHARE_CONCEPT_SUPPORTED_BUT_MANIFEST_HAS_NO_BLOCKS_RULES",
+        "review_status": "REVIEWED",
+        "review_notes": "Record new canonical URL and map only after locating the exact dependent rule in the current repository.",
+        "preserves_original_status": "RETRIEVAL_FAILED",
+        "evidence": [
+          {
+            "evidence_id": "MR-EVID-006",
+            "file": "HDFC_Security_Threat_Detected.pdf",
+            "issuer": "HDFC Bank",
+            "authority": "INDUSTRY",
+            "canonical_url": "https://www.hdfc.bank.in/important-messages/security-threat-detected",
+            "retrieval_type": "CURRENT_CANONICAL_WEB_SNAPSHOT",
+            "retrieved_on": "2026-08-15",
+            "pages": [
+              1
+            ],
+            "claim": "Screen-recording/screen-sharing applications are a banking security threat.",
+            "claim_match": "FULL_FOR_SCREEN_SHARE_CONCEPT",
+            "sha256": "ace7fbb81679009182ffd75652cfde80f1fd0c3f320000fcd1eb05863d73831a"
+          }
+        ],
+        "replacement_source": "HDFC Bank — https://www.hdfc.bank.in/important-messages/security-threat-detected"
+      }
     }
   ],
   "organisation_level_findings": [
@@ -375,5 +828,38 @@
       "urls_retrieved": 0,
       "finding": "Link rot confirmed — cited domain now redirects and content was not located. Commercial source; five rules depend on it."
     }
-  ]
+  ],
+  "historical_manifest": "knowledge/sources/manual-retrieval/verification-manifest-v1.1-original.json (frozen v1.1 automated pass)",
+  "amended_2": "2026-08-28 (RESEARCH-006 manual retrieval reconciliation) — ADDITIVE layer only. Every source's automated `status`, `http`, discrepancies and quotes from the Phase-1 automated pass are PRESERVED UNCHANGED as historical evidence. A `manual_retrieval` object is added to the 14 re-reviewed sources recording the manual outcome, evidence class (DEC-006 / ADR-0015), durable evidence IDs, canonical URL, retrieval date, SHA-256 and human review. No RETRIEVAL_FAILED status was overwritten. The grade `summary` below is DELIBERATELY UNCHANGED because it grades the automated pass only; manual improvements are read from `manual_retrieval.*`.",
+  "manual_retrieval_summary": {
+    "reviewed": "2026-08-28",
+    "sources_reviewed": 14,
+    "by_evidence_class": {
+      "PRIMARY": [
+        "SRC-001",
+        "SRC-005",
+        "SRC-018",
+        "SRC-022",
+        "SRC-023"
+      ],
+      "OFFICIAL_ALTERNATE": [
+        "SRC-013",
+        "SRC-019",
+        "SRC-024"
+      ],
+      "OFFICIAL_REPLACEMENT": [
+        "SRC-015",
+        "SRC-025"
+      ],
+      "INDUSTRY": [
+        "SRC-008",
+        "SRC-026"
+      ],
+      "STILL_UNAVAILABLE": [
+        "SRC-002",
+        "SRC-011"
+      ]
+    },
+    "note": "`status` is the AUTOMATED grade (unchanged). `manual_retrieval.*` is the added reconciliation layer. Original 26-source count and automated grade summary remain historically meaningful."
+  }
 }

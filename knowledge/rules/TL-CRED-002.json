@@ -1,0 +1,92 @@
+{
+  "schema_version": "1.0.0",
+  "rule_version": "1.0.0",
+  "id": "TL-CRED-002",
+  "legacy_id": "RBI-UPIPIN-002",
+  "name": "UPI PIN entry demanded outside a payment the user is making",
+  "description": "The recipient is prompted to enter their UPI PIN for verification, KYC or to 'receive' — outside a payment they themselves are making. A UPI PIN is only ever needed to send money.",
+  "kind": "COMPOSITE",
+  "taxonomy_refs": [
+    "TAX-01-02"
+  ],
+  "severity": "HIGH",
+  "evidence": {
+    "verdict": "PARTIAL",
+    "implementability": "YES",
+    "source_references": [
+      {
+        "source_id": "SRC-005",
+        "issuing_body": "NPCI",
+        "authority": "OFFICIAL_PAYMENT_OPERATOR",
+        "verification_status": "RETRIEVAL_FAILED",
+        "document_ref": "NPCI BHIM UPI Guidelines",
+        "manual_retrieval": {
+          "evidence_class": "PRIMARY",
+          "manual_retrieval_status": "EXACT_PRIMARY_VERIFIED",
+          "evidence_ids": [
+            "MR-EVID-002"
+          ],
+          "retrieved_on": "2026-08-15",
+          "canonical_url": "https://www.npci.org.in/uploads/BHIM_UPI_Guidelines_2026_012a0b1bce.pdf",
+          "locator": "BHIM_UPI_Guidelines_2026_012a0b1bce.pdf p.77",
+          "claim_match": "FULL",
+          "review_status": "REVIEWED",
+          "review_role": "Threat Intelligence Lead",
+          "notes": "Original NPCI PDF was HTTP 403 under automated retrieval; manually verified. 'Only sending money requires UPI PIN.'"
+        }
+      }
+    ],
+    "severity_cap": "HIGH"
+  },
+  "logic": {
+    "require": {
+      "all_of": [
+        "UPI_PIN_PROMPT",
+        {
+          "any_of": [
+            "VERIFICATION_PRETEXT",
+            "KYC_PRETEXT",
+            "RECEIVE_FRAMING",
+            "ACCOUNT_BLOCK_THREAT"
+          ]
+        }
+      ]
+    },
+    "min_evidence_classes": 2
+  },
+  "lifecycle": {
+    "status": "PUBLISHED",
+    "created": "2026-08-28",
+    "last_reviewed": "2026-08-28",
+    "review_due": "2027-02-28",
+    "authored_by_role": "Knowledge Editor",
+    "approved_by_role": "Knowledge Approver"
+  },
+  "language_scope": {
+    "languages": [
+      "en"
+    ],
+    "scripts": [
+      "Latn"
+    ],
+    "on_unsupported_input": "FLAG_UNSUPPORTED"
+  },
+  "explanation": {
+    "plain": "You were asked to enter your UPI PIN to 'verify', complete KYC or receive money. Your UPI PIN is only ever needed to SEND money. Any other reason is a scam.",
+    "technical": "UPI_PIN_PROMPT (credential-action) with a non-payment pretext. NPCI: only sending money requires a UPI PIN.",
+    "verification_steps": [
+      "Only enter your UPI PIN when you are deliberately sending a payment.",
+      "Ignore any 'verify/KYC/receive' request that needs your UPI PIN."
+    ],
+    "why_confidence_limited": "Evidence is NPCI's manually-retrieved guideline (PRIMARY, MR-EVID-002); the RBI half of the original basis did not list UPI-PIN (D1), so the rule is capped at PARTIAL."
+  },
+  "provenance": {
+    "source_severity_hint": {
+      "value": 92,
+      "label": "High",
+      "cited_as": "RP p.6",
+      "operational_use": false
+    },
+    "notes": "Encoded in the WP3 rule-encoding pass; suppression via negative-indicator-library-v1.json."
+  }
+}

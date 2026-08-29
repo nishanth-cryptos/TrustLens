@@ -1,0 +1,143 @@
+{
+  "version": "1.0",
+  "review_date": "2026-08-28",
+  "items": [
+    {
+      "source_id": "SRC-001",
+      "original_status": "RETRIEVAL_FAILED",
+      "manual_outcome": "EXACT_PRIMARY_VERIFIED",
+      "rule_impact": "SOURCE_FACT_CAN_NOW_BE_USED",
+      "evidence_ids": [
+        "MR-EVID-001"
+      ],
+      "action": "Add manual retrieval metadata; source claim is now directly verified."
+    },
+    {
+      "source_id": "SRC-002",
+      "original_status": "RETRIEVAL_FAILED",
+      "manual_outcome": "STILL_UNAVAILABLE",
+      "rule_impact": "NO_DIRECT_RULE_UNBLOCK_LISTED",
+      "evidence_ids": [],
+      "action": "Keep gap open. It is an index page; do not use it as claim evidence."
+    },
+    {
+      "source_id": "SRC-005",
+      "original_status": "RETRIEVAL_FAILED",
+      "manual_outcome": "EXACT_PRIMARY_VERIFIED",
+      "rule_impact": "UPI_GROUND_TRUTH_STRENGTHENED",
+      "evidence_ids": [
+        "MR-EVID-002"
+      ],
+      "action": "Add manual retrieval metadata; exact NPCI claim is verified."
+    },
+    {
+      "source_id": "SRC-008",
+      "original_status": "RETRIEVAL_FAILED",
+      "manual_outcome": "OFFICIAL_REPLACEMENT_PARTIAL",
+      "rule_impact": "DEPENDENT_HDFC_RULES_REQUIRE_PER_RULE_REVIEW",
+      "evidence_ids": [
+        "MR-EVID-007"
+      ],
+      "action": "Do not mark the dead source verified. Rebind only individual rule claims actually present in the replacement snapshot or other official sources."
+    },
+    {
+      "source_id": "SRC-011",
+      "original_status": "RETRIEVAL_FAILED",
+      "manual_outcome": "STILL_UNAVAILABLE_LOW_IMPACT",
+      "rule_impact": "BACKGROUND_ONLY",
+      "evidence_ids": [],
+      "action": "Keep gap open; do not block Phase 2 execution."
+    },
+    {
+      "source_id": "SRC-013",
+      "original_status": "RETRIEVAL_FAILED",
+      "manual_outcome": "OFFICIAL_ALTERNATE_PARTIAL",
+      "rule_impact": "TL-TEL-001_KEEP_DRAFT_OR_NARROW",
+      "evidence_ids": [
+        "MR-EVID-008"
+      ],
+      "action": "If publishing now, narrow TL-TEL-001 to unverified-call-forwarding-code requests; retain delivery/courier pretext as unsupported until primary evidence is found."
+    },
+    {
+      "source_id": "SRC-015",
+      "original_status": "RETRIEVAL_FAILED",
+      "manual_outcome": "OFFICIAL_REPLACEMENT_COMPOSITE_VERIFIED",
+      "rule_impact": "TL-JOB-003_PUBLISHABLE_AFTER_SOURCE_REBIND_AND_WORDING_REVIEW",
+      "evidence_ids": [
+        "MR-EVID-012",
+        "MR-EVID-013"
+      ],
+      "action": "Rebind TL-JOB-003 to the PIB 2023 + I4C 2025 pair. Preserve the original SRC-015 retrieval failure as audit history."
+    },
+    {
+      "source_id": "SRC-018",
+      "original_status": "RETRIEVAL_FAILED",
+      "manual_outcome": "EXACT_PRIMARY_VERIFIED",
+      "rule_impact": "TL-PAY-002_PUBLISHABLE",
+      "evidence_ids": [
+        "MR-EVID-003"
+      ],
+      "action": "Update manual retrieval metadata and permit publication subject to existing rule QA."
+    },
+    {
+      "source_id": "SRC-019",
+      "original_status": "RETRIEVAL_FAILED",
+      "manual_outcome": "OFFICIAL_ALTERNATE_VERIFIED",
+      "rule_impact": "TL-MAL-002_PUBLISHABLE_AFTER_SOURCE_REBIND",
+      "evidence_ids": [
+        "MR-EVID-009"
+      ],
+      "action": "Rebind rule evidence to the archived official CyberDost/I4C post if official-channel evidence is allowed by governance."
+    },
+    {
+      "source_id": "SRC-022",
+      "original_status": "RETRIEVAL_FAILED",
+      "manual_outcome": "EXACT_PRIMARY_VERIFIED",
+      "rule_impact": "TL-AUTH-003_PUBLISHABLE",
+      "evidence_ids": [
+        "MR-EVID-004"
+      ],
+      "action": "Update manual retrieval metadata and permit publication subject to existing rule QA."
+    },
+    {
+      "source_id": "SRC-024",
+      "original_status": "RETRIEVAL_FAILED",
+      "manual_outcome": "OFFICIAL_ALTERNATE_VERIFIED",
+      "rule_impact": "TL-CRYP-001_PUBLISHABLE_AFTER_SOURCE_REBIND",
+      "evidence_ids": [
+        "MR-EVID-010"
+      ],
+      "action": "Rebind rule evidence to the archived official CyberDost/I4C post if official-channel evidence is allowed by governance."
+    },
+    {
+      "source_id": "SRC-025",
+      "original_status": "RETRIEVAL_FAILED",
+      "manual_outcome": "OFFICIAL_REPLACEMENT_PARTIAL",
+      "rule_impact": "TL-MAL-001_KEEP_DRAFT_OR_NARROW",
+      "evidence_ids": [
+        "MR-EVID-011"
+      ],
+      "action": "Narrow to untrusted/non-store app-install prompts if publishing; keep the iOS configuration-profile branch unsupported."
+    },
+    {
+      "source_id": "SRC-026",
+      "original_status": "RETRIEVAL_FAILED",
+      "manual_outcome": "CURRENT_CANONICAL_RETRIEVED",
+      "rule_impact": "SCREEN_SHARE_CONCEPT_SUPPORTED_BUT_MANIFEST_HAS_NO_BLOCKS_RULES",
+      "evidence_ids": [
+        "MR-EVID-006"
+      ],
+      "action": "Record new canonical URL and map only after locating the exact dependent rule in the current repository."
+    },
+    {
+      "source_id": "SRC-023",
+      "original_status": "PRIMARY_CITED_UNVERIFIED",
+      "manual_outcome": "PRIMARY_BODY_RETRIEVED_PARTIAL_CLAIM",
+      "rule_impact": "CELEBRITY_IMPERSONATION_SUPPORTED_DEEPFAKE_NOT_SUPPORTED",
+      "evidence_ids": [
+        "MR-EVID-005"
+      ],
+      "action": "Split or narrow any combined celebrity/deepfake rule. Do not mark the deepfake claim verified from this SEBI release."
+    }
+  ]
+}

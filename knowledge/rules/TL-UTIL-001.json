@@ -1,0 +1,84 @@
+{
+  "schema_version": "1.0.0",
+  "rule_version": "1.0.0",
+  "id": "TL-UTIL-001",
+  "legacy_id": "HDFC-UTILITY-012",
+  "name": "Utility disconnection threat with an urgent unofficial payment",
+  "description": "A message threatens imminent disconnection of electricity/gas/service and demands an urgent payment through an unofficial link or number.",
+  "kind": "COMPOSITE",
+  "taxonomy_refs": [
+    "TAX-07-02"
+  ],
+  "severity": "HIGH",
+  "evidence": {
+    "verdict": "PARTIAL",
+    "implementability": "YES",
+    "source_references": [
+      {
+        "source_id": "SRC-007",
+        "issuing_body": "DoT / Sanchar Saathi",
+        "authority": "OFFICIAL_GOVERNMENT",
+        "verification_status": "PRIMARY_VERIFIED",
+        "document_ref": "Chakshu reporting categories",
+        "quote": "Bank Account / Payment Wallet / SIM / Gas / Electricity / KYC update, impersonation as Government official, sextortion etc."
+      }
+    ],
+    "severity_cap": "HIGH"
+  },
+  "logic": {
+    "require": {
+      "all_of": [
+        "SUSPENSION_THREAT",
+        {
+          "any_of": [
+            "IMMEDIATE_PAYMENT_DEMAND",
+            "PAYMENT_DEMAND"
+          ]
+        },
+        {
+          "any_of": [
+            "URGENCY",
+            "URGENCY_DEADLINE",
+            "LINK_PRESENT"
+          ]
+        }
+      ]
+    },
+    "min_evidence_classes": 2
+  },
+  "lifecycle": {
+    "status": "PUBLISHED",
+    "created": "2026-08-28",
+    "last_reviewed": "2026-08-28",
+    "review_due": "2027-02-28",
+    "authored_by_role": "Knowledge Editor",
+    "approved_by_role": "Knowledge Approver"
+  },
+  "language_scope": {
+    "languages": [
+      "en"
+    ],
+    "scripts": [
+      "Latn"
+    ],
+    "on_unsupported_input": "FLAG_UNSUPPORTED"
+  },
+  "explanation": {
+    "plain": "A message says your electricity/gas will be cut off today unless you pay now through this link. Real utilities do not work by same-day threats and unofficial links. Verify with your provider.",
+    "technical": "SUSPENSION_THREAT (pressure) + payment demand + urgency/link. Chakshu lists gas/electricity among impersonation fraud categories.",
+    "verification_steps": [
+      "Pay bills only through your provider's official app or biller.",
+      "Call your utility on the number on a past bill to confirm."
+    ],
+    "why_confidence_limited": "Chakshu (SRC-007) substantiates the utility-fraud category but not the full disconnection-plus-unofficial-link mechanic; the original HDFC basis is dead (D5). Capped at PARTIAL."
+  },
+  "provenance": {
+    "source_severity_hint": {
+      "value": 84,
+      "label": "High",
+      "cited_as": "RP p.7",
+      "operational_use": false
+    },
+    "notes": "Encoded in the WP3 rule-encoding pass; suppression via negative-indicator-library-v1.json."
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "schema_version": "1.0.0",
+  "rule_version": "1.0.0",
+  "id": "TL-JOB-001",
+  "legacy_id": "I4C-JOB-020",
+  "name": "Payment demanded as a precondition of a job",
+  "description": "A job or placement offer demands an upfront fee, deposit or processing charge before employment — a fee no legitimate employer requires.",
+  "kind": "COMPOSITE",
+  "taxonomy_refs": [
+    "TAX-06-01"
+  ],
+  "severity": "HIGH",
+  "evidence": {
+    "verdict": "SUPPORTED",
+    "implementability": "YES",
+    "source_references": [
+      {
+        "source_id": "SRC-021",
+        "issuing_body": "CERT-In",
+        "authority": "OFFICIAL_GOVERNMENT",
+        "verification_status": "PRIMARY_VERIFIED",
+        "document_ref": "CERT-In Preventing Online scams (CIAD-2024-0050)",
+        "quote": "Never pay for job offers. Verify job postings and companies before applying or providing personal data."
+      }
+    ]
+  },
+  "logic": {
+    "require": {
+      "all_of": [
+        "UPFRONT_FEE_DEMAND",
+        {
+          "any_of": [
+            "JOB_CONTEXT",
+            "JOB_GUARANTEE",
+            "UNSOLICITED_OFFER"
+          ]
+        }
+      ]
+    },
+    "min_evidence_classes": 2,
+    "suppressed_by": [
+      "EXPLICIT_NO_FEE"
+    ]
+  },
+  "lifecycle": {
+    "status": "PUBLISHED",
+    "created": "2026-08-28",
+    "last_reviewed": "2026-08-28",
+    "review_due": "2027-02-28",
+    "authored_by_role": "Knowledge Editor",
+    "approved_by_role": "Knowledge Approver"
+  },
+  "language_scope": {
+    "languages": [
+      "en"
+    ],
+    "scripts": [
+      "Latn"
+    ],
+    "on_unsupported_input": "FLAG_UNSUPPORTED"
+  },
+  "explanation": {
+    "plain": "This job asked you to pay a fee before you start. Real employers never ask you to pay to get a job. It is a scam.",
+    "technical": "UPFRONT_FEE_DEMAND (payment-action) with a job pretext. CERT-In: never pay for job offers.",
+    "verification_steps": [
+      "Never pay a fee to secure a job or placement.",
+      "Verify the company through its official website and careers page."
+    ]
+  },
+  "provenance": {
+    "source_severity_hint": {
+      "value": 86,
+      "label": "High",
+      "cited_as": "RP p.7",
+      "operational_use": false
+    },
+    "notes": "Encoded in the WP3 rule-encoding pass; suppression via negative-indicator-library-v1.json."
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "schema_version": "1.0.0",
+  "rule_version": "1.0.0",
+  "id": "TL-SOC-003",
+  "legacy_id": "CERT-JOB-029",
+  "name": "Urgent transfer request from a claimed relative",
+  "description": "A message claims to be a relative in urgent need, often from a new number, asks for an immediate transfer and discourages a call-back.",
+  "kind": "COMPOSITE",
+  "taxonomy_refs": [
+    "TAX-08-04"
+  ],
+  "severity": "HIGH",
+  "evidence": {
+    "verdict": "SUPPORTED",
+    "implementability": "YES",
+    "source_references": [
+      {
+        "source_id": "SRC-021",
+        "issuing_body": "CERT-In",
+        "authority": "OFFICIAL_GOVERNMENT",
+        "verification_status": "PRIMARY_VERIFIED",
+        "document_ref": "CERT-In Preventing Online scams (CIAD-2024-0050)",
+        "quote": "Verify requests for urgent money transfers by calling directly your relatives/friends."
+      }
+    ]
+  },
+  "logic": {
+    "require": {
+      "all_of": [
+        "CLAIMED_RELATIVE",
+        {
+          "any_of": [
+            "PAYMENT_DEMAND",
+            "IMMEDIATE_PAYMENT_DEMAND"
+          ]
+        },
+        {
+          "any_of": [
+            "URGENCY",
+            "URGENCY_DEADLINE",
+            "DISCOURAGES_VERIFICATION"
+          ]
+        }
+      ]
+    },
+    "min_evidence_classes": 3
+  },
+  "lifecycle": {
+    "status": "PUBLISHED",
+    "created": "2026-08-28",
+    "last_reviewed": "2026-08-28",
+    "review_due": "2027-02-28",
+    "authored_by_role": "Knowledge Editor",
+    "approved_by_role": "Knowledge Approver"
+  },
+  "language_scope": {
+    "languages": [
+      "en"
+    ],
+    "scripts": [
+      "Latn"
+    ],
+    "on_unsupported_input": "FLAG_UNSUPPORTED"
+  },
+  "explanation": {
+    "plain": "Someone claiming to be a relative wants money urgently and does not want you to call. That pressure not to verify is the scam. Call them on their usual number first.",
+    "technical": "CLAIMED_RELATIVE (identity) + payment demand + urgency/new-number/discourages-verification. CERT-In: verify urgent transfer requests by calling directly.",
+    "verification_steps": [
+      "Call the relative on their known number before sending anything.",
+      "Be suspicious of 'new number' plus 'don't call me' together."
+    ]
+  },
+  "provenance": {
+    "source_severity_hint": {
+      "value": 86,
+      "label": "High",
+      "cited_as": "RP p.7",
+      "operational_use": false
+    },
+    "notes": "Encoded in the WP3 rule-encoding pass; suppression via negative-indicator-library-v1.json."
+  }
+}

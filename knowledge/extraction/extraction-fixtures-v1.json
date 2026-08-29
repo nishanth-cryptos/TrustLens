@@ -1,0 +1,2237 @@
+{
+  "$comment": "TrustLens golden EXTRACTION-CONTRACT fixtures (Phase 2 WP2, STEP 14). SYNTHETIC. Each fixture shows an input envelope, its normalized observations (with polarity/attribution/mood, actor/action/target, payment_direction), the indicator observations an extractor would emit, and the expected PROJECTION onto the rule engine's signal set (positive_signals + negative_signals) split by polarity. These fixtures assert the CONTRACT SHAPE and the projection - they deliberately do NOT assert a final risk verdict (that is the rule/detection layer, Phase 3+). expected_projection is DERIVED from indicator_observations (matched==OBSERVED) so it cannot drift. All embedded objects validate against input-envelope/observation/url-observation/indicator-observation schemas. Cross-references point at the seed/suppression case each mirrors, so contract behaviour and rule behaviour stay reconciled. No accuracy claim (G-09).",
+  "fixtures_version": "1.0.0",
+  "generated": "2026-08-29",
+  "provenance": "SYNTHETIC",
+  "usage_constraints": [
+    "Contract-shape + projection testing ONLY.",
+    "MUST NOT be used to claim precision/recall/false-positive rate (G-09).",
+    "No fixture asserts a final scam verdict; extraction never decides risk (CONF-001)."
+  ],
+  "count": 15,
+  "fixtures": [
+    {
+      "fixture_id": "XF-01",
+      "title": "Live OTP disclosure request",
+      "purpose": "Directive first-party credential request -> live positive.",
+      "envelope": {
+        "envelope_version": "1.0.0",
+        "input_id": "XF-01-in",
+        "input_type": "SMS",
+        "source_channel": {
+          "value": "CH-01"
+        },
+        "content": {
+          "raw_text": "Example Bank: unusual activity. Share the OTP you just received with our officer now.",
+          "normalized_text": "Example Bank: unusual activity. Share the OTP you just received with our officer now.",
+          "language": [
+            "en"
+          ],
+          "script": [
+            "Latn"
+          ]
+        },
+        "provenance": {
+          "received_via": "TEST_FIXTURE",
+          "pipeline_stage": "INGESTED",
+          "synthetic": true
+        }
+      },
+      "observations": [
+        {
+          "observation_id": "XF-01-o1",
+          "observation_type": "AUTHENTICATION_ACTION",
+          "source_input_id": "XF-01-in",
+          "status": "OBSERVED",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "canonical_value": "REQUEST_DISCLOSE_OTP",
+          "raw_span": "Share the OTP you just received",
+          "polarity": "AFFIRMED",
+          "attribution": "FIRST_PARTY",
+          "mood": "DIRECTIVE",
+          "action": {
+            "type": "DISCLOSE_CREDENTIAL",
+            "dimension_ref": "UA-01"
+          },
+          "target": {
+            "credential_kind": "OTP"
+          }
+        },
+        {
+          "observation_id": "XF-01-o2",
+          "observation_type": "IDENTITY_ASSERTION",
+          "source_input_id": "XF-01-in",
+          "status": "OBSERVED",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "canonical_value": "CLAIM_BANK",
+          "raw_span": "Example Bank",
+          "actor": {
+            "claimed_identity": "AUTHORITY_BANK",
+            "verified": "UNKNOWN"
+          }
+        }
+      ],
+      "indicator_observations": [
+        {
+          "indicator_id": "CREDENTIAL_REQUEST_OTP",
+          "polarity": "POSITIVE",
+          "matched": "OBSERVED",
+          "input_id": "XF-01-in",
+          "confidence": {
+            "level": "HIGH",
+            "method": "CATEGORICAL"
+          },
+          "extraction_method": "DETERMINISTIC_PATTERN",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "review_required": false,
+          "observation_refs": [
+            "XF-01-o1"
+          ],
+          "family_ref": "FAM-CREDENTIAL-REQUEST"
+        },
+        {
+          "indicator_id": "AUTHORITY_IMPERSONATION_BANK",
+          "polarity": "POSITIVE",
+          "matched": "OBSERVED",
+          "input_id": "XF-01-in",
+          "confidence": {
+            "level": "MEDIUM",
+            "method": "CATEGORICAL"
+          },
+          "extraction_method": "DETERMINISTIC_PATTERN",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "review_required": false,
+          "observation_refs": [
+            "XF-01-o2"
+          ],
+          "family_ref": "FAM-IDENTITY-IMPERSONATION"
+        }
+      ],
+      "expected_projection": {
+        "positive_signals": [
+          "AUTHORITY_IMPERSONATION_BANK",
+          "CREDENTIAL_REQUEST_OTP"
+        ],
+        "negative_signals": [],
+        "note": "Live directive -> CREDENTIAL_REQUEST_OTP emitted. HR_OTP_DISCLOSURE_REQUEST would be active downstream; extractor does NOT decide that."
+      },
+      "cross_reference": "seed M-003 / suppression S-A"
+    },
+    {
+      "fixture_id": "XF-02",
+      "title": "Negated OTP warning",
+      "purpose": "Negated credential mention -> directional negative, NO live positive.",
+      "envelope": {
+        "envelope_version": "1.0.0",
+        "input_id": "XF-02-in",
+        "input_type": "SMS",
+        "source_channel": {
+          "value": "CH-01"
+        },
+        "content": {
+          "raw_text": "Your OTP is 8842 for your transaction. Never share it with anyone. -Example Bank",
+          "normalized_text": "Your OTP is 8842 for your transaction. Never share it with anyone. -Example Bank",
+          "language": [
+            "en"
+          ],
+          "script": [
+            "Latn"
+          ]
+        },
+        "provenance": {
+          "received_via": "TEST_FIXTURE",
+          "pipeline_stage": "INGESTED",
+          "synthetic": true
+        }
+      },
+      "observations": [
+        {
+          "observation_id": "XF-02-o1",
+          "observation_type": "AUTHENTICATION_ACTION",
+          "source_input_id": "XF-02-in",
+          "status": "OBSERVED",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "canonical_value": "OTP_DELIVERED",
+          "raw_span": "Your OTP is 8842",
+          "polarity": "AFFIRMED",
+          "attribution": "FIRST_PARTY",
+          "mood": "DESCRIPTIVE",
+          "payment_direction": "UNKNOWN_DIRECTION",
+          "target": {
+            "credential_kind": "OTP"
+          }
+        },
+        {
+          "observation_id": "XF-02-o2",
+          "observation_type": "AUTHENTICATION_ACTION",
+          "source_input_id": "XF-02-in",
+          "status": "OBSERVED",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "canonical_value": "REQUEST_DISCLOSE_OTP",
+          "raw_span": "Never share it with anyone",
+          "polarity": "NEGATED",
+          "attribution": "FIRST_PARTY",
+          "mood": "DIRECTIVE",
+          "target": {
+            "credential_kind": "OTP"
+          }
+        }
+      ],
+      "indicator_observations": [
+        {
+          "indicator_id": "OTP_DELIVERED_NOT_REQUESTED",
+          "polarity": "NEGATIVE",
+          "matched": "OBSERVED",
+          "input_id": "XF-02-in",
+          "confidence": {
+            "level": "HIGH",
+            "method": "CATEGORICAL"
+          },
+          "extraction_method": "DETERMINISTIC_PATTERN",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "review_required": false,
+          "observation_refs": [
+            "XF-02-o1"
+          ]
+        },
+        {
+          "indicator_id": "NEGATED_CREDENTIAL_REQUEST",
+          "polarity": "NEGATIVE",
+          "matched": "OBSERVED",
+          "input_id": "XF-02-in",
+          "confidence": {
+            "level": "HIGH",
+            "method": "CATEGORICAL"
+          },
+          "extraction_method": "DETERMINISTIC_PATTERN",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "review_required": false,
+          "observation_refs": [
+            "XF-02-o2"
+          ]
+        },
+        {
+          "indicator_id": "SELF_PROTECTIVE_WARNING",
+          "polarity": "NEGATIVE",
+          "matched": "OBSERVED",
+          "input_id": "XF-02-in",
+          "confidence": {
+            "level": "HIGH",
+            "method": "CATEGORICAL"
+          },
+          "extraction_method": "DETERMINISTIC_PATTERN",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "review_required": false,
+          "observation_refs": [
+            "XF-02-o2"
+          ]
+        }
+      ],
+      "expected_projection": {
+        "positive_signals": [],
+        "negative_signals": [
+          "NEGATED_CREDENTIAL_REQUEST",
+          "OTP_DELIVERED_NOT_REQUESTED",
+          "SELF_PROTECTIVE_WARNING"
+        ],
+        "note": "OTP delivered (not requested) + negated request. No live CREDENTIAL_REQUEST_OTP is emitted."
+      },
+      "cross_reference": "seed B-001 / suppression S-B-direct-negated-otp"
+    },
+    {
+      "fixture_id": "XF-03",
+      "title": "Reported scam narrative",
+      "purpose": "Reported (past-tense) speech -> narrative negative, NO live positive.",
+      "envelope": {
+        "envelope_version": "1.0.0",
+        "input_id": "XF-03-in",
+        "input_type": "USER_NARRATIVE",
+        "source_channel": {
+          "value": "UNKNOWN"
+        },
+        "content": {
+          "raw_text": "The scammer asked me to share my OTP. Is this a fraud?",
+          "normalized_text": "The scammer asked me to share my OTP. Is this a fraud?",
+          "language": [
+            "en"
+          ],
+          "script": [
+            "Latn"
+          ]
+        },
+        "provenance": {
+          "received_via": "TEST_FIXTURE",
+          "pipeline_stage": "INGESTED",
+          "synthetic": true
+        },
+        "user_supplied_context": {
+          "relationship_to_content": "REPORTING_ON_BEHALF"
+        }
+      },
+      "observations": [
+        {
+          "observation_id": "XF-03-o1",
+          "observation_type": "AUTHENTICATION_ACTION",
+          "source_input_id": "XF-03-in",
+          "status": "OBSERVED",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "canonical_value": "REQUEST_DISCLOSE_OTP",
+          "raw_span": "The scammer asked me to share my OTP",
+          "polarity": "AFFIRMED",
+          "attribution": "REPORTED",
+          "mood": "DESCRIPTIVE",
+          "target": {
+            "credential_kind": "OTP"
+          },
+          "actor": {
+            "claimed_identity": "UNKNOWN",
+            "party_ref": "THIRD_PARTY"
+          }
+        }
+      ],
+      "indicator_observations": [
+        {
+          "indicator_id": "REPORTED_SCAM_NARRATIVE",
+          "polarity": "NEGATIVE",
+          "matched": "OBSERVED",
+          "input_id": "XF-03-in",
+          "confidence": {
+            "level": "HIGH",
+            "method": "CATEGORICAL"
+          },
+          "extraction_method": "DETERMINISTIC_PATTERN",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "review_required": false,
+          "observation_refs": [
+            "XF-03-o1"
+          ]
+        }
+      ],
+      "expected_projection": {
+        "positive_signals": [],
+        "negative_signals": [
+          "REPORTED_SCAM_NARRATIVE"
+        ],
+        "note": "attribution=REPORTED scopes the OTP request as description, not a live directive: no positive emitted."
+      },
+      "cross_reference": "new (reported-speech case; cf. suppression S-E)"
+    },
+    {
+      "fixture_id": "XF-04",
+      "title": "UPI PIN to RECEIVE",
+      "purpose": "Receive-framed PIN prompt -> receive-fraud positives.",
+      "envelope": {
+        "envelope_version": "1.0.0",
+        "input_id": "XF-04-in",
+        "input_type": "SMS",
+        "source_channel": {
+          "value": "CH-01"
+        },
+        "content": {
+          "raw_text": "Your refund is pending. Enter your UPI PIN to RECEIVE Rs 5,000 now.",
+          "normalized_text": "Your refund is pending. Enter your UPI PIN to RECEIVE Rs 5,000 now.",
+          "language": [
+            "en"
+          ],
+          "script": [
+            "Latn"
+          ]
+        },
+        "provenance": {
+          "received_via": "TEST_FIXTURE",
+          "pipeline_stage": "INGESTED",
+          "synthetic": true
+        }
+      },
+      "observations": [
+        {
+          "observation_id": "XF-04-o1",
+          "observation_type": "PAYMENT_CONTEXT",
+          "source_input_id": "XF-04-in",
+          "status": "OBSERVED",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "canonical_value": "RECEIVE_MONEY",
+          "raw_span": "to RECEIVE Rs 5,000",
+          "payment_direction": "USER_RECEIVES",
+          "pretext": {
+            "kind": "REFUND"
+          },
+          "target": {
+            "amount": 5000,
+            "currency": "INR"
+          }
+        },
+        {
+          "observation_id": "XF-04-o2",
+          "observation_type": "AUTHENTICATION_ACTION",
+          "source_input_id": "XF-04-in",
+          "status": "OBSERVED",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "canonical_value": "ENTER_UPI_PIN",
+          "raw_span": "Enter your UPI PIN",
+          "polarity": "AFFIRMED",
+          "attribution": "FIRST_PARTY",
+          "mood": "DIRECTIVE",
+          "payment_direction": "USER_RECEIVES",
+          "action": {
+            "type": "ENTER_UPI_PIN",
+            "dimension_ref": "UA-02"
+          },
+          "target": {
+            "credential_kind": "UPI_PIN"
+          }
+        }
+      ],
+      "indicator_observations": [
+        {
+          "indicator_id": "RECEIVE_FRAMING",
+          "polarity": "POSITIVE",
+          "matched": "OBSERVED",
+          "input_id": "XF-04-in",
+          "confidence": {
+            "level": "HIGH",
+            "method": "CATEGORICAL"
+          },
+          "extraction_method": "COMPOSED",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "COMPOSED",
+            "extractor_version": "0.1.0-reference"
+          },
+          "review_required": false,
+          "observation_refs": [
+            "XF-04-o1"
+          ],
+          "family_ref": "FAM-PAYMENT-DIRECTION"
+        },
+        {
+          "indicator_id": "UPI_PIN_PROMPT",
+          "polarity": "POSITIVE",
+          "matched": "OBSERVED",
+          "input_id": "XF-04-in",
+          "confidence": {
+            "level": "HIGH",
+            "method": "CATEGORICAL"
+          },
+          "extraction_method": "DETERMINISTIC_PATTERN",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "review_required": false,
+          "observation_refs": [
+            "XF-04-o2"
+          ],
+          "family_ref": "FAM-UPI-PIN-CONTEXT"
+        }
+      ],
+      "expected_projection": {
+        "positive_signals": [
+          "RECEIVE_FRAMING",
+          "UPI_PIN_PROMPT"
+        ],
+        "negative_signals": [],
+        "note": "payment_direction=USER_RECEIVES makes RECEIVE_FRAMING (composed). HR_UPI_PIN_TO_RECEIVE active downstream."
+      },
+      "cross_reference": "seed M-002 / suppression S-G"
+    },
+    {
+      "fixture_id": "XF-05",
+      "title": "UPI PIN to PAY a merchant",
+      "purpose": "Outbound direction -> legitimate-payment negative, NO receive positive.",
+      "envelope": {
+        "envelope_version": "1.0.0",
+        "input_id": "XF-05-in",
+        "input_type": "SMS",
+        "source_channel": {
+          "value": "CH-01"
+        },
+        "content": {
+          "raw_text": "You will enter your UPI PIN in your bank app to PAY the merchant Rs 5,000.",
+          "normalized_text": "You will enter your UPI PIN in your bank app to PAY the merchant Rs 5,000.",
+          "language": [
+            "en"
+          ],
+          "script": [
+            "Latn"
+          ]
+        },
+        "provenance": {
+          "received_via": "TEST_FIXTURE",
+          "pipeline_stage": "INGESTED",
+          "synthetic": true
+        }
+      },
+      "observations": [
+        {
+          "observation_id": "XF-05-o1",
+          "observation_type": "PAYMENT_CONTEXT",
+          "source_input_id": "XF-05-in",
+          "status": "OBSERVED",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "canonical_value": "PAY_MERCHANT",
+          "raw_span": "to PAY the merchant Rs 5,000",
+          "payment_direction": "USER_PAYS",
+          "target": {
+            "amount": 5000,
+            "currency": "INR",
+            "recipient_label": "MERCHANT"
+          }
+        },
+        {
+          "observation_id": "XF-05-o2",
+          "observation_type": "AUTHENTICATION_ACTION",
+          "source_input_id": "XF-05-in",
+          "status": "OBSERVED",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "canonical_value": "ENTER_UPI_PIN",
+          "raw_span": "enter your UPI PIN",
+          "polarity": "AFFIRMED",
+          "attribution": "FIRST_PARTY",
+          "mood": "DIRECTIVE",
+          "payment_direction": "USER_PAYS",
+          "action": {
+            "type": "ENTER_UPI_PIN",
+            "dimension_ref": "UA-02"
+          },
+          "target": {
+            "credential_kind": "UPI_PIN",
+            "recipient_label": "MERCHANT"
+          }
+        }
+      ],
+      "indicator_observations": [
+        {
+          "indicator_id": "UPI_PIN_PROMPT",
+          "polarity": "POSITIVE",
+          "matched": "OBSERVED",
+          "input_id": "XF-05-in",
+          "confidence": {
+            "level": "HIGH",
+            "method": "CATEGORICAL"
+          },
+          "extraction_method": "DETERMINISTIC_PATTERN",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "review_required": false,
+          "observation_refs": [
+            "XF-05-o2"
+          ],
+          "family_ref": "FAM-UPI-PIN-CONTEXT"
+        },
+        {
+          "indicator_id": "PAY_MERCHANT_DIRECTION",
+          "polarity": "NEGATIVE",
+          "matched": "OBSERVED",
+          "input_id": "XF-05-in",
+          "confidence": {
+            "level": "HIGH",
+            "method": "CATEGORICAL"
+          },
+          "extraction_method": "DETERMINISTIC_PATTERN",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "review_required": false,
+          "observation_refs": [
+            "XF-05-o1"
+          ]
+        }
+      ],
+      "expected_projection": {
+        "positive_signals": [
+          "UPI_PIN_PROMPT"
+        ],
+        "negative_signals": [
+          "PAY_MERCHANT_DIRECTION"
+        ],
+        "note": "USER_PAYS to a MERCHANT -> no RECEIVE_FRAMING. PAY_MERCHANT_DIRECTION guards receive-fraud rules. Same UPI_PIN_PROMPT token, opposite direction from XF-04."
+      },
+      "cross_reference": "suppression S-F"
+    },
+    {
+      "fixture_id": "XF-06",
+      "title": "Utility disconnection + pay now",
+      "purpose": "Threat + immediate payment demand -> pressure/payment positives.",
+      "envelope": {
+        "envelope_version": "1.0.0",
+        "input_id": "XF-06-in",
+        "input_type": "SMS",
+        "source_channel": {
+          "value": "CH-01"
+        },
+        "content": {
+          "raw_text": "Your electricity connection will be disconnected tonight. Pay now to avoid disconnection.",
+          "normalized_text": "Your electricity connection will be disconnected tonight. Pay now to avoid disconnection.",
+          "language": [
+            "en"
+          ],
+          "script": [
+            "Latn"
+          ]
+        },
+        "provenance": {
+          "received_via": "TEST_FIXTURE",
+          "pipeline_stage": "INGESTED",
+          "synthetic": true
+        }
+      },
+      "observations": [
+        {
+          "observation_id": "XF-06-o1",
+          "observation_type": "THREAT",
+          "source_input_id": "XF-06-in",
+          "status": "OBSERVED",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "canonical_value": "THREAT_SERVICE_SUSPENSION",
+          "raw_span": "disconnected tonight",
+          "pressure": {
+            "kind": "THREAT",
+            "threat_of": "SERVICE_SUSPENSION",
+            "dimension_ref": "SE-03"
+          },
+          "pretext": {
+            "kind": "ACCOUNT_SECURITY"
+          }
+        },
+        {
+          "observation_id": "XF-06-o2",
+          "observation_type": "PAYMENT_CONTEXT",
+          "source_input_id": "XF-06-in",
+          "status": "OBSERVED",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "canonical_value": "IMMEDIATE_PAYMENT",
+          "raw_span": "Pay now",
+          "polarity": "AFFIRMED",
+          "attribution": "FIRST_PARTY",
+          "mood": "DIRECTIVE",
+          "action": {
+            "type": "MAKE_PAYMENT",
+            "dimension_ref": "UA-03"
+          }
+        },
+        {
+          "observation_id": "XF-06-o3",
+          "observation_type": "TEMPORAL_PRESSURE",
+          "source_input_id": "XF-06-in",
+          "status": "OBSERVED",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "canonical_value": "URGENCY",
+          "raw_span": "tonight",
+          "pressure": {
+            "kind": "URGENCY",
+            "dimension_ref": "SE-02"
+          }
+        }
+      ],
+      "indicator_observations": [
+        {
+          "indicator_id": "SUSPENSION_THREAT",
+          "polarity": "POSITIVE",
+          "matched": "OBSERVED",
+          "input_id": "XF-06-in",
+          "confidence": {
+            "level": "HIGH",
+            "method": "CATEGORICAL"
+          },
+          "extraction_method": "DETERMINISTIC_PATTERN",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "review_required": false,
+          "observation_refs": [
+            "XF-06-o1"
+          ],
+          "family_ref": "FAM-THREAT-CONSEQUENCE"
+        },
+        {
+          "indicator_id": "IMMEDIATE_PAYMENT_DEMAND",
+          "polarity": "POSITIVE",
+          "matched": "OBSERVED",
+          "input_id": "XF-06-in",
+          "confidence": {
+            "level": "HIGH",
+            "method": "CATEGORICAL"
+          },
+          "extraction_method": "DETERMINISTIC_PATTERN",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "review_required": false,
+          "observation_refs": [
+            "XF-06-o2"
+          ],
+          "family_ref": "FAM-PAYMENT-REQUEST"
+        },
+        {
+          "indicator_id": "URGENCY",
+          "polarity": "POSITIVE",
+          "matched": "OBSERVED",
+          "input_id": "XF-06-in",
+          "confidence": {
+            "level": "LOW",
+            "method": "CATEGORICAL"
+          },
+          "extraction_method": "DETERMINISTIC_PATTERN",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "review_required": false,
+          "observation_refs": [
+            "XF-06-o3"
+          ],
+          "family_ref": "FAM-URGENCY-PRESSURE"
+        }
+      ],
+      "expected_projection": {
+        "positive_signals": [
+          "IMMEDIATE_PAYMENT_DEMAND",
+          "SUSPENSION_THREAT",
+          "URGENCY"
+        ],
+        "negative_signals": [],
+        "note": "Threat + immediate-payment + urgency span PRESSURE and PAYMENT_ACTION classes."
+      },
+      "cross_reference": "seed M-016 (TL-UTIL-001)"
+    },
+    {
+      "fixture_id": "XF-07",
+      "title": "AnyDesk to process refund",
+      "purpose": "Screen-share in a payment frame -> remote-access positives (banking override territory).",
+      "envelope": {
+        "envelope_version": "1.0.0",
+        "input_id": "XF-07-in",
+        "input_type": "CHAT_MESSAGE",
+        "source_channel": {
+          "value": "CH-02"
+        },
+        "content": {
+          "raw_text": "To process your refund I need to guide you - install AnyDesk and give me the code so I can complete the payment on your screen.",
+          "normalized_text": "To process your refund I need to guide you - install AnyDesk and give me the code so I can complete the payment on your screen.",
+          "language": [
+            "en"
+          ],
+          "script": [
+            "Latn"
+          ]
+        },
+        "provenance": {
+          "received_via": "TEST_FIXTURE",
+          "pipeline_stage": "INGESTED",
+          "synthetic": true
+        }
+      },
+      "observations": [
+        {
+          "observation_id": "XF-07-o1",
+          "observation_type": "DEVICE_ACTION",
+          "source_input_id": "XF-07-in",
+          "status": "OBSERVED",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "canonical_value": "INSTALL_SCREEN_SHARE_APP",
+          "raw_span": "install AnyDesk and give me the code",
+          "polarity": "AFFIRMED",
+          "attribution": "FIRST_PARTY",
+          "mood": "DIRECTIVE",
+          "action": {
+            "type": "INSTALL_APP",
+            "dimension_ref": "UA-05"
+          },
+          "target": {
+            "instrument": "AnyDesk"
+          }
+        },
+        {
+          "observation_id": "XF-07-o2",
+          "observation_type": "PAYMENT_CONTEXT",
+          "source_input_id": "XF-07-in",
+          "status": "OBSERVED",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "canonical_value": "PAYMENT_CONTEXT",
+          "raw_span": "complete the payment on your screen"
+        },
+        {
+          "observation_id": "XF-07-o3",
+          "observation_type": "CLAIM",
+          "source_input_id": "XF-07-in",
+          "status": "OBSERVED",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "canonical_value": "BENIGN_COVER",
+          "raw_span": "To process your refund I need to guide you",
+          "pretext": {
+            "kind": "TECHNICAL_SUPPORT"
+          }
+        }
+      ],
+      "indicator_observations": [
+        {
+          "indicator_id": "SCREEN_SHARE_APP_REQUEST",
+          "polarity": "POSITIVE",
+          "matched": "OBSERVED",
+          "input_id": "XF-07-in",
+          "confidence": {
+            "level": "HIGH",
+            "method": "CATEGORICAL"
+          },
+          "extraction_method": "DETERMINISTIC_PATTERN",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "review_required": false,
+          "observation_refs": [
+            "XF-07-o1"
+          ],
+          "family_ref": "FAM-REMOTE-ACCESS"
+        },
+        {
+          "indicator_id": "PAYMENT_CONTEXT",
+          "polarity": "POSITIVE",
+          "matched": "OBSERVED",
+          "input_id": "XF-07-in",
+          "confidence": {
+            "level": "MEDIUM",
+            "method": "CATEGORICAL"
+          },
+          "extraction_method": "DETERMINISTIC_PATTERN",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "review_required": false,
+          "observation_refs": [
+            "XF-07-o2"
+          ],
+          "family_ref": "FAM-PAYMENT-REQUEST"
+        },
+        {
+          "indicator_id": "BENIGN_PRETEXT_FOR_TECHNICAL_ACTION",
+          "polarity": "POSITIVE",
+          "matched": "OBSERVED",
+          "input_id": "XF-07-in",
+          "confidence": {
+            "level": "MEDIUM",
+            "method": "CATEGORICAL"
+          },
+          "extraction_method": "DETERMINISTIC_PATTERN",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "review_required": false,
+          "observation_refs": [
+            "XF-07-o3"
+          ],
+          "family_ref": "FAM-PRETEXT-BENIGN-COVER"
+        }
+      ],
+      "expected_projection": {
+        "positive_signals": [
+          "BENIGN_PRETEXT_FOR_TECHNICAL_ACTION",
+          "PAYMENT_CONTEXT",
+          "SCREEN_SHARE_APP_REQUEST"
+        ],
+        "negative_signals": [],
+        "note": "Screen-share + payment context. HR_BANKING_REMOTE_ACCESS active downstream; extractor only reports the signals."
+      },
+      "cross_reference": "seed reconciliation RM-004 / suppression S-L"
+    },
+    {
+      "fixture_id": "XF-08",
+      "title": "Corporate IT AnyDesk (benign)",
+      "purpose": "Same app request, non-banking IT context -> IT-support negative.",
+      "envelope": {
+        "envelope_version": "1.0.0",
+        "input_id": "XF-08-in",
+        "input_type": "EMAIL",
+        "source_channel": {
+          "value": "CH-03"
+        },
+        "content": {
+          "raw_text": "As you requested, corporate IT will start an AnyDesk session for laptop troubleshooting. Do not open banking apps.",
+          "normalized_text": "As you requested, corporate IT will start an AnyDesk session for laptop troubleshooting. Do not open banking apps.",
+          "language": [
+            "en"
+          ],
+          "script": [
+            "Latn"
+          ]
+        },
+        "provenance": {
+          "received_via": "TEST_FIXTURE",
+          "pipeline_stage": "INGESTED",
+          "synthetic": true
+        }
+      },
+      "observations": [
+        {
+          "observation_id": "XF-08-o1",
+          "observation_type": "DEVICE_ACTION",
+          "source_input_id": "XF-08-in",
+          "status": "OBSERVED",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "canonical_value": "INSTALL_SCREEN_SHARE_APP",
+          "raw_span": "corporate IT will start an AnyDesk session",
+          "polarity": "AFFIRMED",
+          "attribution": "FIRST_PARTY",
+          "mood": "DESCRIPTIVE",
+          "action": {
+            "type": "INSTALL_APP"
+          },
+          "target": {
+            "instrument": "AnyDesk"
+          }
+        },
+        {
+          "observation_id": "XF-08-o2",
+          "observation_type": "RELATIONSHIP_CONTEXT",
+          "source_input_id": "XF-08-in",
+          "status": "OBSERVED",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "canonical_value": "IT_SUPPORT",
+          "raw_span": "As you requested, corporate IT ... laptop troubleshooting",
+          "pretext": {
+            "kind": "TECHNICAL_SUPPORT"
+          }
+        }
+      ],
+      "indicator_observations": [
+        {
+          "indicator_id": "SCREEN_SHARE_APP_REQUEST",
+          "polarity": "POSITIVE",
+          "matched": "OBSERVED",
+          "input_id": "XF-08-in",
+          "confidence": {
+            "level": "MEDIUM",
+            "method": "CATEGORICAL"
+          },
+          "extraction_method": "DETERMINISTIC_PATTERN",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "review_required": false,
+          "observation_refs": [
+            "XF-08-o1"
+          ],
+          "family_ref": "FAM-REMOTE-ACCESS"
+        },
+        {
+          "indicator_id": "BENIGN_PRETEXT_FOR_TECHNICAL_ACTION",
+          "polarity": "POSITIVE",
+          "matched": "OBSERVED",
+          "input_id": "XF-08-in",
+          "confidence": {
+            "level": "MEDIUM",
+            "method": "CATEGORICAL"
+          },
+          "extraction_method": "DETERMINISTIC_PATTERN",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "review_required": false,
+          "observation_refs": [
+            "XF-08-o2"
+          ],
+          "family_ref": "FAM-PRETEXT-BENIGN-COVER"
+        },
+        {
+          "indicator_id": "IT_SUPPORT_CONTEXT",
+          "polarity": "NEGATIVE",
+          "matched": "OBSERVED",
+          "input_id": "XF-08-in",
+          "confidence": {
+            "level": "HIGH",
+            "method": "CATEGORICAL"
+          },
+          "extraction_method": "DETERMINISTIC_PATTERN",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "review_required": false,
+          "observation_refs": [
+            "XF-08-o2"
+          ]
+        }
+      ],
+      "expected_projection": {
+        "positive_signals": [
+          "BENIGN_PRETEXT_FOR_TECHNICAL_ACTION",
+          "SCREEN_SHARE_APP_REQUEST"
+        ],
+        "negative_signals": [
+          "IT_SUPPORT_CONTEXT"
+        ],
+        "note": "No banking/payment context -> no override; IT_SUPPORT_CONTEXT (SUPPRESS_RULE) cancels the finding downstream."
+      },
+      "cross_reference": "suppression S-K / reconciliation RB-002"
+    },
+    {
+      "fixture_id": "XF-09",
+      "title": "Wallet connect to verification site",
+      "purpose": "Wallet-connect + fake verify site -> crypto positives.",
+      "envelope": {
+        "envelope_version": "1.0.0",
+        "input_id": "XF-09-in",
+        "input_type": "CHAT_MESSAGE",
+        "source_channel": {
+          "value": "CH-04"
+        },
+        "content": {
+          "raw_text": "Verify your holdings at trust-wallet-verify.example and connect your wallet to confirm ownership.",
+          "normalized_text": "Verify your holdings at trust-wallet-verify.example and connect your wallet to confirm ownership.",
+          "language": [
+            "en"
+          ],
+          "script": [
+            "Latn"
+          ]
+        },
+        "provenance": {
+          "received_via": "TEST_FIXTURE",
+          "pipeline_stage": "INGESTED",
+          "synthetic": true
+        },
+        "extracted_primitives": {
+          "urls": [
+            {
+              "url_id": "XF-09-u1",
+              "raw_url": "http://trust-wallet-verify.example",
+              "structural": {
+                "hostname": "trust-wallet-verify.example",
+                "registered_domain": "trust-wallet-verify.example",
+                "flags": {
+                  "shortened": false,
+                  "obfuscated": false,
+                  "punycode": false,
+                  "ip_literal": false
+                }
+              },
+              "claimed_brand": "Trust Wallet",
+              "assessments": {
+                "domain_matches_claimed_brand": "UNKNOWN",
+                "allowlist_result": "NOT_EVALUATED",
+                "reputation_result": "NOT_EVALUATED"
+              },
+              "provenance": {
+                "extractor_id": "ref-url-parser",
+                "extractor_type": "PARSER",
+                "extractor_version": "0.1.0-reference"
+              }
+            }
+          ]
+        }
+      },
+      "observations": [
+        {
+          "observation_id": "XF-09-o1",
+          "observation_type": "DEVICE_ACTION",
+          "source_input_id": "XF-09-in",
+          "status": "OBSERVED",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "canonical_value": "CONNECT_WALLET",
+          "raw_span": "connect your wallet to confirm ownership",
+          "polarity": "AFFIRMED",
+          "attribution": "FIRST_PARTY",
+          "mood": "DIRECTIVE",
+          "action": {
+            "type": "CONNECT_WALLET",
+            "dimension_ref": "UA-08"
+          }
+        },
+        {
+          "observation_id": "XF-09-o2",
+          "observation_type": "LINK_ACTION",
+          "source_input_id": "XF-09-in",
+          "status": "OBSERVED",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "canonical_value": "FAKE_VERIFICATION_SITE",
+          "raw_span": "trust-wallet-verify.example",
+          "url_ref": "XF-09-u1",
+          "pretext": {
+            "kind": "VERIFICATION"
+          }
+        },
+        {
+          "observation_id": "XF-09-o3",
+          "observation_type": "CLAIM",
+          "source_input_id": "XF-09-in",
+          "status": "OBSERVED",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "canonical_value": "VERIFICATION_PRETEXT",
+          "raw_span": "Verify your holdings"
+        }
+      ],
+      "indicator_observations": [
+        {
+          "indicator_id": "WALLET_CONNECT_REQUEST",
+          "polarity": "POSITIVE",
+          "matched": "OBSERVED",
+          "input_id": "XF-09-in",
+          "confidence": {
+            "level": "HIGH",
+            "method": "CATEGORICAL"
+          },
+          "extraction_method": "DETERMINISTIC_PATTERN",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "review_required": false,
+          "observation_refs": [
+            "XF-09-o1"
+          ],
+          "family_ref": "FAM-WALLET-CONNECTION"
+        },
+        {
+          "indicator_id": "FAKE_VERIFICATION_SITE",
+          "polarity": "POSITIVE",
+          "matched": "OBSERVED",
+          "input_id": "XF-09-in",
+          "confidence": {
+            "level": "HIGH",
+            "method": "CATEGORICAL"
+          },
+          "extraction_method": "DETERMINISTIC_PATTERN",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "review_required": false,
+          "observation_refs": [
+            "XF-09-o2"
+          ],
+          "family_ref": "FAM-LINK-DOMAIN"
+        },
+        {
+          "indicator_id": "VERIFICATION_PRETEXT",
+          "polarity": "POSITIVE",
+          "matched": "OBSERVED",
+          "input_id": "XF-09-in",
+          "confidence": {
+            "level": "LOW",
+            "method": "CATEGORICAL"
+          },
+          "extraction_method": "DETERMINISTIC_PATTERN",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "review_required": false,
+          "observation_refs": [
+            "XF-09-o3"
+          ],
+          "family_ref": "FAM-PRETEXT-ACCOUNT-KYC"
+        },
+        {
+          "indicator_id": "LINK_PRESENT",
+          "polarity": "POSITIVE",
+          "matched": "OBSERVED",
+          "input_id": "XF-09-in",
+          "confidence": {
+            "level": "LOW",
+            "method": "CATEGORICAL"
+          },
+          "extraction_method": "DETERMINISTIC_PATTERN",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "review_required": false,
+          "observation_refs": [
+            "XF-09-o2"
+          ],
+          "family_ref": "FAM-LINK-DOMAIN"
+        }
+      ],
+      "expected_projection": {
+        "positive_signals": [
+          "FAKE_VERIFICATION_SITE",
+          "LINK_PRESENT",
+          "VERIFICATION_PRETEXT",
+          "WALLET_CONNECT_REQUEST"
+        ],
+        "negative_signals": [],
+        "note": "Wallet-connect + fake verification site + verification pretext. URL reputation stays NOT_EVALUATED (no service invented). HR_WALLET_CONNECT_UNKNOWN active downstream."
+      },
+      "cross_reference": "seed M-013 (TL-CRYP-001)"
+    },
+    {
+      "fixture_id": "XF-10",
+      "title": "Task deposit-to-earn with blocked withdrawal",
+      "purpose": "Task lure + deposit + blocked withdrawal -> task-app positives.",
+      "envelope": {
+        "envelope_version": "1.0.0",
+        "input_id": "XF-10-in",
+        "input_type": "CHAT_MESSAGE",
+        "source_channel": {
+          "value": "CH-02"
+        },
+        "content": {
+          "raw_text": "Like three videos and earn Rs 500. Deposit Rs 1,000 to unlock withdrawal of your balance.",
+          "normalized_text": "Like three videos and earn Rs 500. Deposit Rs 1,000 to unlock withdrawal of your balance.",
+          "language": [
+            "en"
+          ],
+          "script": [
+            "Latn"
+          ]
+        },
+        "provenance": {
+          "received_via": "TEST_FIXTURE",
+          "pipeline_stage": "INGESTED",
+          "synthetic": true
+        }
+      },
+      "observations": [
+        {
+          "observation_id": "XF-10-o1",
+          "observation_type": "CLAIM",
+          "source_input_id": "XF-10-in",
+          "status": "OBSERVED",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "canonical_value": "TASK_EARNING_LURE",
+          "raw_span": "Like three videos and earn Rs 500",
+          "pretext": {
+            "kind": "JOB_OFFER"
+          }
+        },
+        {
+          "observation_id": "XF-10-o2",
+          "observation_type": "PAYMENT_CONTEXT",
+          "source_input_id": "XF-10-in",
+          "status": "OBSERVED",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "canonical_value": "DEPOSIT_FOR_EARNINGS",
+          "raw_span": "Deposit Rs 1,000",
+          "polarity": "AFFIRMED",
+          "attribution": "FIRST_PARTY",
+          "mood": "DIRECTIVE",
+          "payment_direction": "USER_PAYS",
+          "target": {
+            "amount": 1000,
+            "currency": "INR"
+          }
+        },
+        {
+          "observation_id": "XF-10-o3",
+          "observation_type": "THREAT",
+          "source_input_id": "XF-10-in",
+          "status": "OBSERVED",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "canonical_value": "WITHDRAWAL_BLOCKED",
+          "raw_span": "to unlock withdrawal of your balance",
+          "pressure": {
+            "kind": "THREAT",
+            "threat_of": "FINANCIAL_LOSS"
+          }
+        }
+      ],
+      "indicator_observations": [
+        {
+          "indicator_id": "TASK_EARNING_LURE",
+          "polarity": "POSITIVE",
+          "matched": "OBSERVED",
+          "input_id": "XF-10-in",
+          "confidence": {
+            "level": "LOW",
+            "method": "CATEGORICAL"
+          },
+          "extraction_method": "DETERMINISTIC_PATTERN",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "review_required": false,
+          "observation_refs": [
+            "XF-10-o1"
+          ],
+          "family_ref": "FAM-PRETEXT-INVESTMENT-JOB"
+        },
+        {
+          "indicator_id": "DEPOSIT_FOR_EARNINGS",
+          "polarity": "POSITIVE",
+          "matched": "OBSERVED",
+          "input_id": "XF-10-in",
+          "confidence": {
+            "level": "MEDIUM",
+            "method": "CATEGORICAL"
+          },
+          "extraction_method": "DETERMINISTIC_PATTERN",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "review_required": false,
+          "observation_refs": [
+            "XF-10-o2"
+          ],
+          "family_ref": "FAM-TASK-MONETISATION"
+        },
+        {
+          "indicator_id": "WITHDRAWAL_BLOCKED_PRETEXT",
+          "polarity": "POSITIVE",
+          "matched": "OBSERVED",
+          "input_id": "XF-10-in",
+          "confidence": {
+            "level": "HIGH",
+            "method": "CATEGORICAL"
+          },
+          "extraction_method": "DETERMINISTIC_PATTERN",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "review_required": false,
+          "observation_refs": [
+            "XF-10-o3"
+          ],
+          "family_ref": "FAM-THREAT-CONSEQUENCE"
+        }
+      ],
+      "expected_projection": {
+        "positive_signals": [
+          "DEPOSIT_FOR_EARNINGS",
+          "TASK_EARNING_LURE",
+          "WITHDRAWAL_BLOCKED_PRETEXT"
+        ],
+        "negative_signals": [],
+        "note": "Earning lure + deposit + blocked-withdrawal chain (TL-JOB-003). impl PARTIAL: the blocked-withdrawal step often needs conversation context to observe reliably."
+      },
+      "cross_reference": "seed reconciliation RM-001"
+    },
+    {
+      "fixture_id": "XF-11",
+      "title": "KYC link + credential capture",
+      "purpose": "KYC pretext + link + verify-capture + deadline -> KYC positives.",
+      "envelope": {
+        "envelope_version": "1.0.0",
+        "input_id": "XF-11-in",
+        "input_type": "SMS",
+        "source_channel": {
+          "value": "CH-01"
+        },
+        "content": {
+          "raw_text": "Your KYC expires today. Open this link http://examplebank-kyc-verify.example and enter your credentials to verify.",
+          "normalized_text": "Your KYC expires today. Open this link http://examplebank-kyc-verify.example and enter your credentials to verify.",
+          "language": [
+            "en"
+          ],
+          "script": [
+            "Latn"
+          ]
+        },
+        "provenance": {
+          "received_via": "TEST_FIXTURE",
+          "pipeline_stage": "INGESTED",
+          "synthetic": true
+        },
+        "extracted_primitives": {
+          "urls": [
+            {
+              "url_id": "XF-11-u1",
+              "raw_url": "http://examplebank-kyc-verify.example",
+              "structural": {
+                "hostname": "examplebank-kyc-verify.example",
+                "registered_domain": "examplebank-kyc-verify.example",
+                "flags": {
+                  "shortened": false,
+                  "obfuscated": false,
+                  "punycode": false,
+                  "ip_literal": false
+                }
+              },
+              "claimed_brand": "Example Bank",
+              "assessments": {
+                "domain_matches_claimed_brand": "UNKNOWN",
+                "allowlist_result": "NOT_EVALUATED",
+                "reputation_result": "NOT_EVALUATED"
+              },
+              "provenance": {
+                "extractor_id": "ref-url-parser",
+                "extractor_type": "PARSER",
+                "extractor_version": "0.1.0-reference"
+              }
+            }
+          ]
+        }
+      },
+      "observations": [
+        {
+          "observation_id": "XF-11-o1",
+          "observation_type": "CLAIM",
+          "source_input_id": "XF-11-in",
+          "status": "OBSERVED",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "canonical_value": "KYC_PRETEXT",
+          "raw_span": "Your KYC expires today",
+          "pretext": {
+            "kind": "KYC_UPDATE"
+          }
+        },
+        {
+          "observation_id": "XF-11-o2",
+          "observation_type": "TEMPORAL_PRESSURE",
+          "source_input_id": "XF-11-in",
+          "status": "OBSERVED",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "canonical_value": "URGENCY_DEADLINE",
+          "raw_span": "expires today",
+          "pressure": {
+            "kind": "DEADLINE",
+            "dimension_ref": "SE-02"
+          }
+        },
+        {
+          "observation_id": "XF-11-o3",
+          "observation_type": "LINK_ACTION",
+          "source_input_id": "XF-11-in",
+          "status": "OBSERVED",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "canonical_value": "LINK_PRESENT",
+          "raw_span": "http://examplebank-kyc-verify.example",
+          "url_ref": "XF-11-u1"
+        },
+        {
+          "observation_id": "XF-11-o4",
+          "observation_type": "AUTHENTICATION_ACTION",
+          "source_input_id": "XF-11-in",
+          "status": "OBSERVED",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "canonical_value": "VERIFICATION_CAPTURE",
+          "raw_span": "enter your credentials to verify",
+          "polarity": "AFFIRMED",
+          "attribution": "FIRST_PARTY",
+          "mood": "DIRECTIVE",
+          "action": {
+            "type": "DISCLOSE_CREDENTIAL",
+            "dimension_ref": "UA-01"
+          }
+        }
+      ],
+      "indicator_observations": [
+        {
+          "indicator_id": "KYC_PRETEXT",
+          "polarity": "POSITIVE",
+          "matched": "OBSERVED",
+          "input_id": "XF-11-in",
+          "confidence": {
+            "level": "LOW",
+            "method": "CATEGORICAL"
+          },
+          "extraction_method": "DETERMINISTIC_PATTERN",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "review_required": false,
+          "observation_refs": [
+            "XF-11-o1"
+          ],
+          "family_ref": "FAM-PRETEXT-ACCOUNT-KYC"
+        },
+        {
+          "indicator_id": "URGENCY_DEADLINE",
+          "polarity": "POSITIVE",
+          "matched": "OBSERVED",
+          "input_id": "XF-11-in",
+          "confidence": {
+            "level": "HIGH",
+            "method": "CATEGORICAL"
+          },
+          "extraction_method": "DETERMINISTIC_PATTERN",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "review_required": false,
+          "observation_refs": [
+            "XF-11-o2"
+          ],
+          "family_ref": "FAM-URGENCY-PRESSURE"
+        },
+        {
+          "indicator_id": "LINK_PRESENT",
+          "polarity": "POSITIVE",
+          "matched": "OBSERVED",
+          "input_id": "XF-11-in",
+          "confidence": {
+            "level": "LOW",
+            "method": "CATEGORICAL"
+          },
+          "extraction_method": "DETERMINISTIC_PATTERN",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "review_required": false,
+          "observation_refs": [
+            "XF-11-o3"
+          ],
+          "family_ref": "FAM-LINK-DOMAIN"
+        },
+        {
+          "indicator_id": "VERIFICATION_PROMPT",
+          "polarity": "POSITIVE",
+          "matched": "OBSERVED",
+          "input_id": "XF-11-in",
+          "confidence": {
+            "level": "HIGH",
+            "method": "CATEGORICAL"
+          },
+          "extraction_method": "DETERMINISTIC_PATTERN",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "review_required": false,
+          "observation_refs": [
+            "XF-11-o4"
+          ],
+          "family_ref": "FAM-VERIFICATION-CAPTURE"
+        }
+      ],
+      "expected_projection": {
+        "positive_signals": [
+          "KYC_PRETEXT",
+          "LINK_PRESENT",
+          "URGENCY_DEADLINE",
+          "VERIFICATION_PROMPT"
+        ],
+        "negative_signals": [],
+        "note": "Full KYC chain: pretext + deadline + link + credential-capture. LOOKALIKE_DOMAIN NOT emitted - brand-match is NOT_EVALUATED, so only structural link facts are asserted."
+      },
+      "cross_reference": "seed M-011 (TL-KYC-001)"
+    },
+    {
+      "fixture_id": "XF-12",
+      "title": "Bank security advisory (adversarial-benign)",
+      "purpose": "Educational post naming scam terms -> educational/negated negatives, NO positive.",
+      "envelope": {
+        "envelope_version": "1.0.0",
+        "input_id": "XF-12-in",
+        "input_type": "SMS",
+        "source_channel": {
+          "value": "CH-01"
+        },
+        "content": {
+          "raw_text": "SCAM ALERT from Example Bank: fraudsters may ask you to share your OTP or install AnyDesk. Example Bank will NEVER ask for these. Report on our official helpline.",
+          "normalized_text": "SCAM ALERT from Example Bank: fraudsters may ask you to share your OTP or install AnyDesk. Example Bank will NEVER ask for these. Report on our official helpline.",
+          "language": [
+            "en"
+          ],
+          "script": [
+            "Latn"
+          ]
+        },
+        "provenance": {
+          "received_via": "TEST_FIXTURE",
+          "pipeline_stage": "INGESTED",
+          "synthetic": true
+        }
+      },
+      "observations": [
+        {
+          "observation_id": "XF-12-o1",
+          "observation_type": "CLAIM",
+          "source_input_id": "XF-12-in",
+          "status": "OBSERVED",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "canonical_value": "EDUCATIONAL_WARNING",
+          "raw_span": "SCAM ALERT ... fraudsters may ask you",
+          "attribution": "HYPOTHETICAL",
+          "mood": "DESCRIPTIVE"
+        },
+        {
+          "observation_id": "XF-12-o2",
+          "observation_type": "AUTHENTICATION_ACTION",
+          "source_input_id": "XF-12-in",
+          "status": "OBSERVED",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "canonical_value": "REQUEST_DISCLOSE_OTP",
+          "raw_span": "NEVER ask for these",
+          "polarity": "NEGATED",
+          "attribution": "HYPOTHETICAL",
+          "mood": "DESCRIPTIVE",
+          "target": {
+            "credential_kind": "OTP"
+          }
+        },
+        {
+          "observation_id": "XF-12-o3",
+          "observation_type": "CLAIM",
+          "source_input_id": "XF-12-in",
+          "status": "OBSERVED",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "canonical_value": "OFFICIAL_CHANNEL_REDIRECT",
+          "raw_span": "Report on our official helpline"
+        }
+      ],
+      "indicator_observations": [
+        {
+          "indicator_id": "EDUCATIONAL_CONTENT",
+          "polarity": "NEGATIVE",
+          "matched": "OBSERVED",
+          "input_id": "XF-12-in",
+          "confidence": {
+            "level": "HIGH",
+            "method": "CATEGORICAL"
+          },
+          "extraction_method": "DETERMINISTIC_PATTERN",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "review_required": false,
+          "observation_refs": [
+            "XF-12-o1"
+          ]
+        },
+        {
+          "indicator_id": "NEGATED_CREDENTIAL_REQUEST",
+          "polarity": "NEGATIVE",
+          "matched": "OBSERVED",
+          "input_id": "XF-12-in",
+          "confidence": {
+            "level": "HIGH",
+            "method": "CATEGORICAL"
+          },
+          "extraction_method": "DETERMINISTIC_PATTERN",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "review_required": false,
+          "observation_refs": [
+            "XF-12-o2"
+          ]
+        },
+        {
+          "indicator_id": "SELF_PROTECTIVE_WARNING",
+          "polarity": "NEGATIVE",
+          "matched": "OBSERVED",
+          "input_id": "XF-12-in",
+          "confidence": {
+            "level": "HIGH",
+            "method": "CATEGORICAL"
+          },
+          "extraction_method": "DETERMINISTIC_PATTERN",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "review_required": false,
+          "observation_refs": [
+            "XF-12-o2"
+          ]
+        }
+      ],
+      "expected_projection": {
+        "positive_signals": [],
+        "negative_signals": [
+          "EDUCATIONAL_CONTENT",
+          "NEGATED_CREDENTIAL_REQUEST",
+          "SELF_PROTECTIVE_WARNING"
+        ],
+        "note": "Every risky term is HYPOTHETICAL/NEGATED, so no live positive is emitted. Nothing to suppress because nothing fired."
+      },
+      "cross_reference": "seed B-003 / B-013"
+    },
+    {
+      "fixture_id": "XF-13",
+      "title": "Ambiguous payment direction",
+      "purpose": "QR + payment context, direction unresolved -> AMBIGUOUS, review required, NO receive positive.",
+      "envelope": {
+        "envelope_version": "1.0.0",
+        "input_id": "XF-13-in",
+        "input_type": "CHAT_MESSAGE",
+        "source_channel": {
+          "value": "CH-02"
+        },
+        "content": {
+          "raw_text": "Scan this QR to complete the transaction. [image attached]",
+          "normalized_text": "Scan this QR to complete the transaction. [image attached]",
+          "language": [
+            "en"
+          ],
+          "script": [
+            "Latn"
+          ]
+        },
+        "provenance": {
+          "received_via": "TEST_FIXTURE",
+          "pipeline_stage": "INGESTED",
+          "synthetic": true
+        },
+        "attachments": [
+          {
+            "attachment_id": "XF-13-a1",
+            "media_type": "image/png",
+            "role": "QR_IMAGE"
+          }
+        ]
+      },
+      "observations": [
+        {
+          "observation_id": "XF-13-o1",
+          "observation_type": "ENTITY",
+          "source_input_id": "XF-13-in",
+          "status": "OBSERVED",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "canonical_value": "QR_PRESENT",
+          "raw_span": "[image attached]"
+        },
+        {
+          "observation_id": "XF-13-o2",
+          "observation_type": "PAYMENT_CONTEXT",
+          "source_input_id": "XF-13-in",
+          "status": "AMBIGUOUS",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "canonical_value": "PAYMENT_CONTEXT",
+          "raw_span": "complete the transaction",
+          "payment_direction": "UNKNOWN_DIRECTION"
+        }
+      ],
+      "indicator_observations": [
+        {
+          "indicator_id": "QR_PRESENT",
+          "polarity": "POSITIVE",
+          "matched": "OBSERVED",
+          "input_id": "XF-13-in",
+          "confidence": {
+            "level": "LOW",
+            "method": "CATEGORICAL"
+          },
+          "extraction_method": "DETERMINISTIC_PATTERN",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "review_required": false,
+          "observation_refs": [
+            "XF-13-o1"
+          ],
+          "family_ref": "FAM-QR-ARTIFACT"
+        },
+        {
+          "indicator_id": "PAYMENT_CONTEXT",
+          "polarity": "POSITIVE",
+          "matched": "OBSERVED",
+          "input_id": "XF-13-in",
+          "confidence": {
+            "level": "LOW",
+            "method": "CATEGORICAL"
+          },
+          "extraction_method": "DETERMINISTIC_PATTERN",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "review_required": true,
+          "observation_refs": [
+            "XF-13-o2"
+          ],
+          "family_ref": "FAM-PAYMENT-REQUEST"
+        }
+      ],
+      "expected_projection": {
+        "positive_signals": [
+          "PAYMENT_CONTEXT",
+          "QR_PRESENT"
+        ],
+        "negative_signals": [],
+        "note": "Direction is NOT inferred from currency/QR presence: payment_direction=UNKNOWN_DIRECTION, status AMBIGUOUS, review_required. No RECEIVE_FRAMING -> receive-fraud rules cannot fire. QR content needs VISION (future)."
+      },
+      "cross_reference": "seed A-005"
+    },
+    {
+      "fixture_id": "XF-14",
+      "title": "Quoted scam content",
+      "purpose": "Verbatim third-party quote -> narrative negative, NO live positive.",
+      "envelope": {
+        "envelope_version": "1.0.0",
+        "input_id": "XF-14-in",
+        "input_type": "USER_NARRATIVE",
+        "source_channel": {
+          "value": "UNKNOWN"
+        },
+        "content": {
+          "raw_text": "My uncle got this: \"guaranteed 200% returns, connect your wallet now\". Is it a scam?",
+          "normalized_text": "My uncle got this: \"guaranteed 200% returns, connect your wallet now\". Is it a scam?",
+          "language": [
+            "en"
+          ],
+          "script": [
+            "Latn"
+          ]
+        },
+        "provenance": {
+          "received_via": "TEST_FIXTURE",
+          "pipeline_stage": "INGESTED",
+          "synthetic": true
+        },
+        "user_supplied_context": {
+          "relationship_to_content": "REPORTING_ON_BEHALF"
+        }
+      },
+      "observations": [
+        {
+          "observation_id": "XF-14-o1",
+          "observation_type": "CLAIM",
+          "source_input_id": "XF-14-in",
+          "status": "OBSERVED",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "canonical_value": "RETURN_GUARANTEE",
+          "raw_span": "guaranteed 200% returns",
+          "polarity": "AFFIRMED",
+          "attribution": "QUOTED",
+          "mood": "DESCRIPTIVE"
+        },
+        {
+          "observation_id": "XF-14-o2",
+          "observation_type": "DEVICE_ACTION",
+          "source_input_id": "XF-14-in",
+          "status": "OBSERVED",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "canonical_value": "CONNECT_WALLET",
+          "raw_span": "connect your wallet now",
+          "polarity": "AFFIRMED",
+          "attribution": "QUOTED",
+          "mood": "DESCRIPTIVE",
+          "action": {
+            "type": "CONNECT_WALLET"
+          }
+        }
+      ],
+      "indicator_observations": [
+        {
+          "indicator_id": "REPORTED_SCAM_NARRATIVE",
+          "polarity": "NEGATIVE",
+          "matched": "OBSERVED",
+          "input_id": "XF-14-in",
+          "confidence": {
+            "level": "HIGH",
+            "method": "CATEGORICAL"
+          },
+          "extraction_method": "DETERMINISTIC_PATTERN",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "review_required": false,
+          "observation_refs": [
+            "XF-14-o1",
+            "XF-14-o2"
+          ]
+        }
+      ],
+      "expected_projection": {
+        "positive_signals": [],
+        "negative_signals": [
+          "REPORTED_SCAM_NARRATIVE"
+        ],
+        "note": "attribution=QUOTED on every risky span -> no live positive; the whole message is reported content."
+      },
+      "cross_reference": "new (quoted-speech; cf. suppression S-E)"
+    },
+    {
+      "fixture_id": "XF-15",
+      "title": "Mixed safety wording + live instruction (decoy)",
+      "purpose": "Live directive + decoy safety wording -> BOTH emitted; extractor does not resolve.",
+      "envelope": {
+        "envelope_version": "1.0.0",
+        "input_id": "XF-15-in",
+        "input_type": "SMS",
+        "source_channel": {
+          "value": "CH-01"
+        },
+        "content": {
+          "raw_text": "We will NEVER ask for your OTP. That said, confirm the OTP you just received now to avoid your account being blocked.",
+          "normalized_text": "We will NEVER ask for your OTP. That said, confirm the OTP you just received now to avoid your account being blocked.",
+          "language": [
+            "en"
+          ],
+          "script": [
+            "Latn"
+          ]
+        },
+        "provenance": {
+          "received_via": "TEST_FIXTURE",
+          "pipeline_stage": "INGESTED",
+          "synthetic": true
+        }
+      },
+      "observations": [
+        {
+          "observation_id": "XF-15-o1",
+          "observation_type": "AUTHENTICATION_ACTION",
+          "source_input_id": "XF-15-in",
+          "status": "OBSERVED",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "canonical_value": "REQUEST_DISCLOSE_OTP",
+          "raw_span": "We will NEVER ask for your OTP",
+          "polarity": "NEGATED",
+          "attribution": "HYPOTHETICAL",
+          "mood": "DESCRIPTIVE",
+          "target": {
+            "credential_kind": "OTP"
+          }
+        },
+        {
+          "observation_id": "XF-15-o2",
+          "observation_type": "AUTHENTICATION_ACTION",
+          "source_input_id": "XF-15-in",
+          "status": "OBSERVED",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "canonical_value": "REQUEST_DISCLOSE_OTP",
+          "raw_span": "confirm the OTP you just received now",
+          "polarity": "AFFIRMED",
+          "attribution": "FIRST_PARTY",
+          "mood": "DIRECTIVE",
+          "target": {
+            "credential_kind": "OTP"
+          }
+        },
+        {
+          "observation_id": "XF-15-o3",
+          "observation_type": "THREAT",
+          "source_input_id": "XF-15-in",
+          "status": "OBSERVED",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "canonical_value": "ACCOUNT_BLOCK",
+          "raw_span": "account being blocked",
+          "pressure": {
+            "kind": "THREAT",
+            "threat_of": "ACCOUNT_BLOCK"
+          }
+        }
+      ],
+      "indicator_observations": [
+        {
+          "indicator_id": "CREDENTIAL_REQUEST_OTP",
+          "polarity": "POSITIVE",
+          "matched": "OBSERVED",
+          "input_id": "XF-15-in",
+          "confidence": {
+            "level": "HIGH",
+            "method": "CATEGORICAL"
+          },
+          "extraction_method": "DETERMINISTIC_PATTERN",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "review_required": false,
+          "observation_refs": [
+            "XF-15-o2"
+          ],
+          "family_ref": "FAM-CREDENTIAL-REQUEST"
+        },
+        {
+          "indicator_id": "ACCOUNT_BLOCK_THREAT",
+          "polarity": "POSITIVE",
+          "matched": "OBSERVED",
+          "input_id": "XF-15-in",
+          "confidence": {
+            "level": "HIGH",
+            "method": "CATEGORICAL"
+          },
+          "extraction_method": "DETERMINISTIC_PATTERN",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "review_required": false,
+          "observation_refs": [
+            "XF-15-o3"
+          ],
+          "family_ref": "FAM-THREAT-CONSEQUENCE"
+        },
+        {
+          "indicator_id": "NEGATED_CREDENTIAL_REQUEST",
+          "polarity": "NEGATIVE",
+          "matched": "OBSERVED",
+          "input_id": "XF-15-in",
+          "confidence": {
+            "level": "HIGH",
+            "method": "CATEGORICAL"
+          },
+          "extraction_method": "DETERMINISTIC_PATTERN",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "review_required": false,
+          "observation_refs": [
+            "XF-15-o1"
+          ]
+        },
+        {
+          "indicator_id": "EDUCATIONAL_CONTENT",
+          "polarity": "NEGATIVE",
+          "matched": "OBSERVED",
+          "input_id": "XF-15-in",
+          "confidence": {
+            "level": "HIGH",
+            "method": "CATEGORICAL"
+          },
+          "extraction_method": "DETERMINISTIC_PATTERN",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "review_required": false,
+          "observation_refs": [
+            "XF-15-o1"
+          ]
+        },
+        {
+          "indicator_id": "SUPPORT_NEVER_ASKS",
+          "polarity": "NEGATIVE",
+          "matched": "OBSERVED",
+          "input_id": "XF-15-in",
+          "confidence": {
+            "level": "HIGH",
+            "method": "CATEGORICAL"
+          },
+          "extraction_method": "DETERMINISTIC_PATTERN",
+          "provenance": {
+            "extractor_id": "ref-det-extractor",
+            "extractor_type": "DETERMINISTIC_PATTERN",
+            "extractor_version": "0.1.0-reference"
+          },
+          "review_required": false,
+          "observation_refs": [
+            "XF-15-o1"
+          ]
+        }
+      ],
+      "expected_projection": {
+        "positive_signals": [
+          "ACCOUNT_BLOCK_THREAT",
+          "CREDENTIAL_REQUEST_OTP"
+        ],
+        "negative_signals": [
+          "EDUCATIONAL_CONTENT",
+          "NEGATED_CREDENTIAL_REQUEST",
+          "SUPPORT_NEVER_ASKS"
+        ],
+        "note": "A live FIRST_PARTY directive (o2) AND decoy safety wording (o1) are BOTH emitted. The extractor reports both and does NOT decide; HR_OTP_DISCLOSURE_REQUEST (computed on the raw set) blocks the soft suppressors downstream."
+      },
+      "cross_reference": "suppression S-I (decoy resistance)"
+    }
+  ]
+}

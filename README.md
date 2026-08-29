@@ -68,8 +68,42 @@ python3 -m venv .venv && .venv/bin/pip install jsonschema
 The validator loads every rule in [knowledge/rules/](knowledge/rules/) against
 [rule.schema.json](knowledge/schemas/rule.schema.json), then applies cross-file lint the schema
 cannot express — indicator resolution, evidence-class diversity, trigger/suppressor polarity, and
-agreement with the Phase 1 source grades. It then runs a negative corpus of **23 deliberately
+agreement with the Phase 1 source grades. It then runs a negative corpus of **25 deliberately
 malformed rules that must all be rejected**, each declaring which layer should catch it.
+
+## Validation quality gate (Phase 2 WP7)
+
+One canonical command runs the **complete** knowledge-validation suite (8 validators) in
+dependency order. **Run it before every commit** — CI runs exactly the same command.
+
+```bash
+# one-time setup (the only dependency mechanism — pins jsonschema + referencing)
+python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
+
+# the quality gate: exits non-zero if ANY validator fails
+.venv/bin/python knowledge/validation/run_all.py
+```
+
+The suite runs offline against the committed evidence bundle (a preflight refuses to run if any
+validator imports a network module) and never modifies repository data. Each validator remains
+independently runnable; `run_all.py` orchestrates without re-implementing their logic. Useful flags:
+`--verbose` (full per-validator output), `--json` (machine-readable summary), `--fail-fast`.
+
+To prove the gate is non-vacuous, `ci_selftest.py` injects representative defects (unknown
+indicator, bad taxonomy/evidence reference, malformed extraction projection, deprecated-negative
+reference) into a **throwaway copy** of the tree and asserts the gate catches each — the real
+repository is never mutated:
+
+```bash
+.venv/bin/python knowledge/validation/ci_selftest.py
+```
+
+CI wiring: [.github/workflows/knowledge-validation.yml](.github/workflows/knowledge-validation.yml)
+runs the gate and the self-test on pull requests and pushes to `main` that touch `knowledge/**`,
+governance/research/knowledge docs, `adr/**`, `requirements.txt`, or the workflow itself. A failing
+gate blocks merge — but **CI is an enforcement layer, not a substitute for the human controls** in
+[KB-001 §9](docs/02-knowledge/KB-001-knowledge-governance.md) (evidence interpretation, safeguarding,
+semantic review, publication approval).
 
 ## Repository layout
 

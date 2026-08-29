@@ -7,7 +7,7 @@
 | Status | Draft |
 | Owner role | Technical Program Director |
 | Dependencies | PROGRAM-001, BASELINE-001 |
-| Last updated | 2026-08-14 |
+| Last updated | 2026-08-28 |
 
 The complete artifact plan across all eleven phases, with per-phase inputs, outputs, quality
 gates and **honest gate forecasts**. Forecasts are stated in advance so shortfalls are predicted
@@ -26,7 +26,7 @@ sequencing is by dependency. Relative sizing uses `S / M / L / XL` rather than f
 |---|---|---|---|---|---|
 | **0** | Program definition | PROGRAM-001, BASELINE-001, 4 registers, glossary, roadmap, ADR index + 2 ADRs | M | ✅ **Complete** | **`PARTIAL`** — achieved |
 | **1** | Research normalisation | RESEARCH-001…005, 3 knowledge files, seed corpus | L | ✅ **Complete** | **`PARTIAL`** — achieved ([GATE-001](GATE-001-phase-1-assessment.md)) |
-| 2 | Knowledge engineering | KB-001, rule JSON Schema, encoded rules, taxonomy | XL | ⬜ **Next** | `PASS` achievable |
+| 2 | Knowledge engineering | KB-001, rule JSON Schema, encoded rules, taxonomy | XL | 🟡 **In progress** | `PASS` achievable |
 | 3 | Detection engine design | DET-001 | XL | ⬜ | `PASS` achievable |
 | 4 | AI intelligence layer | AI-001 | L | ⬜ | `PASS` achievable |
 | 5 | Enterprise architecture | ARCH-001, ADR-0008…0013 | XL | ⬜ | `PASS` achievable |
@@ -100,19 +100,32 @@ score), [CONF-002](conflict-register.md) (three-layer indicator/composite/suppre
    from [RESEARCH-004](../01-research/RESEARCH-004-evidence-matrix.md). →
    [ADR-0003](../../adr/ADR-0003-rule-representation-format.md). Delivered with 7 reference rules,
    a cross-file linter and 23 negative fixtures; `30/30`.
-2. **Indicator families** — formalise the 12 positive families with IDs and extraction contracts.
-3. **Negative-indicator library** — [G-07](../01-research/RESEARCH-005-gap-register.md), the
-   highest-priority gap. None exist in the research package and CONF-002's architecture does not
-   function without them. Author as `HEURISTIC` from the inverse of verified guidance; validate
-   against the 10 benign seed cases.
-4. **Rule encoding** — 18 publishable, 10 `DRAFT`/`HEURISTIC` pending source access, 3 `DEFERRED`
-   with `blocked_by: INPUT_MODALITY`.
-5. **Taxonomy completion** — sextortion as `TAX-11` or a recorded decision to scope it out
-   ([G-10](../01-research/RESEARCH-005-gap-register.md)); research pass on loan apps and mule
-   accounts (G-12).
-6. **KB-001** — ontology, rule lifecycle (FR-023), knowledge governance.
-7. **Schema validation in CI**, replacing the interim
-   [Phase 1 consistency checker](../../knowledge/validation/phase1_consistency_check.py).
+2. ✅ **Indicator families + extraction contracts** — [KB-002](../02-knowledge/KB-002-extraction-contracts.md).
+   Four Draft-2020-12 contract schemas (input-envelope, observation, url-observation,
+   indicator-observation), 28 indicator families partitioning the 63 positives
+   ([`indicator-families-v1.json`](../../knowledge/indicators/indicator-families-v1.json)), negation/
+   reported-speech + actor/action/target + payment-direction models, 15 golden fixtures, a 26-entry
+   extraction-coverage matrix (25 starters + TL-SUP-001), and an 8th validator. Rule engine unchanged. See
+   [GATE-005](GATE-005-phase-2-extraction-contracts.md).
+3. ✅ **Negative-indicator library** — [G-07 CLOSED](../01-research/RESEARCH-005-gap-register.md#6a-g-07-closure-evidence-2026-08-28).
+   Formal reusable library (`negative-indicator-library-v1.json`): 29 negative indicators + 6
+   hard-risk overrides, graded explainable effects, dedicated validator, runner execution, 55 tests
+   incl. adversarial decoys. See [GATE-003](GATE-003-phase-2-g07-and-encoding.md).
+4. 🟡 **Rule encoding** — **25 of 30 starter rules encoded, 18 PUBLISHED** (+ TL-SUP-001, non-starter).
+   The 5 unencoded are intentional: 4 UNSUPPORTED + 1 DEFERRED. Full reconciliation in
+   [GATE-003 §3](GATE-003-phase-2-g07-and-encoding.md).
+5. ✅ **Taxonomy completion** — `TAX-11` sextortion added, detection **deferred** ([DEC-007](decision-log.md));
+   six-axis multidimensional model ([`dimensions-v1.json`](../../knowledge/taxonomies/dimensions-v1.json));
+   `evidence_maturity` layer; loan-app/mule (G-12) preserved with no fabricated rule. Taxonomy v2.0.
+6. ✅ **KB-001** — [knowledge governance, lifecycle, provenance, versioning](../02-knowledge/KB-001-knowledge-governance.md);
+   storage deferred to ADR-0004.
+7. ✅ **Schema validation in CI** — [GATE-006](GATE-006-phase-2-ci-quality-gates.md). Canonical
+   [`run_all.py`](../../knowledge/validation/run_all.py) gate over the eight validators
+   (`manual_evidence_check`, `phase1_consistency_check`, `validate_taxonomy`, `validate_kb`,
+   `validate_negative_library`, `validate_rules`, `validate_extraction`, `rule_runner`) in
+   dependency order, offline preflight, `ci_selftest.py` non-vacuity proof, and a GitHub Actions
+   workflow ([`knowledge-validation.yml`](../../.github/workflows/knowledge-validation.yml)) on
+   path-filtered PRs + `main`. Reproducible via `requirements.txt`. Knowledge base unaffected.
 8. **ADR-0004** (knowledge storage) · **ADR-0014** (language and script strategy).
 
 **⚠ Partial blocker.** Work package 8's ADR-0014 is blocked on
@@ -242,3 +255,8 @@ and when the sources are retrieved. The rest have runway.
 |---|---|---|---|
 | 1.0 | 2026-07-31 | Initial roadmap with per-phase gate forecasts. | Technical Program Director |
 | 1.1 | 2026-08-14 | Phase 1 closed at `PARTIAL`, matching forecast ([GATE-001](GATE-001-phase-1-assessment.md)). Phase 2 expanded into eight dependency-ordered work packages and marked next; OI-04 restated as blocking ADR-0014 only, not the whole phase; G-01 added to open blockers. | Technical Program Director |
+| 1.2 | 2026-08-28 | RESEARCH-006 manual retrieval reconciliation completed; Phase 2 marked **in progress** (WP1 done; WP2/3/4 partial — 14/30 starter rules encoded). Checkpoint recorded in [GATE-002](GATE-002-phase-2-checkpoint.md). | Technical Program Director |
+| 1.3 | 2026-08-28 | **WP3 done (G-07 closed)**; WP4 advanced to **25/30 encoded, 18 published**. Checkpoint [GATE-003](GATE-003-phase-2-g07-and-encoding.md). WP2/5/6/8 remain open. | Technical Program Director |
+| 1.4 | 2026-08-28 | **WP5 done (taxonomy v2.0, TAX-11 deferred, multidimensional model, KB-001)** and **WP6 done (KB-001)**. Checkpoint [GATE-004](GATE-004-phase-2-taxonomy-kb.md). WP2 + CI wiring + ADR-0004/0014 remain. | Technical Program Director |
+| 1.5 | 2026-08-29 | **WP2 done (indicator families + extraction contracts, KB-002)**: four contract schemas, 28 families over 63 positives, 15 golden fixtures, 26-entry coverage matrix (25 starters + TL-SUP-001), 8th validator. Checkpoint [GATE-005](GATE-005-phase-2-extraction-contracts.md). Rule engine and prior gates unaffected. WP7 CI wiring + ADR-0004/0014 remain. | Technical Program Director |
+| 1.6 | 2026-08-29 | **WP7 done (CI quality-gate wiring)**: canonical `run_all.py` gate over the 8 validators (dependency order, offline preflight), `ci_selftest.py` non-vacuity proof, GitHub Actions workflow, `requirements.txt`, KB-001 §11 governance. Checkpoint [GATE-006](GATE-006-phase-2-ci-quality-gates.md). Knowledge base unaffected. **Only WP8 (ADR-0004 storage, ADR-0014 language) remains in Phase 2.** | Technical Program Director |

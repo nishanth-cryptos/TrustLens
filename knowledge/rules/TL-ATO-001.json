@@ -1,0 +1,85 @@
+{
+  "schema_version": "1.0.0",
+  "rule_version": "1.0.0",
+  "id": "TL-ATO-001",
+  "legacy_id": "I4C-WA-014",
+  "name": "Request to share a device-linking code or scan a linking QR",
+  "description": "The recipient is asked to share a device-linking code or scan a linking QR under a benign-sounding pretext, which links the attacker's device to their messaging account.",
+  "kind": "COMPOSITE",
+  "taxonomy_refs": [
+    "TAX-09-01"
+  ],
+  "severity": "CRITICAL",
+  "evidence": {
+    "verdict": "SUPPORTED",
+    "implementability": "YES",
+    "source_references": [
+      {
+        "source_id": "SRC-017",
+        "issuing_body": "CERT-In",
+        "authority": "OFFICIAL_GOVERNMENT",
+        "verification_status": "PRIMARY_VERIFIED",
+        "document_ref": "CERT-In GhostPairing (CIAD-2025-0055)",
+        "quote": "enables cybercriminals to take complete control of WhatsApp accounts without needing passwords or SIM swaps."
+      },
+      {
+        "source_id": "SRC-016",
+        "issuing_body": "Meta",
+        "authority": "INDUSTRY",
+        "verification_status": "PRIMARY_VERIFIED",
+        "document_ref": "Meta anti-scam tools (2026-03-11)",
+        "quote": "a device linking code on your WhatsApp or try to trick you into scanning a QR code under false pretenses"
+      }
+    ]
+  },
+  "logic": {
+    "require": {
+      "all_of": [
+        "DEVICE_LINKING_CODE_REQUEST",
+        {
+          "any_of": [
+            "TRUSTED_CONTACT_PRETEXT",
+            "BENIGN_PRETEXT_FOR_TECHNICAL_ACTION",
+            "UNSOLICITED_OFFER",
+            "VERIFICATION_PRETEXT"
+          ]
+        }
+      ]
+    },
+    "min_evidence_classes": 2
+  },
+  "lifecycle": {
+    "status": "PUBLISHED",
+    "created": "2026-08-28",
+    "last_reviewed": "2026-08-28",
+    "review_due": "2027-02-28",
+    "authored_by_role": "Knowledge Editor",
+    "approved_by_role": "Knowledge Approver"
+  },
+  "language_scope": {
+    "languages": [
+      "en"
+    ],
+    "scripts": [
+      "Latn"
+    ],
+    "on_unsupported_input": "FLAG_UNSUPPORTED"
+  },
+  "explanation": {
+    "plain": "Someone asked you to share a code or scan a QR to 'verify' or 'register' something. That code links your account to their phone and hands them control. Never share it.",
+    "technical": "DEVICE_LINKING_CODE_REQUEST (device-action) with a benign/trusted pretext, spanning device and pretext/identity classes. Two independent verified sources (CERT-In, Meta).",
+    "verification_steps": [
+      "Never share a code you received on WhatsApp/Signal with anyone.",
+      "Check Linked Devices in your app settings and remove unknown devices."
+    ]
+  },
+  "provenance": {
+    "source_severity_hint": {
+      "value": 96,
+      "label": "High",
+      "cited_as": "RP p.7",
+      "operational_use": false
+    },
+    "notes": "Encoded in the WP3 rule-encoding pass; suppression via negative-indicator-library-v1.json."
+  }
+}

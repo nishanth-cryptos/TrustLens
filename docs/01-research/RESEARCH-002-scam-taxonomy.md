@@ -3,13 +3,13 @@
 | Field | Value |
 |---|---|
 | Document ID | RESEARCH-002 |
-| Version | 1.1 |
-| Status | **Approved** — closed at the Phase 1 gate, [GATE-001](../00-program/GATE-001-phase-1-assessment.md) |
+| Version | 2.0 |
+| Status | **Approved** (v1.1) · **Completed** at v2.0 (WP5): multidimensional model, TAX-11, evidence maturity |
 | Owner role | Threat Intelligence Lead |
-| Dependencies | RESEARCH-001 |
-| Feeds | RESEARCH-003, RESEARCH-004, KB-001 |
-| Machine-readable companion | [`knowledge/taxonomies/scam-taxonomy.json`](../../knowledge/taxonomies/scam-taxonomy.json) |
-| Last updated | 2026-08-14 |
+| Dependencies | RESEARCH-001, RESEARCH-006, [KB-001](../02-knowledge/KB-001-knowledge-governance.md) |
+| Feeds | RESEARCH-003, RESEARCH-004, KB-001, DET-001 |
+| Machine-readable companion | [`knowledge/taxonomies/scam-taxonomy.json`](../../knowledge/taxonomies/scam-taxonomy.json) (v2.0) · [`dimensions-v1.json`](../../knowledge/taxonomies/dimensions-v1.json) |
+| Last updated | 2026-08-28 |
 
 ---
 
@@ -46,8 +46,9 @@ Ten top-level categories, as supported by `RP p.2`.
 | `TAX-08` | Social and relationship-enabled scams | 🟢 `PRIMARY_VERIFIED` | SRC-014 (fake profiles, bots) |
 | `TAX-09` | Account-takeover scams | 🟢 `PRIMARY_VERIFIED` | SRC-017, SRC-016 |
 | `TAX-10` | Malware-enabled scams | 🟡 Partial | SRC-010 (Play Protect); I4C advisories unretrievable |
+| `TAX-11` | Sextortion and intimate-content extortion | 🟢 `PRIMARY_VERIFIED` (category) · **detection DEFERRED** | SRC-007 (Chakshu) — see §7 decision |
 
-**Seven of ten categories are verified at top level.** The three partials (`TAX-04`, `TAX-07`,
+**Eight of eleven categories are verified at top level** (TAX-11 added at v2.0). The three partials (`TAX-04`, `TAX-07`,
 `TAX-10`) are all cases where the category is *corroborated* by a verified source but its most
 specific evidence sits in unretrievable I4C advisories.
 
@@ -136,12 +137,16 @@ specific evidence sits in unretrievable I4C advisories.
 
 ## 4. Coverage summary
 
-| Evidence grade | Subcategories | Share |
+Counts are the **automated `evidence` grade** (the checker validates these). WP5 (v2.0) added TAX-11
+(sextortion, +1 verified) and an additive **`evidence_maturity`** layer that records the current
+grade after the RESEARCH-006 reconciliation — see §7.
+
+| Evidence grade (automated) | Subcategories | Share |
 |---|---|---|
-| 🟢 Verified | 15 | 37% |
-| 🟡 Partial / corroborated | 11 | 27% |
-| 🔴 Unverified | 15 | 37% |
-| **Total** | **41** | |
+| 🟢 Verified | 16 | 38% |
+| 🟡 Partial / corroborated | 11 | 26% |
+| 🔴 Unverified | 15 | 36% |
+| **Total** | **42** | |
 
 **Structural finding:** verified coverage clusters in **payments, authority impersonation,
 investment and account takeover** — which happen to be the highest-severity families. The
@@ -153,16 +158,59 @@ unverified tail carried as `DEFERRED` knowledge pending source access.
 
 ## 5. Rules for using this taxonomy
 
-1. A rule may only claim a category at 🟢 or 🟡. A 🔴 category may carry rules **explicitly graded
-   `HEURISTIC`**, never rules presented as officially supported.
+1. **Publication is gated on `evidence_maturity`, not on the automated `evidence` grade.** A rule may
+   be published on a subcategory whose maturity is `PRIMARY`, `PRIMARY_MANUAL`, `PRIMARY_PARTIAL`,
+   `OFFICIAL_ALTERNATE`, `OFFICIAL_REPLACEMENT` or `INDUSTRY` (with the ADR-0015 caps). A subcategory
+   at `NO_PRIMARY_SOURCE` / `UNVERIFIED` may carry only `HEURISTIC` rules, never officially-supported
+   ones. This restatement resolves the reconciliation inconsistency where six subcategories carried
+   published rules while their *automated* grade was still 🔴.
 2. Multiple category assignment is expected; scoring must not double-count severity when a case
    maps to several categories ([CONF-001](../00-program/conflict-register.md)).
 3. Adding a category requires a source reference and an evidence grade. No ungraded terms.
 4. Category IDs are permanent. Deprecation sets a flag; it never reuses an ID.
 
-## 6. Change history
+## 6. Multidimensional model, evidence maturity, and the TAX-11 decision (v2.0)
+
+### 6.1 Separate dimensions
+
+A scam is described on **eight non-collapsed axes**, not one enum: `scam_category` + `scam_subcategory`
+(this document) plus six dimension registries in
+[`dimensions-v1.json`](../../knowledge/taxonomies/dimensions-v1.json): `channel` (CH-*),
+`fraud_objective` (FO-*), `technical_mechanism` (TM-*), `social_engineering_tactic` (SE-*),
+`requested_user_action` (UA-*), `potential_harm` (PH-*). Each subcategory tags its typical dimensions;
+rules inherit them through `taxonomy_refs`. Worked example — a fake-KYC SMS (`TAX-02-01`): objective
+`FO-07`+`FO-01`, mechanism `TM-01`+`TM-11`, channel `CH-01`, tactic `SE-01`+`SE-03`, action
+`UA-09`+`UA-01`, harm `PH-04`+`PH-02`. This structure feeds later correlation and AI-assisted reasoning.
+
+### 6.2 Evidence maturity (additive)
+
+Each subcategory now carries `evidence_maturity` (current, post-RESEARCH-006) alongside `evidence`
+(automated, historical). Six subcategories were uplifted by the manual reconciliation: `TAX-03-04`
+(PRIMARY_MANUAL), `TAX-06-03` / `TAX-10-01` (OFFICIAL_REPLACEMENT), `TAX-04-01` / `TAX-05-05` /
+`TAX-10-02` (OFFICIAL_ALTERNATE), `TAX-10-03` (INDUSTRY), `TAX-05-04` (PRIMARY_PARTIAL). The automated
+`evidence` grade is preserved so the historical Phase-1 record and its coverage counts stay intact.
+
+### 6.3 TAX-11 sextortion — decision: **category ADDED, detection DEFERRED**
+
+Assessed against the WP5 criteria:
+
+| Criterion | Finding |
+|---|---|
+| Source strength | SRC-007 (Chakshu) lists "sextortion" as an official reporting category → the **category existence is `PRIMARY_VERIFIED`**. But there is no modus-operandi source (unlike SRC-012 for digital arrest). |
+| Observability | A sextortion threat + payment demand is partly observable from a submitted message. |
+| Deterministic indicators | Threat-to-expose + payment + secrecy exist, but overlap heavily with generic extortion and risk false positives on genuine distressing content. |
+| Unsafe / speculative detection | **High.** A submitted sextortion message is frequently a victim in crisis; a fraud score is the wrong response — it needs a safeguarding/referral path. |
+| MVP scope | The category is nationally recognised and belongs in the taxonomy; the **detection logic does not belong in the MVP** without safeguarding design. |
+
+**Decision:** add `TAX-11` (and `TAX-11-01`) to the taxonomy with `detection_status:
+DEFERRED_SAFEGUARDING`; author **no executable rule**; keep [G-10](RESEARCH-005-gap-register.md) noting
+the safeguarding requirement. Loan-app (`TAX-01-05`) and mule-account (`TAX-01-06`) stay at
+`NO_PRIMARY_SOURCE` — category preserved, no rule, no fabricated evidence.
+
+## 7. Change history
 
 | Version | Date | Change | Author role |
 |---|---|---|---|
 | 1.0 | 2026-07-31 | Initial taxonomy: 10 categories, 41 subcategories, each evidence-graded against the RESEARCH-001 verification pass. | Threat Intelligence Lead |
 | 1.1 | 2026-08-14 | Approved at the Phase 1 gate ([GATE-001](../00-program/GATE-001-phase-1-assessment.md)). Counts and nesting verified mechanically by [`phase1_consistency_check.py`](../../knowledge/validation/phase1_consistency_check.py). Sextortion (`TAX-11`, G-10) remains an open Phase 2 decision. | Technical Program Director |
+| 2.0 | 2026-08-28 | **WP5 completion.** Added `TAX-11` (sextortion, detection deferred); the six-axis multidimensional model ([`dimensions-v1.json`](../../knowledge/taxonomies/dimensions-v1.json)); additive `evidence_maturity`; rich per-term metadata. Publication restated to gate on maturity (§5.1). Machine-checked by `validate_taxonomy.py`. | Threat Intelligence Lead |

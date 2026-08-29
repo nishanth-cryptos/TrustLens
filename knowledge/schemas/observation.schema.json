@@ -1,0 +1,192 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://trustlens/schemas/observation.schema.json",
+  "title": "TrustLens Normalized Observation",
+  "description": "Phase 2 WP2 STEP 3/6/7/8/11/12. A typed, span-anchored DERIVED FACT about an input envelope, standing strictly between raw input and indicator observations. An observation says what was observed (a request, a threat, an identity claim) and — critically — its POLARITY (affirmed vs negated), its ATTRIBUTION (first-party instruction vs reported/quoted description) and its ACTOR/ACTION/TARGET frame, so that the deterministic layer can reason over structure rather than keywords, and the G-07 suppression layer can make its directional decisions deterministically. An observation carries NO indicator, NO rule reference, and NO verdict/score/severity — those belong downstream. Shape only; resolution and the verdict-ban are enforced by knowledge/validation/validate_extraction.py.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "observation_id",
+    "observation_type",
+    "source_input_id",
+    "status",
+    "provenance"
+  ],
+  "properties": {
+    "observation_id": { "$ref": "#/$defs/id" },
+    "observation_type": {
+      "enum": [
+        "ENTITY",
+        "ACTION",
+        "CLAIM",
+        "REQUEST",
+        "THREAT",
+        "PROMISE",
+        "IDENTITY_ASSERTION",
+        "PAYMENT_CONTEXT",
+        "DEVICE_ACTION",
+        "LINK_ACTION",
+        "AUTHENTICATION_ACTION",
+        "TEMPORAL_PRESSURE",
+        "RELATIONSHIP_CONTEXT"
+      ],
+      "description": "The kind of fact. REQUEST/ACTION carry a frame; THREAT/TEMPORAL_PRESSURE carry pressure; IDENTITY_ASSERTION carries a claimed identity; PAYMENT_CONTEXT carries payment_direction; LINK_ACTION references a url_id; AUTHENTICATION_ACTION covers credential/OTP/PIN handling; DEVICE_ACTION covers install/permission/link/remote/wallet/USSD."
+    },
+    "source_input_id": {
+      "$ref": "#/$defs/id",
+      "description": "The input_id of the envelope this observation was derived from. Every observation traces to exactly one input."
+    },
+    "status": {
+      "enum": ["OBSERVED", "NOT_OBSERVED", "UNKNOWN", "AMBIGUOUS", "NOT_APPLICABLE"],
+      "description": "STEP 12. The epistemic state. OBSERVED = present and determinate. AMBIGUOUS = present but under-determined (e.g. payment direction unresolved). UNKNOWN = could not be determined. NOT_OBSERVED = affirmatively absent (feeds negative context). NOT_APPLICABLE = the question does not arise for this input. Missing evidence is UNKNOWN, never benign."
+    },
+    "polarity": {
+      "enum": ["AFFIRMED", "NEGATED"],
+      "default": "AFFIRMED",
+      "description": "STEP 6. Whether the observed content is asserted or negated. 'Share your OTP' is AFFIRMED; 'never share your OTP' is NEGATED. A NEGATED credential/device request projects to the directional negative indicators (NEGATED_CREDENTIAL_REQUEST / NEGATED_ACTION_REQUEST) and MUST NOT project to a live positive."
+    },
+    "attribution": {
+      "enum": ["FIRST_PARTY", "REPORTED", "QUOTED", "HYPOTHETICAL"],
+      "default": "FIRST_PARTY",
+      "description": "STEP 6. Who is speaking and in what mode. FIRST_PARTY = the sender instructing the recipient now (a live directive). REPORTED = the user recounting what someone else said ('the scammer asked me to...'). QUOTED = verbatim quotation of third-party content. HYPOTHETICAL = conditional/educational ('fraudsters may ask...'). Only FIRST_PARTY AFFIRMED directives project to LIVE positive indicators; REPORTED/QUOTED/HYPOTHETICAL feed REPORTED_SCAM_NARRATIVE / EDUCATIONAL_CONTENT."
+    },
+    "mood": {
+      "enum": ["DIRECTIVE", "DESCRIPTIVE", "INTERROGATIVE"],
+      "default": "DIRECTIVE",
+      "description": "STEP 6. Instruction vs description. DIRECTIVE tells the recipient to do something; DESCRIPTIVE narrates/warns; INTERROGATIVE asks. A DESCRIPTIVE mention of a risky action is not a live request."
+    },
+    "canonical_value": {
+      "type": "string",
+      "description": "The normalised concept the observation represents (e.g. 'REQUEST_DISCLOSE_OTP', an FO/UA/TM dimension term, or a controlled phrase). Stable across surface forms and — where a dimensions-v1.json term applies — SHOULD be that term's id (checked leniently by the linter)."
+    },
+    "normalized_value": {
+      "type": "string",
+      "description": "A normalised surface rendering (e.g. lowercased, expanded). Optional."
+    },
+    "raw_span": {
+      "type": "string",
+      "description": "The exact substring of the source that evidences this observation. The original input span must remain traceable (STEP 3): even when offsets are unavailable, this preserves the words."
+    },
+    "offsets": {
+      "$ref": "#/$defs/span",
+      "description": "Half-open [start,end) offsets into the envelope's content.normalized_text. Optional because some modalities (OCR, narrative paraphrase) cannot always supply exact offsets; raw_span still anchors the evidence."
+    },
+    "confidence": {
+      "$ref": "#/$defs/confidence",
+      "description": "EXTRACTION confidence — how sure we are the text means this. Distinct from rule confidence (STEP 10). Never an input to a risk score (CONF-001)."
+    },
+    "language": { "type": "string", "pattern": "^[a-z]{2,3}(-[A-Za-z]{2,8})*$" },
+    "script": { "type": "string", "pattern": "^[A-Z][a-z]{3}$" },
+    "actor": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "STEP 7. WHO is asking. For IDENTITY_ASSERTION this is the impersonated identity.",
+      "properties": {
+        "claimed_identity": {
+          "type": "string",
+          "description": "Controlled label for the claimed identity, e.g. AUTHORITY_LAW_ENFORCEMENT, AUTHORITY_BANK, EXECUTIVE, RELATIVE, KNOWN_CONTACT, CELEBRITY, MERCHANT, UNKNOWN. A claim only; never a verified identity."
+        },
+        "verified": { "enum": ["YES", "NO", "UNKNOWN"], "default": "UNKNOWN", "description": "Whether the claimed identity is independently verified. UNKNOWN by default; impersonation detection never assumes YES." },
+        "party_ref": { "enum": ["ACTOR", "RECIPIENT", "THIRD_PARTY"], "description": "Which envelope party this maps to." }
+      }
+    },
+    "action": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "STEP 7. WHAT is being asked/done. Keyed to a requested_user_action (UA-*) or technical_mechanism (TM-*) dimension term where one applies.",
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Controlled action label, e.g. DISCLOSE_CREDENTIAL, ENTER_UPI_PIN, MAKE_PAYMENT, SCAN_QR, INSTALL_APP, GRANT_PERMISSION, DIAL_CODE, CONNECT_WALLET, LINK_DEVICE, OPEN_LINK, SHARE_CODE. SHOULD correspond to a UA-* term."
+        },
+        "dimension_ref": { "$ref": "#/$defs/dimensionRef", "description": "Optional UA-*/TM-* dimension term id this action realises." }
+      }
+    },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "STEP 7/8. TO/FOR WHAT. The object of the action.",
+      "properties": {
+        "amount": { "type": "number", "description": "Magnitude, if the action concerns money. Not a risk value (CONF-001)." },
+        "currency": { "type": "string" },
+        "recipient_label": { "type": "string", "description": "Controlled label for the payee/beneficiary where determinable, e.g. MERCHANT, UNKNOWN_ACCOUNT, SELF. Payee IDENTITY resolution is out of scope (TL-PAY-003 is DEFERRED)." },
+        "credential_kind": { "enum": ["OTP", "UPI_PIN", "CVV", "CARD_NUMBER", "PASSWORD", "LINKING_CODE", "OTHER"], "description": "For AUTHENTICATION_ACTION, which secret is at issue." },
+        "instrument": { "type": "string", "description": "For DEVICE_ACTION, the named app/permission/code (e.g. AnyDesk, Accessibility, a USSD string). Controlled or verbatim." }
+      }
+    },
+    "payment_direction": {
+      "enum": ["USER_PAYS", "USER_RECEIVES", "UNKNOWN_DIRECTION"],
+      "default": "UNKNOWN_DIRECTION",
+      "description": "STEP 8. Only meaningful on PAYMENT_CONTEXT / AUTHENTICATION_ACTION involving payment. Direction is NOT inferred from the mere presence of currency or UPI terminology: when the text does not settle it, the value is UNKNOWN_DIRECTION and status SHOULD be AMBIGUOUS. USER_RECEIVES + a credential/PIN prompt is the receive-fraud contradiction (RESEARCH-003 ADV-003 #1); USER_PAYS to a named merchant is legitimate outbound (PAY_MERCHANT_DIRECTION)."
+    },
+    "pressure": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "STEP 7. The coercive lever, for THREAT/TEMPORAL_PRESSURE observations. Keyed to a social_engineering_tactic (SE-*) term where one applies.",
+      "properties": {
+        "kind": { "enum": ["URGENCY", "DEADLINE", "SCARCITY", "THREAT", "ISOLATION", "SECRECY", "NONE"] },
+        "threat_of": { "type": "string", "description": "For kind=THREAT, the stated consequence: ARREST, ACCOUNT_BLOCK, SERVICE_SUSPENSION, LEGAL_ACTION, EXPOSURE, FINANCIAL_LOSS." },
+        "dimension_ref": { "$ref": "#/$defs/dimensionRef" }
+      }
+    },
+    "pretext": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "STEP 7. UNDER WHICH PRETEXT the request is framed.",
+      "properties": {
+        "kind": { "type": "string", "description": "Controlled pretext label, e.g. KYC_UPDATE, VERIFICATION, REFUND, PARCEL_DELIVERY, JOB_OFFER, INVESTMENT, ACCOUNT_SECURITY, TECHNICAL_SUPPORT, PRIZE." }
+      }
+    },
+    "url_ref": {
+      "$ref": "#/$defs/id",
+      "description": "For LINK_ACTION, the url_id (url-observation.schema.json) this observation concerns."
+    },
+    "provenance": {
+      "$ref": "#/$defs/extractorProvenance",
+      "description": "STEP 11. HOW this observation was produced — the extractor identity/type/version. Underpins the explanation chain input → span → observation → indicator → rule → evidence → result."
+    },
+    "derived_from": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/id" },
+      "description": "observation_ids this observation was composed from, where it aggregates finer observations. Optional; keeps composition auditable."
+    }
+  },
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{1,127}$" },
+    "span": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["start", "end"],
+      "properties": {
+        "start": { "type": "integer", "minimum": 0 },
+        "end": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "dimensionRef": { "type": "string", "pattern": "^(CH|FO|TM|SE|UA|PH)-\\d{2}$" },
+    "confidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["level"],
+      "description": "STEP 10. Categorical by default; an optional numeric score is permitted for ordering/triage ONLY and is explicitly not a probability of fraud. method records which was used.",
+      "properties": {
+        "level": { "enum": ["HIGH", "MEDIUM", "LOW"] },
+        "score": { "type": "number", "minimum": 0, "maximum": 1, "description": "Advisory extraction score in [0,1]. NEVER a risk/fraud probability and never aggregated into a finding (CONF-001, DET-001 deferred)." },
+        "method": { "enum": ["CATEGORICAL", "NUMERIC", "HYBRID"], "default": "CATEGORICAL" }
+      }
+    },
+    "extractorProvenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["extractor_id", "extractor_type", "extractor_version"],
+      "properties": {
+        "extractor_id": { "type": "string" },
+        "extractor_type": {
+          "enum": ["DETERMINISTIC_PATTERN", "PARSER", "NER_MODEL", "CLASSIFIER", "LLM", "VISION", "OCR", "USER_SUPPLIED", "SYSTEM_METADATA"],
+          "description": "STEP 11. Provenance type, NOT permission to implement all of them now. WP2 defines the vocabulary; which extractors exist is a later-phase decision."
+        },
+        "extractor_version": { "type": "string" },
+        "config_ref": { "type": "string", "description": "Pointer to the pattern-pack / model / prompt version, where applicable." }
+      }
+    }
+  }
+}

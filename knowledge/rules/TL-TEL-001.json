@@ -1,62 +1,95 @@
 {
   "schema_version": "1.0.0",
-  "rule_version": "0.1.0",
+  "rule_version": "0.2.0",
   "id": "TL-TEL-001",
   "legacy_id": "I4C-USSD-013",
-  "name": "Courier pretext leading to a request to dial a USSD code",
-  "description": "A delivery or courier pretext is used to persuade the recipient to dial a short code, silently enabling call forwarding and enabling account takeover. Encoded and retained, but not published: the advisory that substantiates it could not be retrieved.",
+  "name": "Request to dial an unverified call-forwarding/USSD code",
+  "description": "The recipient is pushed to dial a short/USSD code from an unsolicited or pressured contact. Dialling such a code can silently enable call forwarding and enable account takeover. NARROWED (2026-08-28): the courier/delivery pretext is no longer required, because the only available official evidence (I4C CyberDost) substantiates call-forwarding/code abuse but NOT the delivery pretext.",
   "kind": "COMPOSITE",
-  "taxonomy_refs": ["TAX-04-01", "TAX-07-03"],
+  "taxonomy_refs": [
+    "TAX-04-01"
+  ],
   "severity": "HIGH",
-
   "evidence": {
-    "verdict": "UNSUPPORTED",
+    "verdict": "PARTIAL",
     "implementability": "YES",
+    "severity_cap": "HIGH",
     "source_references": [
       {
         "source_id": "SRC-013",
         "issuing_body": "I4C",
         "authority": "OFFICIAL_GOVERNMENT",
         "verification_status": "RETRIEVAL_FAILED",
-        "document_ref": "Advisory TAU_ADV_007 — USSD based call forwarding / account takeover"
+        "document_ref": "Advisory TAU_ADV_007 — USSD based call forwarding (original PDF unavailable)",
+        "manual_retrieval": {
+          "evidence_class": "OFFICIAL_ALTERNATE",
+          "manual_retrieval_status": "OFFICIAL_ALTERNATE_PARTIAL",
+          "evidence_ids": [
+            "MR-EVID-008"
+          ],
+          "retrieved_on": "2026-08-28",
+          "canonical_url": "https://www.t.me/s/cyberdosti4c?q=%23CallForwarding",
+          "locator": "I4C_USSD_Call_Forwarding_CyberDost.pdf p.3",
+          "claim_match": "PARTIAL",
+          "review_status": "REVIEWED",
+          "review_role": "Threat Intelligence Lead",
+          "official_alternate_source": "CyberDost / I4C, Ministry of Home Affairs — https://www.t.me/s/cyberdosti4c",
+          "notes": "Supports call-forwarding/code abuse and 'do not dial unverified codes'. Does NOT establish the courier/delivery pretext — that clause is narrowed OUT and remains an open gap (RESEARCH-005 G-01 residue)."
+        }
       }
     ]
   },
-
   "logic": {
     "require": {
       "all_of": [
-        "PARCEL_PRETEXT",
         "USSD_CODE_DIAL_REQUEST",
-        { "any_of": ["URGENCY", "URGENCY_DEADLINE", "DISCOURAGES_VERIFICATION"] }
+        {
+          "any_of": [
+            "DISCOURAGES_VERIFICATION",
+            "URGENCY",
+            "URGENCY_DEADLINE",
+            "UNSOLICITED_OFFER"
+          ]
+        }
       ]
     },
-    "min_evidence_classes": 3,
-    "suppressed_by": ["NO_CODE_DIAL_REQUEST", "TRANSACTION_NOTIFICATION", "EDUCATIONAL_CONTENT"]
+    "min_evidence_classes": 2,
+    "suppressed_by": [
+      "NO_CODE_DIAL_REQUEST"
+    ]
   },
-
   "lifecycle": {
-    "status": "DRAFT",
+    "status": "PEER_REVIEW",
     "created": "2026-08-15",
-    "last_reviewed": "2026-08-15",
-    "review_due": "2026-11-01",
+    "last_reviewed": "2026-08-28",
+    "review_due": "2026-11-28",
     "authored_by_role": "Knowledge Editor"
   },
-
   "language_scope": {
-    "languages": ["en"],
-    "scripts": ["Latn"],
+    "languages": [
+      "en"
+    ],
+    "scripts": [
+      "Latn"
+    ],
     "on_unsupported_input": "FLAG_UNSUPPORTED"
   },
-
   "explanation": {
-    "plain": "You have been asked to dial a short code to resolve a delivery problem. Dialling codes of that kind can quietly forward your calls to someone else, which lets them take over accounts secured by phone verification.",
-    "technical": "Parcel pretext with a vague technical action request and a pressure indicator. Held at DRAFT: the sole supporting advisory (I4C TAU_ADV_007) returned a connection reset on both retrieval methods.",
-    "why_confidence_limited": "No verified source. The concept is plausible and I4C is a genuine national authority, but plausibility is not evidence — the rule stays out of the published set until the advisory is retrieved (G-01)."
+    "plain": "You were asked to dial a short code. Dialling codes like that can quietly forward your calls to someone else, letting them take over accounts secured by phone verification. Do not dial codes sent by people you cannot verify.",
+    "technical": "USSD_CODE_DIAL_REQUEST (device-action) with a pressure or unsolicited-contact indicator. Narrowed from the original courier-pretext form, which the available official evidence does not support.",
+    "verification_steps": [
+      "Do not dial any code you did not look up yourself from an official source.",
+      "If you already dialled one, dial ##002# to cancel all call forwarding and contact your operator."
+    ],
+    "why_confidence_limited": "Evidence is an official I4C CyberDost channel post (OFFICIAL_ALTERNATE) covering the call-forwarding mechanism only; the courier/delivery pretext of the original rule is unverified and was removed. Held at PEER_REVIEW pending a malicious USSD test case and human sign-off."
   },
-
   "provenance": {
-    "source_severity_hint": { "value": 88, "label": "High", "cited_as": "RP p.8", "operational_use": false },
-    "notes": "One of seven rules blocked solely by I4C being unreachable. Not disproven — unretrievable. Promotes to APPROVED review the moment the source is obtained (RESEARCH-004 section 4). First encoding used PARCEL_PRETEXT + VAGUE_ACTION_REQUEST + urgency, which the linter correctly rejected as satisfiable by weak indicators alone. The actual discriminator — being asked to dial a code — had no positive indicator in the registry at all, only the benign guard NO_CODE_DIAL_REQUEST. USSD_CODE_DIAL_REQUEST was added and is now required."
+    "source_severity_hint": {
+      "value": 88,
+      "label": "High",
+      "cited_as": "RP p.8",
+      "operational_use": false
+    },
+    "notes": "Was UNSUPPORTED/DRAFT (SRC-013 unreachable, G-01). Rebound to the official CyberDost/I4C call-forwarding post (MR-EVID-008) under DEC-006 / ADR-0015 and NARROWED: PARCEL_PRETEXT dropped as a required trigger because the evidence does not support the courier pretext. Verdict PARTIAL (capped). First encoding also lacked a positive USSD indicator; USSD_CODE_DIAL_REQUEST supplies it. | WP3/G-07: globally-scoped suppressors removed from suppressed_by (now auto-applied from negative-indicator-library-v1.json); only family-specific guards remain."
   }
 }

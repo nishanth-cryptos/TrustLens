@@ -1,0 +1,127 @@
+@startuml TrustLens_DFD_Level1
+
+title <b>TrustLens  —  Level 1 DFD</b>
+
+' keeps the PNG inside the public server's 4096px cap (SVG ignores this)
+scale max 3800 width
+
+skinparam backgroundColor #F8FAFC
+skinparam defaultFontName Arial
+skinparam defaultFontSize 10
+skinparam shadowing false
+skinparam dpi 150
+skinparam nodesep 40
+skinparam ranksep 90
+
+<style>
+element {
+  Padding 6
+  Margin  8
+}
+</style>
+
+skinparam rectangle {
+    BackgroundColor #1F3864
+    FontColor       #FFFFFF
+    BorderColor     #0D2137
+    BorderThickness 2
+}
+
+skinparam usecase {
+    BackgroundColor #BBDEFB
+    BorderColor     #1565C0
+    FontColor       #0D2137
+    BorderThickness 2
+}
+
+skinparam database {
+    BackgroundColor #FFF8E1
+    BorderColor     #E65100
+    FontColor       #4E342E
+    BorderThickness 2
+}
+
+skinparam arrow {
+    Color       #444444
+    FontColor   #222222
+    FontSize    9
+}
+
+rectangle "Reporting User"          as RU
+rectangle "Analyst"                 as AN
+rectangle "Administrator"           as AD
+rectangle "Report Recipient"        as RR
+rectangle "Guidance Bodies"         as GB
+rectangle "Knowledge Editor"        as KE
+rectangle "Knowledge Approver"      as KA
+rectangle "Threat-Intel Providers"  as TI
+rectangle "AI Assist Provider"      as AI
+
+usecase "**1.0**\nIngest &\nPreserve Evidence"      as P1
+usecase "**2.0**\nNormalise &\nExtract"             as P2
+usecase "**3.0**\nEvaluate Rules\n& Score"          as P3
+usecase "**4.0**\nCompose\nExplanation"             as P4
+usecase "**5.0**\nRoute &\nAdjudicate"              as P5
+usecase "**6.0**\nAssemble\nReport Bundle"          as P6
+usecase "**7.0**\nGovern\nKnowledge Base"           as P7
+usecase "**8.0**\nAdminister,\nAudit & Observe"     as P8
+
+database "D1  Evidence\nStore"        as D1
+database "D2  Case\nStore"            as D2
+database "D3  Rule-Set\nStore"        as D3
+database "D4  Source\nRegister"       as D4
+database "D5  Analysis\nRecord"       as D5
+database "D6  Audit\nLog"             as D6
+
+' --- ingest -----------------------------------------------------------------
+RU -down-> P1 : F1  Submitted artifacts
+P1 --> D1 : Artifact + SHA-256 hash,\nchain of custody
+D1 --> P2 : Preserved artifact
+
+' --- normalise and extract --------------------------------------------------
+RU -down-> P2 : F2  Corrections,\nre-evaluate
+P2 -right-> AI : F17  Isolated content prompt
+P2 --> P3 : Entities, indicators,\nnegative indicators
+
+' --- evaluate ---------------------------------------------------------------
+D3 --> P3 : Published rule set\n(version pinned)
+P3 -right-> TI : F15  Reputation lookup
+TI -left-> P3 : F16  Provider verdict
+P3 --> D5 : Pinned analysis record\n(for exact replay)
+P3 --> P4 : Matched / unmatched rules,\nrisk + confidence
+P3 --> P5 : Uncertain case\n(past threshold)
+
+' --- explain ----------------------------------------------------------------
+D4 --> P4 : Graded source citations
+P4 -up-> RU : F3  Verdict + evidence trace
+
+' --- adjudicate -------------------------------------------------------------
+P5 -up-> AN : F5  Queued case\n+ decomposition
+AN -down-> P5 : F6  Adjudication\n+ rationale
+P5 --> D2 : Case, findings,\nadjudication
+P5 --> D6 : Adjudication audit event
+
+' --- report -----------------------------------------------------------------
+D2 --> P6 : Case + findings
+D1 --> P6 : Evidence + hashes
+D5 --> P6 : Pinned analysis\n(reproducible)
+P6 -up-> RU : F4  Report bundle
+P6 --> RR : F9  Access-controlled export
+
+' --- knowledge governance ---------------------------------------------------
+GB --> P7 : F10  Published advisories
+P7 --> D4 : Graded source record
+KE --> P7 : F11  Draft rule + sources
+P7 --> KE : F12  Schema + lint verdict
+P7 --> KA : F13  Diff, impact, replay
+KA --> P7 : F14  Publish / reject
+AI --> P7 : F18  Schema-checked draft
+P7 --> D3 : Publish rule-set version
+P7 --> D6 : Knowledge action audit
+
+' --- administration ---------------------------------------------------------
+AD --> P8 : F7  Config, retention policy
+P8 --> AD : F8  Health, audit, metrics
+D6 --> P8 : Audit events
+
+@enduml

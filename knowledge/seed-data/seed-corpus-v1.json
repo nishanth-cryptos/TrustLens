@@ -1,14 +1,15 @@
 {
   "$comment": "TrustLens seed corpus v1. EVERY case in this file is SYNTHETIC — authored by the programme for testing. NO case is a real-world sample, and none may be presented as evidence of real scam activity (MP §8, §21). Phone numbers, VPAs, URLs and names are deliberately fictitious. Benign cases were authored FIRST, per CONF-002, because they are the regression tests that prevent the engine degenerating into a keyword matcher.",
-  "corpus_version": "1.0",
+  "corpus_version": "1.1",
   "generated": "2026-07-31",
+  "amended": "2026-08-28 — 3 benign near-misses (B-011..B-013, incl. an adversarial official-educational post) and 3 malicious cases (M-012 boss scam, M-013 crypto wallet drain, M-014 USSD call-forwarding) added for the rules the RESEARCH-006 manual retrieval reconciliation made publishable. All remain SYNTHETIC.",
   "provenance": "SYNTHETIC",
   "usage_constraints": [
     "Supports determinism and regression testing ONLY.",
     "MUST NOT be used to compute or claim precision, recall, or false-positive rate — a synthetic corpus cannot support an accuracy claim (RSK-003, G-09).",
     "Expected outcomes encode design intent, not measured behaviour. They are the specification the engine must satisfy."
   ],
-  "composition": {"benign": 10, "malicious": 11, "ambiguous": 6, "total": 27},
+  "composition": {"benign": 13, "malicious": 16, "ambiguous": 6, "total": 35},
 
   "benign": [
     {
@@ -30,7 +31,7 @@
       "language": "en",
       "text": "Dear Customer, your KYC is due for periodic update. Please visit your nearest Example Bank branch or use the official Example Bank app. We will never ask for your PIN, OTP or password.",
       "expected_outcome": "NO_FINDING",
-      "must_not_match": ["TL-KYC-001"],
+      "must_not_match": ["TL-KYC-001", "TL-CRED-002"],
       "expected_negative_indicators": ["SELF_PROTECTIVE_WARNING", "OFFICIAL_CHANNEL_REDIRECT", "NO_LINK_PRESENT"],
       "rationale": "Legitimate KYC communication. Banks DO legitimately mention KYC. The scam signal is a link or call demanding credentials — not the word KYC. Directing to a branch or official app is the opposite of the scam pattern.",
       "guards": ["CONF-002", "RSK-002"]
@@ -123,6 +124,42 @@
       "expected_negative_indicators": ["NO_PAYMENT_REQUESTED", "NO_CODE_DIAL_REQUEST", "OFFICIAL_CHANNEL_REDIRECT"],
       "rationale": "Ordinary delivery notification. The courier pretext only becomes a signal when combined with a payment demand or a request to dial a USSD code.",
       "guards": ["CONF-002"]
+    },
+    {
+      "id": "B-011",
+      "channel": "EMAIL",
+      "language": "en",
+      "text": "Hi team, great work this quarter. Please review the attached board deck before Friday's meeting. No payment or transfer is needed from anyone — just your feedback. Reach me on my usual desk extension.",
+      "expected_outcome": "NO_FINDING",
+      "must_not_match": ["TL-AUTH-003"],
+      "expected_indicators": ["URGENCY"],
+      "expected_negative_indicators": ["NO_PAYMENT_REQUESTED", "REASONABLE_DEADLINE", "OFFICIAL_CHANNEL_REDIRECT"],
+      "rationale": "Near-miss for TL-AUTH-003: a genuine internal note from a manager with mild time pressure but NO impersonation cue and NO payment order. The boss-scam signal is executive/regulator impersonation PLUS an urgent transfer — not seniority alone.",
+      "guards": ["CONF-002", "RSK-002"]
+    },
+    {
+      "id": "B-012",
+      "channel": "EMAIL",
+      "language": "en",
+      "text": "Security notice: a new device signed in to your exchange account. If this was you, no action is needed. If not, reset your password in the official app. We will never ask you to connect your wallet to 'verify' it.",
+      "expected_outcome": "NO_FINDING",
+      "must_not_match": ["TL-CRYP-001"],
+      "expected_negative_indicators": ["SECURITY_NOTIFICATION", "NO_ACTION_REQUESTED", "NO_PERMISSION_REQUEST"],
+      "rationale": "A genuine exchange security notice mentions wallets but requests no wallet connection and no action. TL-CRYP-001's signal is a wallet-connect request under a verification pretext — absent here.",
+      "guards": ["CONF-002"]
+    },
+    {
+      "id": "B-013",
+      "priority": "HIGH",
+      "channel": "SOCIAL",
+      "language": "en",
+      "text": "#CyberDost Alert from I4C/MHA: Fraudsters may ask you to install an APK, switch on Accessibility permission, or connect your crypto wallet at a 'verification' link. Official agencies will NEVER ask this. Never share your OTP. Report on 1930.",
+      "expected_outcome": "NO_FINDING",
+      "must_not_match": ["TL-CRYP-001", "TL-MAL-002", "TL-CRED-001"],
+      "expected_indicators": [],
+      "expected_negative_indicators": ["EDUCATIONAL_CONTENT", "SELF_PROTECTIVE_WARNING", "NEGATED_CREDENTIAL_REQUEST", "NEGATED_ACTION_REQUEST", "REPORTED_SCAM_NARRATIVE"],
+      "rationale": "Adversarial-benign: an official government awareness post that names every high-risk device/crypto action. Under the WP3 negation model the extractor scopes these as REPORTED/NEGATED, not as live directives, so NO live positive is emitted and nothing matches — the correct outcome. This is important: the hard-risk overrides (ADR/G-07) deliberately REFUSE to let a live wallet-connect/accessibility pattern be cancelled by educational wording, so official educational posts must be represented as reported/negated (family 7 + 9), NOT as a live pattern that EDUCATIONAL_CONTENT then 'undoes'. The paired suppression-tests-v1 cases prove both directions (safety wording ≠ live directive; and a live decoy is NOT suppressed).",
+      "guards": ["CONF-002", "RSK-002", "G-07"]
     }
   ],
 
@@ -243,9 +280,10 @@
       "language": "en",
       "text": "Hey! It's me, I made a new account because my old one got hacked. I'm stuck and need Rs 12,000 sent to this UPI right now. Please don't tell anyone, it's embarrassing.",
       "expected_outcome": "HIGH",
-      "expected_rules": ["TL-SOC-002", "TL-SOC-003"],
+      "expected_rules": ["TL-SOC-002"],
       "expected_indicators": ["FAKE_PROFILE_CLAIM", "PAYMENT_DEMAND", "URGENCY", "SECRECY_REQUEST"],
-      "source_basis": ["SRC-014", "SRC-021"],
+      "source_basis": ["SRC-014"],
+      "rationale": "Fake-profile impersonation of a generic contact ('it's me, new account'). Matches TL-SOC-002. Corrected 2026-08-28: TL-SOC-003 was removed from the expectation because this case does not claim a RELATIVE and carries no CLAIMED_RELATIVE indicator — the claimed-relative variant is M-009.",
       "guards": ["FR-031"]
     },
     {
@@ -258,6 +296,68 @@
       "expected_indicators": ["KYC_PRETEXT", "ACCOUNT_BLOCK_THREAT", "URGENCY", "LOOKALIKE_DOMAIN", "CREDENTIAL_REQUEST_OTP", "CREDENTIAL_REQUEST_CARD"],
       "source_basis": ["SRC-004", "SRC-007"],
       "rationale": "The full KYC attack chain from RP p.12: pretext → link → credential request. Contrast with B-002, which shares the KYC pretext and nothing else.",
+      "guards": ["FR-031", "CONF-002"]
+    },
+    {
+      "id": "M-012",
+      "priority": "HIGH",
+      "channel": "WHATSAPP",
+      "language": "en",
+      "text": "This is your CEO. I'm in a board meeting and cannot take calls. I need you to urgently transfer Rs 4,50,000 to a vendor account I'll send now to close a deal. Keep this strictly confidential until it's done.",
+      "expected_outcome": "HIGH",
+      "expected_rules": ["TL-AUTH-003"],
+      "expected_indicators": ["EXECUTIVE_IMPERSONATION", "IMMEDIATE_PAYMENT_DEMAND", "URGENCY", "SECRECY_REQUEST"],
+      "source_basis": ["SRC-022"],
+      "rationale": "Boss-scam pattern verified by PIB/MHA (SRC-022, MR-EVID-004): senior-identity claim + urgent transfer + secrecy, over a messaging app. Contrast with B-011, which has seniority and urgency but no payment order.",
+      "guards": ["FR-031", "CONF-002"]
+    },
+    {
+      "id": "M-013",
+      "priority": "HIGH",
+      "channel": "SOCIAL",
+      "language": "en",
+      "text": "Your crypto airdrop is ready to claim! Verify your holdings at trust-wallet-verify.example and connect your wallet to confirm ownership. Continue with our agent on Telegram to release the funds.",
+      "expected_outcome": "HIGH",
+      "expected_rules": ["TL-CRYP-001"],
+      "expected_indicators": ["WALLET_CONNECT_REQUEST", "FAKE_VERIFICATION_SITE", "VERIFICATION_PRETEXT", "OFF_PLATFORM_HANDOFF", "LINK_PRESENT", "LOOKALIKE_DOMAIN"],
+      "source_basis": ["SRC-024"],
+      "rationale": "Matches the I4C CyberDost Trust Wallet chain (SRC-024, MR-EVID-010): fake verification site + wallet-connect request + off-platform handoff. Contrast with B-012, which mentions wallets but requests no connection.",
+      "guards": ["FR-031", "CONF-002"]
+    },
+    {
+      "id": "M-014",
+      "channel": "SMS",
+      "language": "en",
+      "text": "URGENT: Your SIM will be deactivated today due to incomplete verification. To keep your number active, dial *401*98765XXXXX# immediately from your phone. Act now to avoid disconnection.",
+      "expected_outcome": "HIGH",
+      "expected_rules": ["TL-TEL-001"],
+      "expected_indicators": ["USSD_CODE_DIAL_REQUEST", "URGENCY", "ACCOUNT_BLOCK_THREAT"],
+      "source_basis": ["SRC-013"],
+      "rationale": "The narrowed TL-TEL-001: a pressured request to dial a call-forwarding/USSD code, verified by I4C CyberDost (SRC-013, MR-EVID-008). Note there is NO courier pretext — that clause was removed as unsupported. Contrast with B-010, which is a plain delivery notice with no code to dial.",
+      "guards": ["FR-031", "CONF-002"]
+    },
+    {
+      "id": "M-015",
+      "channel": "SMS",
+      "language": "en",
+      "text": "Example Bank: complete your pending KYC now. Enter your UPI PIN in the linked form to verify your account or it will be suspended.",
+      "expected_outcome": "HIGH",
+      "expected_rules": ["TL-CRED-002"],
+      "expected_indicators": ["UPI_PIN_PROMPT", "KYC_PRETEXT", "ACCOUNT_BLOCK_THREAT"],
+      "source_basis": ["SRC-005"],
+      "rationale": "A UPI PIN demanded for 'KYC verification' — outside any payment the user is making. NPCI (SRC-005, MR-EVID-002): only sending money requires a UPI PIN. Fires TL-CRED-002.",
+      "guards": ["FR-031", "CONF-002"]
+    },
+    {
+      "id": "M-016",
+      "channel": "SMS",
+      "language": "en",
+      "text": "URGENT: your electricity will be disconnected tonight due to a pending due. Pay Rs 1,240 immediately at http://ex-power-bill.example/pay to avoid disconnection.",
+      "expected_outcome": "HIGH",
+      "expected_rules": ["TL-UTIL-001"],
+      "expected_indicators": ["SUSPENSION_THREAT", "IMMEDIATE_PAYMENT_DEMAND", "URGENCY", "LINK_PRESENT"],
+      "source_basis": ["SRC-007"],
+      "rationale": "Same-day disconnection threat plus an urgent unofficial payment link. Contrast with B-005, a genuine bill with an official biller and a reasonable deadline. Fires TL-UTIL-001.",
       "guards": ["FR-031", "CONF-002"]
     }
   ],

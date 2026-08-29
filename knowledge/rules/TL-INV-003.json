@@ -1,0 +1,94 @@
+{
+  "schema_version": "1.0.0",
+  "rule_version": "1.0.0",
+  "id": "TL-INV-003",
+  "legacy_id": "SEBI-DEEP-019",
+  "name": "Celebrity or public-figure impersonation in a social-media investment funnel",
+  "description": "An investment approach on social media leans on an impersonated celebrity or public figure, fake testimonials and unrealistic returns. NARROWED (2026-08-28): the deepfake-specific mechanism is excluded — SEBI's release verifies celebrity/public-figure impersonation but contains no deepfake statement (G-16 stays open).",
+  "kind": "COMPOSITE",
+  "taxonomy_refs": [
+    "TAX-05-04"
+  ],
+  "severity": "HIGH",
+  "evidence": {
+    "verdict": "PARTIAL",
+    "implementability": "YES",
+    "severity_cap": "HIGH",
+    "source_references": [
+      {
+        "source_id": "SRC-023",
+        "issuing_body": "SEBI",
+        "authority": "OFFICIAL_REGULATOR",
+        "verification_status": "PRIMARY_CITED_UNVERIFIED",
+        "document_ref": "SEBI PR No. 27/2025 — stock-market scams via social media",
+        "manual_retrieval": {
+          "evidence_class": "PRIMARY",
+          "manual_retrieval_status": "PRIMARY_BODY_RETRIEVED_PARTIAL_CLAIM",
+          "evidence_ids": [
+            "MR-EVID-005"
+          ],
+          "retrieved_on": "2026-08-15",
+          "canonical_url": "https://www.sebi.gov.in/media-and-notifications/press-releases/may-2025/caution-to-investors-on-stock-market-scams-through-social-media-platforms_94064.html",
+          "locator": "SEBI_PR-27-2025_Social_Media_Stock_Market_Scams.pdf p.1",
+          "claim_match": "PARTIAL",
+          "review_status": "REVIEWED",
+          "review_role": "Threat Intelligence Lead",
+          "notes": "Body now retrieved (was PRIMARY_CITED_UNVERIFIED). Verifies celebrity/public-figure impersonation, fake testimonials and unreasonable-return promises. Contains NO deepfake-specific statement — the deepfake mechanism is narrowed out and stays an open gap (G-16)."
+        }
+      }
+    ]
+  },
+  "logic": {
+    "require": {
+      "all_of": [
+        "CELEBRITY_IMPERSONATION",
+        {
+          "any_of": [
+            "RETURN_GUARANTEE",
+            "HIGH_RETURN_MENTION",
+            "INVESTMENT_SOLICITATION"
+          ]
+        }
+      ]
+    },
+    "min_evidence_classes": 2,
+    "suppressed_by": [
+      "RISK_DISCLOSURE_PRESENT",
+      "REGISTRATION_DISCLOSED"
+    ]
+  },
+  "lifecycle": {
+    "status": "PEER_REVIEW",
+    "created": "2026-08-28",
+    "last_reviewed": "2026-08-28",
+    "review_due": "2026-11-28",
+    "authored_by_role": "Knowledge Editor"
+  },
+  "language_scope": {
+    "languages": [
+      "en"
+    ],
+    "scripts": [
+      "Latn"
+    ],
+    "on_unsupported_input": "FLAG_UNSUPPORTED"
+  },
+  "explanation": {
+    "plain": "This investment pitch uses a famous person's name or image to look trustworthy. Celebrities do not run investment tips through social-media DMs, and 'endorsements' like these are usually fake. Treat guaranteed-return claims tied to a celebrity as a scam.",
+    "technical": "CELEBRITY_IMPERSONATION (identity-claim) with an investment solicitation or return claim (financial/pretext). SEBI PR 27/2025 verifies the celebrity-impersonation funnel; the deepfake variant is not covered.",
+    "verification_steps": [
+      "Check whether the 'endorsement' appears on the celebrity's genuine, verified account.",
+      "Only deal with SEBI-registered intermediaries; verify the registration number."
+    ],
+    "why_confidence_limited": "SEBI's body verifies celebrity impersonation but not a deepfake mechanism, so the rule is narrowed to impersonation and capped at PARTIAL. The deepfake-specific detection remains an open gap (G-16). Held at PEER_REVIEW."
+  },
+  "provenance": {
+    "source_severity_hint": {
+      "value": 84,
+      "label": "High",
+      "cited_as": "RP p.7",
+      "operational_use": false
+    },
+    "notes": "Was PARTIAL and conflated deepfake with celebrity impersonation (D2). SEBI body retrieved (MR-EVID-005) under DEC-006 / ADR-0015; rule split/narrowed to the supported celebrity-impersonation concept; deepfake never marked verified from this source. | WP3/G-07: globally-scoped suppressors removed from suppressed_by (now auto-applied from negative-indicator-library-v1.json); only family-specific guards remain."
+  }
+}

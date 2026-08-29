@@ -1,0 +1,108 @@
+{
+  "schema_version": "1.0.0",
+  "rule_version": "1.0.0",
+  "id": "TL-MAL-001",
+  "legacy_id": "I4C-APK-026",
+  "name": "Prompt to install an app from an untrusted, non-store source",
+  "description": "The recipient is prompted to install an app or APK delivered through a message, link or social post rather than an official store. NARROWED (2026-08-28): the iOS configuration-profile mechanism is excluded — CERT-In supports the generic untrusted-install concept only.",
+  "kind": "COMPOSITE",
+  "taxonomy_refs": [
+    "TAX-10-01"
+  ],
+  "severity": "MEDIUM",
+  "evidence": {
+    "verdict": "PARTIAL",
+    "implementability": "YES",
+    "severity_cap": "MEDIUM",
+    "source_references": [
+      {
+        "source_id": "SRC-025",
+        "issuing_body": "I4C",
+        "authority": "OFFICIAL_GOVERNMENT",
+        "verification_status": "RETRIEVAL_FAILED",
+        "document_ref": "iOS/Apple malicious side-loading advisory (original PDF unavailable)",
+        "manual_retrieval": {
+          "evidence_class": "OFFICIAL_REPLACEMENT",
+          "manual_retrieval_status": "OFFICIAL_REPLACEMENT_PARTIAL",
+          "evidence_ids": [
+            "MR-EVID-011"
+          ],
+          "retrieved_on": "2026-08-28",
+          "canonical_url": "https://www.cert-in.org.in/PDF/CSA_Booklet.pdf",
+          "locator": "CERTIn_Cyber_Security_Awareness_Booklet.pdf pp.6-7",
+          "claim_match": "PARTIAL",
+          "review_status": "REVIEWED",
+          "review_role": "Threat Intelligence Lead",
+          "replacement_source": "CERT-In Cyber Security Awareness Booklet — https://www.cert-in.org.in/PDF/CSA_Booklet.pdf",
+          "notes": "Original iOS advisory (SRC-025) still unavailable. CERT-In supports 'use trusted/authorised app stores; avoid apps from messages/social links'. Does NOT support the iOS configuration-profile mechanism — that clause is narrowed out and stays unsupported."
+        }
+      },
+      {
+        "source_id": "SRC-010",
+        "issuing_body": "Google",
+        "authority": "INDUSTRY",
+        "verification_status": "PRIMARY_VERIFIED",
+        "document_ref": "Google Safety Charter for India (2025-06-18)",
+        "quote": "Since our Play Protect pilot rolled out in October 2024 in India, it has blocked nearly 6 crore (60 million) attempts to install high-risk apps"
+      }
+    ]
+  },
+  "logic": {
+    "require": {
+      "all_of": [
+        {
+          "any_of": [
+            "APP_INSTALL_UNTRUSTED_SOURCE",
+            "APK_INSTALL_REQUEST"
+          ]
+        },
+        {
+          "any_of": [
+            "LINK_PRESENT",
+            "SHORTENED_URL",
+            "FAKE_APP_IMPERSONATION",
+            "UNSOLICITED_OFFER"
+          ]
+        }
+      ]
+    },
+    "min_evidence_classes": 2,
+    "suppressed_by": [
+      "OFFICIAL_APP_STORE_SOURCE"
+    ]
+  },
+  "lifecycle": {
+    "status": "PEER_REVIEW",
+    "created": "2026-08-28",
+    "last_reviewed": "2026-08-28",
+    "review_due": "2026-11-28",
+    "authored_by_role": "Knowledge Editor"
+  },
+  "language_scope": {
+    "languages": [
+      "en"
+    ],
+    "scripts": [
+      "Latn"
+    ],
+    "on_unsupported_input": "FLAG_UNSUPPORTED"
+  },
+  "explanation": {
+    "plain": "You were sent a link to install an app directly, outside the official app store. Apps delivered this way are a common way to plant malware. Install apps only from the official store, never from a link in a message.",
+    "technical": "An untrusted/non-store install prompt (device-action) with a link/impersonation/unsolicited vector. CERT-In supports the trusted-store guidance; Google evidences the scale of blocked high-risk installs.",
+    "verification_steps": [
+      "Install apps only from the official app store; delete APKs sent by message.",
+      "Check the developer name in the store before installing."
+    ],
+    "why_confidence_limited": "Narrowed to the generic untrusted-install concept: the iOS configuration-profile mechanism has no verified basis and is excluded. Evidence is an official replacement (CERT-In) plus industry prevalence (Google); capped at MEDIUM. Held at PEER_REVIEW."
+  },
+  "provenance": {
+    "source_severity_hint": {
+      "value": 80,
+      "label": "Medium",
+      "cited_as": "RP p.7",
+      "operational_use": false
+    },
+    "notes": "PARTIAL at Phase 1 (SRC-025 unreachable; SRC-010 prevalence only). Reconciled to CERT-In replacement support (MR-EVID-011) under DEC-006 / ADR-0015; iOS configuration-profile clause narrowed out and left as an open gap. | WP3/G-07: globally-scoped suppressors removed from suppressed_by (now auto-applied from negative-indicator-library-v1.json); only family-specific guards remain."
+  }
+}

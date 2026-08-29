@@ -1,0 +1,100 @@
+@startuml TrustLens_DFD_Level0
+' TrustLens — Level 0 (context) DFD
+' Notation : DeMarco & Yourdon — oval = process, rectangle = external entity
+' Contents : 1 process · 9 external entities · 18 flows (9 in, 9 out)
+'            no data stores — level 0 carries none by convention
+'
+' LAYOUT NOTES — read before editing, these are the rules that keep it clean:
+'  1. No "left to right direction". This diagram is radial; the
+'     -up-/-down-/-left-/-right- hints place entities around the process
+'     and LR mode breaks them.
+'  2. At most ONE entity on the left and ONE on the right. A second one is
+'     pushed an extra rank outward, its edges run long, and its two labels
+'     collide. Entities above and below sit side by side on one rank with
+'     short edges, so that is where the rest go.
+'  3. Arrow labels stay at 2-3 words. Long labels are wide boxes that
+'     overlap on curved edges.
+
+title <b>TrustLens  —  Level 0 Context Diagram</b>
+
+skinparam backgroundColor #F8FAFC
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam shadowing false
+skinparam dpi 150
+skinparam nodesep 55
+skinparam ranksep 80
+
+<style>
+element {
+  Padding 8
+  Margin  12
+}
+</style>
+
+skinparam rectangle {
+    BackgroundColor #1F3864
+    FontColor       #FFFFFF
+    BorderColor     #0D2137
+    BorderThickness 2
+}
+
+skinparam usecase {
+    BackgroundColor #BBDEFB
+    BorderColor     #1565C0
+    FontColor       #0D2137
+    BorderThickness 2
+}
+
+skinparam arrow {
+    Color       #444444
+    FontColor   #222222
+    FontSize    10
+}
+
+usecase "**0.0**\n**TrustLens**\nScam Detection,\nEvidence &\nReporting System" as SYS
+
+' --- above: submission and knowledge authoring --------------------------------
+rectangle "Reporting User\n(P1 Priya / P2 Ramesh)"          as RU
+rectangle "Official Guidance Bodies\n(I4C / CERT-In / RBI)"  as GB
+rectangle "Knowledge Editor\n(P4 Vikram)"                    as KE
+
+' --- left: review -------------------------------------------------------------
+rectangle "Analyst\n(P3 Anjali)"        as AN
+
+' --- right: publication gate --------------------------------------------------
+rectangle "Knowledge Approver\n(P5 Meera)" as KA
+
+' --- below: outputs and external providers ------------------------------------
+rectangle "Report Recipient\n(authority / bank)" as RR
+rectangle "Administrator\n(P6)"                  as AD
+rectangle "Threat-Intel Providers\n(post-MVP)"   as TI
+rectangle "AI Assist Provider\n(post-MVP)"       as AI
+
+'=== flows ====================================================================
+RU -down-> SYS : F1  Submitted artifacts\nF2  Corrections
+SYS  -up-> RU  : F3  Verdict + trace\nF4  Report bundle
+
+GB -down-> SYS : F10  Published advisories
+
+KE -down-> SYS : F11  Draft rule
+SYS  -up-> KE  : F12  Lint verdict
+
+SYS -left-> AN  : F5  Queued case
+AN -right-> SYS : F6  Adjudication
+
+SYS -right-> KA : F13  Review package
+KA   -left-> SYS : F14  Publish / reject
+
+SYS -down-> RR : F9  Report export
+
+AD   -up-> SYS : F7  Configuration
+SYS -down-> AD : F8  Health + audit
+
+SYS -down-> TI : F15  Reputation lookup
+TI    -up-> SYS : F16  Provider verdict
+
+SYS -down-> AI : F17  Content prompt
+AI    -up-> SYS : F18  Checked draft
+
+@enduml

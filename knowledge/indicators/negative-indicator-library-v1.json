@@ -1,0 +1,1397 @@
+{
+  "$comment": "TrustLens formal negative-indicator & suppression library (WP3, closes G-07). Authoritative home for negative (SUPPRESSIVE) indicators, replacing the NEGATIVE half of indicator-registry-v0.json. Consumed by validate_rules.py (resolution + checks) and rule_runner.py (deterministic, explainable suppression). Numeric score-reduction magnitudes are NOT defined here - they are deferred to DET-001 (CONF-001); effects here are ordinal/categorical.",
+  "library_version": "1.0.0",
+  "generated": "2026-08-28",
+  "status": "ACTIVE",
+  "supersedes": "NEGATIVE half of knowledge/indicators/indicator-registry-v0.json",
+  "provenance": "Authored from the inverse of verified official guidance (SRC-004/006/021 et al.) and the ADR-0015 evidence hierarchy. Evidence-class/strength/effect assignments are HEURISTIC programme judgements (G-07).",
+  "categories": {
+    "EDUCATIONAL_SAFETY": "Scam-awareness / safety guidance: warns the user, does not instruct them.",
+    "CUSTOMER_SUPPORT_SAFETY": "Official 'we will never ask for X' support language.",
+    "LEGIT_SERVICE_COMMS": "Ordinary bank/service communication: notifications, official-channel redirects, no credential request.",
+    "LEGIT_PAYMENT_DIRECTION": "A clearly legitimate outbound payment direction (paying a known merchant).",
+    "IT_SUPPORT": "A legitimate, user-expected IT-support context with no banking/payment fraud signals.",
+    "USER_INITIATED": "The user themselves initiated the action (only trustworthy if the context model can observe it).",
+    "ALLOWLIST_DOMAIN": "A verified/allowlisted domain context. Weak by design; never cancels a hard-risk pattern.",
+    "REPORTED_SCAM": "The user is reporting/quoting scam wording, not receiving a live instruction.",
+    "NEGATION_DIRECTIONAL": "A directional negation that neutralises a specific positive indicator ('do NOT share your OTP').",
+    "BENIGN_CONTEXT": "Weak benign context (low amount, no urgency). Adds evidence; never cancels alone."
+  },
+  "suppression_effects": {
+    "SUPPRESS_RULE": "Cancels the whole matched rule (unless a hard-risk override is active).",
+    "SUPPRESS_INDICATOR": "Neutralises specific positive indicator(s) before the rule is evaluated (directional). Not blocked by overrides.",
+    "CAP_SEVERITY": "Caps the fired rule's severity to an ordinal ceiling; does not cancel.",
+    "CONTEXT_ONLY": "Records benign context; never changes the finding. (No numeric score-reduction here — REDUCE magnitudes are deferred to DET-001, CONF-001.)"
+  },
+  "resolution_order": [
+    "1. SUPPRESS_INDICATOR (directional negation) removes its target positives from the signal set; the rule's require is re-evaluated.",
+    "2. If the rule still matches, active hard-risk OVERRIDES are computed on the reduced set.",
+    "3. If any applicable override is active, it BLOCKS all SUPPRESS_RULE and CAP_SEVERITY effects from its blocked categories; the rule fires and the block is recorded as an explanation.",
+    "4. Otherwise, an active SUPPRESS_RULE cancels the rule; active CAP_SEVERITY caps its severity ordinally.",
+    "5. CONTEXT_ONLY indicators are recorded as benign evidence and never change the finding."
+  ],
+  "negative_indicators": [
+    {
+      "negative_indicator_id": "EDUCATIONAL_CONTENT",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "name": "The message is warning about scams rather than conducting one (scam-awareness ar",
+      "description": "The message is warning about scams rather than conducting one (scam-awareness article, safety alert).",
+      "category": "EDUCATIONAL_SAFETY",
+      "evidence_class": "SUPPRESSIVE",
+      "strength": "STRONG",
+      "applicable_channels": [
+        "*"
+      ],
+      "applicable_rule_families": [
+        "*"
+      ],
+      "suppression_effect": "SUPPRESS_RULE",
+      "blockable_by_overrides": true,
+      "language": [
+        "en"
+      ],
+      "script": [
+        "Latn"
+      ],
+      "source_basis": [
+        "SRC-021"
+      ],
+      "evidence_strength": "HEURISTIC",
+      "false_negative_risk": "MEDIUM",
+      "last_reviewed": "2026-08-28",
+      "review_required_by": "2027-02-28",
+      "change_history": [
+        {
+          "version": "1.0.0",
+          "date": "2026-08-28",
+          "change": "Authored as part of the G-07 formal negative-indicator library (WP3)."
+        }
+      ],
+      "positive_suppression_examples": [
+        "SCAM ALERT: fraudsters may ask for your OTP. We will never ask for it."
+      ],
+      "counter_examples": [
+        "Share the OTP we just sent to verify your account."
+      ]
+    },
+    {
+      "negative_indicator_id": "SELF_PROTECTIVE_WARNING",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "name": "The message warns the recipient to protect their own credentials ('never share t",
+      "description": "The message warns the recipient to protect their own credentials ('never share this with anyone').",
+      "category": "EDUCATIONAL_SAFETY",
+      "evidence_class": "SUPPRESSIVE",
+      "strength": "STRONG",
+      "applicable_channels": [
+        "*"
+      ],
+      "applicable_rule_families": [
+        "*"
+      ],
+      "suppression_effect": "SUPPRESS_RULE",
+      "blockable_by_overrides": true,
+      "language": [
+        "en"
+      ],
+      "script": [
+        "Latn"
+      ],
+      "source_basis": [
+        "SRC-004"
+      ],
+      "evidence_strength": "HEURISTIC",
+      "false_negative_risk": "LOW",
+      "last_reviewed": "2026-08-28",
+      "review_required_by": "2027-02-28",
+      "change_history": [
+        {
+          "version": "1.0.0",
+          "date": "2026-08-28",
+          "change": "Authored as part of the G-07 formal negative-indicator library (WP3)."
+        }
+      ],
+      "positive_suppression_examples": [
+        "Never share this OTP with anyone. -Example Bank"
+      ]
+    },
+    {
+      "negative_indicator_id": "SUPPORT_NEVER_ASKS",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "name": "Official support-safety language: 'our team will never ask for your OTP/PIN'",
+      "description": "Official support-safety language: 'our team will never ask for your OTP/PIN'.",
+      "category": "CUSTOMER_SUPPORT_SAFETY",
+      "evidence_class": "SUPPRESSIVE",
+      "strength": "STRONG",
+      "applicable_channels": [
+        "*"
+      ],
+      "applicable_rule_families": [
+        "*"
+      ],
+      "suppression_effect": "SUPPRESS_RULE",
+      "blockable_by_overrides": true,
+      "language": [
+        "en"
+      ],
+      "script": [
+        "Latn"
+      ],
+      "source_basis": [
+        "SRC-004"
+      ],
+      "evidence_strength": "HEURISTIC",
+      "false_negative_risk": "LOW",
+      "last_reviewed": "2026-08-28",
+      "review_required_by": "2027-02-28",
+      "change_history": [
+        {
+          "version": "1.0.0",
+          "date": "2026-08-28",
+          "change": "Authored as part of the G-07 formal negative-indicator library (WP3)."
+        }
+      ],
+      "positive_suppression_examples": [
+        "Our support team will never ask for your OTP or PIN."
+      ],
+      "counter_examples": [
+        "This is support - confirm your PIN to proceed."
+      ]
+    },
+    {
+      "negative_indicator_id": "NEGATED_CREDENTIAL_REQUEST",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "name": "A credential is named inside a negation ('we will never ask for your OTP')",
+      "description": "A credential is named inside a negation ('we will never ask for your OTP'). Neutralises the credential-request positives.",
+      "category": "NEGATION_DIRECTIONAL",
+      "evidence_class": "SUPPRESSIVE",
+      "strength": "STRONG",
+      "applicable_channels": [
+        "*"
+      ],
+      "applicable_rule_families": [
+        "*"
+      ],
+      "suppression_effect": "SUPPRESS_INDICATOR",
+      "blockable_by_overrides": false,
+      "language": [
+        "en"
+      ],
+      "script": [
+        "Latn"
+      ],
+      "source_basis": [
+        "SRC-004"
+      ],
+      "evidence_strength": "HEURISTIC",
+      "false_negative_risk": "LOW",
+      "last_reviewed": "2026-08-28",
+      "review_required_by": "2027-02-28",
+      "change_history": [
+        {
+          "version": "1.0.0",
+          "date": "2026-08-28",
+          "change": "Authored as part of the G-07 formal negative-indicator library (WP3)."
+        }
+      ],
+      "suppresses_indicators": [
+        "CREDENTIAL_REQUEST_OTP",
+        "CREDENTIAL_REQUEST_CVV",
+        "CREDENTIAL_REQUEST_CARD",
+        "UPI_PIN_PROMPT"
+      ],
+      "positive_suppression_examples": [
+        "Do not share your OTP with anyone."
+      ],
+      "counter_examples": [
+        "Share your OTP now."
+      ]
+    },
+    {
+      "negative_indicator_id": "OTP_DELIVERED_NOT_REQUESTED",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "name": "An OTP is being supplied TO the recipient rather than solicited FROM them",
+      "description": "An OTP is being supplied TO the recipient rather than solicited FROM them. Directionality.",
+      "category": "NEGATION_DIRECTIONAL",
+      "evidence_class": "SUPPRESSIVE",
+      "strength": "STRONG",
+      "applicable_channels": [
+        "*"
+      ],
+      "applicable_rule_families": [
+        "*"
+      ],
+      "suppression_effect": "SUPPRESS_INDICATOR",
+      "blockable_by_overrides": false,
+      "language": [
+        "en"
+      ],
+      "script": [
+        "Latn"
+      ],
+      "source_basis": [],
+      "evidence_strength": "HEURISTIC",
+      "false_negative_risk": "LOW",
+      "last_reviewed": "2026-08-28",
+      "review_required_by": "2027-02-28",
+      "change_history": [
+        {
+          "version": "1.0.0",
+          "date": "2026-08-28",
+          "change": "Authored as part of the G-07 formal negative-indicator library (WP3)."
+        }
+      ],
+      "suppresses_indicators": [
+        "CREDENTIAL_REQUEST_OTP"
+      ],
+      "positive_suppression_examples": [
+        "Your OTP is 452901 for your transaction."
+      ],
+      "counter_examples": [
+        "Tell me the OTP you received."
+      ]
+    },
+    {
+      "negative_indicator_id": "NEGATED_ACTION_REQUEST",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "name": "A risky device/payment action named inside a negation ('do not connect your wall",
+      "description": "A risky device/payment action named inside a negation ('do not connect your wallet / do not install').",
+      "category": "NEGATION_DIRECTIONAL",
+      "evidence_class": "SUPPRESSIVE",
+      "strength": "STRONG",
+      "applicable_channels": [
+        "*"
+      ],
+      "applicable_rule_families": [
+        "*"
+      ],
+      "suppression_effect": "SUPPRESS_INDICATOR",
+      "blockable_by_overrides": false,
+      "language": [
+        "en"
+      ],
+      "script": [
+        "Latn"
+      ],
+      "source_basis": [],
+      "evidence_strength": "HEURISTIC",
+      "false_negative_risk": "LOW",
+      "last_reviewed": "2026-08-28",
+      "review_required_by": "2027-02-28",
+      "change_history": [
+        {
+          "version": "1.0.0",
+          "date": "2026-08-28",
+          "change": "Authored as part of the G-07 formal negative-indicator library (WP3)."
+        }
+      ],
+      "suppresses_indicators": [
+        "WALLET_CONNECT_REQUEST",
+        "ACCESSIBILITY_PERMISSION_REQUEST",
+        "APK_INSTALL_REQUEST",
+        "USSD_CODE_DIAL_REQUEST",
+        "SCREEN_SHARE_APP_REQUEST",
+        "APP_INSTALL_UNTRUSTED_SOURCE"
+      ],
+      "positive_suppression_examples": [
+        "Never connect your wallet to a link you were sent."
+      ],
+      "counter_examples": [
+        "Connect your wallet at this link to verify."
+      ]
+    },
+    {
+      "negative_indicator_id": "NO_CODE_DIAL_REQUEST",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "name": "No USSD/short code is presented for dialling; neutralises a spurious dial-reques",
+      "description": "No USSD/short code is presented for dialling; neutralises a spurious dial-request tag.",
+      "category": "NEGATION_DIRECTIONAL",
+      "evidence_class": "SUPPRESSIVE",
+      "strength": "MODERATE",
+      "applicable_channels": [
+        "*"
+      ],
+      "applicable_rule_families": [
+        "TAX-04"
+      ],
+      "suppression_effect": "SUPPRESS_INDICATOR",
+      "blockable_by_overrides": false,
+      "language": [
+        "en"
+      ],
+      "script": [
+        "Latn"
+      ],
+      "source_basis": [],
+      "evidence_strength": "HEURISTIC",
+      "false_negative_risk": "LOW",
+      "last_reviewed": "2026-08-28",
+      "review_required_by": "2027-02-28",
+      "change_history": [
+        {
+          "version": "1.0.0",
+          "date": "2026-08-28",
+          "change": "Authored as part of the G-07 formal negative-indicator library (WP3)."
+        }
+      ],
+      "suppresses_indicators": [
+        "USSD_CODE_DIAL_REQUEST"
+      ]
+    },
+    {
+      "negative_indicator_id": "NO_PERMISSION_REQUEST",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "name": "No device permission, Accessibility grant, app install or wallet connection is r",
+      "description": "No device permission, Accessibility grant, app install or wallet connection is requested.",
+      "category": "NEGATION_DIRECTIONAL",
+      "evidence_class": "SUPPRESSIVE",
+      "strength": "MODERATE",
+      "applicable_channels": [
+        "*"
+      ],
+      "applicable_rule_families": [
+        "TAX-10",
+        "TAX-05"
+      ],
+      "suppression_effect": "SUPPRESS_INDICATOR",
+      "blockable_by_overrides": false,
+      "language": [
+        "en"
+      ],
+      "script": [
+        "Latn"
+      ],
+      "source_basis": [],
+      "evidence_strength": "HEURISTIC",
+      "false_negative_risk": "LOW",
+      "last_reviewed": "2026-08-28",
+      "review_required_by": "2027-02-28",
+      "change_history": [
+        {
+          "version": "1.0.0",
+          "date": "2026-08-28",
+          "change": "Authored as part of the G-07 formal negative-indicator library (WP3)."
+        }
+      ],
+      "suppresses_indicators": [
+        "ACCESSIBILITY_PERMISSION_REQUEST",
+        "SCREEN_SHARE_APP_REQUEST",
+        "WALLET_CONNECT_REQUEST"
+      ]
+    },
+    {
+      "negative_indicator_id": "NO_RETURN_GUARANTEE",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "name": "Returns are discussed without any guarantee; neutralises a spurious guarantee ta",
+      "description": "Returns are discussed without any guarantee; neutralises a spurious guarantee tag.",
+      "category": "NEGATION_DIRECTIONAL",
+      "evidence_class": "SUPPRESSIVE",
+      "strength": "MODERATE",
+      "applicable_channels": [
+        "*"
+      ],
+      "applicable_rule_families": [
+        "TAX-05"
+      ],
+      "suppression_effect": "SUPPRESS_INDICATOR",
+      "blockable_by_overrides": false,
+      "language": [
+        "en"
+      ],
+      "script": [
+        "Latn"
+      ],
+      "source_basis": [],
+      "evidence_strength": "HEURISTIC",
+      "false_negative_risk": "LOW",
+      "last_reviewed": "2026-08-28",
+      "review_required_by": "2027-02-28",
+      "change_history": [
+        {
+          "version": "1.0.0",
+          "date": "2026-08-28",
+          "change": "Authored as part of the G-07 formal negative-indicator library (WP3)."
+        }
+      ],
+      "suppresses_indicators": [
+        "RETURN_GUARANTEE"
+      ]
+    },
+    {
+      "negative_indicator_id": "RISK_DISCLOSURE_PRESENT",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "name": "Standard investment risk disclosure present - the inverse of RISK_DENIAL",
+      "description": "Standard investment risk disclosure present - the inverse of RISK_DENIAL.",
+      "category": "NEGATION_DIRECTIONAL",
+      "evidence_class": "SUPPRESSIVE",
+      "strength": "STRONG",
+      "applicable_channels": [
+        "*"
+      ],
+      "applicable_rule_families": [
+        "TAX-05"
+      ],
+      "suppression_effect": "SUPPRESS_INDICATOR",
+      "blockable_by_overrides": false,
+      "language": [
+        "en"
+      ],
+      "script": [
+        "Latn"
+      ],
+      "source_basis": [
+        "SRC-006"
+      ],
+      "evidence_strength": "HEURISTIC",
+      "false_negative_risk": "LOW",
+      "last_reviewed": "2026-08-28",
+      "review_required_by": "2027-02-28",
+      "change_history": [
+        {
+          "version": "1.0.0",
+          "date": "2026-08-28",
+          "change": "Authored as part of the G-07 formal negative-indicator library (WP3)."
+        }
+      ],
+      "suppresses_indicators": [
+        "RISK_DENIAL"
+      ]
+    },
+    {
+      "negative_indicator_id": "TRANSACTION_NOTIFICATION",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "name": "A record of a completed transaction rather than a request to make one",
+      "description": "A record of a completed transaction rather than a request to make one.",
+      "category": "LEGIT_SERVICE_COMMS",
+      "evidence_class": "SUPPRESSIVE",
+      "strength": "MODERATE",
+      "applicable_channels": [
+        "*"
+      ],
+      "applicable_rule_families": [
+        "*"
+      ],
+      "suppression_effect": "SUPPRESS_RULE",
+      "blockable_by_overrides": true,
+      "language": [
+        "en"
+      ],
+      "script": [
+        "Latn"
+      ],
+      "source_basis": [],
+      "evidence_strength": "HEURISTIC",
+      "false_negative_risk": "LOW",
+      "last_reviewed": "2026-08-28",
+      "review_required_by": "2027-02-28",
+      "change_history": [
+        {
+          "version": "1.0.0",
+          "date": "2026-08-28",
+          "change": "Authored as part of the G-07 formal negative-indicator library (WP3)."
+        }
+      ],
+      "positive_suppression_examples": [
+        "Rs 5,000 credited to your A/c XX4471. Not you? Call the number on your card."
+      ]
+    },
+    {
+      "negative_indicator_id": "SECURITY_NOTIFICATION",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "name": "Informs the recipient of a security event rather than requesting an action",
+      "description": "Informs the recipient of a security event rather than requesting an action.",
+      "category": "LEGIT_SERVICE_COMMS",
+      "evidence_class": "SUPPRESSIVE",
+      "strength": "MODERATE",
+      "applicable_channels": [
+        "*"
+      ],
+      "applicable_rule_families": [
+        "*"
+      ],
+      "suppression_effect": "SUPPRESS_RULE",
+      "blockable_by_overrides": true,
+      "language": [
+        "en"
+      ],
+      "script": [
+        "Latn"
+      ],
+      "source_basis": [],
+      "evidence_strength": "HEURISTIC",
+      "false_negative_risk": "LOW",
+      "last_reviewed": "2026-08-28",
+      "review_required_by": "2027-02-28",
+      "change_history": [
+        {
+          "version": "1.0.0",
+          "date": "2026-08-28",
+          "change": "Authored as part of the G-07 formal negative-indicator library (WP3)."
+        }
+      ],
+      "positive_suppression_examples": [
+        "New login to WhatsApp Web. If this was you, no action is needed."
+      ]
+    },
+    {
+      "negative_indicator_id": "OFFICIAL_CHANNEL_REDIRECT",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "name": "Directs the recipient to an official app, branch or published number - the inver",
+      "description": "Directs the recipient to an official app, branch or published number - the inverse of DISCOURAGES_VERIFICATION.",
+      "category": "LEGIT_SERVICE_COMMS",
+      "evidence_class": "SUPPRESSIVE",
+      "strength": "STRONG",
+      "applicable_channels": [
+        "*"
+      ],
+      "applicable_rule_families": [
+        "*"
+      ],
+      "suppression_effect": "SUPPRESS_RULE",
+      "blockable_by_overrides": true,
+      "language": [
+        "en"
+      ],
+      "script": [
+        "Latn"
+      ],
+      "source_basis": [],
+      "evidence_strength": "HEURISTIC",
+      "false_negative_risk": "LOW",
+      "last_reviewed": "2026-08-28",
+      "review_required_by": "2027-02-28",
+      "change_history": [
+        {
+          "version": "1.0.0",
+          "date": "2026-08-28",
+          "change": "Authored as part of the G-07 formal negative-indicator library (WP3)."
+        }
+      ],
+      "positive_suppression_examples": [
+        "Please use the official Example Bank app or visit your nearest branch."
+      ]
+    },
+    {
+      "negative_indicator_id": "NO_ACTION_REQUESTED",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "name": "The message asks the recipient to do nothing",
+      "description": "The message asks the recipient to do nothing.",
+      "category": "LEGIT_SERVICE_COMMS",
+      "evidence_class": "SUPPRESSIVE",
+      "strength": "MODERATE",
+      "applicable_channels": [
+        "*"
+      ],
+      "applicable_rule_families": [
+        "*"
+      ],
+      "suppression_effect": "SUPPRESS_RULE",
+      "blockable_by_overrides": true,
+      "language": [
+        "en"
+      ],
+      "script": [
+        "Latn"
+      ],
+      "source_basis": [],
+      "evidence_strength": "HEURISTIC",
+      "false_negative_risk": "LOW",
+      "last_reviewed": "2026-08-28",
+      "review_required_by": "2027-02-28",
+      "change_history": [
+        {
+          "version": "1.0.0",
+          "date": "2026-08-28",
+          "change": "Authored as part of the G-07 formal negative-indicator library (WP3)."
+        }
+      ]
+    },
+    {
+      "negative_indicator_id": "NO_PAYMENT_REQUESTED",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "name": "No payment or transfer is solicited",
+      "description": "No payment or transfer is solicited.",
+      "category": "LEGIT_SERVICE_COMMS",
+      "evidence_class": "SUPPRESSIVE",
+      "strength": "MODERATE",
+      "applicable_channels": [
+        "*"
+      ],
+      "applicable_rule_families": [
+        "TAX-01",
+        "TAX-06",
+        "TAX-08"
+      ],
+      "suppression_effect": "SUPPRESS_RULE",
+      "blockable_by_overrides": true,
+      "language": [
+        "en"
+      ],
+      "script": [
+        "Latn"
+      ],
+      "source_basis": [],
+      "evidence_strength": "HEURISTIC",
+      "false_negative_risk": "LOW",
+      "last_reviewed": "2026-08-28",
+      "review_required_by": "2027-02-28",
+      "change_history": [
+        {
+          "version": "1.0.0",
+          "date": "2026-08-28",
+          "change": "Authored as part of the G-07 formal negative-indicator library (WP3)."
+        }
+      ]
+    },
+    {
+      "negative_indicator_id": "EXPLICIT_NO_FEE",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "name": "The message states that no fee or payment is required",
+      "description": "The message states that no fee or payment is required.",
+      "category": "LEGIT_SERVICE_COMMS",
+      "evidence_class": "SUPPRESSIVE",
+      "strength": "STRONG",
+      "applicable_channels": [
+        "*"
+      ],
+      "applicable_rule_families": [
+        "TAX-06"
+      ],
+      "suppression_effect": "SUPPRESS_RULE",
+      "blockable_by_overrides": true,
+      "language": [
+        "en"
+      ],
+      "script": [
+        "Latn"
+      ],
+      "source_basis": [],
+      "evidence_strength": "HEURISTIC",
+      "false_negative_risk": "LOW",
+      "last_reviewed": "2026-08-28",
+      "review_required_by": "2027-02-28",
+      "change_history": [
+        {
+          "version": "1.0.0",
+          "date": "2026-08-28",
+          "change": "Authored as part of the G-07 formal negative-indicator library (WP3)."
+        }
+      ],
+      "positive_suppression_examples": [
+        "There is no fee at any stage of our hiring process."
+      ]
+    },
+    {
+      "negative_indicator_id": "REGISTRATION_DISCLOSED",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "name": "A verifiable regulatory registration number is disclosed",
+      "description": "A verifiable regulatory registration number is disclosed.",
+      "category": "LEGIT_SERVICE_COMMS",
+      "evidence_class": "SUPPRESSIVE",
+      "strength": "STRONG",
+      "applicable_channels": [
+        "*"
+      ],
+      "applicable_rule_families": [
+        "TAX-05"
+      ],
+      "suppression_effect": "SUPPRESS_RULE",
+      "blockable_by_overrides": true,
+      "language": [
+        "en"
+      ],
+      "script": [
+        "Latn"
+      ],
+      "source_basis": [
+        "SRC-006"
+      ],
+      "evidence_strength": "HEURISTIC",
+      "false_negative_risk": "LOW",
+      "last_reviewed": "2026-08-28",
+      "review_required_by": "2027-02-28",
+      "change_history": [
+        {
+          "version": "1.0.0",
+          "date": "2026-08-28",
+          "change": "Authored as part of the G-07 formal negative-indicator library (WP3)."
+        }
+      ]
+    },
+    {
+      "negative_indicator_id": "PAY_MERCHANT_DIRECTION",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "name": "A clearly legitimate OUTBOUND payment to a known merchant ('enter your UPI PIN t",
+      "description": "A clearly legitimate OUTBOUND payment to a known merchant ('enter your UPI PIN to PAY the merchant'). Suppresses receive-money fraud only; blocked if a receive+PIN hard-risk pattern is present.",
+      "category": "LEGIT_PAYMENT_DIRECTION",
+      "evidence_class": "SUPPRESSIVE",
+      "strength": "MODERATE",
+      "applicable_channels": [
+        "*"
+      ],
+      "applicable_rule_families": [
+        "TAX-01"
+      ],
+      "suppression_effect": "SUPPRESS_RULE",
+      "blockable_by_overrides": true,
+      "language": [
+        "en"
+      ],
+      "script": [
+        "Latn"
+      ],
+      "source_basis": [],
+      "evidence_strength": "HEURISTIC",
+      "false_negative_risk": "LOW",
+      "last_reviewed": "2026-08-28",
+      "review_required_by": "2027-02-28",
+      "change_history": [
+        {
+          "version": "1.0.0",
+          "date": "2026-08-28",
+          "change": "Authored as part of the G-07 formal negative-indicator library (WP3)."
+        }
+      ],
+      "positive_suppression_examples": [
+        "You will enter your UPI PIN in your bank app to pay the merchant Rs 5,000."
+      ],
+      "counter_examples": [
+        "Enter your UPI PIN to receive Rs 5,000."
+      ]
+    },
+    {
+      "negative_indicator_id": "IT_SUPPORT_CONTEXT",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "name": "A legitimate, user-expected IT-support session (employer helpdesk) with NO banki",
+      "description": "A legitimate, user-expected IT-support session (employer helpdesk) with NO banking/payment context. Blocked entirely by the banking-remote-access override.",
+      "category": "IT_SUPPORT",
+      "evidence_class": "SUPPRESSIVE",
+      "strength": "MODERATE",
+      "applicable_channels": [
+        "*"
+      ],
+      "applicable_rule_families": [
+        "TAX-10"
+      ],
+      "suppression_effect": "SUPPRESS_RULE",
+      "blockable_by_overrides": true,
+      "language": [
+        "en"
+      ],
+      "script": [
+        "Latn"
+      ],
+      "source_basis": [],
+      "evidence_strength": "HEURISTIC",
+      "false_negative_risk": "MEDIUM",
+      "last_reviewed": "2026-08-28",
+      "review_required_by": "2027-02-28",
+      "change_history": [
+        {
+          "version": "1.0.0",
+          "date": "2026-08-28",
+          "change": "Authored as part of the G-07 formal negative-indicator library (WP3)."
+        }
+      ],
+      "positive_suppression_examples": [
+        "Your corporate IT helpdesk will start a TeamViewer session to fix your laptop. Do not open banking apps."
+      ],
+      "counter_examples": [
+        "Bank support: install AnyDesk and share the code to fix your account."
+      ]
+    },
+    {
+      "negative_indicator_id": "REPORTED_SCAM_NARRATIVE",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "name": "The user is reporting or quoting scam wording in the past tense, not receiving a",
+      "description": "The user is reporting or quoting scam wording in the past tense, not receiving a live instruction. Preserves the reporter from being classified as attacker text.",
+      "category": "REPORTED_SCAM",
+      "evidence_class": "SUPPRESSIVE",
+      "strength": "MODERATE",
+      "applicable_channels": [
+        "*"
+      ],
+      "applicable_rule_families": [
+        "*"
+      ],
+      "suppression_effect": "SUPPRESS_RULE",
+      "blockable_by_overrides": true,
+      "language": [
+        "en"
+      ],
+      "script": [
+        "Latn"
+      ],
+      "source_basis": [],
+      "evidence_strength": "HEURISTIC",
+      "false_negative_risk": "MEDIUM",
+      "last_reviewed": "2026-08-28",
+      "review_required_by": "2027-02-28",
+      "change_history": [
+        {
+          "version": "1.0.0",
+          "date": "2026-08-28",
+          "change": "Authored as part of the G-07 formal negative-indicator library (WP3)."
+        }
+      ],
+      "positive_suppression_examples": [
+        "The scammer told me to install AnyDesk and share my OTP - is this a fraud?"
+      ],
+      "counter_examples": [
+        "Install AnyDesk and share your OTP now."
+      ]
+    },
+    {
+      "negative_indicator_id": "ALLOWLISTED_DOMAIN_CONTEXT",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "name": "A verified/allowlisted domain is present",
+      "description": "A verified/allowlisted domain is present. Records benign context only; MUST NOT cancel a hard-risk credential/payment instruction on its own.",
+      "category": "ALLOWLIST_DOMAIN",
+      "evidence_class": "SUPPRESSIVE",
+      "strength": "WEAK",
+      "applicable_channels": [
+        "*"
+      ],
+      "applicable_rule_families": [
+        "*"
+      ],
+      "suppression_effect": "CONTEXT_ONLY",
+      "blockable_by_overrides": false,
+      "language": [
+        "en"
+      ],
+      "script": [
+        "Latn"
+      ],
+      "source_basis": [],
+      "evidence_strength": "HEURISTIC",
+      "false_negative_risk": "HIGH",
+      "last_reviewed": "2026-08-28",
+      "review_required_by": "2027-02-28",
+      "change_history": [
+        {
+          "version": "1.0.0",
+          "date": "2026-08-28",
+          "change": "Authored as part of the G-07 formal negative-indicator library (WP3)."
+        }
+      ]
+    },
+    {
+      "negative_indicator_id": "USER_INITIATED_ACTION",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "name": "The user states they themselves initiated the action",
+      "description": "The user states they themselves initiated the action. Trustworthy only if the context model can observe it; text-only cannot, so CONTEXT_ONLY and its observability is deferred.",
+      "category": "USER_INITIATED",
+      "evidence_class": "SUPPRESSIVE",
+      "strength": "WEAK",
+      "applicable_channels": [
+        "*"
+      ],
+      "applicable_rule_families": [
+        "*"
+      ],
+      "suppression_effect": "CONTEXT_ONLY",
+      "blockable_by_overrides": false,
+      "language": [
+        "en"
+      ],
+      "script": [
+        "Latn"
+      ],
+      "source_basis": [],
+      "evidence_strength": "HEURISTIC",
+      "false_negative_risk": "HIGH",
+      "last_reviewed": "2026-08-28",
+      "review_required_by": "2027-02-28",
+      "change_history": [
+        {
+          "version": "1.0.0",
+          "date": "2026-08-28",
+          "change": "Authored as part of the G-07 formal negative-indicator library (WP3)."
+        }
+      ]
+    },
+    {
+      "negative_indicator_id": "CASUAL_REGISTER",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "name": "Informal conversational tone inconsistent with institutional impersonation",
+      "description": "Informal conversational tone inconsistent with institutional impersonation.",
+      "category": "BENIGN_CONTEXT",
+      "evidence_class": "SUPPRESSIVE",
+      "strength": "WEAK",
+      "applicable_channels": [
+        "*"
+      ],
+      "applicable_rule_families": [
+        "*"
+      ],
+      "suppression_effect": "CONTEXT_ONLY",
+      "blockable_by_overrides": false,
+      "language": [
+        "en"
+      ],
+      "script": [
+        "Latn"
+      ],
+      "source_basis": [],
+      "evidence_strength": "HEURISTIC",
+      "false_negative_risk": "LOW",
+      "last_reviewed": "2026-08-28",
+      "review_required_by": "2027-02-28",
+      "change_history": [
+        {
+          "version": "1.0.0",
+          "date": "2026-08-28",
+          "change": "Authored as part of the G-07 formal negative-indicator library (WP3)."
+        }
+      ]
+    },
+    {
+      "negative_indicator_id": "LOW_AMOUNT",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "name": "Any amount referenced is small enough to be routine",
+      "description": "Any amount referenced is small enough to be routine.",
+      "category": "BENIGN_CONTEXT",
+      "evidence_class": "SUPPRESSIVE",
+      "strength": "WEAK",
+      "applicable_channels": [
+        "*"
+      ],
+      "applicable_rule_families": [
+        "*"
+      ],
+      "suppression_effect": "CONTEXT_ONLY",
+      "blockable_by_overrides": false,
+      "language": [
+        "en"
+      ],
+      "script": [
+        "Latn"
+      ],
+      "source_basis": [],
+      "evidence_strength": "HEURISTIC",
+      "false_negative_risk": "LOW",
+      "last_reviewed": "2026-08-28",
+      "review_required_by": "2027-02-28",
+      "change_history": [
+        {
+          "version": "1.0.0",
+          "date": "2026-08-28",
+          "change": "Authored as part of the G-07 formal negative-indicator library (WP3)."
+        }
+      ]
+    },
+    {
+      "negative_indicator_id": "NO_LINK_PRESENT",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "name": "No URL in the message",
+      "description": "No URL in the message.",
+      "category": "BENIGN_CONTEXT",
+      "evidence_class": "SUPPRESSIVE",
+      "strength": "WEAK",
+      "applicable_channels": [
+        "*"
+      ],
+      "applicable_rule_families": [
+        "*"
+      ],
+      "suppression_effect": "CONTEXT_ONLY",
+      "blockable_by_overrides": false,
+      "language": [
+        "en"
+      ],
+      "script": [
+        "Latn"
+      ],
+      "source_basis": [],
+      "evidence_strength": "HEURISTIC",
+      "false_negative_risk": "LOW",
+      "last_reviewed": "2026-08-28",
+      "review_required_by": "2027-02-28",
+      "change_history": [
+        {
+          "version": "1.0.0",
+          "date": "2026-08-28",
+          "change": "Authored as part of the G-07 formal negative-indicator library (WP3)."
+        }
+      ]
+    },
+    {
+      "negative_indicator_id": "NO_THREAT_LANGUAGE",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "name": "No coercive or threatening language present",
+      "description": "No coercive or threatening language present.",
+      "category": "BENIGN_CONTEXT",
+      "evidence_class": "SUPPRESSIVE",
+      "strength": "WEAK",
+      "applicable_channels": [
+        "*"
+      ],
+      "applicable_rule_families": [
+        "*"
+      ],
+      "suppression_effect": "CONTEXT_ONLY",
+      "blockable_by_overrides": false,
+      "language": [
+        "en"
+      ],
+      "script": [
+        "Latn"
+      ],
+      "source_basis": [],
+      "evidence_strength": "HEURISTIC",
+      "false_negative_risk": "LOW",
+      "last_reviewed": "2026-08-28",
+      "review_required_by": "2027-02-28",
+      "change_history": [
+        {
+          "version": "1.0.0",
+          "date": "2026-08-28",
+          "change": "Authored as part of the G-07 formal negative-indicator library (WP3)."
+        }
+      ]
+    },
+    {
+      "negative_indicator_id": "NO_URGENCY_PRESSURE",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "name": "No time pressure applied",
+      "description": "No time pressure applied.",
+      "category": "BENIGN_CONTEXT",
+      "evidence_class": "SUPPRESSIVE",
+      "strength": "WEAK",
+      "applicable_channels": [
+        "*"
+      ],
+      "applicable_rule_families": [
+        "*"
+      ],
+      "suppression_effect": "CONTEXT_ONLY",
+      "blockable_by_overrides": false,
+      "language": [
+        "en"
+      ],
+      "script": [
+        "Latn"
+      ],
+      "source_basis": [],
+      "evidence_strength": "HEURISTIC",
+      "false_negative_risk": "LOW",
+      "last_reviewed": "2026-08-28",
+      "review_required_by": "2027-02-28",
+      "change_history": [
+        {
+          "version": "1.0.0",
+          "date": "2026-08-28",
+          "change": "Authored as part of the G-07 formal negative-indicator library (WP3)."
+        }
+      ]
+    },
+    {
+      "negative_indicator_id": "REASONABLE_DEADLINE",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "name": "Any deadline given is proportionate rather than coercive",
+      "description": "Any deadline given is proportionate rather than coercive.",
+      "category": "BENIGN_CONTEXT",
+      "evidence_class": "SUPPRESSIVE",
+      "strength": "WEAK",
+      "applicable_channels": [
+        "*"
+      ],
+      "applicable_rule_families": [
+        "*"
+      ],
+      "suppression_effect": "CONTEXT_ONLY",
+      "blockable_by_overrides": false,
+      "language": [
+        "en"
+      ],
+      "script": [
+        "Latn"
+      ],
+      "source_basis": [],
+      "evidence_strength": "HEURISTIC",
+      "false_negative_risk": "LOW",
+      "last_reviewed": "2026-08-28",
+      "review_required_by": "2027-02-28",
+      "change_history": [
+        {
+          "version": "1.0.0",
+          "date": "2026-08-28",
+          "change": "Authored as part of the G-07 formal negative-indicator library (WP3)."
+        }
+      ]
+    },
+    {
+      "negative_indicator_id": "OFFICIAL_APP_STORE_SOURCE",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "name": "Recipient is directed to an official app store / verified app - inverse of untru",
+      "description": "Recipient is directed to an official app store / verified app - inverse of untrusted-source install.",
+      "category": "LEGIT_SERVICE_COMMS",
+      "evidence_class": "SUPPRESSIVE",
+      "strength": "MODERATE",
+      "applicable_channels": [
+        "*"
+      ],
+      "applicable_rule_families": [
+        "TAX-10"
+      ],
+      "suppression_effect": "SUPPRESS_INDICATOR",
+      "blockable_by_overrides": false,
+      "language": [
+        "en"
+      ],
+      "script": [
+        "Latn"
+      ],
+      "source_basis": [
+        "SRC-025"
+      ],
+      "evidence_strength": "HEURISTIC",
+      "false_negative_risk": "LOW",
+      "last_reviewed": "2026-08-28",
+      "review_required_by": "2027-02-28",
+      "change_history": [
+        {
+          "version": "1.0.0",
+          "date": "2026-08-28",
+          "change": "Authored as part of the G-07 formal negative-indicator library (WP3)."
+        }
+      ],
+      "suppresses_indicators": [
+        "APP_INSTALL_UNTRUSTED_SOURCE",
+        "APK_INSTALL_REQUEST"
+      ]
+    }
+  ],
+  "overrides": [
+    {
+      "override_id": "HR_UPI_PIN_TO_RECEIVE",
+      "name": "Credential/QR+PIN demanded to RECEIVE money",
+      "condition": {
+        "all_of": [
+          "RECEIVE_FRAMING",
+          {
+            "any_of": [
+              "UPI_PIN_PROMPT",
+              "CREDENTIAL_REQUEST_OTP",
+              "QR_SCAN_REQUEST"
+            ]
+          }
+        ]
+      },
+      "applies_to_families": [
+        "TAX-01"
+      ],
+      "applies_to_rules": [],
+      "blocks_suppression_categories": [
+        "EDUCATIONAL_SAFETY",
+        "CUSTOMER_SUPPORT_SAFETY",
+        "LEGIT_SERVICE_COMMS",
+        "LEGIT_PAYMENT_DIRECTION",
+        "IT_SUPPORT",
+        "USER_INITIATED",
+        "ALLOWLIST_DOMAIN",
+        "REPORTED_SCAM"
+      ],
+      "does_not_block": "NEGATION_DIRECTIONAL and BENIGN_CONTEXT effects (directional neutralisation and weak context) still apply.",
+      "rationale": "NPCI/CERT-In: you never need a PIN or OTP to receive money.",
+      "evidence_strength": "PRIMARY_OR_ALTERNATE"
+    },
+    {
+      "override_id": "HR_OTP_DISCLOSURE_REQUEST",
+      "name": "Explicit request to disclose an OTP",
+      "condition": {
+        "all_of": [
+          "CREDENTIAL_REQUEST_OTP"
+        ]
+      },
+      "applies_to_families": [
+        "TAX-01",
+        "TAX-02"
+      ],
+      "applies_to_rules": [],
+      "blocks_suppression_categories": [
+        "EDUCATIONAL_SAFETY",
+        "CUSTOMER_SUPPORT_SAFETY",
+        "LEGIT_SERVICE_COMMS",
+        "LEGIT_PAYMENT_DIRECTION",
+        "IT_SUPPORT",
+        "USER_INITIATED",
+        "ALLOWLIST_DOMAIN",
+        "REPORTED_SCAM"
+      ],
+      "does_not_block": "NEGATION_DIRECTIONAL and BENIGN_CONTEXT effects (directional neutralisation and weak context) still apply.",
+      "rationale": "RBI: institutions never ask for your OTP. A live disclosure request is hard-risk.",
+      "evidence_strength": "PRIMARY_OR_ALTERNATE"
+    },
+    {
+      "override_id": "HR_PAYMENT_UNDER_COERCION",
+      "name": "Payment demanded under arrest/legal/block threat",
+      "condition": {
+        "all_of": [
+          {
+            "any_of": [
+              "IMMEDIATE_PAYMENT_DEMAND",
+              "PAYMENT_DEMAND",
+              "UPFRONT_FEE_DEMAND"
+            ]
+          },
+          {
+            "any_of": [
+              "ARREST_THREAT",
+              "LEGAL_ACCUSATION",
+              "ACCOUNT_BLOCK_THREAT"
+            ]
+          }
+        ]
+      },
+      "applies_to_families": [
+        "TAX-03",
+        "TAX-01"
+      ],
+      "applies_to_rules": [],
+      "blocks_suppression_categories": [
+        "EDUCATIONAL_SAFETY",
+        "CUSTOMER_SUPPORT_SAFETY",
+        "LEGIT_SERVICE_COMMS",
+        "LEGIT_PAYMENT_DIRECTION",
+        "IT_SUPPORT",
+        "USER_INITIATED",
+        "ALLOWLIST_DOMAIN",
+        "REPORTED_SCAM"
+      ],
+      "does_not_block": "NEGATION_DIRECTIONAL and BENIGN_CONTEXT effects (directional neutralisation and weak context) still apply.",
+      "rationale": "NITI Aayog digital-arrest: coercive payment demands are hard-risk.",
+      "evidence_strength": "PRIMARY_OR_ALTERNATE"
+    },
+    {
+      "override_id": "HR_WALLET_CONNECT_UNKNOWN",
+      "name": "Wallet connect to an unknown verification site",
+      "condition": {
+        "all_of": [
+          "WALLET_CONNECT_REQUEST",
+          {
+            "any_of": [
+              "FAKE_VERIFICATION_SITE",
+              "VERIFICATION_PRETEXT",
+              "LOOKALIKE_DOMAIN",
+              "OFF_PLATFORM_HANDOFF"
+            ]
+          }
+        ]
+      },
+      "applies_to_families": [
+        "TAX-05"
+      ],
+      "applies_to_rules": [],
+      "blocks_suppression_categories": [
+        "EDUCATIONAL_SAFETY",
+        "CUSTOMER_SUPPORT_SAFETY",
+        "LEGIT_SERVICE_COMMS",
+        "LEGIT_PAYMENT_DIRECTION",
+        "IT_SUPPORT",
+        "USER_INITIATED",
+        "ALLOWLIST_DOMAIN",
+        "REPORTED_SCAM"
+      ],
+      "does_not_block": "NEGATION_DIRECTIONAL and BENIGN_CONTEXT effects (directional neutralisation and weak context) still apply.",
+      "rationale": "I4C CyberDost Trust Wallet drain chain.",
+      "evidence_strength": "PRIMARY_OR_ALTERNATE"
+    },
+    {
+      "override_id": "HR_ACCESSIBILITY_REQUEST",
+      "name": "Out-of-context Accessibility permission after app/link delivery",
+      "condition": {
+        "all_of": [
+          "ACCESSIBILITY_PERMISSION_REQUEST",
+          {
+            "any_of": [
+              "FAKE_APP_IMPERSONATION",
+              "LINK_PRESENT",
+              "APK_INSTALL_REQUEST",
+              "SHORTENED_URL"
+            ]
+          }
+        ]
+      },
+      "applies_to_families": [
+        "TAX-10"
+      ],
+      "applies_to_rules": [],
+      "blocks_suppression_categories": [
+        "EDUCATIONAL_SAFETY",
+        "CUSTOMER_SUPPORT_SAFETY",
+        "LEGIT_SERVICE_COMMS",
+        "LEGIT_PAYMENT_DIRECTION",
+        "IT_SUPPORT",
+        "USER_INITIATED",
+        "ALLOWLIST_DOMAIN",
+        "REPORTED_SCAM"
+      ],
+      "does_not_block": "NEGATION_DIRECTIONAL and BENIGN_CONTEXT effects (directional neutralisation and weak context) still apply.",
+      "rationale": "I4C CyberDost Android God Mode.",
+      "evidence_strength": "PRIMARY_OR_ALTERNATE"
+    },
+    {
+      "override_id": "HR_BANKING_REMOTE_ACCESS",
+      "name": "Screen-share/remote-control requested in a banking context",
+      "condition": {
+        "all_of": [
+          "SCREEN_SHARE_APP_REQUEST",
+          {
+            "any_of": [
+              "AUTHORITY_IMPERSONATION_BANK",
+              "PAYMENT_CONTEXT",
+              "KYC_PRETEXT"
+            ]
+          }
+        ]
+      },
+      "applies_to_families": [
+        "TAX-10"
+      ],
+      "applies_to_rules": [],
+      "blocks_suppression_categories": [
+        "EDUCATIONAL_SAFETY",
+        "CUSTOMER_SUPPORT_SAFETY",
+        "LEGIT_SERVICE_COMMS",
+        "LEGIT_PAYMENT_DIRECTION",
+        "IT_SUPPORT",
+        "USER_INITIATED",
+        "ALLOWLIST_DOMAIN",
+        "REPORTED_SCAM"
+      ],
+      "does_not_block": "NEGATION_DIRECTIONAL and BENIGN_CONTEXT effects (directional neutralisation and weak context) still apply.",
+      "rationale": "HDFC/NPCI: banks never ask you to install AnyDesk/TeamViewer. Blocks IT_SUPPORT_CONTEXT.",
+      "evidence_strength": "PRIMARY_OR_ALTERNATE"
+    }
+  ]
+}

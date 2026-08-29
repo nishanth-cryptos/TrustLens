@@ -3,10 +3,10 @@
 | Field | Value |
 |---|---|
 | Document ID | ADR-INDEX |
-| Version | 1.0 |
+| Version | 1.1 |
 | Status | Active |
 | Owner role | Chief Architect |
-| Last updated | 2026-07-31 |
+| Last updated | 2026-08-28 |
 
 Per `MP §20`, every major architectural choice is captured as a numbered ADR stating: the
 decision, constraints, viable alternatives, comparison criteria, selected option, justification,
@@ -26,6 +26,7 @@ Programme-level scope, process and evidence decisions live in the
 | [ADR-0001](ADR-0001-adopt-technical-baseline.md) | Adopt the supplied technical baseline | Accepted | 2026-07-31 | Medium |
 | [ADR-0002](ADR-0002-defer-python-intelligence-service.md) | Defer the Python intelligence service to the AI phase | Accepted | 2026-07-31 | Very low |
 | [ADR-0003](ADR-0003-rule-representation-format.md) | Rule representation — JSON Schema plus a cross-file linter | Accepted | 2026-08-15 | Low |
+| [ADR-0015](ADR-0015-evidence-hierarchy-and-official-alternate-provenance.md) | Evidence hierarchy and official-alternate provenance | Accepted | 2026-08-28 | Low |
 
 ## Planned
 
@@ -45,6 +46,11 @@ analysis that belongs to a later phase. Recording them now prevents them being m
 | ADR-0012 | Threat-intelligence adapter architecture and provider selection | 6 | INT-001 |
 | ADR-0013 | Rule-set publication and version distribution mechanism | 5 | ARCH-001 |
 | ADR-0014 | Language and script handling strategy | 2 | [CONF-004](../docs/00-program/conflict-register.md) resolution |
+
+**Numbering note.** ADR-0004…0014 remain **reserved** for the planned topics above. ADR-0015 was
+issued ahead of them because the RESEARCH-006 manual retrieval reconciliation forced an evidence-model
+decision (the evidence hierarchy) that could not wait for those later phases. It does not consume any
+reserved number.
 
 ## Template
 

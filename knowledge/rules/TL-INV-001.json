@@ -1,0 +1,84 @@
+{
+  "schema_version": "1.0.0",
+  "rule_version": "1.0.0",
+  "id": "TL-INV-001",
+  "legacy_id": "SEBI-RET-017",
+  "name": "Assured/guaranteed return with risk denial",
+  "description": "An investment pitch promises assured or guaranteed returns and denies risk — the classic fraud cue that no legitimate regulated product makes.",
+  "kind": "COMPOSITE",
+  "taxonomy_refs": [
+    "TAX-05-01"
+  ],
+  "severity": "HIGH",
+  "evidence": {
+    "verdict": "SUPPORTED",
+    "implementability": "YES",
+    "source_references": [
+      {
+        "source_id": "SRC-006",
+        "issuing_body": "SEBI",
+        "authority": "OFFICIAL_REGULATOR",
+        "verification_status": "PRIMARY_VERIFIED",
+        "document_ref": "SEBI Caution to Investor",
+        "quote": "It is illegal to act as Investment Adviser without SEBI registration."
+      },
+      {
+        "source_id": "SRC-020",
+        "issuing_body": "Reserve Bank of India",
+        "authority": "OFFICIAL_REGULATOR",
+        "verification_status": "PRIMARY_VERIFIED",
+        "document_ref": "RBI FAME booklet",
+        "quote": "120% returns assured! Zero risk!"
+      }
+    ]
+  },
+  "logic": {
+    "require": {
+      "all_of": [
+        "RETURN_GUARANTEE",
+        {
+          "any_of": [
+            "SCARCITY_PRESSURE",
+            "INVESTMENT_SOLICITATION",
+            "UNSOLICITED_OFFER"
+          ]
+        }
+      ]
+    },
+    "min_evidence_classes": 2
+  },
+  "lifecycle": {
+    "status": "PUBLISHED",
+    "created": "2026-08-28",
+    "last_reviewed": "2026-08-28",
+    "review_due": "2027-02-28",
+    "authored_by_role": "Knowledge Editor",
+    "approved_by_role": "Knowledge Approver"
+  },
+  "language_scope": {
+    "languages": [
+      "en"
+    ],
+    "scripts": [
+      "Latn"
+    ],
+    "on_unsupported_input": "FLAG_UNSUPPORTED"
+  },
+  "explanation": {
+    "plain": "This offer promises guaranteed returns with no risk. No genuine investment can promise that — it is a hallmark of a scam.",
+    "technical": "RETURN_GUARANTEE (financial-claim) with risk denial/scarcity/handling funds. RBI FAME and SEBI both present guaranteed-return/zero-risk as fraud cues.",
+    "verification_steps": [
+      "Treat any 'guaranteed' or 'risk-free' return as a scam signal.",
+      "Only invest through SEBI-registered intermediaries."
+    ]
+  },
+  "provenance": {
+    "source_severity_hint": {
+      "value": 90,
+      "label": "High",
+      "cited_as": "RP p.7",
+      "operational_use": false
+    },
+    "notes": "Encoded in the WP3 rule-encoding pass; suppression via negative-indicator-library-v1.json."
+  }
+}

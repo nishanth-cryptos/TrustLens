@@ -1,0 +1,105 @@
+{
+  "$comment": "SYNTHETIC supplementary cases for rules the RESEARCH-006 manual retrieval reconciliation encoded but which are NOT in the published live set — TL-JOB-003 and TL-MAL-002 (implementability PARTIAL, status APPROVED) and TL-MAL-001 / TL-MAL-003 / TL-INV-003 (PARTIAL, status PEER_REVIEW). They are kept out of seed-corpus-v1.json so they do not violate that corpus's invariant that no malicious case expects a DEFERRED/partial-implementability rule. The rule-runner evaluates them to prove the reconciled rule logic and its suppressors. NONE is a real-world sample.",
+  "corpus_version": "1.0",
+  "generated": "2026-08-28",
+  "provenance": "SYNTHETIC",
+  "usage_constraints": [
+    "Determinism and regression testing of the reconciled rule logic ONLY.",
+    "MUST NOT be used to claim precision/recall/false-positive rate (RSK-003, G-09)."
+  ],
+
+  "benign": [
+    {
+      "id": "RB-001",
+      "channel": "EMAIL",
+      "language": "en",
+      "text": "Congratulations on joining Example Analytics! Your onboarding tasks are in the portal. There is no fee, deposit or investment at any stage — your salary is credited monthly. Welcome aboard!",
+      "expected_outcome": "NO_FINDING",
+      "must_not_match": ["TL-JOB-003"],
+      "expected_indicators": ["TASK_EARNING_LURE", "JOB_CONTEXT"],
+      "expected_negative_indicators": ["EXPLICIT_NO_FEE", "NO_PAYMENT_REQUESTED"],
+      "rationale": "A genuine task/job onboarding mentions tasks and earning but demands no deposit and blocks no withdrawal. EXPLICIT_NO_FEE suppresses TL-JOB-003; the discriminating blocked-withdrawal step is absent."
+    },
+    {
+      "id": "RB-002",
+      "channel": "EMAIL",
+      "language": "en",
+      "text": "As you requested with the IT helpdesk, we will start a TeamViewer session at 3pm to fix your laptop display. This is an internal support session for your work device; no bank or payment details are involved.",
+      "expected_outcome": "NO_FINDING",
+      "must_not_match": ["TL-MAL-003"],
+      "expected_indicators": ["SCREEN_SHARE_APP_REQUEST", "BENIGN_PRETEXT_FOR_TECHNICAL_ACTION"],
+      "expected_negative_indicators": ["IT_SUPPORT_CONTEXT"],
+      "rationale": "Legitimate, user-initiated IT support names a screen-sharing app but in a non-banking work context. TL-MAL-003 is scoped to a banking/authority/payment context AND is suppressed by IT_SUPPORT_CONTEXT — this is the 'legitimate IT support distinguishable from banking screen-share' requirement."
+    },
+    {
+      "id": "RB-003",
+      "channel": "SMS",
+      "language": "en",
+      "text": "Your Example Bank app update is available. Please update it only from the official Google Play Store or Apple App Store. Do not install any APK from links.",
+      "expected_outcome": "NO_FINDING",
+      "must_not_match": ["TL-MAL-001"],
+      "expected_negative_indicators": ["OFFICIAL_APP_STORE_SOURCE", "EDUCATIONAL_CONTENT"],
+      "rationale": "Directs the user to an official store — the inverse of an untrusted-source install prompt. OFFICIAL_APP_STORE_SOURCE suppresses TL-MAL-001."
+    }
+  ],
+
+  "malicious": [
+    {
+      "id": "RM-001",
+      "channel": "WHATSAPP",
+      "language": "en",
+      "text": "Easy part-time job! Complete simple tasks and earn daily. Deposit Rs 5,000 to activate premium tasks and unlock higher commissions. Your balance shows Rs 42,000 — but to withdraw you must first pay a 10% tax deposit.",
+      "expected_outcome": "HIGH",
+      "expected_rules": ["TL-JOB-003"],
+      "expected_indicators": ["TASK_EARNING_LURE", "DEPOSIT_FOR_EARNINGS", "WITHDRAWAL_BLOCKED_PRETEXT"],
+      "source_basis": ["SRC-015"],
+      "rationale": "Task-app chain verified by the PIB-2023 + I4C-2025 replacement pair (MR-EVID-012/013): earning lure + deposit + blocked-withdrawal-with-further-payment. Contrast with RB-001."
+    },
+    {
+      "id": "RM-002",
+      "channel": "SMS",
+      "language": "en",
+      "text": "Your KYC app is ready. Install Bank-Verify.apk from this link and, when prompted, turn ON Accessibility permission so the app can auto-complete your verification.",
+      "expected_outcome": "HIGH",
+      "expected_rules": ["TL-MAL-002"],
+      "expected_indicators": ["ACCESSIBILITY_PERMISSION_REQUEST", "FAKE_APP_IMPERSONATION", "LINK_PRESENT", "APK_INSTALL_REQUEST"],
+      "source_basis": ["SRC-019"],
+      "rationale": "Accessibility-permission abuse verified by I4C CyberDost (SRC-019, MR-EVID-009): out-of-context Accessibility grant plus a fake-app/link delivery vector. Contrast with B-013, where the same actions are named inside an official warning and suppressed."
+    },
+    {
+      "id": "RM-003",
+      "channel": "SMS",
+      "language": "en",
+      "text": "Update required: your payment app is outdated. Install the new version now from this link: http://bit.example/appx — do not use the store, this build is exclusive.",
+      "expected_outcome": "MEDIUM",
+      "expected_rules": ["TL-MAL-001"],
+      "expected_indicators": ["APP_INSTALL_UNTRUSTED_SOURCE", "APK_INSTALL_REQUEST", "SHORTENED_URL", "LINK_PRESENT"],
+      "source_basis": ["SRC-025"],
+      "rationale": "Untrusted, non-store install prompt via a shortened link. Narrowed rule (iOS config-profile excluded). Contrast with RB-003, which points to the official store."
+    },
+    {
+      "id": "RM-004",
+      "channel": "WHATSAPP",
+      "language": "en",
+      "text": "This is Example Bank support. To resolve the failed debit on your account, please install AnyDesk and share the 9-digit code so our officer can guide your KYC re-verification.",
+      "expected_outcome": "HIGH",
+      "expected_rules": ["TL-MAL-003"],
+      "expected_indicators": ["SCREEN_SHARE_APP_REQUEST", "AUTHORITY_IMPERSONATION_BANK", "KYC_PRETEXT"],
+      "source_basis": ["SRC-026"],
+      "rationale": "Screen-share app requested inside a banking-support pretext — named on HDFC's current page (SRC-026, MR-EVID-006). Contrast with RB-002, a non-banking user-initiated IT session."
+    },
+    {
+      "id": "RM-005",
+      "channel": "SOCIAL",
+      "language": "en",
+      "text": "As seen on TV! [Famous Actor] reveals the trading app that guarantees 200% returns. Join his exclusive group now — thousands are already earning risk-free!",
+      "expected_outcome": "HIGH",
+      "expected_rules": ["TL-INV-003"],
+      "expected_indicators": ["CELEBRITY_IMPERSONATION", "RETURN_GUARANTEE", "INVESTMENT_SOLICITATION"],
+      "source_basis": ["SRC-023"],
+      "rationale": "Celebrity impersonation in a social-media investment funnel, verified by SEBI PR 27/2025 body (MR-EVID-005). NOTE: no deepfake claim is made — that mechanism stays out of scope (G-16)."
+    }
+  ],
+
+  "ambiguous": []
+}

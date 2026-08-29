@@ -1,0 +1,146 @@
+@startuml TrustLens_SD_UC03_Manage_Detection_Rules
+
+title <b>TrustLens  —  Sequence Diagram UC-03</b>\nManage Detection Rules  ·  Create  ·  Approve  ·  Publish Rule Set
+
+scale max 3800 width
+
+skinparam backgroundColor #F8FAFC
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam shadowing false
+skinparam dpi 150
+skinparam maxMessageSize 210
+
+skinparam sequence {
+    ArrowColor                 #444444
+    ArrowFontSize              10
+    LifeLineBorderColor        #90A4AE
+    LifeLineBackgroundColor    #ECEFF1
+    ParticipantBackgroundColor #1F3864
+    ParticipantBorderColor     #0D2137
+    ParticipantFontColor       #FFFFFF
+    ParticipantFontSize        11
+    ActorBackgroundColor       #FFFFFF
+    ActorBorderColor           #0D2137
+    GroupBackgroundColor       #BBDEFB
+    GroupBorderColor           #1565C0
+    GroupBodyBackgroundColor   #FFFFFF
+    GroupFontColor             #0D2137
+    DividerBackgroundColor     #E3F2FD
+}
+
+skinparam database {
+    BackgroundColor #FFF8E1
+    BorderColor     #E65100
+    FontColor       #4E342E
+}
+
+skinparam note {
+    BackgroundColor #FFFDE7
+    BorderColor     #C0A050
+    FontSize        10
+}
+
+actor       "Administrator\n(Knowledge Editor)" as KE
+participant "RA : RuleAuthoringUI"    as RA
+participant "KS : KnowledgeService"   as KS
+participant "SV : SchemaValidator"    as SV
+participant "LN : CrossFileLinter"    as LN
+participant "SM : SourceManifest"     as SM
+database    "D3 : RuleSetStore"       as D3
+database    "D6 : AuditLog"           as D6
+actor       "Knowledge Approver"      as KA
+
+autonumber
+
+== Author and validate (FR 4.7.3.1, 4.7.3.2) ==
+
+KE -> RA : CreateRule(draft)
+activate KE
+activate RA
+RA -> KS : SubmitDraft(rule, UID)
+activate KS
+
+KS -> SV : Validate(rule, Rule JSON Schema v1.0)
+activate SV
+SV --> KS : schema verdict
+deactivate SV
+
+alt schema invalid
+    KS --> RA : Reject(constraint, layer = SCHEMA)
+    RA --> KE : Error naming the constraint\nand the layer that caught it
+else schema valid
+    KS -> LN : Lint(rule, indicator registry, taxonomy)
+    activate LN
+    LN -> SM : CheckSourceGrade(sourceIds)
+    activate SM
+    SM --> LN : verification status + grade
+    deactivate SM
+    LN --> KS : lint verdict\n(names the layer that caught it)
+    deactivate LN
+
+    alt single weak indicator, or claimed grade\ncontradicts the manifest
+        KS --> RA : Reject(constraint, layer = LINT)
+        RA --> KE : Error naming the constraint\nand the layer that caught it
+    else lint passes
+        KS -> D3 : Store rule (state = DRAFT)
+        activate D3
+        D3 --> KS : ruleId, version
+        deactivate D3
+        KS --> RA : Draft accepted
+        RA --> KE : Draft accepted (ruleId)
+
+        == Review and approve (FR 4.7.3.4) ==
+
+        loop for each review stage:\nPEER_REVIEW then SECURITY_REVIEW
+            KS -> KA : Route(diff, impact analysis, replay result)
+            activate KA
+            KA --> KS : Review outcome + rationale
+            deactivate KA
+        end
+
+        opt impact analysis available  —  Post-MVP
+            KS -> KS : ReplayHistoricalEvaluations\n(regression check)
+        end
+
+        alt Approver approves
+            KA -> KS : Approve(ruleId, rationale)
+            activate KS #4A6FA5
+
+            create participant "V : RuleSetVersion" as V
+            KS -> V : «create» (rules, indicator registry,\ntaxonomy, schemaVersion)
+            activate V
+            V --> KS : ruleSetVersionId (immutable snapshot)
+            deactivate V
+
+            KS -> D3 : Publish(ruleSetVersionId,\nstate = PUBLISHED)
+            activate D3
+            D3 --> KS : OK
+            deactivate D3
+            KS -> D6 : Write audit event\n(publish, UID, version, rationale)
+            activate D6
+            D6 --> KS : OK
+            deactivate D6
+            KS --> RA : Published(ruleSetVersionId)
+            deactivate KS
+            RA --> KE : Rule set published
+
+        else Approver rejects
+            KA -> KS : Reject(ruleId, rationale)
+            KS -> D3 : Return rule to DRAFT
+            KS -> D6 : Write audit event (reject)
+            KS --> RA : Rejected + rationale
+            RA --> KE : Rejected; rationale shown
+        end
+    end
+end
+deactivate KS
+deactivate RA
+deactivate KE
+
+note across
+  The rule set is shared with the detection side as an **immutable versioned snapshot**, so publishing
+  a new version cannot retroactively change an analysis that has already finished  (SRS 3.3, FR 4.3.3.8)
+end note
+
+@enduml

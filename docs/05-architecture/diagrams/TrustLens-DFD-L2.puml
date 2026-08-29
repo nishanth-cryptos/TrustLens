@@ -1,0 +1,88 @@
+@startuml TrustLens_DFD_Level2_EvaluateRulesAndScore
+
+title <b>TrustLens  —  Level 2 DFD  |  Process 3.0: Evaluate Rules & Score</b>
+
+' keeps the PNG inside the public server's 4096px cap (SVG ignores this)
+scale max 3800 width
+
+skinparam backgroundColor #F8FAFC
+skinparam defaultFontName Arial
+skinparam defaultFontSize 10
+skinparam shadowing false
+skinparam dpi 150
+skinparam nodesep 45
+skinparam ranksep 110
+
+<style>
+element {
+  Padding 6
+  Margin  8
+}
+</style>
+
+skinparam rectangle {
+    BackgroundColor #1F3864
+    FontColor       #FFFFFF
+    BorderColor     #0D2137
+    BorderThickness 2
+}
+
+skinparam usecase {
+    BackgroundColor #BBDEFB
+    BorderColor     #1565C0
+    FontColor       #0D2137
+    BorderThickness 2
+}
+
+skinparam database {
+    BackgroundColor #FFF8E1
+    BorderColor     #E65100
+    FontColor       #4E342E
+    BorderThickness 2
+}
+
+skinparam arrow {
+    Color       #444444
+    FontColor   #222222
+    FontSize    9
+}
+
+left to right direction
+
+rectangle "Threat-Intel Providers"          as TI
+rectangle "[2.0]\nNormalise &\nExtract"      as P2REF
+rectangle "[4.0]\nCompose\nExplanation"      as P4REF
+rectangle "[5.0]\nRoute &\nAdjudicate"       as P5REF
+
+usecase "**3.1**\nLoad & Pin\nRule Set"                  as P31
+usecase "**3.2**\nMatch\nComposite Rules"                as P32
+usecase "**3.3**\nApply Suppressors\n& Resolve Conflicts" as P33
+usecase "**3.4**\nScore Risk &\nConfidence\nSeparately"   as P34
+usecase "**3.5**\nDecide Outcome\n& Route"                as P35
+
+database "D3  Rule-Set\nStore"    as D3
+database "D5  Analysis\nRecord"   as D5
+
+D3 -down-> P31 : Published rules, indicators,\ntaxonomy version
+D5   -up-> P31 : Replay request:\npinned rule-set version
+P31 -right-> P32 : Pinned rule set\n(version id fixed)
+
+P2REF -right-> P32 : Entities, indicators,\nnegative indicators
+
+P32 -right-> TI : F15  Reputation lookup
+TI   -left-> P32 : F16  Provider verdict\n(labelled non-authoritative)
+
+P32 -right-> P33 : Candidate rule matches\n(composite triggers met)
+P33 -right-> P34 : Surviving matches\n+ suppressed set
+P34 -right-> P35 : Risk, confidence, severity,\nevidence quality (4 separate values)
+
+P35 -down-> D5 : Pinned analysis record\n(inputs, version, scores)
+P35   -up-> P4REF : Findings + full\nscore decomposition
+P35 -down-> P5REF : Uncertain case /\nINSUFFICIENT_EVIDENCE
+
+legend bottom left
+  5 sub-processes (ceiling is 9)
+  Suppressors run before scoring, so negative evidence can never be out-voted
+endlegend
+
+@enduml

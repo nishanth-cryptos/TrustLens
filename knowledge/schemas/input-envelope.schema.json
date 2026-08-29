@@ -1,0 +1,279 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://trustlens/schemas/input-envelope.schema.json",
+  "title": "TrustLens Input Envelope",
+  "description": "Phase 2 WP2. The canonical, versioned boundary between RAW TrustLens input and the deterministic detection knowledge layer. An envelope carries the submitted artefact plus whatever channel/parser metadata is available; it is NOT a detection and carries NO verdict, score or indicator. Downstream the normaliser turns an envelope into typed observations (observation.schema.json), which the indicator layer turns into indicator observations (indicator-observation.schema.json), which the existing rule engine consumes. This schema fixes the SHAPE only; referential integrity, ID resolution and the ban on a verdict leaking in are enforced by knowledge/validation/validate_extraction.py. Storage is deliberately unspecified (ADR-0004). Language/script are carried as data and MUST NOT be assumed English-only, so that resolving OI-04 / ADR-0014 is a data change, not a schema migration. Data minimisation (NFR/DPDP): a field being expressible here is not licence to populate it — see privacy.redaction.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "envelope_version",
+    "input_id",
+    "input_type",
+    "content",
+    "provenance"
+  ],
+  "properties": {
+    "envelope_version": {
+      "const": "1.0.0",
+      "description": "Version of THIS envelope contract the instance was produced against. Const per contract revision (KB-001 §8: a bump is a governed change, not silent)."
+    },
+    "input_id": {
+      "$ref": "#/$defs/id",
+      "description": "Opaque, stable identifier for this submission. Not derived from content; not a hash of PII."
+    },
+    "input_type": {
+      "enum": [
+        "TEXT",
+        "SMS",
+        "CHAT_MESSAGE",
+        "EMAIL",
+        "URL",
+        "OCR_TEXT",
+        "SCREENSHOT_DERIVED_TEXT",
+        "DOCUMENT_TEXT",
+        "USER_NARRATIVE"
+      ],
+      "description": "The modality of the submission. Not all modalities are implemented in the MVP; reserving them here keeps modality growth a data change. USER_NARRATIVE = the user describing an interaction in their own words (relevant to reported-speech handling)."
+    },
+    "source_channel": {
+      "$ref": "#/$defs/channelRef",
+      "description": "The communication channel, keyed to a dimensions-v1.json CH-* term where known. UNKNOWN is allowed and is not treated as benign."
+    },
+    "content": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["language", "script"],
+      "description": "The textual payload and its normalisation. raw_text may be absent for a URL-only or attachment-only submission.",
+      "properties": {
+        "raw_text": {
+          "type": "string",
+          "description": "The submission exactly as received, before normalisation. May be redacted in place — see privacy.redaction."
+        },
+        "normalized_text": {
+          "type": "string",
+          "description": "Unicode-normalised, whitespace-collapsed, case-preserved text used as the offset frame for observation spans. Normalisation is lossless-locating: offsets into normalized_text must remain valid."
+        },
+        "language": {
+          "$ref": "#/$defs/languageTags",
+          "description": "Detected/declared BCP-47-ish language tags (ISO 639). MVP knowledge is en only, but an envelope MAY carry any language; the rule layer flags unsupported input (rule schema on_unsupported_input) — the envelope never silently downgrades."
+        },
+        "script": {
+          "$ref": "#/$defs/scriptTags",
+          "description": "ISO 15924 script codes, e.g. Latn, Deva, Taml. Carried even when language is en so that a transliterated message (e.g. hi-Latn) is representable rather than mislabelled."
+        },
+        "language_detection": {
+          "$ref": "#/$defs/detection",
+          "description": "How language/script were determined and with what confidence. Confidence here is EXTRACTION confidence, never a risk score (CONF-001)."
+        }
+      }
+    },
+    "timestamp": {
+      "type": "string",
+      "description": "ISO-8601 instant the artefact was sent/observed, where known. Absence is UNKNOWN, not 'now'."
+    },
+    "actor": {
+      "$ref": "#/$defs/party",
+      "description": "The sender/originator, where any of it is known. Every field optional; data minimisation applies."
+    },
+    "recipient": {
+      "$ref": "#/$defs/party",
+      "description": "The recipient/target, where known. Typically the submitting user."
+    },
+    "extracted_primitives": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Structural artefacts a PARSER/SYSTEM_METADATA extractor can lift without interpretation. These are FACTS about the message, not indicators. Interpretation happens in the observation layer. All arrays default to empty; empty means 'none found', UNKNOWN is expressed by omission.",
+      "properties": {
+        "urls": {
+          "type": "array",
+          "items": { "$ref": "https://trustlens/schemas/url-observation.schema.json" },
+          "description": "URL facts, each conforming to url-observation.schema.json. Reputation/allowlist default to NOT_EVALUATED — never assumed malicious."
+        },
+        "phone_numbers": { "type": "array", "items": { "$ref": "#/$defs/primitive" } },
+        "email_addresses": { "type": "array", "items": { "$ref": "#/$defs/primitive" } },
+        "upi_ids": { "type": "array", "items": { "$ref": "#/$defs/primitive" } },
+        "payment_handles": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/primitive" },
+          "description": "Bank/wallet/merchant handles other than UPI VPAs."
+        },
+        "amounts": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/amount" },
+          "description": "Monetary amounts with currency where determinable. Direction of any amount is NOT decided here — it belongs to the observation's payment_direction (WP2 STEP 8)."
+        },
+        "codes": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/primitive" },
+          "description": "Numeric codes present in the text (OTP-shaped strings, USSD/short codes, linking codes). Whether a code is being REQUESTED or DELIVERED is an observation-layer decision, not a primitive."
+        }
+      }
+    },
+    "attachments": {
+      "type": "array",
+      "description": "Metadata about attachments (images, PDFs, QR images). Content is not inlined; a VISION/OCR extractor produces derived text as a separate envelope or as observations. No attachment bytes are stored here.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["attachment_id", "media_type"],
+        "properties": {
+          "attachment_id": { "$ref": "#/$defs/id" },
+          "media_type": { "type": "string", "description": "IANA media type, e.g. image/png, application/pdf." },
+          "role": { "enum": ["QR_IMAGE", "SCREENSHOT", "DOCUMENT", "OTHER"] },
+          "derived_text_input_id": { "$ref": "#/$defs/id", "description": "The input_id of the OCR/VISION-derived envelope, if one was produced. Keeps the provenance chain traceable." }
+        }
+      }
+    },
+    "thread": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Conversation/thread context where available. A single message is the common case; a thread lets stage-sequence signals (RESEARCH-003 §2) become expressible later without a schema change.",
+      "properties": {
+        "thread_id": { "$ref": "#/$defs/id" },
+        "position": { "type": "integer", "minimum": 0, "description": "Index of this message within the thread." },
+        "prior_input_ids": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/id" },
+          "description": "input_ids of preceding messages, for cross-message reasoning in a later phase. Not required."
+        }
+      }
+    },
+    "user_supplied_context": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "What the user tells us about the artefact. Critical for reported-speech: a user pasting a scam they RECEIVED versus one they are being asked to act on. Never treated as ground truth about maliciousness.",
+      "properties": {
+        "relationship_to_content": {
+          "enum": ["RECEIVED", "SENT", "REPORTING_ON_BEHALF", "FORWARDED", "UNKNOWN"],
+          "description": "Feeds the observation attribution model (FIRST_PARTY vs REPORTED)."
+        },
+        "note": { "type": "string", "description": "Free-text user note. May be redacted." }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["received_via", "pipeline_stage"],
+      "description": "How this envelope came to exist. Distinct from the per-observation extractor provenance downstream.",
+      "properties": {
+        "received_via": {
+          "enum": ["USER_SUBMISSION", "API", "BATCH_IMPORT", "TEST_FIXTURE"],
+          "description": "TEST_FIXTURE marks synthetic data (G-09): a fixture-sourced envelope may never contribute to an accuracy claim."
+        },
+        "pipeline_stage": {
+          "const": "INGESTED",
+          "description": "An envelope is always at INGESTED; observation/indicator stages live in their own artefacts. Const to stop the envelope being reused as a detection carrier."
+        },
+        "normalizer": { "$ref": "#/$defs/toolRef", "description": "The normalisation tool/version that produced normalized_text." },
+        "synthetic": { "type": "boolean", "description": "True for authored test data. Redundant with received_via=TEST_FIXTURE but explicit for downstream guards." }
+      }
+    },
+    "privacy": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Data-minimisation and redaction metadata (NFR privacy, DPDP posture; retention/legal basis is OI-05, out of WP2 scope). Records WHAT was minimised so the decision is auditable, without storing the removed value.",
+      "properties": {
+        "redaction": {
+          "type": "array",
+          "description": "Redactions applied to raw_text/notes before storage. Each records the class and span that was removed, not the value.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["class", "method"],
+            "properties": {
+              "class": { "enum": ["PHONE", "EMAIL", "UPI_ID", "CARD_PAN", "OTP", "NAME", "ACCOUNT_NUMBER", "OTHER_PII"] },
+              "span": { "$ref": "#/$defs/span" },
+              "method": { "enum": ["MASKED", "HASHED", "DROPPED"] }
+            }
+          }
+        },
+        "minimization_profile": {
+          "type": "string",
+          "description": "Named minimisation policy applied (e.g. 'default-mvp'). The policy content is defined outside WP2."
+        }
+      }
+    }
+  },
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{1,127}$" },
+    "span": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["start", "end"],
+      "description": "Half-open character offsets [start, end) into content.normalized_text.",
+      "properties": {
+        "start": { "type": "integer", "minimum": 0 },
+        "end": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "languageTags": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^[a-z]{2,3}(-[A-Za-z]{2,8})*$" }
+    },
+    "scriptTags": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^[A-Z][a-z]{3}$" }
+    },
+    "detection": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "method": { "enum": ["DECLARED", "HEURISTIC", "CLASSIFIER", "UNKNOWN"] },
+        "confidence": { "enum": ["HIGH", "MEDIUM", "LOW", "UNKNOWN"] }
+      }
+    },
+    "channelRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["value"],
+      "properties": {
+        "value": { "type": "string", "pattern": "^(CH-\\d{2}|UNKNOWN)$", "description": "A dimensions-v1.json channel term, or UNKNOWN." }
+      }
+    },
+    "party": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "A communicating party. All fields optional; populate only what is needed and permitted.",
+      "properties": {
+        "display_name": { "type": "string" },
+        "handle": { "type": "string", "description": "Phone/username/email/VPA as presented. May be redacted." },
+        "claimed_identity": { "type": "string", "description": "Who the party CLAIMS to be, verbatim-ish (e.g. 'CBI officer'). This is a claim, never a verified fact; it feeds IDENTITY_ASSERTION observations." },
+        "is_known_contact": { "enum": ["YES", "NO", "UNKNOWN"], "description": "Whether the recipient recognises the party. UNKNOWN by default; never assumed known." }
+      }
+    },
+    "primitive": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["value"],
+      "description": "A parsed structural artefact and where it sits in the text.",
+      "properties": {
+        "value": { "type": "string", "description": "The parsed token as it appears (possibly masked)." },
+        "normalized_value": { "type": "string" },
+        "span": { "$ref": "#/$defs/span" }
+      }
+    },
+    "amount": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["value"],
+      "properties": {
+        "value": { "type": "number", "description": "Magnitude only. This is not a severity or risk number (CONF-001)." },
+        "currency": { "type": "string", "description": "ISO 4217 where determinable (e.g. INR); omitted if unknown." },
+        "span": { "$ref": "#/$defs/span" }
+      }
+    },
+    "toolRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version"],
+      "properties": {
+        "id": { "type": "string" },
+        "version": { "type": "string" }
+      }
+    }
+  }
+}
