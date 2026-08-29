@@ -1,0 +1,1652 @@
+{
+  "$comment": "TrustLens EXTRACTION COVERAGE MATRIX (Phase 2 WP2, STEP 15). It maps EVERY rule file to the extraction contract it depends on. SCOPE: the 25 encoded STARTER rules (kind=COMPOSITE) PLUS TL-SUP-001, the non-starter SUPPRESSION-infrastructure rule = 26 total matrix entries. Per rule: required evidence classes, indicator families, observation types and positive indicators; negative-context dependencies (explicit suppressed_by, family-scoped suppressors, directional neutralisers) and applicable hard-risk overrides; and an EXTRACTABILITY verdict derived from the rule's implementability. CURRENTLY_EXTRACTABLE = producible from the defined text input contract by a reference deterministic/NLP extractor; PARTIAL_REQUIRES_FUTURE_EXTRACTOR = the discriminating signal needs a capability beyond the MVP text contract (named in future_capability_needed); UNOBSERVABLE = TrustLens cannot observe what the rule needs (rule is DEFERRED, blocked_by recorded). Across all 26 entries: 23 CURRENTLY_EXTRACTABLE, 2 PARTIAL, 1 UNOBSERVABLE (the 25 starters split 22/2/1; TL-SUP-001 is the +1 CURRENTLY_EXTRACTABLE). DERIVED from the rule set + indicator-families-v1.json + negative-indicator-library-v1.json and re-checked by validate_extraction.py, so it cannot drift. Makes implementation sequencing obvious without building any extractor now.",
+  "coverage_version": "1.0.0",
+  "generated": "2026-08-29",
+  "derived_from": [
+    "knowledge/rules/TL-*.json",
+    "knowledge/indicators/indicator-families-v1.json",
+    "knowledge/indicators/negative-indicator-library-v1.json"
+  ],
+  "future_capability_legend": {
+    "URL_BRAND_REPUTATION": "Brand-domain match + threat-intel reputation adapter (Phase 6, ADR-0012). Until then url-observation assessments stay UNKNOWN/NOT_EVALUATED and lookalike/fake-site are heuristic only.",
+    "THREAD_CONTEXT": "Multi-message conversation context (envelope.thread) to observe a chain such as deposit -> blocked withdrawal reliably.",
+    "DEVICE_STATE": "Observation of an actual device permission/grant, not just the text request.",
+    "TRANSACTION_CONTEXT_FOR_AMBIGUOUS_CASES": "Live transaction context to settle payment_direction when the text alone is ambiguous; clear textual receive/pay framing is already extractable.",
+    "PAYEE_IDENTITY": "Resolution of a payee's banking name from a QR/handle (TL-PAY-003 blocked_by INPUT_MODALITY)."
+  },
+  "summary": {
+    "total_matrix_entries": 26,
+    "starter_rules_covered": 25,
+    "non_starter_suppression_rules": [
+      "TL-SUP-001"
+    ],
+    "scope_note": "25 encoded starter rules (COMPOSITE) + TL-SUP-001 (non-starter suppression infrastructure) = 26 matrix entries.",
+    "by_extractability_all_26": {
+      "CURRENTLY_EXTRACTABLE": 23,
+      "PARTIAL_REQUIRES_FUTURE_EXTRACTOR": 2,
+      "UNOBSERVABLE": 1
+    },
+    "by_extractability_starters_only": {
+      "CURRENTLY_EXTRACTABLE": 22,
+      "PARTIAL_REQUIRES_FUTURE_EXTRACTOR": 2,
+      "UNOBSERVABLE": 1
+    },
+    "by_status": {
+      "PUBLISHED": 18,
+      "PEER_REVIEW": 4,
+      "APPROVED": 3,
+      "DRAFT": 1
+    }
+  },
+  "rules": [
+    {
+      "rule_id": "TL-ATO-001",
+      "kind": "COMPOSITE",
+      "status": "PUBLISHED",
+      "severity": "CRITICAL",
+      "verdict": "SUPPORTED",
+      "implementability": "YES",
+      "blocked_by": null,
+      "taxonomy_refs": [
+        "TAX-09-01"
+      ],
+      "required_evidence_classes": [
+        "DEVICE_ACTION",
+        "PRETEXT"
+      ],
+      "required_indicator_families": [
+        "FAM-DEVICE-LINKING",
+        "FAM-PRETEXT-ACCOUNT-KYC",
+        "FAM-PRETEXT-BENIGN-COVER",
+        "FAM-PRETEXT-SOCIAL-LURE"
+      ],
+      "required_observation_types": [
+        "AUTHENTICATION_ACTION",
+        "CLAIM",
+        "DEVICE_ACTION",
+        "ENTITY",
+        "LINK_ACTION",
+        "RELATIONSHIP_CONTEXT"
+      ],
+      "required_positive_indicators": [
+        "BENIGN_PRETEXT_FOR_TECHNICAL_ACTION",
+        "DEVICE_LINKING_CODE_REQUEST",
+        "TRUSTED_CONTACT_PRETEXT",
+        "UNSOLICITED_OFFER",
+        "VERIFICATION_PRETEXT"
+      ],
+      "suppression_trigger_indicators": [],
+      "negative_context": {
+        "explicit_suppressed_by": [],
+        "family_scoped_suppressors": [
+          "EDUCATIONAL_CONTENT",
+          "NO_ACTION_REQUESTED",
+          "OFFICIAL_CHANNEL_REDIRECT",
+          "REPORTED_SCAM_NARRATIVE",
+          "SECURITY_NOTIFICATION",
+          "SELF_PROTECTIVE_WARNING",
+          "SUPPORT_NEVER_ASKS",
+          "TRANSACTION_NOTIFICATION"
+        ],
+        "directional_neutralisers": []
+      },
+      "hard_risk_overrides": [],
+      "extractability": "CURRENTLY_EXTRACTABLE",
+      "future_capability_needed": {},
+      "extraction_notes": {}
+    },
+    {
+      "rule_id": "TL-ATO-002",
+      "kind": "COMPOSITE",
+      "status": "PUBLISHED",
+      "severity": "HIGH",
+      "verdict": "SUPPORTED",
+      "implementability": "YES",
+      "blocked_by": null,
+      "taxonomy_refs": [
+        "TAX-09-02"
+      ],
+      "required_evidence_classes": [
+        "CREDENTIAL_ACTION",
+        "IDENTITY_CLAIM",
+        "PRETEXT"
+      ],
+      "required_indicator_families": [
+        "FAM-IDENTITY-IMPERSONATION",
+        "FAM-PRETEXT-SOCIAL-LURE",
+        "FAM-VERIFICATION-CAPTURE"
+      ],
+      "required_observation_types": [
+        "AUTHENTICATION_ACTION",
+        "CLAIM",
+        "IDENTITY_ASSERTION",
+        "LINK_ACTION",
+        "RELATIONSHIP_CONTEXT"
+      ],
+      "required_positive_indicators": [
+        "FAKE_PLATFORM_PREVIEW",
+        "TEASER_BAIT",
+        "VERIFICATION_PROMPT"
+      ],
+      "suppression_trigger_indicators": [],
+      "negative_context": {
+        "explicit_suppressed_by": [],
+        "family_scoped_suppressors": [
+          "EDUCATIONAL_CONTENT",
+          "NO_ACTION_REQUESTED",
+          "OFFICIAL_CHANNEL_REDIRECT",
+          "REPORTED_SCAM_NARRATIVE",
+          "SECURITY_NOTIFICATION",
+          "SELF_PROTECTIVE_WARNING",
+          "SUPPORT_NEVER_ASKS",
+          "TRANSACTION_NOTIFICATION"
+        ],
+        "directional_neutralisers": []
+      },
+      "hard_risk_overrides": [],
+      "extractability": "CURRENTLY_EXTRACTABLE",
+      "future_capability_needed": {},
+      "extraction_notes": {}
+    },
+    {
+      "rule_id": "TL-AUTH-001",
+      "kind": "COMPOSITE",
+      "status": "PUBLISHED",
+      "severity": "CRITICAL",
+      "verdict": "SUPPORTED",
+      "implementability": "YES",
+      "blocked_by": null,
+      "taxonomy_refs": [
+        "TAX-03-01",
+        "TAX-03-02"
+      ],
+      "required_evidence_classes": [
+        "IDENTITY_CLAIM",
+        "PAYMENT_ACTION",
+        "PRESSURE"
+      ],
+      "required_indicator_families": [
+        "FAM-IDENTITY-IMPERSONATION",
+        "FAM-PAYMENT-REQUEST",
+        "FAM-THREAT-CONSEQUENCE"
+      ],
+      "required_observation_types": [
+        "CLAIM",
+        "IDENTITY_ASSERTION",
+        "PAYMENT_CONTEXT",
+        "REQUEST",
+        "TEMPORAL_PRESSURE",
+        "THREAT"
+      ],
+      "required_positive_indicators": [
+        "ACCOUNT_BLOCK_THREAT",
+        "ARREST_THREAT",
+        "AUTHORITY_IMPERSONATION",
+        "IMMEDIATE_PAYMENT_DEMAND",
+        "LEGAL_ACCUSATION",
+        "PAYMENT_DEMAND"
+      ],
+      "suppression_trigger_indicators": [],
+      "negative_context": {
+        "explicit_suppressed_by": [],
+        "family_scoped_suppressors": [
+          "EDUCATIONAL_CONTENT",
+          "NO_ACTION_REQUESTED",
+          "OFFICIAL_CHANNEL_REDIRECT",
+          "REPORTED_SCAM_NARRATIVE",
+          "SECURITY_NOTIFICATION",
+          "SELF_PROTECTIVE_WARNING",
+          "SUPPORT_NEVER_ASKS",
+          "TRANSACTION_NOTIFICATION"
+        ],
+        "directional_neutralisers": []
+      },
+      "hard_risk_overrides": [
+        "HR_PAYMENT_UNDER_COERCION"
+      ],
+      "extractability": "CURRENTLY_EXTRACTABLE",
+      "future_capability_needed": {},
+      "extraction_notes": {}
+    },
+    {
+      "rule_id": "TL-AUTH-002",
+      "kind": "COMPOSITE",
+      "status": "PUBLISHED",
+      "severity": "CRITICAL",
+      "verdict": "SUPPORTED",
+      "implementability": "YES",
+      "blocked_by": null,
+      "taxonomy_refs": [
+        "TAX-03-01"
+      ],
+      "required_evidence_classes": [
+        "IDENTITY_CLAIM",
+        "PRESSURE"
+      ],
+      "required_indicator_families": [
+        "FAM-COERCION-ISOLATION",
+        "FAM-IDENTITY-IMPERSONATION"
+      ],
+      "required_observation_types": [
+        "CLAIM",
+        "IDENTITY_ASSERTION",
+        "REQUEST",
+        "THREAT"
+      ],
+      "required_positive_indicators": [
+        "AUTHORITY_IMPERSONATION",
+        "ISOLATION_FROM_FAMILY_OR_LAWYER"
+      ],
+      "suppression_trigger_indicators": [],
+      "negative_context": {
+        "explicit_suppressed_by": [],
+        "family_scoped_suppressors": [
+          "EDUCATIONAL_CONTENT",
+          "NO_ACTION_REQUESTED",
+          "OFFICIAL_CHANNEL_REDIRECT",
+          "REPORTED_SCAM_NARRATIVE",
+          "SECURITY_NOTIFICATION",
+          "SELF_PROTECTIVE_WARNING",
+          "SUPPORT_NEVER_ASKS",
+          "TRANSACTION_NOTIFICATION"
+        ],
+        "directional_neutralisers": []
+      },
+      "hard_risk_overrides": [
+        "HR_PAYMENT_UNDER_COERCION"
+      ],
+      "extractability": "CURRENTLY_EXTRACTABLE",
+      "future_capability_needed": {},
+      "extraction_notes": {}
+    },
+    {
+      "rule_id": "TL-AUTH-003",
+      "kind": "COMPOSITE",
+      "status": "PUBLISHED",
+      "severity": "HIGH",
+      "verdict": "SUPPORTED",
+      "implementability": "YES",
+      "blocked_by": null,
+      "taxonomy_refs": [
+        "TAX-03-04"
+      ],
+      "required_evidence_classes": [
+        "IDENTITY_CLAIM",
+        "PAYMENT_ACTION",
+        "PRESSURE"
+      ],
+      "required_indicator_families": [
+        "FAM-COERCION-ISOLATION",
+        "FAM-IDENTITY-IMPERSONATION",
+        "FAM-PAYMENT-REQUEST",
+        "FAM-URGENCY-PRESSURE"
+      ],
+      "required_observation_types": [
+        "CLAIM",
+        "IDENTITY_ASSERTION",
+        "PAYMENT_CONTEXT",
+        "REQUEST",
+        "TEMPORAL_PRESSURE",
+        "THREAT"
+      ],
+      "required_positive_indicators": [
+        "AUTHORITY_IMPERSONATION",
+        "DISCOURAGES_VERIFICATION",
+        "EXECUTIVE_IMPERSONATION",
+        "IMMEDIATE_PAYMENT_DEMAND",
+        "PAYMENT_DEMAND",
+        "SECRECY_REQUEST",
+        "URGENCY",
+        "URGENCY_DEADLINE"
+      ],
+      "suppression_trigger_indicators": [],
+      "negative_context": {
+        "explicit_suppressed_by": [],
+        "family_scoped_suppressors": [
+          "EDUCATIONAL_CONTENT",
+          "NO_ACTION_REQUESTED",
+          "OFFICIAL_CHANNEL_REDIRECT",
+          "REPORTED_SCAM_NARRATIVE",
+          "SECURITY_NOTIFICATION",
+          "SELF_PROTECTIVE_WARNING",
+          "SUPPORT_NEVER_ASKS",
+          "TRANSACTION_NOTIFICATION"
+        ],
+        "directional_neutralisers": []
+      },
+      "hard_risk_overrides": [
+        "HR_PAYMENT_UNDER_COERCION"
+      ],
+      "extractability": "CURRENTLY_EXTRACTABLE",
+      "future_capability_needed": {},
+      "extraction_notes": {}
+    },
+    {
+      "rule_id": "TL-CRED-001",
+      "kind": "COMPOSITE",
+      "status": "PUBLISHED",
+      "severity": "CRITICAL",
+      "verdict": "SUPPORTED",
+      "implementability": "YES",
+      "blocked_by": null,
+      "taxonomy_refs": [
+        "TAX-01-01",
+        "TAX-01-07"
+      ],
+      "required_evidence_classes": [
+        "CREDENTIAL_ACTION",
+        "IDENTITY_CLAIM",
+        "PRESSURE",
+        "PRETEXT"
+      ],
+      "required_indicator_families": [
+        "FAM-CREDENTIAL-REQUEST",
+        "FAM-IDENTITY-IMPERSONATION",
+        "FAM-PRETEXT-ACCOUNT-KYC",
+        "FAM-THREAT-CONSEQUENCE",
+        "FAM-URGENCY-PRESSURE"
+      ],
+      "required_observation_types": [
+        "AUTHENTICATION_ACTION",
+        "CLAIM",
+        "ENTITY",
+        "IDENTITY_ASSERTION",
+        "REQUEST",
+        "TEMPORAL_PRESSURE",
+        "THREAT"
+      ],
+      "required_positive_indicators": [
+        "ACCOUNT_BLOCK_THREAT",
+        "AUTHORITY_IMPERSONATION",
+        "AUTHORITY_IMPERSONATION_BANK",
+        "CREDENTIAL_REQUEST_OTP",
+        "KYC_PRETEXT",
+        "SUSPENSION_THREAT",
+        "URGENCY_DEADLINE",
+        "VERIFICATION_PRETEXT"
+      ],
+      "suppression_trigger_indicators": [],
+      "negative_context": {
+        "explicit_suppressed_by": [],
+        "family_scoped_suppressors": [
+          "EDUCATIONAL_CONTENT",
+          "NO_ACTION_REQUESTED",
+          "NO_PAYMENT_REQUESTED",
+          "OFFICIAL_CHANNEL_REDIRECT",
+          "PAY_MERCHANT_DIRECTION",
+          "REPORTED_SCAM_NARRATIVE",
+          "SECURITY_NOTIFICATION",
+          "SELF_PROTECTIVE_WARNING",
+          "SUPPORT_NEVER_ASKS",
+          "TRANSACTION_NOTIFICATION"
+        ],
+        "directional_neutralisers": [
+          "NEGATED_CREDENTIAL_REQUEST",
+          "OTP_DELIVERED_NOT_REQUESTED"
+        ]
+      },
+      "hard_risk_overrides": [
+        "HR_OTP_DISCLOSURE_REQUEST",
+        "HR_PAYMENT_UNDER_COERCION",
+        "HR_UPI_PIN_TO_RECEIVE"
+      ],
+      "extractability": "CURRENTLY_EXTRACTABLE",
+      "future_capability_needed": {},
+      "extraction_notes": {}
+    },
+    {
+      "rule_id": "TL-CRED-002",
+      "kind": "COMPOSITE",
+      "status": "PUBLISHED",
+      "severity": "HIGH",
+      "verdict": "PARTIAL",
+      "implementability": "YES",
+      "blocked_by": null,
+      "taxonomy_refs": [
+        "TAX-01-02"
+      ],
+      "required_evidence_classes": [
+        "CREDENTIAL_ACTION",
+        "PAYMENT_ACTION",
+        "PRESSURE",
+        "PRETEXT"
+      ],
+      "required_indicator_families": [
+        "FAM-PAYMENT-DIRECTION",
+        "FAM-PRETEXT-ACCOUNT-KYC",
+        "FAM-THREAT-CONSEQUENCE",
+        "FAM-UPI-PIN-CONTEXT"
+      ],
+      "required_observation_types": [
+        "AUTHENTICATION_ACTION",
+        "CLAIM",
+        "ENTITY",
+        "PAYMENT_CONTEXT",
+        "TEMPORAL_PRESSURE",
+        "THREAT"
+      ],
+      "required_positive_indicators": [
+        "ACCOUNT_BLOCK_THREAT",
+        "KYC_PRETEXT",
+        "RECEIVE_FRAMING",
+        "UPI_PIN_PROMPT",
+        "VERIFICATION_PRETEXT"
+      ],
+      "suppression_trigger_indicators": [],
+      "negative_context": {
+        "explicit_suppressed_by": [],
+        "family_scoped_suppressors": [
+          "EDUCATIONAL_CONTENT",
+          "NO_ACTION_REQUESTED",
+          "NO_PAYMENT_REQUESTED",
+          "OFFICIAL_CHANNEL_REDIRECT",
+          "PAY_MERCHANT_DIRECTION",
+          "REPORTED_SCAM_NARRATIVE",
+          "SECURITY_NOTIFICATION",
+          "SELF_PROTECTIVE_WARNING",
+          "SUPPORT_NEVER_ASKS",
+          "TRANSACTION_NOTIFICATION"
+        ],
+        "directional_neutralisers": [
+          "NEGATED_CREDENTIAL_REQUEST"
+        ]
+      },
+      "hard_risk_overrides": [
+        "HR_OTP_DISCLOSURE_REQUEST",
+        "HR_PAYMENT_UNDER_COERCION",
+        "HR_UPI_PIN_TO_RECEIVE"
+      ],
+      "extractability": "CURRENTLY_EXTRACTABLE",
+      "future_capability_needed": {},
+      "extraction_notes": {
+        "RECEIVE_FRAMING": "TRANSACTION_CONTEXT_FOR_AMBIGUOUS_CASES"
+      }
+    },
+    {
+      "rule_id": "TL-CRED-003",
+      "kind": "COMPOSITE",
+      "status": "PUBLISHED",
+      "severity": "HIGH",
+      "verdict": "SUPPORTED",
+      "implementability": "YES",
+      "blocked_by": null,
+      "taxonomy_refs": [
+        "TAX-01-07"
+      ],
+      "required_evidence_classes": [
+        "CHANNEL_ARTIFACT",
+        "CREDENTIAL_ACTION",
+        "PRESSURE"
+      ],
+      "required_indicator_families": [
+        "FAM-CREDENTIAL-REQUEST",
+        "FAM-LINK-DOMAIN",
+        "FAM-THREAT-CONSEQUENCE",
+        "FAM-URGENCY-PRESSURE"
+      ],
+      "required_observation_types": [
+        "AUTHENTICATION_ACTION",
+        "ENTITY",
+        "LINK_ACTION",
+        "REQUEST",
+        "TEMPORAL_PRESSURE",
+        "THREAT"
+      ],
+      "required_positive_indicators": [
+        "CREDENTIAL_REQUEST_CARD",
+        "CREDENTIAL_REQUEST_CVV",
+        "LINK_PRESENT",
+        "SUSPENSION_THREAT",
+        "URGENCY",
+        "URGENCY_DEADLINE"
+      ],
+      "suppression_trigger_indicators": [],
+      "negative_context": {
+        "explicit_suppressed_by": [],
+        "family_scoped_suppressors": [
+          "EDUCATIONAL_CONTENT",
+          "NO_ACTION_REQUESTED",
+          "NO_PAYMENT_REQUESTED",
+          "OFFICIAL_CHANNEL_REDIRECT",
+          "PAY_MERCHANT_DIRECTION",
+          "REPORTED_SCAM_NARRATIVE",
+          "SECURITY_NOTIFICATION",
+          "SELF_PROTECTIVE_WARNING",
+          "SUPPORT_NEVER_ASKS",
+          "TRANSACTION_NOTIFICATION"
+        ],
+        "directional_neutralisers": [
+          "NEGATED_CREDENTIAL_REQUEST"
+        ]
+      },
+      "hard_risk_overrides": [
+        "HR_OTP_DISCLOSURE_REQUEST",
+        "HR_PAYMENT_UNDER_COERCION",
+        "HR_UPI_PIN_TO_RECEIVE"
+      ],
+      "extractability": "CURRENTLY_EXTRACTABLE",
+      "future_capability_needed": {},
+      "extraction_notes": {}
+    },
+    {
+      "rule_id": "TL-CRYP-001",
+      "kind": "COMPOSITE",
+      "status": "PUBLISHED",
+      "severity": "HIGH",
+      "verdict": "PARTIAL",
+      "implementability": "YES",
+      "blocked_by": null,
+      "taxonomy_refs": [
+        "TAX-05-05"
+      ],
+      "required_evidence_classes": [
+        "CHANNEL_ARTIFACT",
+        "DEVICE_ACTION",
+        "PRETEXT"
+      ],
+      "required_indicator_families": [
+        "FAM-LINK-DOMAIN",
+        "FAM-PRETEXT-ACCOUNT-KYC",
+        "FAM-PRETEXT-SOCIAL-LURE",
+        "FAM-WALLET-CONNECTION"
+      ],
+      "required_observation_types": [
+        "CLAIM",
+        "DEVICE_ACTION",
+        "ENTITY",
+        "LINK_ACTION",
+        "RELATIONSHIP_CONTEXT"
+      ],
+      "required_positive_indicators": [
+        "FAKE_VERIFICATION_SITE",
+        "LINK_PRESENT",
+        "LOOKALIKE_DOMAIN",
+        "OFF_PLATFORM_HANDOFF",
+        "VERIFICATION_PRETEXT",
+        "WALLET_CONNECT_REQUEST"
+      ],
+      "suppression_trigger_indicators": [],
+      "negative_context": {
+        "explicit_suppressed_by": [],
+        "family_scoped_suppressors": [
+          "EDUCATIONAL_CONTENT",
+          "NO_ACTION_REQUESTED",
+          "OFFICIAL_CHANNEL_REDIRECT",
+          "REGISTRATION_DISCLOSED",
+          "REPORTED_SCAM_NARRATIVE",
+          "SECURITY_NOTIFICATION",
+          "SELF_PROTECTIVE_WARNING",
+          "SUPPORT_NEVER_ASKS",
+          "TRANSACTION_NOTIFICATION"
+        ],
+        "directional_neutralisers": [
+          "NEGATED_ACTION_REQUEST",
+          "NO_PERMISSION_REQUEST"
+        ]
+      },
+      "hard_risk_overrides": [
+        "HR_WALLET_CONNECT_UNKNOWN"
+      ],
+      "extractability": "CURRENTLY_EXTRACTABLE",
+      "future_capability_needed": {
+        "FAKE_VERIFICATION_SITE": "URL_BRAND_REPUTATION",
+        "LOOKALIKE_DOMAIN": "URL_BRAND_REPUTATION"
+      },
+      "extraction_notes": {}
+    },
+    {
+      "rule_id": "TL-INV-001",
+      "kind": "COMPOSITE",
+      "status": "PUBLISHED",
+      "severity": "HIGH",
+      "verdict": "SUPPORTED",
+      "implementability": "YES",
+      "blocked_by": null,
+      "taxonomy_refs": [
+        "TAX-05-01"
+      ],
+      "required_evidence_classes": [
+        "FINANCIAL_CLAIM",
+        "PRESSURE",
+        "PRETEXT"
+      ],
+      "required_indicator_families": [
+        "FAM-INVESTMENT-RETURNS",
+        "FAM-PRETEXT-INVESTMENT-JOB",
+        "FAM-PRETEXT-SOCIAL-LURE",
+        "FAM-URGENCY-PRESSURE"
+      ],
+      "required_observation_types": [
+        "CLAIM",
+        "ENTITY",
+        "LINK_ACTION",
+        "PROMISE",
+        "RELATIONSHIP_CONTEXT",
+        "TEMPORAL_PRESSURE"
+      ],
+      "required_positive_indicators": [
+        "INVESTMENT_SOLICITATION",
+        "RETURN_GUARANTEE",
+        "SCARCITY_PRESSURE",
+        "UNSOLICITED_OFFER"
+      ],
+      "suppression_trigger_indicators": [],
+      "negative_context": {
+        "explicit_suppressed_by": [],
+        "family_scoped_suppressors": [
+          "EDUCATIONAL_CONTENT",
+          "NO_ACTION_REQUESTED",
+          "OFFICIAL_CHANNEL_REDIRECT",
+          "REGISTRATION_DISCLOSED",
+          "REPORTED_SCAM_NARRATIVE",
+          "SECURITY_NOTIFICATION",
+          "SELF_PROTECTIVE_WARNING",
+          "SUPPORT_NEVER_ASKS",
+          "TRANSACTION_NOTIFICATION"
+        ],
+        "directional_neutralisers": [
+          "NO_RETURN_GUARANTEE"
+        ]
+      },
+      "hard_risk_overrides": [
+        "HR_WALLET_CONNECT_UNKNOWN"
+      ],
+      "extractability": "CURRENTLY_EXTRACTABLE",
+      "future_capability_needed": {},
+      "extraction_notes": {}
+    },
+    {
+      "rule_id": "TL-INV-002",
+      "kind": "COMPOSITE",
+      "status": "PUBLISHED",
+      "severity": "HIGH",
+      "verdict": "SUPPORTED",
+      "implementability": "YES",
+      "blocked_by": null,
+      "taxonomy_refs": [
+        "TAX-05-02"
+      ],
+      "required_evidence_classes": [
+        "FINANCIAL_CLAIM",
+        "PRESSURE",
+        "PRETEXT"
+      ],
+      "required_indicator_families": [
+        "FAM-INVESTMENT-RETURNS",
+        "FAM-PRETEXT-INVESTMENT-JOB",
+        "FAM-PRETEXT-SOCIAL-LURE",
+        "FAM-URGENCY-PRESSURE"
+      ],
+      "required_observation_types": [
+        "CLAIM",
+        "ENTITY",
+        "LINK_ACTION",
+        "PROMISE",
+        "RELATIONSHIP_CONTEXT",
+        "TEMPORAL_PRESSURE"
+      ],
+      "required_positive_indicators": [
+        "INVESTMENT_SOLICITATION",
+        "SCARCITY_PRESSURE",
+        "TRADING_ON_BEHALF_OF_CLIENT",
+        "UNSOLICITED_OFFER"
+      ],
+      "suppression_trigger_indicators": [],
+      "negative_context": {
+        "explicit_suppressed_by": [
+          "REGISTRATION_DISCLOSED"
+        ],
+        "family_scoped_suppressors": [
+          "EDUCATIONAL_CONTENT",
+          "NO_ACTION_REQUESTED",
+          "OFFICIAL_CHANNEL_REDIRECT",
+          "REGISTRATION_DISCLOSED",
+          "REPORTED_SCAM_NARRATIVE",
+          "SECURITY_NOTIFICATION",
+          "SELF_PROTECTIVE_WARNING",
+          "SUPPORT_NEVER_ASKS",
+          "TRANSACTION_NOTIFICATION"
+        ],
+        "directional_neutralisers": []
+      },
+      "hard_risk_overrides": [
+        "HR_WALLET_CONNECT_UNKNOWN"
+      ],
+      "extractability": "CURRENTLY_EXTRACTABLE",
+      "future_capability_needed": {},
+      "extraction_notes": {}
+    },
+    {
+      "rule_id": "TL-INV-003",
+      "kind": "COMPOSITE",
+      "status": "PEER_REVIEW",
+      "severity": "HIGH",
+      "verdict": "PARTIAL",
+      "implementability": "YES",
+      "blocked_by": null,
+      "taxonomy_refs": [
+        "TAX-05-04"
+      ],
+      "required_evidence_classes": [
+        "FINANCIAL_CLAIM",
+        "IDENTITY_CLAIM",
+        "PRETEXT"
+      ],
+      "required_indicator_families": [
+        "FAM-IDENTITY-IMPERSONATION",
+        "FAM-INVESTMENT-RETURNS",
+        "FAM-PRETEXT-INVESTMENT-JOB"
+      ],
+      "required_observation_types": [
+        "CLAIM",
+        "ENTITY",
+        "IDENTITY_ASSERTION",
+        "PROMISE",
+        "RELATIONSHIP_CONTEXT"
+      ],
+      "required_positive_indicators": [
+        "CELEBRITY_IMPERSONATION",
+        "HIGH_RETURN_MENTION",
+        "INVESTMENT_SOLICITATION",
+        "RETURN_GUARANTEE"
+      ],
+      "suppression_trigger_indicators": [],
+      "negative_context": {
+        "explicit_suppressed_by": [
+          "RISK_DISCLOSURE_PRESENT",
+          "REGISTRATION_DISCLOSED"
+        ],
+        "family_scoped_suppressors": [
+          "EDUCATIONAL_CONTENT",
+          "NO_ACTION_REQUESTED",
+          "OFFICIAL_CHANNEL_REDIRECT",
+          "REGISTRATION_DISCLOSED",
+          "REPORTED_SCAM_NARRATIVE",
+          "SECURITY_NOTIFICATION",
+          "SELF_PROTECTIVE_WARNING",
+          "SUPPORT_NEVER_ASKS",
+          "TRANSACTION_NOTIFICATION"
+        ],
+        "directional_neutralisers": [
+          "NO_RETURN_GUARANTEE"
+        ]
+      },
+      "hard_risk_overrides": [
+        "HR_WALLET_CONNECT_UNKNOWN"
+      ],
+      "extractability": "CURRENTLY_EXTRACTABLE",
+      "future_capability_needed": {},
+      "extraction_notes": {}
+    },
+    {
+      "rule_id": "TL-JOB-001",
+      "kind": "COMPOSITE",
+      "status": "PUBLISHED",
+      "severity": "HIGH",
+      "verdict": "SUPPORTED",
+      "implementability": "YES",
+      "blocked_by": null,
+      "taxonomy_refs": [
+        "TAX-06-01"
+      ],
+      "required_evidence_classes": [
+        "FINANCIAL_CLAIM",
+        "PAYMENT_ACTION",
+        "PRETEXT"
+      ],
+      "required_indicator_families": [
+        "FAM-JOB-INCOME-GUARANTEE",
+        "FAM-PAYMENT-REQUEST",
+        "FAM-PRETEXT-INVESTMENT-JOB",
+        "FAM-PRETEXT-SOCIAL-LURE"
+      ],
+      "required_observation_types": [
+        "CLAIM",
+        "ENTITY",
+        "LINK_ACTION",
+        "PAYMENT_CONTEXT",
+        "PROMISE",
+        "RELATIONSHIP_CONTEXT",
+        "REQUEST"
+      ],
+      "required_positive_indicators": [
+        "JOB_CONTEXT",
+        "JOB_GUARANTEE",
+        "UNSOLICITED_OFFER",
+        "UPFRONT_FEE_DEMAND"
+      ],
+      "suppression_trigger_indicators": [],
+      "negative_context": {
+        "explicit_suppressed_by": [
+          "EXPLICIT_NO_FEE"
+        ],
+        "family_scoped_suppressors": [
+          "EDUCATIONAL_CONTENT",
+          "EXPLICIT_NO_FEE",
+          "NO_ACTION_REQUESTED",
+          "NO_PAYMENT_REQUESTED",
+          "OFFICIAL_CHANNEL_REDIRECT",
+          "REPORTED_SCAM_NARRATIVE",
+          "SECURITY_NOTIFICATION",
+          "SELF_PROTECTIVE_WARNING",
+          "SUPPORT_NEVER_ASKS",
+          "TRANSACTION_NOTIFICATION"
+        ],
+        "directional_neutralisers": []
+      },
+      "hard_risk_overrides": [],
+      "extractability": "CURRENTLY_EXTRACTABLE",
+      "future_capability_needed": {},
+      "extraction_notes": {}
+    },
+    {
+      "rule_id": "TL-JOB-003",
+      "kind": "COMPOSITE",
+      "status": "APPROVED",
+      "severity": "HIGH",
+      "verdict": "SUPPORTED",
+      "implementability": "PARTIAL",
+      "blocked_by": null,
+      "taxonomy_refs": [
+        "TAX-06-03"
+      ],
+      "required_evidence_classes": [
+        "PAYMENT_ACTION",
+        "PRESSURE",
+        "PRETEXT"
+      ],
+      "required_indicator_families": [
+        "FAM-PAYMENT-REQUEST",
+        "FAM-PRETEXT-INVESTMENT-JOB",
+        "FAM-TASK-MONETISATION",
+        "FAM-THREAT-CONSEQUENCE"
+      ],
+      "required_observation_types": [
+        "CLAIM",
+        "ENTITY",
+        "PAYMENT_CONTEXT",
+        "PROMISE",
+        "RELATIONSHIP_CONTEXT",
+        "REQUEST",
+        "TEMPORAL_PRESSURE",
+        "THREAT"
+      ],
+      "required_positive_indicators": [
+        "DEPOSIT_FOR_EARNINGS",
+        "JOB_CONTEXT",
+        "PAYMENT_DEMAND",
+        "TASK_EARNING_LURE",
+        "UPFRONT_FEE_DEMAND",
+        "WITHDRAWAL_BLOCKED_PRETEXT"
+      ],
+      "suppression_trigger_indicators": [],
+      "negative_context": {
+        "explicit_suppressed_by": [
+          "EXPLICIT_NO_FEE",
+          "NO_PAYMENT_REQUESTED"
+        ],
+        "family_scoped_suppressors": [
+          "EDUCATIONAL_CONTENT",
+          "EXPLICIT_NO_FEE",
+          "NO_ACTION_REQUESTED",
+          "NO_PAYMENT_REQUESTED",
+          "OFFICIAL_CHANNEL_REDIRECT",
+          "REPORTED_SCAM_NARRATIVE",
+          "SECURITY_NOTIFICATION",
+          "SELF_PROTECTIVE_WARNING",
+          "SUPPORT_NEVER_ASKS",
+          "TRANSACTION_NOTIFICATION"
+        ],
+        "directional_neutralisers": []
+      },
+      "hard_risk_overrides": [],
+      "extractability": "PARTIAL_REQUIRES_FUTURE_EXTRACTOR",
+      "future_capability_needed": {
+        "WITHDRAWAL_BLOCKED_PRETEXT": "THREAD_CONTEXT"
+      },
+      "extraction_notes": {}
+    },
+    {
+      "rule_id": "TL-KYC-001",
+      "kind": "COMPOSITE",
+      "status": "PUBLISHED",
+      "severity": "HIGH",
+      "verdict": "PARTIAL",
+      "implementability": "YES",
+      "blocked_by": null,
+      "taxonomy_refs": [
+        "TAX-02-01",
+        "TAX-02-02"
+      ],
+      "required_evidence_classes": [
+        "CHANNEL_ARTIFACT",
+        "CREDENTIAL_ACTION",
+        "IDENTITY_CLAIM",
+        "PRESSURE",
+        "PRETEXT"
+      ],
+      "required_indicator_families": [
+        "FAM-IDENTITY-IMPERSONATION",
+        "FAM-LINK-DOMAIN",
+        "FAM-PRETEXT-ACCOUNT-KYC",
+        "FAM-THREAT-CONSEQUENCE",
+        "FAM-URGENCY-PRESSURE",
+        "FAM-VERIFICATION-CAPTURE"
+      ],
+      "required_observation_types": [
+        "AUTHENTICATION_ACTION",
+        "CLAIM",
+        "ENTITY",
+        "IDENTITY_ASSERTION",
+        "LINK_ACTION",
+        "TEMPORAL_PRESSURE",
+        "THREAT"
+      ],
+      "required_positive_indicators": [
+        "ACCOUNT_BLOCK_THREAT",
+        "AUTHORITY_IMPERSONATION_BANK",
+        "KYC_PRETEXT",
+        "LINK_PRESENT",
+        "LOOKALIKE_DOMAIN",
+        "SHORTENED_URL",
+        "SUSPENSION_THREAT",
+        "URGENCY_DEADLINE",
+        "VERIFICATION_PROMPT"
+      ],
+      "suppression_trigger_indicators": [],
+      "negative_context": {
+        "explicit_suppressed_by": [],
+        "family_scoped_suppressors": [
+          "EDUCATIONAL_CONTENT",
+          "NO_ACTION_REQUESTED",
+          "OFFICIAL_CHANNEL_REDIRECT",
+          "REPORTED_SCAM_NARRATIVE",
+          "SECURITY_NOTIFICATION",
+          "SELF_PROTECTIVE_WARNING",
+          "SUPPORT_NEVER_ASKS",
+          "TRANSACTION_NOTIFICATION"
+        ],
+        "directional_neutralisers": []
+      },
+      "hard_risk_overrides": [
+        "HR_OTP_DISCLOSURE_REQUEST"
+      ],
+      "extractability": "CURRENTLY_EXTRACTABLE",
+      "future_capability_needed": {
+        "LOOKALIKE_DOMAIN": "URL_BRAND_REPUTATION"
+      },
+      "extraction_notes": {}
+    },
+    {
+      "rule_id": "TL-MAL-001",
+      "kind": "COMPOSITE",
+      "status": "PEER_REVIEW",
+      "severity": "MEDIUM",
+      "verdict": "PARTIAL",
+      "implementability": "YES",
+      "blocked_by": null,
+      "taxonomy_refs": [
+        "TAX-10-01"
+      ],
+      "required_evidence_classes": [
+        "CHANNEL_ARTIFACT",
+        "DEVICE_ACTION",
+        "IDENTITY_CLAIM",
+        "PRETEXT"
+      ],
+      "required_indicator_families": [
+        "FAM-APP-INSTALLATION",
+        "FAM-IDENTITY-IMPERSONATION",
+        "FAM-LINK-DOMAIN",
+        "FAM-PRETEXT-SOCIAL-LURE"
+      ],
+      "required_observation_types": [
+        "CLAIM",
+        "DEVICE_ACTION",
+        "ENTITY",
+        "IDENTITY_ASSERTION",
+        "LINK_ACTION",
+        "RELATIONSHIP_CONTEXT"
+      ],
+      "required_positive_indicators": [
+        "APK_INSTALL_REQUEST",
+        "APP_INSTALL_UNTRUSTED_SOURCE",
+        "FAKE_APP_IMPERSONATION",
+        "LINK_PRESENT",
+        "SHORTENED_URL",
+        "UNSOLICITED_OFFER"
+      ],
+      "suppression_trigger_indicators": [],
+      "negative_context": {
+        "explicit_suppressed_by": [
+          "OFFICIAL_APP_STORE_SOURCE"
+        ],
+        "family_scoped_suppressors": [
+          "EDUCATIONAL_CONTENT",
+          "IT_SUPPORT_CONTEXT",
+          "NO_ACTION_REQUESTED",
+          "OFFICIAL_CHANNEL_REDIRECT",
+          "REPORTED_SCAM_NARRATIVE",
+          "SECURITY_NOTIFICATION",
+          "SELF_PROTECTIVE_WARNING",
+          "SUPPORT_NEVER_ASKS",
+          "TRANSACTION_NOTIFICATION"
+        ],
+        "directional_neutralisers": [
+          "NEGATED_ACTION_REQUEST",
+          "OFFICIAL_APP_STORE_SOURCE"
+        ]
+      },
+      "hard_risk_overrides": [
+        "HR_ACCESSIBILITY_REQUEST",
+        "HR_BANKING_REMOTE_ACCESS"
+      ],
+      "extractability": "CURRENTLY_EXTRACTABLE",
+      "future_capability_needed": {},
+      "extraction_notes": {}
+    },
+    {
+      "rule_id": "TL-MAL-002",
+      "kind": "COMPOSITE",
+      "status": "APPROVED",
+      "severity": "HIGH",
+      "verdict": "PARTIAL",
+      "implementability": "PARTIAL",
+      "blocked_by": null,
+      "taxonomy_refs": [
+        "TAX-10-02"
+      ],
+      "required_evidence_classes": [
+        "CHANNEL_ARTIFACT",
+        "DEVICE_ACTION",
+        "IDENTITY_CLAIM",
+        "PRETEXT"
+      ],
+      "required_indicator_families": [
+        "FAM-ACCESSIBILITY-PERMISSION",
+        "FAM-IDENTITY-IMPERSONATION",
+        "FAM-LINK-DOMAIN",
+        "FAM-PRETEXT-BENIGN-COVER"
+      ],
+      "required_observation_types": [
+        "CLAIM",
+        "DEVICE_ACTION",
+        "ENTITY",
+        "IDENTITY_ASSERTION",
+        "LINK_ACTION"
+      ],
+      "required_positive_indicators": [
+        "ACCESSIBILITY_PERMISSION_REQUEST",
+        "BENIGN_PRETEXT_FOR_TECHNICAL_ACTION",
+        "FAKE_APP_IMPERSONATION",
+        "LINK_PRESENT",
+        "SHORTENED_URL"
+      ],
+      "suppression_trigger_indicators": [],
+      "negative_context": {
+        "explicit_suppressed_by": [
+          "NO_PERMISSION_REQUEST",
+          "OFFICIAL_APP_STORE_SOURCE"
+        ],
+        "family_scoped_suppressors": [
+          "EDUCATIONAL_CONTENT",
+          "IT_SUPPORT_CONTEXT",
+          "NO_ACTION_REQUESTED",
+          "OFFICIAL_CHANNEL_REDIRECT",
+          "REPORTED_SCAM_NARRATIVE",
+          "SECURITY_NOTIFICATION",
+          "SELF_PROTECTIVE_WARNING",
+          "SUPPORT_NEVER_ASKS",
+          "TRANSACTION_NOTIFICATION"
+        ],
+        "directional_neutralisers": [
+          "NEGATED_ACTION_REQUEST",
+          "NO_PERMISSION_REQUEST"
+        ]
+      },
+      "hard_risk_overrides": [
+        "HR_ACCESSIBILITY_REQUEST",
+        "HR_BANKING_REMOTE_ACCESS"
+      ],
+      "extractability": "PARTIAL_REQUIRES_FUTURE_EXTRACTOR",
+      "future_capability_needed": {
+        "ACCESSIBILITY_PERMISSION_REQUEST": "DEVICE_STATE"
+      },
+      "extraction_notes": {}
+    },
+    {
+      "rule_id": "TL-MAL-003",
+      "kind": "COMPOSITE",
+      "status": "PEER_REVIEW",
+      "severity": "HIGH",
+      "verdict": "PARTIAL",
+      "implementability": "YES",
+      "blocked_by": null,
+      "taxonomy_refs": [
+        "TAX-10-03"
+      ],
+      "required_evidence_classes": [
+        "DEVICE_ACTION",
+        "IDENTITY_CLAIM",
+        "PAYMENT_ACTION",
+        "PRETEXT"
+      ],
+      "required_indicator_families": [
+        "FAM-IDENTITY-IMPERSONATION",
+        "FAM-PAYMENT-REQUEST",
+        "FAM-PRETEXT-ACCOUNT-KYC",
+        "FAM-PRETEXT-BENIGN-COVER",
+        "FAM-REMOTE-ACCESS"
+      ],
+      "required_observation_types": [
+        "CLAIM",
+        "DEVICE_ACTION",
+        "ENTITY",
+        "IDENTITY_ASSERTION",
+        "PAYMENT_CONTEXT",
+        "REQUEST"
+      ],
+      "required_positive_indicators": [
+        "AUTHORITY_IMPERSONATION_BANK",
+        "BENIGN_PRETEXT_FOR_TECHNICAL_ACTION",
+        "KYC_PRETEXT",
+        "PAYMENT_CONTEXT",
+        "SCREEN_SHARE_APP_REQUEST"
+      ],
+      "suppression_trigger_indicators": [],
+      "negative_context": {
+        "explicit_suppressed_by": [
+          "IT_SUPPORT_CONTEXT",
+          "NO_PERMISSION_REQUEST"
+        ],
+        "family_scoped_suppressors": [
+          "EDUCATIONAL_CONTENT",
+          "IT_SUPPORT_CONTEXT",
+          "NO_ACTION_REQUESTED",
+          "OFFICIAL_CHANNEL_REDIRECT",
+          "REPORTED_SCAM_NARRATIVE",
+          "SECURITY_NOTIFICATION",
+          "SELF_PROTECTIVE_WARNING",
+          "SUPPORT_NEVER_ASKS",
+          "TRANSACTION_NOTIFICATION"
+        ],
+        "directional_neutralisers": [
+          "NEGATED_ACTION_REQUEST",
+          "NO_PERMISSION_REQUEST"
+        ]
+      },
+      "hard_risk_overrides": [
+        "HR_ACCESSIBILITY_REQUEST",
+        "HR_BANKING_REMOTE_ACCESS"
+      ],
+      "extractability": "CURRENTLY_EXTRACTABLE",
+      "future_capability_needed": {},
+      "extraction_notes": {}
+    },
+    {
+      "rule_id": "TL-PAY-001",
+      "kind": "COMPOSITE",
+      "status": "PUBLISHED",
+      "severity": "CRITICAL",
+      "verdict": "SUPPORTED",
+      "implementability": "YES",
+      "blocked_by": null,
+      "taxonomy_refs": [
+        "TAX-01-02",
+        "TAX-01-03"
+      ],
+      "required_evidence_classes": [
+        "CREDENTIAL_ACTION",
+        "PAYMENT_ACTION"
+      ],
+      "required_indicator_families": [
+        "FAM-CREDENTIAL-REQUEST",
+        "FAM-PAYMENT-DIRECTION",
+        "FAM-UPI-PIN-CONTEXT",
+        "FAM-VERIFICATION-CAPTURE"
+      ],
+      "required_observation_types": [
+        "AUTHENTICATION_ACTION",
+        "LINK_ACTION",
+        "PAYMENT_CONTEXT",
+        "REQUEST"
+      ],
+      "required_positive_indicators": [
+        "CREDENTIAL_REQUEST_OTP",
+        "RECEIVE_FRAMING",
+        "UPI_PIN_PROMPT",
+        "VERIFICATION_PROMPT"
+      ],
+      "suppression_trigger_indicators": [],
+      "negative_context": {
+        "explicit_suppressed_by": [],
+        "family_scoped_suppressors": [
+          "EDUCATIONAL_CONTENT",
+          "NO_ACTION_REQUESTED",
+          "NO_PAYMENT_REQUESTED",
+          "OFFICIAL_CHANNEL_REDIRECT",
+          "PAY_MERCHANT_DIRECTION",
+          "REPORTED_SCAM_NARRATIVE",
+          "SECURITY_NOTIFICATION",
+          "SELF_PROTECTIVE_WARNING",
+          "SUPPORT_NEVER_ASKS",
+          "TRANSACTION_NOTIFICATION"
+        ],
+        "directional_neutralisers": [
+          "NEGATED_CREDENTIAL_REQUEST",
+          "OTP_DELIVERED_NOT_REQUESTED"
+        ]
+      },
+      "hard_risk_overrides": [
+        "HR_OTP_DISCLOSURE_REQUEST",
+        "HR_PAYMENT_UNDER_COERCION",
+        "HR_UPI_PIN_TO_RECEIVE"
+      ],
+      "extractability": "CURRENTLY_EXTRACTABLE",
+      "future_capability_needed": {},
+      "extraction_notes": {
+        "RECEIVE_FRAMING": "TRANSACTION_CONTEXT_FOR_AMBIGUOUS_CASES"
+      }
+    },
+    {
+      "rule_id": "TL-PAY-002",
+      "kind": "COMPOSITE",
+      "status": "PUBLISHED",
+      "severity": "HIGH",
+      "verdict": "SUPPORTED",
+      "implementability": "YES",
+      "blocked_by": null,
+      "taxonomy_refs": [
+        "TAX-01-03"
+      ],
+      "required_evidence_classes": [
+        "CREDENTIAL_ACTION",
+        "PAYMENT_ACTION"
+      ],
+      "required_indicator_families": [
+        "FAM-PAYMENT-DIRECTION",
+        "FAM-QR-PAYMENT",
+        "FAM-UPI-PIN-CONTEXT"
+      ],
+      "required_observation_types": [
+        "ACTION",
+        "AUTHENTICATION_ACTION",
+        "PAYMENT_CONTEXT"
+      ],
+      "required_positive_indicators": [
+        "QR_SCAN_REQUEST",
+        "RECEIVE_FRAMING",
+        "UPI_PIN_PROMPT"
+      ],
+      "suppression_trigger_indicators": [],
+      "negative_context": {
+        "explicit_suppressed_by": [],
+        "family_scoped_suppressors": [
+          "EDUCATIONAL_CONTENT",
+          "NO_ACTION_REQUESTED",
+          "NO_PAYMENT_REQUESTED",
+          "OFFICIAL_CHANNEL_REDIRECT",
+          "PAY_MERCHANT_DIRECTION",
+          "REPORTED_SCAM_NARRATIVE",
+          "SECURITY_NOTIFICATION",
+          "SELF_PROTECTIVE_WARNING",
+          "SUPPORT_NEVER_ASKS",
+          "TRANSACTION_NOTIFICATION"
+        ],
+        "directional_neutralisers": [
+          "NEGATED_CREDENTIAL_REQUEST"
+        ]
+      },
+      "hard_risk_overrides": [
+        "HR_OTP_DISCLOSURE_REQUEST",
+        "HR_PAYMENT_UNDER_COERCION",
+        "HR_UPI_PIN_TO_RECEIVE"
+      ],
+      "extractability": "CURRENTLY_EXTRACTABLE",
+      "future_capability_needed": {},
+      "extraction_notes": {
+        "RECEIVE_FRAMING": "TRANSACTION_CONTEXT_FOR_AMBIGUOUS_CASES"
+      }
+    },
+    {
+      "rule_id": "TL-PAY-003",
+      "kind": "COMPOSITE",
+      "status": "DRAFT",
+      "severity": "HIGH",
+      "verdict": "SUPPORTED",
+      "implementability": "DEFERRED",
+      "blocked_by": "LIVE_TRANSACTION_CONTEXT",
+      "taxonomy_refs": [
+        "TAX-01-03"
+      ],
+      "required_evidence_classes": [
+        "CHANNEL_ARTIFACT",
+        "PAYMENT_ACTION"
+      ],
+      "required_indicator_families": [
+        "FAM-PAYMENT-REQUEST",
+        "FAM-QR-ARTIFACT",
+        "FAM-QR-PAYMENT"
+      ],
+      "required_observation_types": [
+        "ACTION",
+        "ENTITY",
+        "PAYMENT_CONTEXT",
+        "REQUEST"
+      ],
+      "required_positive_indicators": [
+        "IMMEDIATE_PAYMENT_DEMAND",
+        "PAYMENT_CONTEXT",
+        "QR_PRESENT",
+        "QR_SCAN_REQUEST"
+      ],
+      "suppression_trigger_indicators": [],
+      "negative_context": {
+        "explicit_suppressed_by": [],
+        "family_scoped_suppressors": [
+          "EDUCATIONAL_CONTENT",
+          "NO_ACTION_REQUESTED",
+          "NO_PAYMENT_REQUESTED",
+          "OFFICIAL_CHANNEL_REDIRECT",
+          "PAY_MERCHANT_DIRECTION",
+          "REPORTED_SCAM_NARRATIVE",
+          "SECURITY_NOTIFICATION",
+          "SELF_PROTECTIVE_WARNING",
+          "SUPPORT_NEVER_ASKS",
+          "TRANSACTION_NOTIFICATION"
+        ],
+        "directional_neutralisers": []
+      },
+      "hard_risk_overrides": [
+        "HR_OTP_DISCLOSURE_REQUEST",
+        "HR_PAYMENT_UNDER_COERCION",
+        "HR_UPI_PIN_TO_RECEIVE"
+      ],
+      "extractability": "UNOBSERVABLE",
+      "future_capability_needed": {},
+      "extraction_notes": {}
+    },
+    {
+      "rule_id": "TL-SOC-002",
+      "kind": "COMPOSITE",
+      "status": "PUBLISHED",
+      "severity": "HIGH",
+      "verdict": "SUPPORTED",
+      "implementability": "YES",
+      "blocked_by": null,
+      "taxonomy_refs": [
+        "TAX-08-02"
+      ],
+      "required_evidence_classes": [
+        "IDENTITY_CLAIM",
+        "PAYMENT_ACTION",
+        "PRESSURE"
+      ],
+      "required_indicator_families": [
+        "FAM-COERCION-ISOLATION",
+        "FAM-IDENTITY-TRUSTED-CONTACT",
+        "FAM-PAYMENT-REQUEST",
+        "FAM-URGENCY-PRESSURE"
+      ],
+      "required_observation_types": [
+        "IDENTITY_ASSERTION",
+        "PAYMENT_CONTEXT",
+        "RELATIONSHIP_CONTEXT",
+        "REQUEST",
+        "TEMPORAL_PRESSURE",
+        "THREAT"
+      ],
+      "required_positive_indicators": [
+        "FAKE_PROFILE_CLAIM",
+        "PAYMENT_DEMAND",
+        "SECRECY_REQUEST",
+        "URGENCY"
+      ],
+      "suppression_trigger_indicators": [],
+      "negative_context": {
+        "explicit_suppressed_by": [],
+        "family_scoped_suppressors": [
+          "EDUCATIONAL_CONTENT",
+          "NO_ACTION_REQUESTED",
+          "NO_PAYMENT_REQUESTED",
+          "OFFICIAL_CHANNEL_REDIRECT",
+          "REPORTED_SCAM_NARRATIVE",
+          "SECURITY_NOTIFICATION",
+          "SELF_PROTECTIVE_WARNING",
+          "SUPPORT_NEVER_ASKS",
+          "TRANSACTION_NOTIFICATION"
+        ],
+        "directional_neutralisers": []
+      },
+      "hard_risk_overrides": [],
+      "extractability": "CURRENTLY_EXTRACTABLE",
+      "future_capability_needed": {},
+      "extraction_notes": {}
+    },
+    {
+      "rule_id": "TL-SOC-003",
+      "kind": "COMPOSITE",
+      "status": "PUBLISHED",
+      "severity": "HIGH",
+      "verdict": "SUPPORTED",
+      "implementability": "YES",
+      "blocked_by": null,
+      "taxonomy_refs": [
+        "TAX-08-04"
+      ],
+      "required_evidence_classes": [
+        "IDENTITY_CLAIM",
+        "PAYMENT_ACTION",
+        "PRESSURE"
+      ],
+      "required_indicator_families": [
+        "FAM-COERCION-ISOLATION",
+        "FAM-IDENTITY-TRUSTED-CONTACT",
+        "FAM-PAYMENT-REQUEST",
+        "FAM-URGENCY-PRESSURE"
+      ],
+      "required_observation_types": [
+        "IDENTITY_ASSERTION",
+        "PAYMENT_CONTEXT",
+        "RELATIONSHIP_CONTEXT",
+        "REQUEST",
+        "TEMPORAL_PRESSURE",
+        "THREAT"
+      ],
+      "required_positive_indicators": [
+        "CLAIMED_RELATIVE",
+        "DISCOURAGES_VERIFICATION",
+        "IMMEDIATE_PAYMENT_DEMAND",
+        "PAYMENT_DEMAND",
+        "URGENCY",
+        "URGENCY_DEADLINE"
+      ],
+      "suppression_trigger_indicators": [],
+      "negative_context": {
+        "explicit_suppressed_by": [],
+        "family_scoped_suppressors": [
+          "EDUCATIONAL_CONTENT",
+          "NO_ACTION_REQUESTED",
+          "NO_PAYMENT_REQUESTED",
+          "OFFICIAL_CHANNEL_REDIRECT",
+          "REPORTED_SCAM_NARRATIVE",
+          "SECURITY_NOTIFICATION",
+          "SELF_PROTECTIVE_WARNING",
+          "SUPPORT_NEVER_ASKS",
+          "TRANSACTION_NOTIFICATION"
+        ],
+        "directional_neutralisers": []
+      },
+      "hard_risk_overrides": [],
+      "extractability": "CURRENTLY_EXTRACTABLE",
+      "future_capability_needed": {},
+      "extraction_notes": {}
+    },
+    {
+      "rule_id": "TL-SUP-001",
+      "kind": "SUPPRESSION",
+      "status": "APPROVED",
+      "severity": null,
+      "verdict": "HEURISTIC",
+      "implementability": "YES",
+      "blocked_by": null,
+      "taxonomy_refs": [
+        "TAX-01-01"
+      ],
+      "required_evidence_classes": [],
+      "required_indicator_families": [],
+      "required_observation_types": [],
+      "required_positive_indicators": [],
+      "suppression_trigger_indicators": [
+        "NEGATED_CREDENTIAL_REQUEST",
+        "OTP_DELIVERED_NOT_REQUESTED",
+        "SELF_PROTECTIVE_WARNING"
+      ],
+      "negative_context": {
+        "explicit_suppressed_by": [],
+        "family_scoped_suppressors": [
+          "EDUCATIONAL_CONTENT",
+          "NO_ACTION_REQUESTED",
+          "NO_PAYMENT_REQUESTED",
+          "OFFICIAL_CHANNEL_REDIRECT",
+          "PAY_MERCHANT_DIRECTION",
+          "REPORTED_SCAM_NARRATIVE",
+          "SECURITY_NOTIFICATION",
+          "SELF_PROTECTIVE_WARNING",
+          "SUPPORT_NEVER_ASKS",
+          "TRANSACTION_NOTIFICATION"
+        ],
+        "directional_neutralisers": []
+      },
+      "hard_risk_overrides": [
+        "HR_OTP_DISCLOSURE_REQUEST",
+        "HR_PAYMENT_UNDER_COERCION",
+        "HR_UPI_PIN_TO_RECEIVE"
+      ],
+      "extractability": "CURRENTLY_EXTRACTABLE",
+      "future_capability_needed": {},
+      "extraction_notes": {}
+    },
+    {
+      "rule_id": "TL-TEL-001",
+      "kind": "COMPOSITE",
+      "status": "PEER_REVIEW",
+      "severity": "HIGH",
+      "verdict": "PARTIAL",
+      "implementability": "YES",
+      "blocked_by": null,
+      "taxonomy_refs": [
+        "TAX-04-01"
+      ],
+      "required_evidence_classes": [
+        "DEVICE_ACTION",
+        "PRESSURE",
+        "PRETEXT"
+      ],
+      "required_indicator_families": [
+        "FAM-CALL-FORWARDING",
+        "FAM-COERCION-ISOLATION",
+        "FAM-PRETEXT-SOCIAL-LURE",
+        "FAM-URGENCY-PRESSURE"
+      ],
+      "required_observation_types": [
+        "CLAIM",
+        "DEVICE_ACTION",
+        "LINK_ACTION",
+        "RELATIONSHIP_CONTEXT",
+        "REQUEST",
+        "TEMPORAL_PRESSURE",
+        "THREAT"
+      ],
+      "required_positive_indicators": [
+        "DISCOURAGES_VERIFICATION",
+        "UNSOLICITED_OFFER",
+        "URGENCY",
+        "URGENCY_DEADLINE",
+        "USSD_CODE_DIAL_REQUEST"
+      ],
+      "suppression_trigger_indicators": [],
+      "negative_context": {
+        "explicit_suppressed_by": [
+          "NO_CODE_DIAL_REQUEST"
+        ],
+        "family_scoped_suppressors": [
+          "EDUCATIONAL_CONTENT",
+          "NO_ACTION_REQUESTED",
+          "OFFICIAL_CHANNEL_REDIRECT",
+          "REPORTED_SCAM_NARRATIVE",
+          "SECURITY_NOTIFICATION",
+          "SELF_PROTECTIVE_WARNING",
+          "SUPPORT_NEVER_ASKS",
+          "TRANSACTION_NOTIFICATION"
+        ],
+        "directional_neutralisers": [
+          "NEGATED_ACTION_REQUEST",
+          "NO_CODE_DIAL_REQUEST"
+        ]
+      },
+      "hard_risk_overrides": [],
+      "extractability": "CURRENTLY_EXTRACTABLE",
+      "future_capability_needed": {},
+      "extraction_notes": {}
+    },
+    {
+      "rule_id": "TL-UTIL-001",
+      "kind": "COMPOSITE",
+      "status": "PUBLISHED",
+      "severity": "HIGH",
+      "verdict": "PARTIAL",
+      "implementability": "YES",
+      "blocked_by": null,
+      "taxonomy_refs": [
+        "TAX-07-02"
+      ],
+      "required_evidence_classes": [
+        "CHANNEL_ARTIFACT",
+        "PAYMENT_ACTION",
+        "PRESSURE"
+      ],
+      "required_indicator_families": [
+        "FAM-LINK-DOMAIN",
+        "FAM-PAYMENT-REQUEST",
+        "FAM-THREAT-CONSEQUENCE",
+        "FAM-URGENCY-PRESSURE"
+      ],
+      "required_observation_types": [
+        "ENTITY",
+        "LINK_ACTION",
+        "PAYMENT_CONTEXT",
+        "REQUEST",
+        "TEMPORAL_PRESSURE",
+        "THREAT"
+      ],
+      "required_positive_indicators": [
+        "IMMEDIATE_PAYMENT_DEMAND",
+        "LINK_PRESENT",
+        "PAYMENT_DEMAND",
+        "SUSPENSION_THREAT",
+        "URGENCY",
+        "URGENCY_DEADLINE"
+      ],
+      "suppression_trigger_indicators": [],
+      "negative_context": {
+        "explicit_suppressed_by": [],
+        "family_scoped_suppressors": [
+          "EDUCATIONAL_CONTENT",
+          "NO_ACTION_REQUESTED",
+          "OFFICIAL_CHANNEL_REDIRECT",
+          "REPORTED_SCAM_NARRATIVE",
+          "SECURITY_NOTIFICATION",
+          "SELF_PROTECTIVE_WARNING",
+          "SUPPORT_NEVER_ASKS",
+          "TRANSACTION_NOTIFICATION"
+        ],
+        "directional_neutralisers": []
+      },
+      "hard_risk_overrides": [],
+      "extractability": "CURRENTLY_EXTRACTABLE",
+      "future_capability_needed": {},
+      "extraction_notes": {}
+    }
+  ]
+}

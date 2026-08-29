@@ -4,7 +4,7 @@
   "generated": "2026-08-15",
   "amended": "2026-08-28 — 13 positive and 3 negative indicators added for the rules the RESEARCH-006 manual retrieval reconciliation made publishable (executive impersonation, accessibility/APK/wallet-connect device actions, task-app deposit/blocked-withdrawal, screen-share, celebrity impersonation), plus device-action and app-store guards. Evidence-class/strength assignments remain HEURISTIC programme judgements; source_basis points at the manually-retrieved source. | 2026-08-28 — NEGATIVE (SUPPRESSIVE) indicators MIGRATED OUT to knowledge/indicators/negative-indicator-library-v1.json (WP3, G-07). This file now holds POSITIVE indicators only. Loaders merge the library's negatives back into the indicator namespace for ID/polarity resolution.",
   "supersedes": null,
-  "superseded_by": "knowledge/indicators/indicator-families-v1.json (Phase 2 WP2, not yet written)",
+  "superseded_by": "knowledge/indicators/indicator-families-v1.json (Phase 2 WP2, WRITTEN 2026-08-29). The families file ORGANISES these positive indicators into 28 extraction families; it does NOT change any indicator id/polarity/evidence_class/strength here — this registry remains the source of truth for indicator definitions. See KB-002.",
   "provenance": "DERIVED from knowledge/seed-data/seed-corpus-v1.json. Evidence-class and strength assignments are HEURISTIC programme judgements, not source-published values.",
   "evidence_classes": {
     "PRETEXT": "The stated reason for contact — the story that frames the request",

@@ -1,0 +1,1396 @@
+{
+  "$comment": "TrustLens positive indicator FAMILIES (Phase 2 WP2, STEP 4). Formal, reusable groupings of the positive indicators in indicator-registry-v0.json into extraction families, each with the observation types it consumes, the indicators it produces, applicable taxonomy dimensions, its negative-context and hard-risk-override interactions, language/script considerations, confidence requirements, known ambiguities, and worked examples/counterexamples. This is the file indicator-registry-v0.json names as its successor-in-organisation (superseded_by). It ADDS an organising layer; it does NOT change indicator IDs, polarity, evidence_class or strength — the rule engine and registry remain the source of truth for those. The families PARTITION the 63 positive indicators exactly once (verified by validate_extraction.py). Negatives are governed by negative-indicator-library-v1.json (WP3); families only reference the negatives they interact with. No numeric weights (CONF-001); no verdicts.",
+  "families_version": "1.0.0",
+  "generated": "2026-08-29",
+  "status": "ACTIVE",
+  "organises": "knowledge/indicators/indicator-registry-v0.json (positive indicators)",
+  "negatives_governed_by": "knowledge/indicators/negative-indicator-library-v1.json",
+  "partition_invariant": "The union of families[].indicator_outputs equals the set of positive indicators in indicator-registry-v0.json, with no indicator in two families (enforced by validate_extraction.py).",
+  "evidence_class_legend": "parent_evidence_class mirrors the indicator registry's evidence_classes; it preserves the clean canonical grouping while families give finer, mechanism-level granularity.",
+  "families": [
+    {
+      "family_id": "FAM-IDENTITY-IMPERSONATION",
+      "name": "Authority / brand impersonation",
+      "parent_evidence_class": "IDENTITY_CLAIM",
+      "observation_inputs": [
+        "IDENTITY_ASSERTION",
+        "CLAIM"
+      ],
+      "indicator_outputs": [
+        "AUTHORITY_IMPERSONATION",
+        "AUTHORITY_IMPERSONATION_BANK",
+        "EXECUTIVE_IMPERSONATION",
+        "CELEBRITY_IMPERSONATION",
+        "FAKE_APP_IMPERSONATION",
+        "FAKE_PLATFORM_PREVIEW"
+      ],
+      "applicable_dimensions": {
+        "technical_mechanism": [
+          "TM-10"
+        ],
+        "social_engineering_tactics": [
+          "SE-01"
+        ]
+      },
+      "negative_interactions": [
+        "EDUCATIONAL_CONTENT",
+        "CASUAL_REGISTER"
+      ],
+      "hard_risk_overrides": [],
+      "known_ambiguities": [
+        "A genuine sender legitimately naming their institution vs claiming its authority to instruct.",
+        "Satire/news referencing an official is not an impersonation."
+      ],
+      "language_considerations": "MVP cues authored for en/Latn only; transliterated (e.g. hi-Latn) and non-Latin scripts are representable in the envelope but NOT yet extractable — the rule layer flags unsupported input (G-08/ADR-0014 unresolved, do not resolve here).",
+      "confidence_requirements": "Categorical extraction confidence (HIGH/MEDIUM/LOW); a lone WEAK-strength output never supports a finding alone (CONF-002). No numeric fraud probability (CONF-001).",
+      "examples": [
+        "This is Inspector Sharma, CBI Cyber Crime Division.",
+        "This is your CEO; transfer now."
+      ],
+      "counterexamples": [
+        "Message from your bank's verified channel with no instruction to act."
+      ],
+      "description": "The sender claims a false or borrowed identity (law enforcement, regulator, bank, senior executive, celebrity, or a trusted brand/platform) to borrow its authority. An IDENTITY_ASSERTION observation with actor.verified=UNKNOWN and a claimed_identity feeds this family.",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "change_history": [
+        {
+          "version": "1.0.0",
+          "date": "2026-08-29",
+          "change": "Authored in WP2 indicator-family formalisation."
+        }
+      ]
+    },
+    {
+      "family_id": "FAM-IDENTITY-TRUSTED-CONTACT",
+      "name": "Trusted-contact / relationship identity",
+      "parent_evidence_class": "IDENTITY_CLAIM",
+      "observation_inputs": [
+        "IDENTITY_ASSERTION",
+        "RELATIONSHIP_CONTEXT"
+      ],
+      "indicator_outputs": [
+        "FAKE_PROFILE_CLAIM",
+        "CLAIMED_RELATIVE",
+        "NEW_NUMBER_CLAIM"
+      ],
+      "applicable_dimensions": {
+        "social_engineering_tactics": [
+          "SE-05"
+        ],
+        "technical_mechanism": [
+          "TM-10"
+        ]
+      },
+      "negative_interactions": [
+        "CASUAL_REGISTER"
+      ],
+      "hard_risk_overrides": [],
+      "known_ambiguities": [
+        "A real relative genuinely messaging from a new number vs an impostor claiming to be one.",
+        "'It's me' is ambiguous without a payment/urgency frame."
+      ],
+      "language_considerations": "MVP cues authored for en/Latn only; transliterated (e.g. hi-Latn) and non-Latin scripts are representable in the envelope but NOT yet extractable — the rule layer flags unsupported input (G-08/ADR-0014 unresolved, do not resolve here).",
+      "confidence_requirements": "Categorical extraction confidence (HIGH/MEDIUM/LOW); a lone WEAK-strength output never supports a finding alone (CONF-002). No numeric fraud probability (CONF-001).",
+      "examples": [
+        "Beta, this is your uncle, new number, need money urgently.",
+        "It's me, I made a new account, send money."
+      ],
+      "counterexamples": [
+        "hey, forgot my wallet, can you send 300 for the cab? (casual, low amount)"
+      ],
+      "description": "The sender claims to be a known person — a relative, a friend, an existing contact — often from a new/unfamiliar account or number. Weak alone; dangerous combined with an urgent payment request.",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "change_history": [
+        {
+          "version": "1.0.0",
+          "date": "2026-08-29",
+          "change": "Authored in WP2 indicator-family formalisation."
+        }
+      ]
+    },
+    {
+      "family_id": "FAM-URGENCY-PRESSURE",
+      "name": "Urgency / time & scarcity pressure",
+      "parent_evidence_class": "PRESSURE",
+      "observation_inputs": [
+        "TEMPORAL_PRESSURE"
+      ],
+      "indicator_outputs": [
+        "URGENCY",
+        "URGENCY_DEADLINE",
+        "SCARCITY_PRESSURE",
+        "MILD_CONSEQUENCE_LANGUAGE"
+      ],
+      "applicable_dimensions": {
+        "social_engineering_tactics": [
+          "SE-02",
+          "SE-04"
+        ]
+      },
+      "negative_interactions": [
+        "NO_URGENCY_PRESSURE",
+        "REASONABLE_DEADLINE"
+      ],
+      "hard_risk_overrides": [],
+      "known_ambiguities": [
+        "Legitimate deadlines exist (bill due dates); the discriminator is proportionality, captured by REASONABLE_DEADLINE.",
+        "'Urgent' alone is WEAK (RP p.13) and must never suffice."
+      ],
+      "language_considerations": "MVP cues authored for en/Latn only; transliterated (e.g. hi-Latn) and non-Latin scripts are representable in the envelope but NOT yet extractable — the rule layer flags unsupported input (G-08/ADR-0014 unresolved, do not resolve here).",
+      "confidence_requirements": "Categorical extraction confidence (HIGH/MEDIUM/LOW); a lone WEAK-strength output never supports a finding alone (CONF-002). No numeric fraud probability (CONF-001).",
+      "examples": [
+        "Act now to avoid disconnection.",
+        "Only 5 seats left today!"
+      ],
+      "counterexamples": [
+        "Your bill is due on 05-08-2026 (a proportionate, dated deadline)."
+      ],
+      "description": "Time pressure, artificial deadlines and scarcity used to short-circuit deliberation. All WEAK/MODERATE by design; corroboration from another class is required.",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "change_history": [
+        {
+          "version": "1.0.0",
+          "date": "2026-08-29",
+          "change": "Authored in WP2 indicator-family formalisation."
+        }
+      ]
+    },
+    {
+      "family_id": "FAM-THREAT-CONSEQUENCE",
+      "name": "Threat / adverse consequence",
+      "parent_evidence_class": "PRESSURE",
+      "observation_inputs": [
+        "THREAT",
+        "TEMPORAL_PRESSURE"
+      ],
+      "indicator_outputs": [
+        "ACCOUNT_BLOCK_THREAT",
+        "SUSPENSION_THREAT",
+        "ARREST_THREAT",
+        "LEGAL_ACCUSATION",
+        "WITHDRAWAL_BLOCKED_PRETEXT"
+      ],
+      "applicable_dimensions": {
+        "social_engineering_tactics": [
+          "SE-03"
+        ],
+        "potential_harm": [
+          "PH-06"
+        ]
+      },
+      "negative_interactions": [
+        "NO_THREAT_LANGUAGE",
+        "SECURITY_NOTIFICATION"
+      ],
+      "hard_risk_overrides": [
+        "HR_PAYMENT_UNDER_COERCION"
+      ],
+      "known_ambiguities": [
+        "A factual service notice ('a login occurred') is not a threat; SECURITY_NOTIFICATION distinguishes it.",
+        "'Withdrawal blocked until you pay tax' is the discriminating task-app step, not routine friction."
+      ],
+      "language_considerations": "MVP cues authored for en/Latn only; transliterated (e.g. hi-Latn) and non-Latin scripts are representable in the envelope but NOT yet extractable — the rule layer flags unsupported input (G-08/ADR-0014 unresolved, do not resolve here).",
+      "confidence_requirements": "Categorical extraction confidence (HIGH/MEDIUM/LOW); a lone WEAK-strength output never supports a finding alone (CONF-002). No numeric fraud probability (CONF-001).",
+      "examples": [
+        "Your account will be BLOCKED today.",
+        "A warrant is issued; you are under digital arrest.",
+        "To withdraw you must first pay a 10% tax deposit."
+      ],
+      "counterexamples": [
+        "New login to your account; if this was you, no action needed."
+      ],
+      "description": "A stated adverse consequence — account block, service suspension, arrest, legal accusation, or a blocked withdrawal contingent on further payment — used as coercion. THREAT observations carry pressure.threat_of.",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "change_history": [
+        {
+          "version": "1.0.0",
+          "date": "2026-08-29",
+          "change": "Authored in WP2 indicator-family formalisation."
+        }
+      ]
+    },
+    {
+      "family_id": "FAM-COERCION-ISOLATION",
+      "name": "Coercion: isolation & secrecy",
+      "parent_evidence_class": "PRESSURE",
+      "observation_inputs": [
+        "THREAT",
+        "REQUEST"
+      ],
+      "indicator_outputs": [
+        "ISOLATION_FROM_FAMILY_OR_LAWYER",
+        "SECRECY_REQUEST",
+        "DISCOURAGES_VERIFICATION"
+      ],
+      "applicable_dimensions": {
+        "social_engineering_tactics": [
+          "SE-06"
+        ]
+      },
+      "negative_interactions": [
+        "OFFICIAL_CHANNEL_REDIRECT"
+      ],
+      "hard_risk_overrides": [],
+      "known_ambiguities": [
+        "'Keep this confidential until the deal closes' can be legitimate business; the frame plus impersonation is the signal.",
+        "Discouraging verification is the inverse of OFFICIAL_CHANNEL_REDIRECT."
+      ],
+      "language_considerations": "MVP cues authored for en/Latn only; transliterated (e.g. hi-Latn) and non-Latin scripts are representable in the envelope but NOT yet extractable — the rule layer flags unsupported input (G-08/ADR-0014 unresolved, do not resolve here).",
+      "confidence_requirements": "Categorical extraction confidence (HIGH/MEDIUM/LOW); a lone WEAK-strength output never supports a finding alone (CONF-002). No numeric fraud probability (CONF-001).",
+      "examples": [
+        "Do NOT contact your family or any lawyer.",
+        "Don't call, I can't talk here.",
+        "Keep this strictly confidential."
+      ],
+      "counterexamples": [
+        "Please verify by calling the number on your card (encourages verification)."
+      ],
+      "description": "The recipient is steered away from independent verification or told to keep the interaction secret — pre-empting exactly the check official guidance recommends.",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "change_history": [
+        {
+          "version": "1.0.0",
+          "date": "2026-08-29",
+          "change": "Authored in WP2 indicator-family formalisation."
+        }
+      ]
+    },
+    {
+      "family_id": "FAM-CREDENTIAL-REQUEST",
+      "name": "Credential disclosure request",
+      "parent_evidence_class": "CREDENTIAL_ACTION",
+      "observation_inputs": [
+        "AUTHENTICATION_ACTION",
+        "REQUEST"
+      ],
+      "indicator_outputs": [
+        "CREDENTIAL_REQUEST_OTP",
+        "CREDENTIAL_REQUEST_CVV",
+        "CREDENTIAL_REQUEST_CARD"
+      ],
+      "applicable_dimensions": {
+        "fraud_objective": [
+          "FO-01"
+        ],
+        "technical_mechanism": [
+          "TM-11"
+        ],
+        "requested_user_actions": [
+          "UA-01"
+        ]
+      },
+      "negative_interactions": [
+        "NEGATED_CREDENTIAL_REQUEST",
+        "OTP_DELIVERED_NOT_REQUESTED",
+        "SELF_PROTECTIVE_WARNING",
+        "SUPPORT_NEVER_ASKS",
+        "EDUCATIONAL_CONTENT"
+      ],
+      "hard_risk_overrides": [
+        "HR_OTP_DISCLOSURE_REQUEST"
+      ],
+      "known_ambiguities": [
+        "Directionality is decisive: an OTP DELIVERED to the user (AUTHENTICATION_ACTION, mood=DESCRIPTIVE) is not a request; only a FIRST_PARTY AFFIRMED DIRECTIVE projects the positive.",
+        "'Never share your OTP' is NEGATED and projects NEGATED_CREDENTIAL_REQUEST, not the positive."
+      ],
+      "language_considerations": "MVP cues authored for en/Latn only; transliterated (e.g. hi-Latn) and non-Latin scripts are representable in the envelope but NOT yet extractable — the rule layer flags unsupported input (G-08/ADR-0014 unresolved, do not resolve here).",
+      "confidence_requirements": "Categorical extraction confidence (HIGH/MEDIUM/LOW); a lone WEAK-strength output never supports a finding alone (CONF-002). No numeric fraud probability (CONF-001).",
+      "examples": [
+        "Share the OTP you just received with our officer now.",
+        "Confirm your 16-digit card number and CVV."
+      ],
+      "counterexamples": [
+        "Your OTP is 452901. Never share it. (delivered + negated)"
+      ],
+      "description": "A live request that the recipient DISCLOSE a secret — OTP, CVV, full card number. The single most directionality-sensitive family: polarity + attribution on the underlying AUTHENTICATION_ACTION observation determine whether the positive is emitted at all.",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "change_history": [
+        {
+          "version": "1.0.0",
+          "date": "2026-08-29",
+          "change": "Authored in WP2 indicator-family formalisation."
+        }
+      ]
+    },
+    {
+      "family_id": "FAM-UPI-PIN-CONTEXT",
+      "name": "UPI PIN entry context",
+      "parent_evidence_class": "CREDENTIAL_ACTION",
+      "observation_inputs": [
+        "AUTHENTICATION_ACTION",
+        "PAYMENT_CONTEXT"
+      ],
+      "indicator_outputs": [
+        "UPI_PIN_PROMPT"
+      ],
+      "applicable_dimensions": {
+        "fraud_objective": [
+          "FO-01",
+          "FO-02"
+        ],
+        "requested_user_actions": [
+          "UA-02"
+        ]
+      },
+      "negative_interactions": [
+        "NEGATED_CREDENTIAL_REQUEST",
+        "PAY_MERCHANT_DIRECTION"
+      ],
+      "hard_risk_overrides": [
+        "HR_UPI_PIN_TO_RECEIVE"
+      ],
+      "known_ambiguities": [
+        "A UPI PIN to PAY a known merchant is legitimate outbound (PAY_MERCHANT_DIRECTION); a PIN to RECEIVE is fraud (HR_UPI_PIN_TO_RECEIVE). Direction MUST come from payment_direction, not from the word 'UPI'."
+      ],
+      "language_considerations": "MVP cues authored for en/Latn only; transliterated (e.g. hi-Latn) and non-Latin scripts are representable in the envelope but NOT yet extractable — the rule layer flags unsupported input (G-08/ADR-0014 unresolved, do not resolve here).",
+      "confidence_requirements": "Categorical extraction confidence (HIGH/MEDIUM/LOW); a lone WEAK-strength output never supports a finding alone (CONF-002). No numeric fraud probability (CONF-001).",
+      "examples": [
+        "Enter your UPI PIN to RECEIVE Rs 5,000.",
+        "Enter UPI PIN in the form to verify your KYC."
+      ],
+      "counterexamples": [
+        "You will enter your UPI PIN in your bank app to PAY the merchant Rs 5,000."
+      ],
+      "description": "A prompt to enter a UPI PIN. Interpreted strictly with payment_direction: entering a PIN never receives money, so a receive-framed PIN prompt is the canonical contradiction.",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "change_history": [
+        {
+          "version": "1.0.0",
+          "date": "2026-08-29",
+          "change": "Authored in WP2 indicator-family formalisation."
+        }
+      ]
+    },
+    {
+      "family_id": "FAM-VERIFICATION-CAPTURE",
+      "name": "Verification-flow credential capture",
+      "parent_evidence_class": "CREDENTIAL_ACTION",
+      "observation_inputs": [
+        "AUTHENTICATION_ACTION",
+        "LINK_ACTION"
+      ],
+      "indicator_outputs": [
+        "VERIFICATION_PROMPT"
+      ],
+      "applicable_dimensions": {
+        "technical_mechanism": [
+          "TM-09",
+          "TM-01"
+        ],
+        "requested_user_actions": [
+          "UA-09",
+          "UA-01"
+        ]
+      },
+      "negative_interactions": [
+        "EDUCATIONAL_CONTENT",
+        "OFFICIAL_CHANNEL_REDIRECT"
+      ],
+      "hard_risk_overrides": [],
+      "known_ambiguities": [
+        "A legitimate 'verify your email' flow exists; the signal is a capture page reached under a false pretext, often with a lookalike domain."
+      ],
+      "language_considerations": "MVP cues authored for en/Latn only; transliterated (e.g. hi-Latn) and non-Latin scripts are representable in the envelope but NOT yet extractable — the rule layer flags unsupported input (G-08/ADR-0014 unresolved, do not resolve here).",
+      "confidence_requirements": "Categorical extraction confidence (HIGH/MEDIUM/LOW); a lone WEAK-strength output never supports a finding alone (CONF-002). No numeric fraud probability (CONF-001).",
+      "examples": [
+        "Tap to verify your account and see who tagged you.",
+        "Open this link and enter your credentials to verify."
+      ],
+      "counterexamples": [
+        "Log in via our official app (redirect to official channel)."
+      ],
+      "description": "The recipient is driven into a flow that captures credentials under a verification framing (fake viewer/verify page). Bridges credential-action and link/domain evidence.",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "change_history": [
+        {
+          "version": "1.0.0",
+          "date": "2026-08-29",
+          "change": "Authored in WP2 indicator-family formalisation."
+        }
+      ]
+    },
+    {
+      "family_id": "FAM-PAYMENT-REQUEST",
+      "name": "Payment / fee demand",
+      "parent_evidence_class": "PAYMENT_ACTION",
+      "observation_inputs": [
+        "PAYMENT_CONTEXT",
+        "REQUEST"
+      ],
+      "indicator_outputs": [
+        "PAYMENT_CONTEXT",
+        "PAYMENT_DEMAND",
+        "IMMEDIATE_PAYMENT_DEMAND",
+        "UPFRONT_FEE_DEMAND"
+      ],
+      "applicable_dimensions": {
+        "fraud_objective": [
+          "FO-02"
+        ],
+        "requested_user_actions": [
+          "UA-03"
+        ]
+      },
+      "negative_interactions": [
+        "NO_PAYMENT_REQUESTED",
+        "EXPLICIT_NO_FEE",
+        "TRANSACTION_NOTIFICATION",
+        "LOW_AMOUNT"
+      ],
+      "hard_risk_overrides": [
+        "HR_PAYMENT_UNDER_COERCION"
+      ],
+      "known_ambiguities": [
+        "A completed-transaction NOTICE (TRANSACTION_NOTIFICATION) is not a demand.",
+        "An upfront fee before a promised benefit is the fraud shape; a normal invoice is not."
+      ],
+      "language_considerations": "MVP cues authored for en/Latn only; transliterated (e.g. hi-Latn) and non-Latin scripts are representable in the envelope but NOT yet extractable — the rule layer flags unsupported input (G-08/ADR-0014 unresolved, do not resolve here).",
+      "confidence_requirements": "Categorical extraction confidence (HIGH/MEDIUM/LOW); a lone WEAK-strength output never supports a finding alone (CONF-002). No numeric fraud probability (CONF-001).",
+      "examples": [
+        "Transfer Rs 85,000 as a refundable security deposit.",
+        "Pay the visa processing fee of Rs 18,500 today."
+      ],
+      "counterexamples": [
+        "Rs 5,000 credited to your account. Not you? Call the number on your card."
+      ],
+      "description": "A request to move money — general payment demand, immediate/coerced payment, or an upfront fee before a promised benefit. Direction-agnostic; pairs with FAM-PAYMENT-DIRECTION for receive-vs-pay.",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "change_history": [
+        {
+          "version": "1.0.0",
+          "date": "2026-08-29",
+          "change": "Authored in WP2 indicator-family formalisation."
+        }
+      ]
+    },
+    {
+      "family_id": "FAM-PAYMENT-DIRECTION",
+      "name": "Payment direction framing",
+      "parent_evidence_class": "PAYMENT_ACTION",
+      "observation_inputs": [
+        "PAYMENT_CONTEXT"
+      ],
+      "indicator_outputs": [
+        "RECEIVE_FRAMING"
+      ],
+      "applicable_dimensions": {
+        "fraud_objective": [
+          "FO-02"
+        ],
+        "requested_user_actions": [
+          "UA-02",
+          "UA-03"
+        ]
+      },
+      "negative_interactions": [
+        "PAY_MERCHANT_DIRECTION",
+        "LOW_AMOUNT"
+      ],
+      "hard_risk_overrides": [
+        "HR_UPI_PIN_TO_RECEIVE"
+      ],
+      "known_ambiguities": [
+        "Direction is AMBIGUOUS by default; RECEIVE_FRAMING is only emitted when the text settles that money is to be RECEIVED. Presence of currency alone does NOT set direction (STEP 8)."
+      ],
+      "language_considerations": "MVP cues authored for en/Latn only; transliterated (e.g. hi-Latn) and non-Latin scripts are representable in the envelope but NOT yet extractable — the rule layer flags unsupported input (G-08/ADR-0014 unresolved, do not resolve here).",
+      "confidence_requirements": "Categorical extraction confidence (HIGH/MEDIUM/LOW); a lone WEAK-strength output never supports a finding alone (CONF-002). No numeric fraud probability (CONF-001).",
+      "examples": [
+        "To RECEIVE the refund, enter your UPI PIN / scan this QR.",
+        "Enter UPI PIN to receive Rs 5,000."
+      ],
+      "counterexamples": [
+        "Scan this QR to complete the transaction (direction unresolved -> AMBIGUOUS, no RECEIVE_FRAMING)."
+      ],
+      "description": "Explicit framing that the user is to RECEIVE money. The keystone of the receive-vs-pay boundary (RESEARCH-003 ADV-003 #1). Derived from a PAYMENT_CONTEXT observation whose payment_direction=USER_RECEIVES.",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "change_history": [
+        {
+          "version": "1.0.0",
+          "date": "2026-08-29",
+          "change": "Authored in WP2 indicator-family formalisation."
+        }
+      ]
+    },
+    {
+      "family_id": "FAM-QR-PAYMENT",
+      "name": "QR-initiated payment action",
+      "parent_evidence_class": "PAYMENT_ACTION",
+      "observation_inputs": [
+        "PAYMENT_CONTEXT",
+        "ACTION"
+      ],
+      "indicator_outputs": [
+        "QR_SCAN_REQUEST"
+      ],
+      "applicable_dimensions": {
+        "technical_mechanism": [
+          "TM-02"
+        ],
+        "requested_user_actions": [
+          "UA-04"
+        ]
+      },
+      "negative_interactions": [
+        "PAY_MERCHANT_DIRECTION"
+      ],
+      "hard_risk_overrides": [
+        "HR_UPI_PIN_TO_RECEIVE"
+      ],
+      "known_ambiguities": [
+        "Scanning a QR authorises an OUTGOING payment; framed as needed to RECEIVE, it is fraud. QR CONTENT is not decoded in WP2 (requires VISION) — only the request to scan is observed."
+      ],
+      "language_considerations": "MVP cues authored for en/Latn only; transliterated (e.g. hi-Latn) and non-Latin scripts are representable in the envelope but NOT yet extractable — the rule layer flags unsupported input (G-08/ADR-0014 unresolved, do not resolve here).",
+      "confidence_requirements": "Categorical extraction confidence (HIGH/MEDIUM/LOW); a lone WEAK-strength output never supports a finding alone (CONF-002). No numeric fraud probability (CONF-001).",
+      "examples": [
+        "Scan the QR and enter your UPI PIN to RECEIVE Rs 8,750."
+      ],
+      "counterexamples": [
+        "Scan our store QR to pay the bill you incurred."
+      ],
+      "description": "A request to scan a QR code to move money. Distinct from the mere PRESENCE of a QR image (FAM-QR-ARTIFACT); this is the action request.",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "change_history": [
+        {
+          "version": "1.0.0",
+          "date": "2026-08-29",
+          "change": "Authored in WP2 indicator-family formalisation."
+        }
+      ]
+    },
+    {
+      "family_id": "FAM-TASK-MONETISATION",
+      "name": "Task-app deposit-to-earn",
+      "parent_evidence_class": "PAYMENT_ACTION",
+      "observation_inputs": [
+        "PAYMENT_CONTEXT",
+        "PROMISE"
+      ],
+      "indicator_outputs": [
+        "DEPOSIT_FOR_EARNINGS"
+      ],
+      "applicable_dimensions": {
+        "fraud_objective": [
+          "FO-05",
+          "FO-02"
+        ],
+        "requested_user_actions": [
+          "UA-03"
+        ]
+      },
+      "negative_interactions": [
+        "EXPLICIT_NO_FEE",
+        "NO_PAYMENT_REQUESTED",
+        "EDUCATIONAL_CONTENT"
+      ],
+      "hard_risk_overrides": [],
+      "known_ambiguities": [
+        "A genuine job never asks you to deposit to unlock earnings; EXPLICIT_NO_FEE is the discriminator with the blocked-withdrawal step (FAM-THREAT-CONSEQUENCE)."
+      ],
+      "language_considerations": "MVP cues authored for en/Latn only; transliterated (e.g. hi-Latn) and non-Latin scripts are representable in the envelope but NOT yet extractable — the rule layer flags unsupported input (G-08/ADR-0014 unresolved, do not resolve here).",
+      "confidence_requirements": "Categorical extraction confidence (HIGH/MEDIUM/LOW); a lone WEAK-strength output never supports a finding alone (CONF-002). No numeric fraud probability (CONF-001).",
+      "examples": [
+        "Deposit Rs 5,000 to activate premium tasks and unlock higher commissions."
+      ],
+      "counterexamples": [
+        "Your salary is credited monthly; there is no deposit at any stage."
+      ],
+      "description": "A demand to deposit/invest money to unlock displayed task earnings or a larger commission — the monetisation step of the part-time-task scam.",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "change_history": [
+        {
+          "version": "1.0.0",
+          "date": "2026-08-29",
+          "change": "Authored in WP2 indicator-family formalisation."
+        }
+      ]
+    },
+    {
+      "family_id": "FAM-REMOTE-ACCESS",
+      "name": "Screen-share / remote-control app",
+      "parent_evidence_class": "DEVICE_ACTION",
+      "observation_inputs": [
+        "DEVICE_ACTION"
+      ],
+      "indicator_outputs": [
+        "SCREEN_SHARE_APP_REQUEST"
+      ],
+      "applicable_dimensions": {
+        "technical_mechanism": [
+          "TM-04"
+        ],
+        "fraud_objective": [
+          "FO-04"
+        ],
+        "requested_user_actions": [
+          "UA-05"
+        ]
+      },
+      "negative_interactions": [
+        "IT_SUPPORT_CONTEXT",
+        "NO_PERMISSION_REQUEST"
+      ],
+      "hard_risk_overrides": [
+        "HR_BANKING_REMOTE_ACCESS"
+      ],
+      "known_ambiguities": [
+        "Legitimate, user-initiated IT support uses these tools (IT_SUPPORT_CONTEXT suppresses); the banking/payment context override BLOCKS that suppression (over-suppression fix)."
+      ],
+      "language_considerations": "MVP cues authored for en/Latn only; transliterated (e.g. hi-Latn) and non-Latin scripts are representable in the envelope but NOT yet extractable — the rule layer flags unsupported input (G-08/ADR-0014 unresolved, do not resolve here).",
+      "confidence_requirements": "Categorical extraction confidence (HIGH/MEDIUM/LOW); a lone WEAK-strength output never supports a finding alone (CONF-002). No numeric fraud probability (CONF-001).",
+      "examples": [
+        "Install AnyDesk and share the 9-digit code so our IT team can fix your account."
+      ],
+      "counterexamples": [
+        "As you requested, corporate IT will start a TeamViewer session; do not open banking apps."
+      ],
+      "description": "A request to install a screen-sharing/remote-control app (AnyDesk, TeamViewer, AirDroid). Benign in user-initiated IT support; hard-risk in a banking/payment frame.",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "change_history": [
+        {
+          "version": "1.0.0",
+          "date": "2026-08-29",
+          "change": "Authored in WP2 indicator-family formalisation."
+        }
+      ]
+    },
+    {
+      "family_id": "FAM-APP-INSTALLATION",
+      "name": "Untrusted app / APK installation",
+      "parent_evidence_class": "DEVICE_ACTION",
+      "observation_inputs": [
+        "DEVICE_ACTION",
+        "LINK_ACTION"
+      ],
+      "indicator_outputs": [
+        "APK_INSTALL_REQUEST",
+        "APP_INSTALL_UNTRUSTED_SOURCE"
+      ],
+      "applicable_dimensions": {
+        "technical_mechanism": [
+          "TM-06"
+        ],
+        "fraud_objective": [
+          "FO-04"
+        ],
+        "requested_user_actions": [
+          "UA-05"
+        ]
+      },
+      "negative_interactions": [
+        "OFFICIAL_APP_STORE_SOURCE",
+        "NEGATED_ACTION_REQUEST",
+        "EDUCATIONAL_CONTENT"
+      ],
+      "hard_risk_overrides": [],
+      "known_ambiguities": [
+        "Directing to an official store is the inverse (OFFICIAL_APP_STORE_SOURCE, a SUPPRESS_INDICATOR).",
+        "'Do not install APKs from links' is NEGATED, not a live request."
+      ],
+      "language_considerations": "MVP cues authored for en/Latn only; transliterated (e.g. hi-Latn) and non-Latin scripts are representable in the envelope but NOT yet extractable — the rule layer flags unsupported input (G-08/ADR-0014 unresolved, do not resolve here).",
+      "confidence_requirements": "Categorical extraction confidence (HIGH/MEDIUM/LOW); a lone WEAK-strength output never supports a finding alone (CONF-002). No numeric fraud probability (CONF-001).",
+      "examples": [
+        "Install Bank-Verify.apk from this link.",
+        "Install the new build now, do not use the store."
+      ],
+      "counterexamples": [
+        "Update only from the official Play Store; do not install any APK from links."
+      ],
+      "description": "A prompt to install an app from a non-store/untrusted source, often via a shortened link. iOS config-profile mechanism is out of scope (unsupported).",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "change_history": [
+        {
+          "version": "1.0.0",
+          "date": "2026-08-29",
+          "change": "Authored in WP2 indicator-family formalisation."
+        }
+      ]
+    },
+    {
+      "family_id": "FAM-ACCESSIBILITY-PERMISSION",
+      "name": "Accessibility permission grant",
+      "parent_evidence_class": "DEVICE_ACTION",
+      "observation_inputs": [
+        "DEVICE_ACTION"
+      ],
+      "indicator_outputs": [
+        "ACCESSIBILITY_PERMISSION_REQUEST"
+      ],
+      "applicable_dimensions": {
+        "technical_mechanism": [
+          "TM-05"
+        ],
+        "fraud_objective": [
+          "FO-04"
+        ],
+        "requested_user_actions": [
+          "UA-06"
+        ]
+      },
+      "negative_interactions": [
+        "NO_PERMISSION_REQUEST",
+        "NEGATED_ACTION_REQUEST"
+      ],
+      "hard_risk_overrides": [
+        "HR_ACCESSIBILITY_REQUEST"
+      ],
+      "known_ambiguities": [
+        "Out-of-context Accessibility grant + app/link delivery is hard-risk (God Mode); named inside an official warning it is NEGATED/REPORTED and suppressed."
+      ],
+      "language_considerations": "MVP cues authored for en/Latn only; transliterated (e.g. hi-Latn) and non-Latin scripts are representable in the envelope but NOT yet extractable — the rule layer flags unsupported input (G-08/ADR-0014 unresolved, do not resolve here).",
+      "confidence_requirements": "Categorical extraction confidence (HIGH/MEDIUM/LOW); a lone WEAK-strength output never supports a finding alone (CONF-002). No numeric fraud probability (CONF-001).",
+      "examples": [
+        "When prompted, turn ON Accessibility permission so the app can auto-complete verification."
+      ],
+      "counterexamples": [
+        "Official agencies will NEVER ask you to switch on Accessibility permission (educational, negated)."
+      ],
+      "description": "A request to grant Android Accessibility permission out of context, which yields screen-reading and input-injection control.",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "change_history": [
+        {
+          "version": "1.0.0",
+          "date": "2026-08-29",
+          "change": "Authored in WP2 indicator-family formalisation."
+        }
+      ]
+    },
+    {
+      "family_id": "FAM-DEVICE-LINKING",
+      "name": "Messaging-app device linking",
+      "parent_evidence_class": "DEVICE_ACTION",
+      "observation_inputs": [
+        "DEVICE_ACTION",
+        "AUTHENTICATION_ACTION"
+      ],
+      "indicator_outputs": [
+        "DEVICE_LINKING_CODE_REQUEST"
+      ],
+      "applicable_dimensions": {
+        "technical_mechanism": [
+          "TM-03"
+        ],
+        "fraud_objective": [
+          "FO-03"
+        ],
+        "requested_user_actions": [
+          "UA-10"
+        ]
+      },
+      "negative_interactions": [
+        "SECURITY_NOTIFICATION",
+        "NO_ACTION_REQUESTED"
+      ],
+      "hard_risk_overrides": [],
+      "known_ambiguities": [
+        "A genuine 'new linked device' NOTICE requests nothing (SECURITY_NOTIFICATION); the fraud is a request that the USER perform the linking under a pretext."
+      ],
+      "language_considerations": "MVP cues authored for en/Latn only; transliterated (e.g. hi-Latn) and non-Latin scripts are representable in the envelope but NOT yet extractable — the rule layer flags unsupported input (G-08/ADR-0014 unresolved, do not resolve here).",
+      "confidence_requirements": "Categorical extraction confidence (HIGH/MEDIUM/LOW); a lone WEAK-strength output never supports a finding alone (CONF-002). No numeric fraud probability (CONF-001).",
+      "examples": [
+        "Send me the 8-digit code you just received on WhatsApp so I can register your vote."
+      ],
+      "counterexamples": [
+        "New login to WhatsApp Web; if this was you, no action needed."
+      ],
+      "description": "A request to share a device-linking code or scan a linking QR, linking the attacker's device to the victim's messaging account without a password.",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "change_history": [
+        {
+          "version": "1.0.0",
+          "date": "2026-08-29",
+          "change": "Authored in WP2 indicator-family formalisation."
+        }
+      ]
+    },
+    {
+      "family_id": "FAM-CALL-FORWARDING",
+      "name": "USSD / call-forwarding dial",
+      "parent_evidence_class": "DEVICE_ACTION",
+      "observation_inputs": [
+        "DEVICE_ACTION"
+      ],
+      "indicator_outputs": [
+        "USSD_CODE_DIAL_REQUEST"
+      ],
+      "applicable_dimensions": {
+        "technical_mechanism": [
+          "TM-08"
+        ],
+        "fraud_objective": [
+          "FO-03"
+        ],
+        "requested_user_actions": [
+          "UA-07"
+        ]
+      },
+      "negative_interactions": [
+        "NO_CODE_DIAL_REQUEST",
+        "NEGATED_ACTION_REQUEST"
+      ],
+      "hard_risk_overrides": [],
+      "known_ambiguities": [
+        "Only a code actually presented for dialling qualifies (NO_CODE_DIAL_REQUEST neutralises a spurious tag).",
+        "Courier pretext was removed as unsupported; the dial request is the core signal."
+      ],
+      "language_considerations": "MVP cues authored for en/Latn only; transliterated (e.g. hi-Latn) and non-Latin scripts are representable in the envelope but NOT yet extractable — the rule layer flags unsupported input (G-08/ADR-0014 unresolved, do not resolve here).",
+      "confidence_requirements": "Categorical extraction confidence (HIGH/MEDIUM/LOW); a lone WEAK-strength output never supports a finding alone (CONF-002). No numeric fraud probability (CONF-001).",
+      "examples": [
+        "Dial *401*98765XXXXX# immediately to keep your number active."
+      ],
+      "counterexamples": [
+        "Track your parcel on the official app (no code to dial)."
+      ],
+      "description": "A pressured request to dial a USSD/short code that can silently enable call forwarding (intercepting OTPs).",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "change_history": [
+        {
+          "version": "1.0.0",
+          "date": "2026-08-29",
+          "change": "Authored in WP2 indicator-family formalisation."
+        }
+      ]
+    },
+    {
+      "family_id": "FAM-WALLET-CONNECTION",
+      "name": "Crypto wallet connection",
+      "parent_evidence_class": "DEVICE_ACTION",
+      "observation_inputs": [
+        "DEVICE_ACTION",
+        "LINK_ACTION"
+      ],
+      "indicator_outputs": [
+        "WALLET_CONNECT_REQUEST"
+      ],
+      "applicable_dimensions": {
+        "technical_mechanism": [
+          "TM-07"
+        ],
+        "fraud_objective": [
+          "FO-02",
+          "FO-04"
+        ],
+        "requested_user_actions": [
+          "UA-08"
+        ]
+      },
+      "negative_interactions": [
+        "NEGATED_ACTION_REQUEST",
+        "NO_PERMISSION_REQUEST",
+        "SECURITY_NOTIFICATION"
+      ],
+      "hard_risk_overrides": [
+        "HR_WALLET_CONNECT_UNKNOWN"
+      ],
+      "known_ambiguities": [
+        "Wallet-connect to an unknown 'verification' site can approve asset transfers (hard-risk); a genuine exchange notice requests no connection."
+      ],
+      "language_considerations": "MVP cues authored for en/Latn only; transliterated (e.g. hi-Latn) and non-Latin scripts are representable in the envelope but NOT yet extractable — the rule layer flags unsupported input (G-08/ADR-0014 unresolved, do not resolve here).",
+      "confidence_requirements": "Categorical extraction confidence (HIGH/MEDIUM/LOW); a lone WEAK-strength output never supports a finding alone (CONF-002). No numeric fraud probability (CONF-001).",
+      "examples": [
+        "Verify your holdings and connect your wallet to confirm ownership."
+      ],
+      "counterexamples": [
+        "We will never ask you to connect your wallet to 'verify' it (negated)."
+      ],
+      "description": "A request to connect/link a crypto wallet to a site or app, which can approve asset transfers. Hard-risk when paired with a fake verification site or off-platform handoff.",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "change_history": [
+        {
+          "version": "1.0.0",
+          "date": "2026-08-29",
+          "change": "Authored in WP2 indicator-family formalisation."
+        }
+      ]
+    },
+    {
+      "family_id": "FAM-UNSPECIFIED-DEVICE-ACTION",
+      "name": "Unspecified / vague device action",
+      "parent_evidence_class": "DEVICE_ACTION",
+      "observation_inputs": [
+        "DEVICE_ACTION",
+        "REQUEST"
+      ],
+      "indicator_outputs": [
+        "VAGUE_ACTION_REQUEST"
+      ],
+      "applicable_dimensions": {
+        "requested_user_actions": [
+          "UA-09"
+        ]
+      },
+      "negative_interactions": [
+        "NO_ACTION_REQUESTED"
+      ],
+      "hard_risk_overrides": [],
+      "known_ambiguities": [
+        "A vague action request is WEAK and never fires alone; it exists to be corroborated or to route to review."
+      ],
+      "language_considerations": "MVP cues authored for en/Latn only; transliterated (e.g. hi-Latn) and non-Latin scripts are representable in the envelope but NOT yet extractable — the rule layer flags unsupported input (G-08/ADR-0014 unresolved, do not resolve here).",
+      "confidence_requirements": "Categorical extraction confidence (HIGH/MEDIUM/LOW); a lone WEAK-strength output never supports a finding alone (CONF-002). No numeric fraud probability (CONF-001).",
+      "examples": [
+        "Complete the onboarding formalities on our portal to proceed."
+      ],
+      "counterexamples": [
+        "The message asks the recipient to do nothing (NO_ACTION_REQUESTED)."
+      ],
+      "description": "An action is requested without a clear stated purpose. Weak by design; contributes only in combination and often signals INSUFFICIENT_EVIDENCE.",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "change_history": [
+        {
+          "version": "1.0.0",
+          "date": "2026-08-29",
+          "change": "Authored in WP2 indicator-family formalisation."
+        }
+      ]
+    },
+    {
+      "family_id": "FAM-INVESTMENT-RETURNS",
+      "name": "Investment return / adviser-misconduct claim",
+      "parent_evidence_class": "FINANCIAL_CLAIM",
+      "observation_inputs": [
+        "CLAIM",
+        "PROMISE"
+      ],
+      "indicator_outputs": [
+        "HIGH_RETURN_MENTION",
+        "RETURN_GUARANTEE",
+        "RISK_DENIAL",
+        "TRADING_ON_BEHALF_OF_CLIENT"
+      ],
+      "applicable_dimensions": {
+        "fraud_objective": [
+          "FO-05"
+        ],
+        "social_engineering_tactics": [
+          "SE-08"
+        ]
+      },
+      "negative_interactions": [
+        "NO_RETURN_GUARANTEE",
+        "RISK_DISCLOSURE_PRESENT",
+        "REGISTRATION_DISCLOSED",
+        "REPORTED_SCAM_NARRATIVE"
+      ],
+      "hard_risk_overrides": [],
+      "known_ambiguities": [
+        "A historical return figure WITH a risk disclosure is not a guarantee (RISK_DISCLOSURE_PRESENT neutralises RISK_DENIAL).",
+        "The detectable concept is guarantee + risk-denial, never a percentage threshold (RESEARCH-003 ADV-006)."
+      ],
+      "language_considerations": "MVP cues authored for en/Latn only; transliterated (e.g. hi-Latn) and non-Latin scripts are representable in the envelope but NOT yet extractable — the rule layer flags unsupported input (G-08/ADR-0014 unresolved, do not resolve here).",
+      "confidence_requirements": "Categorical extraction confidence (HIGH/MEDIUM/LOW); a lone WEAK-strength output never supports a finding alone (CONF-002). No numeric fraud probability (CONF-001).",
+      "examples": [
+        "Guaranteed 120% returns, ZERO RISK, our expert handles all trades for you."
+      ],
+      "counterexamples": [
+        "Averaged 18% annually; past performance does not guarantee future results; SEBI Reg. No. ..."
+      ],
+      "description": "Claims of guaranteed/assured or extraordinary returns, explicit risk denial, or an adviser offering to trade/hold client funds (SEBI-prohibited). Meaning comes from the conjunction, not a number.",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "change_history": [
+        {
+          "version": "1.0.0",
+          "date": "2026-08-29",
+          "change": "Authored in WP2 indicator-family formalisation."
+        }
+      ]
+    },
+    {
+      "family_id": "FAM-JOB-INCOME-GUARANTEE",
+      "name": "Guaranteed job / income claim",
+      "parent_evidence_class": "FINANCIAL_CLAIM",
+      "observation_inputs": [
+        "CLAIM",
+        "PROMISE"
+      ],
+      "indicator_outputs": [
+        "JOB_GUARANTEE"
+      ],
+      "applicable_dimensions": {
+        "fraud_objective": [
+          "FO-02"
+        ],
+        "social_engineering_tactics": [
+          "SE-08"
+        ]
+      },
+      "negative_interactions": [
+        "EXPLICIT_NO_FEE",
+        "NO_PAYMENT_REQUESTED"
+      ],
+      "hard_risk_overrides": [],
+      "known_ambiguities": [
+        "Employment presented as guaranteed is a cue only with a payment demand; a genuine offer stating 'no fee' is the inverse."
+      ],
+      "language_considerations": "MVP cues authored for en/Latn only; transliterated (e.g. hi-Latn) and non-Latin scripts are representable in the envelope but NOT yet extractable — the rule layer flags unsupported input (G-08/ADR-0014 unresolved, do not resolve here).",
+      "confidence_requirements": "Categorical extraction confidence (HIGH/MEDIUM/LOW); a lone WEAK-strength output never supports a finding alone (CONF-002). No numeric fraud probability (CONF-001).",
+      "examples": [
+        "Job guaranteed! Pay the placement fee today."
+      ],
+      "counterexamples": [
+        "There is no fee at any stage of our hiring process."
+      ],
+      "description": "Employment or income presented as assured/guaranteed. Dangerous paired with an upfront fee (FAM-PAYMENT-REQUEST).",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "change_history": [
+        {
+          "version": "1.0.0",
+          "date": "2026-08-29",
+          "change": "Authored in WP2 indicator-family formalisation."
+        }
+      ]
+    },
+    {
+      "family_id": "FAM-LINK-DOMAIN",
+      "name": "Link / domain artifact",
+      "parent_evidence_class": "CHANNEL_ARTIFACT",
+      "observation_inputs": [
+        "LINK_ACTION",
+        "ENTITY"
+      ],
+      "indicator_outputs": [
+        "LINK_PRESENT",
+        "SHORTENED_URL",
+        "LOOKALIKE_DOMAIN",
+        "FAKE_VERIFICATION_SITE"
+      ],
+      "applicable_dimensions": {
+        "technical_mechanism": [
+          "TM-01",
+          "TM-09"
+        ],
+        "typical_channels": [
+          "CH-07"
+        ]
+      },
+      "negative_interactions": [
+        "ALLOWLISTED_DOMAIN_CONTEXT",
+        "NO_LINK_PRESENT",
+        "OFFICIAL_CHANNEL_REDIRECT"
+      ],
+      "hard_risk_overrides": [
+        "HR_WALLET_CONNECT_UNKNOWN"
+      ],
+      "known_ambiguities": [
+        "LOOKALIKE_DOMAIN / FAKE_VERIFICATION_SITE need brand-match/reputation which do NOT exist yet (url-observation assessments default UNKNOWN/NOT_EVALUATED); today only structural facts (shortened/punycode/ip) are reliable.",
+        "ALLOWLISTED is weak context and never cancels a hard-risk pattern."
+      ],
+      "language_considerations": "MVP cues authored for en/Latn only; transliterated (e.g. hi-Latn) and non-Latin scripts are representable in the envelope but NOT yet extractable — the rule layer flags unsupported input (G-08/ADR-0014 unresolved, do not resolve here).",
+      "confidence_requirements": "Categorical extraction confidence (HIGH/MEDIUM/LOW); a lone WEAK-strength output never supports a finding alone (CONF-002). No numeric fraud probability (CONF-001).",
+      "examples": [
+        "...at trust-wallet-verify.example (lookalike + fake verification site).",
+        "http://bit.example/appx (shortened)."
+      ],
+      "counterexamples": [
+        "Log in via our official website / nearest branch (official redirect)."
+      ],
+      "description": "Structural URL/domain evidence: a link present, a shortened/obfuscated URL, a brand-lookalike domain, or a fake verification site. Backed by url-observation.schema.json; reputation is reserved (NOT_EVALUATED), never invented.",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "change_history": [
+        {
+          "version": "1.0.0",
+          "date": "2026-08-29",
+          "change": "Authored in WP2 indicator-family formalisation."
+        }
+      ]
+    },
+    {
+      "family_id": "FAM-QR-ARTIFACT",
+      "name": "QR-code artifact present",
+      "parent_evidence_class": "CHANNEL_ARTIFACT",
+      "observation_inputs": [
+        "ENTITY"
+      ],
+      "indicator_outputs": [
+        "QR_PRESENT"
+      ],
+      "applicable_dimensions": {
+        "typical_channels": [
+          "CH-08"
+        ],
+        "technical_mechanism": [
+          "TM-02"
+        ]
+      },
+      "negative_interactions": [],
+      "hard_risk_overrides": [],
+      "known_ambiguities": [
+        "Presence of a QR image is WEAK and, absent a scan request or receive framing, yields INSUFFICIENT_EVIDENCE. QR CONTENT decoding requires VISION (future)."
+      ],
+      "language_considerations": "MVP cues authored for en/Latn only; transliterated (e.g. hi-Latn) and non-Latin scripts are representable in the envelope but NOT yet extractable — the rule layer flags unsupported input (G-08/ADR-0014 unresolved, do not resolve here).",
+      "confidence_requirements": "Categorical extraction confidence (HIGH/MEDIUM/LOW); a lone WEAK-strength output never supports a finding alone (CONF-002). No numeric fraud probability (CONF-001).",
+      "examples": [
+        "Scan this QR to complete the transaction. [image attached]"
+      ],
+      "counterexamples": [
+        "A shared photo that happens to contain a QR in the background."
+      ],
+      "description": "A QR code is attached or referenced. A channel artifact only; the actionable signal is the request to scan it (FAM-QR-PAYMENT).",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "change_history": [
+        {
+          "version": "1.0.0",
+          "date": "2026-08-29",
+          "change": "Authored in WP2 indicator-family formalisation."
+        }
+      ]
+    },
+    {
+      "family_id": "FAM-PRETEXT-ACCOUNT-KYC",
+      "name": "Account / KYC / verification pretext",
+      "parent_evidence_class": "PRETEXT",
+      "observation_inputs": [
+        "CLAIM",
+        "ENTITY"
+      ],
+      "indicator_outputs": [
+        "KYC_PRETEXT",
+        "VERIFICATION_PRETEXT"
+      ],
+      "applicable_dimensions": {
+        "fraud_objective": [
+          "FO-07"
+        ],
+        "social_engineering_tactics": [
+          "SE-01"
+        ]
+      },
+      "negative_interactions": [
+        "OFFICIAL_CHANNEL_REDIRECT",
+        "EDUCATIONAL_CONTENT"
+      ],
+      "hard_risk_overrides": [],
+      "known_ambiguities": [
+        "Banks legitimately mention KYC; the pretext is WEAK by design and only matters with a link/credential/payment step (CONF-002)."
+      ],
+      "language_considerations": "MVP cues authored for en/Latn only; transliterated (e.g. hi-Latn) and non-Latin scripts are representable in the envelope but NOT yet extractable — the rule layer flags unsupported input (G-08/ADR-0014 unresolved, do not resolve here).",
+      "confidence_requirements": "Categorical extraction confidence (HIGH/MEDIUM/LOW); a lone WEAK-strength output never supports a finding alone (CONF-002). No numeric fraud probability (CONF-001).",
+      "examples": [
+        "Your KYC expires today; open this link and enter your credentials.",
+        "account verification required."
+      ],
+      "counterexamples": [
+        "Your KYC is due; visit your nearest branch or use the official app."
+      ],
+      "description": "KYC-update or account-verification cited as the reason for contact. Weak alone (legitimate institutions use it); a framing device, not a finding.",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "change_history": [
+        {
+          "version": "1.0.0",
+          "date": "2026-08-29",
+          "change": "Authored in WP2 indicator-family formalisation."
+        }
+      ]
+    },
+    {
+      "family_id": "FAM-PRETEXT-DELIVERY",
+      "name": "Courier / delivery / utility pretext",
+      "parent_evidence_class": "PRETEXT",
+      "observation_inputs": [
+        "CLAIM",
+        "ENTITY"
+      ],
+      "indicator_outputs": [
+        "PARCEL_PRETEXT"
+      ],
+      "applicable_dimensions": {
+        "social_engineering_tactics": [
+          "SE-07"
+        ]
+      },
+      "negative_interactions": [
+        "NO_PAYMENT_REQUESTED",
+        "NO_CODE_DIAL_REQUEST"
+      ],
+      "hard_risk_overrides": [],
+      "known_ambiguities": [
+        "A courier/customs pretext is a signal only combined with a payment demand or a dial/USSD request; ordinary delivery notices are benign."
+      ],
+      "language_considerations": "MVP cues authored for en/Latn only; transliterated (e.g. hi-Latn) and non-Latin scripts are representable in the envelope but NOT yet extractable — the rule layer flags unsupported input (G-08/ADR-0014 unresolved, do not resolve here).",
+      "confidence_requirements": "Categorical extraction confidence (HIGH/MEDIUM/LOW); a lone WEAK-strength output never supports a finding alone (CONF-002). No numeric fraud probability (CONF-001).",
+      "examples": [
+        "A parcel in your name containing illegal items has been seized."
+      ],
+      "counterexamples": [
+        "Your parcel is out for delivery today, 2pm-6pm; track on the official app."
+      ],
+      "description": "A parcel, customs or delivery issue offered as the reason for contact. Weak; an entry-point pretext that escalates when combined with payment or device actions.",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "change_history": [
+        {
+          "version": "1.0.0",
+          "date": "2026-08-29",
+          "change": "Authored in WP2 indicator-family formalisation."
+        }
+      ]
+    },
+    {
+      "family_id": "FAM-PRETEXT-INVESTMENT-JOB",
+      "name": "Investment / job / task lure",
+      "parent_evidence_class": "PRETEXT",
+      "observation_inputs": [
+        "CLAIM",
+        "ENTITY",
+        "RELATIONSHIP_CONTEXT"
+      ],
+      "indicator_outputs": [
+        "INVESTMENT_SOLICITATION",
+        "JOB_CONTEXT",
+        "TASK_EARNING_LURE"
+      ],
+      "applicable_dimensions": {
+        "social_engineering_tactics": [
+          "SE-08"
+        ],
+        "fraud_objective": [
+          "FO-05",
+          "FO-02"
+        ]
+      },
+      "negative_interactions": [
+        "EXPLICIT_NO_FEE",
+        "REGISTRATION_DISCLOSED",
+        "EDUCATIONAL_CONTENT"
+      ],
+      "hard_risk_overrides": [],
+      "known_ambiguities": [
+        "Legitimate investment solicitation and job offers exist; the lure is WEAK and needs the guarantee/fee/deposit steps to matter."
+      ],
+      "language_considerations": "MVP cues authored for en/Latn only; transliterated (e.g. hi-Latn) and non-Latin scripts are representable in the envelope but NOT yet extractable — the rule layer flags unsupported input (G-08/ADR-0014 unresolved, do not resolve here).",
+      "confidence_requirements": "Categorical extraction confidence (HIGH/MEDIUM/LOW); a lone WEAK-strength output never supports a finding alone (CONF-002). No numeric fraud probability (CONF-001).",
+      "examples": [
+        "Easy part-time job! Complete simple tasks and earn daily.",
+        "Join our VIP trading group."
+      ],
+      "counterexamples": [
+        "Congratulations on joining; onboarding tasks are in the portal, no fee at any stage."
+      ],
+      "description": "An easy-income, investment, job or task-completion lure — the opening frame of investment/employment scams. Weak by design; discriminated by the monetisation step.",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "change_history": [
+        {
+          "version": "1.0.0",
+          "date": "2026-08-29",
+          "change": "Authored in WP2 indicator-family formalisation."
+        }
+      ]
+    },
+    {
+      "family_id": "FAM-PRETEXT-SOCIAL-LURE",
+      "name": "Social / curiosity / off-platform lure",
+      "parent_evidence_class": "PRETEXT",
+      "observation_inputs": [
+        "CLAIM",
+        "RELATIONSHIP_CONTEXT",
+        "LINK_ACTION"
+      ],
+      "indicator_outputs": [
+        "TRUSTED_CONTACT_PRETEXT",
+        "UNSOLICITED_OFFER",
+        "TEASER_BAIT",
+        "OFF_PLATFORM_HANDOFF"
+      ],
+      "applicable_dimensions": {
+        "social_engineering_tactics": [
+          "SE-05",
+          "SE-07"
+        ]
+      },
+      "negative_interactions": [
+        "REPORTED_SCAM_NARRATIVE",
+        "CASUAL_REGISTER"
+      ],
+      "hard_risk_overrides": [],
+      "known_ambiguities": [
+        "Curiosity bait and unsolicited offers are common in legitimate marketing; off-platform handoff (move to WhatsApp/Telegram) is the meaningful escalation cue."
+      ],
+      "language_considerations": "MVP cues authored for en/Latn only; transliterated (e.g. hi-Latn) and non-Latin scripts are representable in the envelope but NOT yet extractable — the rule layer flags unsupported input (G-08/ADR-0014 unresolved, do not resolve here).",
+      "confidence_requirements": "Categorical extraction confidence (HIGH/MEDIUM/LOW); a lone WEAK-strength output never supports a finding alone (CONF-002). No numeric fraud probability (CONF-001).",
+      "examples": [
+        "Hi, check this photo 😮",
+        "Continue with our agent on Telegram to release the funds."
+      ],
+      "counterexamples": [
+        "A friend casually sharing a genuine link in an existing chat."
+      ],
+      "description": "Social-engineering lures that trade on relationship/curiosity or move the target off-platform to continue the approach. Weak/moderate framing cues.",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "change_history": [
+        {
+          "version": "1.0.0",
+          "date": "2026-08-29",
+          "change": "Authored in WP2 indicator-family formalisation."
+        }
+      ]
+    },
+    {
+      "family_id": "FAM-PRETEXT-BENIGN-COVER",
+      "name": "Benign cover story for a technical action",
+      "parent_evidence_class": "PRETEXT",
+      "observation_inputs": [
+        "CLAIM"
+      ],
+      "indicator_outputs": [
+        "BENIGN_PRETEXT_FOR_TECHNICAL_ACTION",
+        "VAGUE_PRETEXT"
+      ],
+      "applicable_dimensions": {
+        "social_engineering_tactics": [
+          "SE-07"
+        ]
+      },
+      "negative_interactions": [
+        "IT_SUPPORT_CONTEXT"
+      ],
+      "hard_risk_overrides": [],
+      "known_ambiguities": [
+        "An innocuous cover ('to help you', 'for troubleshooting') for a consequential action is the discriminator between a benign IT session and a remote-access scam — resolved by IT_SUPPORT_CONTEXT vs the banking override."
+      ],
+      "language_considerations": "MVP cues authored for en/Latn only; transliterated (e.g. hi-Latn) and non-Latin scripts are representable in the envelope but NOT yet extractable — the rule layer flags unsupported input (G-08/ADR-0014 unresolved, do not resolve here).",
+      "confidence_requirements": "Categorical extraction confidence (HIGH/MEDIUM/LOW); a lone WEAK-strength output never supports a finding alone (CONF-002). No numeric fraud probability (CONF-001).",
+      "examples": [
+        "Install AnyDesk so I can process your refund.",
+        "to fix your account, just do this quick step."
+      ],
+      "counterexamples": [
+        "Our corporate helpdesk will fix your laptop display (genuine, scoped, non-banking)."
+      ],
+      "description": "An innocuous-sounding justification offered for a technically consequential action. The cover story that makes device-action families look harmless.",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "change_history": [
+        {
+          "version": "1.0.0",
+          "date": "2026-08-29",
+          "change": "Authored in WP2 indicator-family formalisation."
+        }
+      ]
+    }
+  ]
+}

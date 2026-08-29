@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://trustlens/schemas/indicator-observation.schema.json",
+  "title": "TrustLens Indicator Observation",
+  "description": "Phase 2 WP2 STEP 5. The TYPED BOUNDARY between the extraction layer and the deterministic rule engine. An indicator observation asserts that a named registry/library indicator was (or was not) observed in an input, with what confidence, backed by which normalized observations and spans. It is the object the rule engine consumes: the current rule_runner takes the SET { indicator_id : matched == OBSERVED } as its signal set, so this contract is a strict, backward-compatible superset of today's hand-declared expected_indicators. An extractor emits indicator observations; it MUST NOT declare a scam, risk, severity or final verdict — that is the rule/detection layer's job (FR/CONF-001). The schema forbids a verdict structurally (additionalProperties:false with no such field); validate_extraction.py additionally rejects any forbidden key by name as defence in depth.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "indicator_id",
+    "polarity",
+    "matched",
+    "input_id",
+    "provenance"
+  ],
+  "properties": {
+    "indicator_id": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Z0-9_]{2,63}$",
+      "description": "Must resolve to a POSITIVE indicator in indicator-registry-v0.json or a NEGATIVE indicator in negative-indicator-library-v1.json. A DEPRECATED indicator may not be emitted (checked by the linter, matching validate_rules.py L1b)."
+    },
+    "indicator_version": {
+      "type": "string",
+      "description": "Version of the indicator definition this observation was produced against (library indicators carry a version; the positive registry is versioned as a whole). Lets a finding record exactly which indicator semantics ran (KB-001 §7)."
+    },
+    "polarity": {
+      "enum": ["POSITIVE", "NEGATIVE"],
+      "description": "Must equal the polarity the indicator carries in the registry/library. A POSITIVE indicator observation is a scam-supporting signal; a NEGATIVE one is suppressive. The linter fails a mismatch."
+    },
+    "matched": {
+      "enum": ["OBSERVED", "NOT_OBSERVED", "UNKNOWN", "AMBIGUOUS", "NOT_APPLICABLE"],
+      "description": "STEP 12. Whether the indicator fired. Only OBSERVED enters the rule engine's signal set. NOT_OBSERVED records an affirmative absence (useful for negative context and for explanation). AMBIGUOUS/UNKNOWN keep uncertainty as uncertainty rather than collapsing to benign."
+    },
+    "confidence": {
+      "$ref": "#/$defs/confidence",
+      "description": "STEP 10. EXTRACTION confidence that this indicator is present — 'how sure are we that this text requests an OTP'. NOT rule confidence and NOT a fraud probability. The rule engine currently uses presence (OBSERVED), not this number."
+    },
+    "observation_refs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/id" },
+      "description": "observation_ids (observation.schema.json) that support this indicator. The bridge that makes an indicator explainable: an indicator with no supporting observation is unexplainable and SHOULD NOT be emitted (the linter warns)."
+    },
+    "supporting_spans": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/span" },
+      "description": "Character spans in the source text evidencing the indicator, so the explanation chain reaches the exact words (FR-046/047)."
+    },
+    "input_id": {
+      "$ref": "#/$defs/id",
+      "description": "The envelope this indicator observation was derived from."
+    },
+    "language": { "type": "string", "pattern": "^[a-z]{2,3}(-[A-Za-z]{2,8})*$" },
+    "script": { "type": "string", "pattern": "^[A-Z][a-z]{3}$" },
+    "extraction_method": {
+      "enum": ["DETERMINISTIC_PATTERN", "PARSER", "NER_MODEL", "CLASSIFIER", "LLM", "VISION", "OCR", "USER_SUPPLIED", "SYSTEM_METADATA", "COMPOSED"],
+      "description": "How this indicator was produced. COMPOSED = derived from multiple observations by a deterministic composition rule (e.g. RECEIVE_FRAMING from a payment_direction fact). The concrete method mix is a later-phase decision; WP2 reserves the vocabulary."
+    },
+    "family_ref": {
+      "type": "string",
+      "pattern": "^FAM-[A-Z0-9-]{2,48}$",
+      "description": "The indicator-families-v1.json family this indicator belongs to. Optional on an instance (derivable from the family map) but useful for grouped explanation."
+    },
+    "review_required": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this observation should be routed to human review before being trusted (e.g. AMBIGUOUS payment direction, low-confidence LLM extraction). Advisory to the pipeline; never itself a finding."
+    },
+    "provenance": {
+      "$ref": "#/$defs/extractorProvenance",
+      "description": "STEP 11. Extractor identity/type/version behind this indicator observation."
+    }
+  },
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{1,127}$" },
+    "span": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["start", "end"],
+      "properties": {
+        "start": { "type": "integer", "minimum": 0 },
+        "end": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "confidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["level"],
+      "properties": {
+        "level": { "enum": ["HIGH", "MEDIUM", "LOW"] },
+        "score": { "type": "number", "minimum": 0, "maximum": 1, "description": "Advisory extraction score. Never a fraud probability (CONF-001)." },
+        "method": { "enum": ["CATEGORICAL", "NUMERIC", "HYBRID"], "default": "CATEGORICAL" }
+      }
+    },
+    "extractorProvenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["extractor_id", "extractor_type", "extractor_version"],
+      "properties": {
+        "extractor_id": { "type": "string" },
+        "extractor_type": {
+          "enum": ["DETERMINISTIC_PATTERN", "PARSER", "NER_MODEL", "CLASSIFIER", "LLM", "VISION", "OCR", "USER_SUPPLIED", "SYSTEM_METADATA", "COMPOSED"]
+        },
+        "extractor_version": { "type": "string" },
+        "config_ref": { "type": "string" }
+      }
+    }
+  }
+}

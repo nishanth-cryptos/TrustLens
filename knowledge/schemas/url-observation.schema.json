@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://trustlens/schemas/url-observation.schema.json",
+  "title": "TrustLens URL / Domain Observation",
+  "description": "Phase 2 WP2 STEP 9. The contract for URL/domain FACTS, without building the future URL-reputation service. It records structural properties a parser can derive (scheme, hostname, registered domain, obfuscation flags) and RESERVES the fields a later intelligence adapter (Phase 6, ADR-0012) will fill — brand match, allowlist, reputation. Those default to UNKNOWN / NOT_EVALUATED and MUST NOT be invented: absence of a reputation service is expressed as NOT_EVALUATED, never as CLEAN and never as MALICIOUS. Whether a URL becomes the LINK_PRESENT / SHORTENED_URL / LOOKALIKE_DOMAIN / FAKE_VERIFICATION_SITE indicator is an indicator-layer decision, not decided here.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["url_id", "raw_url", "structural"],
+  "properties": {
+    "url_id": { "$ref": "#/$defs/id" },
+    "raw_url": { "type": "string", "description": "The URL exactly as it appeared in the text." },
+    "normalized_url": { "type": "string", "description": "Canonicalised URL (lowercased host, tracking params such as utm_* stripped — matching the Phase-1 source-verification normalisation)." },
+    "span": { "$ref": "#/$defs/span", "description": "Where the URL sits in the source text, for traceability." },
+    "structural": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["flags"],
+      "description": "Facts derivable by a PARSER alone. No judgement.",
+      "properties": {
+        "scheme": { "type": "string", "description": "e.g. http, https. Absent if not parseable." },
+        "hostname": { "type": "string" },
+        "registered_domain": { "type": "string", "description": "eTLD+1, e.g. example.co.in. The unit brand-comparison and allowlisting operate on." },
+        "subdomain": { "type": "string" },
+        "path": { "type": "string" },
+        "flags": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Boolean structural properties. Each is a fact, not a verdict. All default false = 'not observed', except where UNKNOWN is meaningful.",
+          "properties": {
+            "shortened": { "type": "boolean", "description": "Host is a known URL-shortening service, concealing the destination." },
+            "obfuscated": { "type": "boolean", "description": "Contains encoding/obfuscation (percent-encoding of host, @-tricks, excessive subdomains)." },
+            "punycode": { "type": "boolean", "description": "Host uses xn-- punycode (possible homograph)." },
+            "ip_literal": { "type": "boolean", "description": "Host is a raw IP address rather than a domain name." }
+          }
+        }
+      }
+    },
+    "claimed_brand": {
+      "type": "string",
+      "description": "The brand the surrounding message CLAIMS the link belongs to (e.g. 'Example Bank'), where the text asserts one. A claim, not a verified association."
+    },
+    "assessments": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "RESERVED for later intelligence adapters. Every field defaults to the non-committal value. validate_extraction.py enforces that these are never set to a malicious/clean judgement in a WP2 artefact, because no such service exists yet.",
+      "properties": {
+        "domain_matches_claimed_brand": {
+          "enum": ["MATCH", "MISMATCH", "UNKNOWN"],
+          "default": "UNKNOWN",
+          "description": "Whether registered_domain corresponds to claimed_brand. UNKNOWN until a brand-domain map exists."
+        },
+        "allowlist_result": {
+          "enum": ["ALLOWLISTED", "NOT_ALLOWLISTED", "NOT_EVALUATED"],
+          "default": "NOT_EVALUATED",
+          "description": "Allowlist lookup outcome. NOT_EVALUATED until an allowlist exists. ALLOWLISTED is weak context only (see negative library ALLOWLISTED_DOMAIN_CONTEXT) and never cancels a hard-risk pattern."
+        },
+        "reputation_result": {
+          "enum": ["MALICIOUS", "SUSPICIOUS", "CLEAN", "UNKNOWN", "NOT_EVALUATED"],
+          "default": "NOT_EVALUATED",
+          "description": "Threat-intel reputation. NOT_EVALUATED until a reputation adapter (ADR-0012) exists. MALICIOUS/SUSPICIOUS/CLEAN may NOT appear in a WP2 artefact — inventing a reputation result is forbidden."
+        }
+      }
+    },
+    "provenance": {
+      "$ref": "#/$defs/extractorProvenance",
+      "description": "Which extractor produced these URL facts (typically a PARSER)."
+    }
+  },
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{1,127}$" },
+    "span": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["start", "end"],
+      "properties": {
+        "start": { "type": "integer", "minimum": 0 },
+        "end": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "extractorProvenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["extractor_id", "extractor_type", "extractor_version"],
+      "properties": {
+        "extractor_id": { "type": "string" },
+        "extractor_type": {
+          "enum": ["DETERMINISTIC_PATTERN", "PARSER", "NER_MODEL", "CLASSIFIER", "LLM", "VISION", "OCR", "USER_SUPPLIED", "SYSTEM_METADATA"]
+        },
+        "extractor_version": { "type": "string" },
+        "config_ref": { "type": "string" }
+      }
+    }
+  }
+}

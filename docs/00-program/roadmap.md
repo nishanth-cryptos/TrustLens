@@ -100,8 +100,13 @@ score), [CONF-002](conflict-register.md) (three-layer indicator/composite/suppre
    from [RESEARCH-004](../01-research/RESEARCH-004-evidence-matrix.md). →
    [ADR-0003](../../adr/ADR-0003-rule-representation-format.md). Delivered with 7 reference rules,
    a cross-file linter and 23 negative fixtures; `30/30`.
-2. 🟡 **Indicator families** — positive registry (v0.3.0-interim, 63 positives); formal extraction
-   contracts still outstanding. Negatives migrated to the WP3 library.
+2. ✅ **Indicator families + extraction contracts** — [KB-002](../02-knowledge/KB-002-extraction-contracts.md).
+   Four Draft-2020-12 contract schemas (input-envelope, observation, url-observation,
+   indicator-observation), 28 indicator families partitioning the 63 positives
+   ([`indicator-families-v1.json`](../../knowledge/indicators/indicator-families-v1.json)), negation/
+   reported-speech + actor/action/target + payment-direction models, 15 golden fixtures, a 26-entry
+   extraction-coverage matrix (25 starters + TL-SUP-001), and an 8th validator. Rule engine unchanged. See
+   [GATE-005](GATE-005-phase-2-extraction-contracts.md).
 3. ✅ **Negative-indicator library** — [G-07 CLOSED](../01-research/RESEARCH-005-gap-register.md#6a-g-07-closure-evidence-2026-08-28).
    Formal reusable library (`negative-indicator-library-v1.json`): 29 negative indicators + 6
    hard-risk overrides, graded explainable effects, dedicated validator, runner execution, 55 tests
@@ -114,9 +119,9 @@ score), [CONF-002](conflict-register.md) (three-layer indicator/composite/suppre
    `evidence_maturity` layer; loan-app/mule (G-12) preserved with no fabricated rule. Taxonomy v2.0.
 6. ✅ **KB-001** — [knowledge governance, lifecycle, provenance, versioning](../02-knowledge/KB-001-knowledge-governance.md);
    storage deferred to ADR-0004.
-7. 🟡 **Schema validation in CI** — seven validators exist (`manual_evidence_check`,
+7. 🟡 **Schema validation in CI** — eight validators exist (`manual_evidence_check`,
    `phase1_consistency_check`, `validate_taxonomy`, `validate_kb`, `validate_negative_library`,
-   `validate_rules`, `rule_runner`); wiring into a CI workflow remains.
+   `validate_rules`, `rule_runner`, `validate_extraction`); wiring into a CI workflow remains.
 8. **ADR-0004** (knowledge storage) · **ADR-0014** (language and script strategy).
 
 **⚠ Partial blocker.** Work package 8's ADR-0014 is blocked on
@@ -249,3 +254,4 @@ and when the sources are retrieved. The rest have runway.
 | 1.2 | 2026-08-28 | RESEARCH-006 manual retrieval reconciliation completed; Phase 2 marked **in progress** (WP1 done; WP2/3/4 partial — 14/30 starter rules encoded). Checkpoint recorded in [GATE-002](GATE-002-phase-2-checkpoint.md). | Technical Program Director |
 | 1.3 | 2026-08-28 | **WP3 done (G-07 closed)**; WP4 advanced to **25/30 encoded, 18 published**. Checkpoint [GATE-003](GATE-003-phase-2-g07-and-encoding.md). WP2/5/6/8 remain open. | Technical Program Director |
 | 1.4 | 2026-08-28 | **WP5 done (taxonomy v2.0, TAX-11 deferred, multidimensional model, KB-001)** and **WP6 done (KB-001)**. Checkpoint [GATE-004](GATE-004-phase-2-taxonomy-kb.md). WP2 + CI wiring + ADR-0004/0014 remain. | Technical Program Director |
+| 1.5 | 2026-08-29 | **WP2 done (indicator families + extraction contracts, KB-002)**: four contract schemas, 28 families over 63 positives, 15 golden fixtures, 26-entry coverage matrix (25 starters + TL-SUP-001), 8th validator. Checkpoint [GATE-005](GATE-005-phase-2-extraction-contracts.md). Rule engine and prior gates unaffected. WP7 CI wiring + ADR-0004/0014 remain. | Technical Program Director |
