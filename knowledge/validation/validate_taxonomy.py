@@ -22,6 +22,11 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT))  # import the shared dimension-axis contract from the runtime package
+# Single source of truth for the taxonomy dimension-map KEY -> AXIS mapping, shared with the P3-WP2
+# runtime loader so authoring and runtime axis-integrity validation cannot silently diverge.
+from knowledge.runtime.dimensions import dimension_map_problems
+
 TAX_PATH = ROOT / "knowledge" / "taxonomies" / "scam-taxonomy.json"
 DIM_PATH = ROOT / "knowledge" / "taxonomies" / "dimensions-v1.json"
 RULES_DIR = ROOT / "knowledge" / "rules"
@@ -30,11 +35,6 @@ MATURITY = {"PRIMARY", "PRIMARY_MANUAL", "PRIMARY_PARTIAL", "OFFICIAL_ALTERNATE"
             "OFFICIAL_REPLACEMENT", "INDUSTRY", "PARTIAL", "NO_PRIMARY_SOURCE", "UNVERIFIED"}
 PUBLISHABLE_MATURITY = {"PRIMARY", "PRIMARY_MANUAL", "PRIMARY_PARTIAL",
                         "OFFICIAL_ALTERNATE", "OFFICIAL_REPLACEMENT", "INDUSTRY", "PARTIAL"}
-DIM_KEYS = ["fraud_objective", "technical_mechanism", "typical_channels",
-            "social_engineering_tactics", "requested_user_actions", "potential_harm"]
-KEY_TO_AXIS = {"fraud_objective": "fraud_objective", "technical_mechanism": "technical_mechanism",
-               "typical_channels": "channel", "social_engineering_tactics": "social_engineering_tactic",
-               "requested_user_actions": "requested_user_action", "potential_harm": "potential_harm"}
 
 
 def load(p):
@@ -86,13 +86,10 @@ def main() -> int:
                     errs.append(f"{sid}: missing {f}")
             if s.get("detection_status") == "DEFERRED_SAFEGUARDING" or c.get("detection_status") == "DEFERRED_SAFEGUARDING":
                 deferred_subs.add(sid)
-            for key, tags in s.get("dimensions", {}).items():
-                if key not in DIM_KEYS:
-                    errs.append(f"{sid}: unknown dimension key {key}")
-                    continue
-                for tag in tags:
-                    if tag not in dim_ids[KEY_TO_AXIS[key]]:
-                        errs.append(f"{sid}: dimension tag {tag} not in {KEY_TO_AXIS[key]} registry")
+            # axis-scoped dimension integrity via the SHARED helper (same mapping the runtime loader
+            # uses) — rejects an unknown axis key, a valid term under the wrong axis, and a nonexistent
+            # term. dim_ids is {axis: {term_id}} built above.
+            errs.extend(dimension_map_problems(sid, s.get("dimensions", {}), dim_ids))
 
     # rule reconciliation
     published_bad = []
