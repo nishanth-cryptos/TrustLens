@@ -7,7 +7,11 @@ Checks the library file itself and its cross-references, independently of the ru
   * CAP_SEVERITY effects carry a severity_cap; other effects do not;
   * hard-risk overrides are explicit: unique ids, a condition referencing only known POSITIVE
     indicators, and an applicability (rule ids or families);
-  * applicable_rule_families are '*' or valid TAX ids;
+  * applicable_rule_families / override applies_to_families are '*' or a valid TAX **category** id
+    (TAX-NN). Suppression/override scope is CATEGORY-level: a rule's category membership is derived by
+    rollup from its taxonomy_refs, and the runtime loader (P3-WP2) matches negative/override scope at
+    category granularity, so a subcategory-scoped negative/override could never be acted on consistently.
+    Both authoring and runtime therefore agree on category-only family scope (DET-001-WP2 §Taxonomy);
   * language/script present;
   * every negative id referenced by any rule's suppressed_by resolves and is not DEPRECATED;
   * no PUBLISHED rule depends on an unresolved suppression reference.
@@ -56,8 +60,10 @@ def main() -> int:
     registry = load(REGISTRY_PATH)
     positives = {i["id"] for i in registry["indicators"] if i["polarity"] == "POSITIVE"}
     taxonomy = load(TAXONOMY_PATH)
-    taxa = {c["id"] for c in taxonomy["categories"]}
-    taxa |= {s["id"] for c in taxonomy["categories"] for s in c["subcategories"]}
+    # Suppression/override family scope is CATEGORY-level only (TAX-NN); subcategories are NOT valid
+    # scope targets (runtime matches at category granularity — DET-001-WP2). Kept in sync with the
+    # runtime loader's validate_references (knowledge/runtime/indexes.py).
+    family_scope = {c["id"] for c in taxonomy["categories"]}
 
     categories = set(lib["categories"])
     ni = lib["negative_indicators"]
@@ -92,8 +98,8 @@ def main() -> int:
         if eff != "CAP_SEVERITY" and "severity_cap" in n:
             errs.append(f"{nid}: severity_cap only valid on CAP_SEVERITY")
         for fam in n.get("applicable_rule_families", []):
-            if fam != "*" and fam not in taxa:
-                errs.append(f"{nid}: applicable_rule_family {fam} is not a known taxonomy id")
+            if fam != "*" and fam not in family_scope:
+                errs.append(f"{nid}: applicable_rule_family {fam} is not a TAX category id (category-level scope only)")
         if not n.get("language") or not n.get("script"):
             errs.append(f"{nid}: language/script required")
         if n.get("false_negative_risk") not in ("LOW", "MEDIUM", "HIGH"):
@@ -111,8 +117,8 @@ def main() -> int:
         if not o.get("applies_to_rules") and not o.get("applies_to_families"):
             errs.append(f"{oid}: override must declare applies_to_rules or applies_to_families")
         for fam in o.get("applies_to_families", []):
-            if fam not in taxa:
-                errs.append(f"{oid}: applies_to_family {fam} not a known taxonomy id")
+            if fam not in family_scope:
+                errs.append(f"{oid}: applies_to_family {fam} not a TAX category id (category-level scope only)")
         for cat in o.get("blocks_suppression_categories", []):
             if cat not in categories:
                 errs.append(f"{oid}: blocks unknown category {cat}")
