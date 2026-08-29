@@ -3,10 +3,10 @@
 | Field | Value |
 |---|---|
 | Document ID | ADR-INDEX |
-| Version | 1.1 |
+| Version | 1.2 |
 | Status | Active |
 | Owner role | Chief Architect |
-| Last updated | 2026-08-28 |
+| Last updated | 2026-08-29 |
 
 Per `MP §20`, every major architectural choice is captured as a numbered ADR stating: the
 decision, constraints, viable alternatives, comparison criteria, selected option, justification,
@@ -26,6 +26,8 @@ Programme-level scope, process and evidence decisions live in the
 | [ADR-0001](ADR-0001-adopt-technical-baseline.md) | Adopt the supplied technical baseline | Accepted | 2026-07-31 | Medium |
 | [ADR-0002](ADR-0002-defer-python-intelligence-service.md) | Defer the Python intelligence service to the AI phase | Accepted | 2026-07-31 | Very low |
 | [ADR-0003](ADR-0003-rule-representation-format.md) | Rule representation — JSON Schema plus a cross-file linter | Accepted | 2026-08-15 | Low |
+| [ADR-0004](ADR-0004-knowledge-storage-architecture.md) | Knowledge storage — Git source of truth + immutable hashed runtime bundle | Accepted | 2026-08-29 | Low |
+| [ADR-0014](ADR-0014-language-and-script-strategy.md) | Language and script strategy — MVP English-only, schemas extensible (OI-04 → option A) | Accepted | 2026-08-29 | Low |
 | [ADR-0015](ADR-0015-evidence-hierarchy-and-official-alternate-provenance.md) | Evidence hierarchy and official-alternate provenance | Accepted | 2026-08-28 | Low |
 
 ## Planned
@@ -35,7 +37,6 @@ analysis that belongs to a later phase. Recording them now prevents them being m
 
 | ID | Decision needed | Phase | Depends on |
 |---|---|---|---|
-| ADR-0004 | Knowledge storage — relational, graph database, or hybrid, with migration path | 2 | KB-001, `MP §9` |
 | ADR-0005 | Rule execution model — interpreter design, dependency resolution, determinism guarantees | 3 | DET-001 |
 | ADR-0006 | Risk and confidence aggregation mathematics | 3 | DET-001, [CONF-001](../docs/00-program/conflict-register.md) |
 | ADR-0007 | AI model strategy — local/open vs managed API vs hybrid | 4 | AI-001, `MP §11` |
@@ -45,12 +46,11 @@ analysis that belongs to a later phase. Recording them now prevents them being m
 | ADR-0011 | Database migration tooling | 6 | DATA-001 |
 | ADR-0012 | Threat-intelligence adapter architecture and provider selection | 6 | INT-001 |
 | ADR-0013 | Rule-set publication and version distribution mechanism | 5 | ARCH-001 |
-| ADR-0014 | Language and script handling strategy | 2 | [CONF-004](../docs/00-program/conflict-register.md) resolution |
 
-**Numbering note.** ADR-0004…0014 remain **reserved** for the planned topics above. ADR-0015 was
-issued ahead of them because the RESEARCH-006 manual retrieval reconciliation forced an evidence-model
-decision (the evidence hierarchy) that could not wait for those later phases. It does not consume any
-reserved number.
+**Numbering note.** ADR-0004 and ADR-0014 are now issued and Accepted (WP8); ADR-0005…0013 remain
+**reserved** for the planned topics above. ADR-0015 was issued ahead of them because the RESEARCH-006
+manual retrieval reconciliation forced an evidence-model decision (the evidence hierarchy) that could not
+wait for those later phases.
 
 ## Template
 

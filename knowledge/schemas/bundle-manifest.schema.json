@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://trustlens/schemas/bundle-manifest.schema.json",
+  "title": "TrustLens Published Knowledge Bundle Manifest",
+  "description": "Phase 2 WP8 (ADR-0004). The contract for the manifest of an immutable, versioned TrustLens knowledge bundle. A bundle is a deterministic projection of a git commit containing only the runtime-necessary knowledge (rules, indicators, negative library, taxonomy/dimensions, schemas, evidence METADATA) — never raw PDFs, test corpora or validators. The manifest pins every component version, records a SHA-256 per file and a content digest over the whole set, so a runtime decision can answer exactly which knowledge executed and be reproduced. commit_sha and created_at are provenance and are DELIBERATELY excluded from content_digest so that the same commit always yields the same digest.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "manifest_schema_version",
+    "bundle_version",
+    "content_digest",
+    "component_versions",
+    "integrity",
+    "counts"
+  ],
+  "properties": {
+    "manifest_schema_version": {
+      "const": "1.0.0",
+      "description": "Version of THIS manifest contract. Const per revision (KB-001 §8)."
+    },
+    "bundle_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semantic version of the bundle format/content contract."
+    },
+    "created_at": {
+      "type": "string",
+      "description": "ISO-8601 build instant. Provenance only — NOT part of content_digest, so builds remain reproducible."
+    },
+    "commit_sha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{7,40}$|^unknown$",
+      "description": "The git commit the bundle was built from (from GITHUB_SHA or .git/HEAD), or 'unknown' when built outside a work tree. Provenance only — not part of content_digest."
+    },
+    "gate": {
+      "enum": ["PASS", "NOT_RECORDED"],
+      "default": "NOT_RECORDED",
+      "description": "Whether the publication quality gate passed for this build. NOT_RECORDED unless a publish step explicitly asserts PASS — the builder never claims a gate it did not observe."
+    },
+    "content_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "SHA-256 over the sorted set of '<bundle_path>=<sha256>' lines for every included file. The reproducible identity of the bundle's knowledge content."
+    },
+    "component_versions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rule_schema",
+        "taxonomy",
+        "dimensions",
+        "indicator_registry",
+        "indicator_families",
+        "negative_library",
+        "evidence_manifest",
+        "evidence_records",
+        "extraction_schemas"
+      ],
+      "description": "The pinned semantic version of every knowledge component in the bundle (STEP 7).",
+      "properties": {
+        "rule_schema": { "type": "string", "minLength": 1 },
+        "taxonomy": { "type": "string", "minLength": 1 },
+        "dimensions": { "type": "string", "minLength": 1 },
+        "indicator_registry": { "type": "string", "minLength": 1 },
+        "indicator_families": { "type": "string", "minLength": 1 },
+        "negative_library": { "type": "string", "minLength": 1 },
+        "evidence_manifest": { "type": "string", "minLength": 1 },
+        "evidence_records": { "type": "string", "minLength": 1 },
+        "extraction_schemas": { "type": "string", "minLength": 1 }
+      }
+    },
+    "integrity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "files"],
+      "properties": {
+        "algorithm": { "const": "sha256" },
+        "files": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["path", "sha256", "bytes"],
+            "properties": {
+              "path": { "type": "string", "description": "Bundle-relative path, e.g. rules/TL-PAY-001.json." },
+              "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+              "bytes": { "type": "integer", "minimum": 0 }
+            }
+          }
+        }
+      }
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Informative counts for humans and quick sanity checks (rules_total, rules_published, positive/negative indicators, taxonomy categories/subcategories, dimension terms, files)."
+    },
+    "notes": { "type": "string" }
+  }
+}

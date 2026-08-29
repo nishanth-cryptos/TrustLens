@@ -232,6 +232,35 @@ evidence); scope sextortion out entirely (rejected — it is an official, nation
 
 ---
 
+## DEC-008 — MVP language scope: English only (OI-04 resolved)
+
+| | |
+|---|---|
+| **Date** | 2026-08-29 |
+| **Decided by** | **Sponsor** (OI-04 is an explicit owner decision) |
+| **Status** | Accepted |
+| **Related** | [OI-04](PROGRAM-001-program-charter.md#11-open-issues), [CONF-004](conflict-register.md), [G-08](../01-research/RESEARCH-005-gap-register.md), [ADR-0014](../../adr/ADR-0014-language-and-script-strategy.md) |
+
+**Decision.** MVP **detection** supports **English (`en` / `Latn`) only** — CONF-004 pre-registered
+resolution **(a)**. The knowledge schemas remain language/script-extensible; non-English input is
+explicitly flagged `UNSUPPORTED` (NFR-009), never silently scored. The multilingual claim (`MP §1`) is
+**roadmapped**, not shipped.
+
+**Justification.** No verified official source supplies non-English cues ([G-08](../01-research/RESEARCH-005-gap-register.md)),
+so any non-English rule would be `HEURISTIC` and un-publishable (RESEARCH-004 §7) without a dedicated
+research pass. Option A is the only choice consistent with the current evidence and requires **zero**
+engineering change — the language-extensible posture (rule `language_scope`, envelope language/script,
+seed case A-006's `UNSUPPORTED` flag) already implements it.
+
+**Consequences.** Resolves OI-04 and CONF-004; Accepts ADR-0014 at English-only scope; **unblocks Phase-2
+closure**. G-08 persists as **future, non-blocking** research (verified non-English cues). Widening scope
+later (Hindi or other Indian languages) is a **data change** gated by a verified-cue research pass.
+
+**Reversal cost.** Low — schemas already carry language/script; adding a language is additive data, not a
+migration.
+
+---
+
 ## Summary
 
 | ID | Decision | Decided by | Status |
@@ -243,6 +272,7 @@ evidence); scope sextortion out entirely (rejected — it is an official, nation
 | DEC-005 | Neutral rule identifiers | Programme | Accepted |
 | DEC-006 | Evidence hierarchy (official-alternate + replacement) | Programme | Accepted |
 | DEC-007 | Sextortion in taxonomy; detection deferred (safeguarding) | Programme | Accepted |
+| DEC-008 | MVP language scope English-only (OI-04 resolved); schemas stay extensible | Sponsor | Accepted |
 
 ## Change history
 
@@ -251,3 +281,4 @@ evidence); scope sextortion out entirely (rejected — it is an official, nation
 | 1.0 | 2026-07-31 | Log opened with five Phase 0 decisions. | Technical Program Director |
 | 1.1 | 2026-08-28 | DEC-006 added — evidence hierarchy admitting official-alternate and replacement provenance, arising from the RESEARCH-006 manual retrieval reconciliation. Points to ADR-0015. | Chief Architect |
 | 1.2 | 2026-08-28 | DEC-007 added — sextortion added to the taxonomy (TAX-11) with detection deferred for safeguarding (WP5). | Threat Intelligence Lead |
+| 1.3 | 2026-08-29 | DEC-008 added — Sponsor resolved OI-04: MVP language scope is English-only (CONF-004 option a); schemas stay language/script-extensible. Accepts ADR-0014; unblocks Phase-2 closure. | Technical Program Director |
