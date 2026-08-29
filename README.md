@@ -17,8 +17,8 @@ determination.** It assists reporting and investigation.
 
 | | |
 |---|---|
-| Programme phase | Phase 0 ✅ · Phase 1 ✅ (`PARTIAL`, [GATE-001](docs/00-program/GATE-001-phase-1-assessment.md)) · **Phase 2 — Knowledge Engineering, next** |
-| Knowledge base | 26 sources graded, **11 verified** · 10 categories / 41 subcategories · 30 starter rules graded, **18 evidenced and implementable** · 22 open research gaps |
+| Programme phase | Phase 0 ✅ · Phase 1 ✅ (`PARTIAL`, [GATE-001](docs/00-program/GATE-001-phase-1-assessment.md)) · **Phase 2 ✅ Knowledge Engineering (`PASS`, [GATE-008](docs/00-program/GATE-008-phase-2-closure.md))** · Phase 3 (Detection design) — next, awaiting approval |
+| Knowledge base | 26 sources graded, **11 verified** · **11 categories / 42 subcategories** (taxonomy v2) · 30 starter rules graded, **25 encoded / 18 PUBLISHED** · extraction contracts + CI quality gate · MVP detection **English-only** ([DEC-008](docs/00-program/decision-log.md)) |
 | Implementation | Not started — specifications only |
 | Detection quality | **Unmeasured.** No labelled corpus exists yet; no accuracy claim is made. |
 
@@ -73,8 +73,8 @@ malformed rules that must all be rejected**, each declaring which layer should c
 
 ## Validation quality gate (Phase 2 WP7)
 
-One canonical command runs the **complete** knowledge-validation suite (8 validators) in
-dependency order. **Run it before every commit** — CI runs exactly the same command.
+One canonical command runs the **complete** knowledge-validation suite (8 validators + published-bundle
+integrity = 9 checks) in dependency order. **Run it before every commit** — CI runs exactly the same command.
 
 ```bash
 # one-time setup (the only dependency mechanism — pins jsonschema + referencing)
@@ -96,6 +96,15 @@ repository is never mutated:
 
 ```bash
 .venv/bin/python knowledge/validation/ci_selftest.py
+```
+
+The **published knowledge bundle** ([ADR-0004](adr/ADR-0004-knowledge-storage-architecture.md)) — the
+immutable, hashed, runtime-necessary knowledge — is built deterministically from the working tree; the
+gate verifies it builds and its hashes match on every run:
+
+```bash
+.venv/bin/python knowledge/publish/build_bundle.py --out build/bundle   # deterministic bundle + manifest
+.venv/bin/python knowledge/publish/validate_bundle.py                    # integrity + reproducibility
 ```
 
 CI wiring: [.github/workflows/knowledge-validation.yml](.github/workflows/knowledge-validation.yml)

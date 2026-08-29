@@ -418,7 +418,7 @@ consumes a `DERIVED` requirement inherits the ASM-001 caveat.
 | OI-01 | No end-user or analyst access to validate personas and journeys | Sponsor | Confidence in `DERIVED` requirements |
 | OI-02 | Docker + PostgreSQL not installed | Sponsor (admin install) | Phase 9 |
 | OI-03 | No programme end date given; scope staging cannot be time-boxed | Sponsor | PLAN-001 |
-| OI-04 | Which Indian languages are in MVP scope? Currently English-only by default | Sponsor | FR-012, NFR-009 |
+| OI-04 | ✅ **RESOLVED 2026-08-29 (DEC-008):** MVP detection is **English-only**; schemas stay language/script-extensible; non-English flagged `UNSUPPORTED`; multilingual roadmapped. (was: which Indian languages are in MVP scope?) | Sponsor | FR-012, NFR-009 |
 | OI-05 | Data retention period and legal basis undecided; DPDP applicability unverified | Sponsor + legal | FR-065, NFR-015 |
 | OI-06 | Deployment target unknown — local-only, or a hosted environment? | Sponsor | ARCH-001, OPS-001 |
 

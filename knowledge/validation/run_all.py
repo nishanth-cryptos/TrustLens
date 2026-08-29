@@ -18,7 +18,8 @@ Design guarantees:
 
 Order (dependency-aware, see ORDER below):
   manual evidence integrity → Phase-1 consistency → taxonomy → KB governance →
-  negative-indicator library → rule schema/lint → extraction contracts → rule runner
+  negative-indicator library → rule schema/lint → extraction contracts → rule runner →
+  published-bundle integrity (ADR-0004)
 
 Usage:
   python knowledge/validation/run_all.py             # human-readable; runs all; non-zero on any failure
@@ -39,10 +40,10 @@ import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-VALDIR = ROOT / "knowledge" / "validation"
 
-# Dependency-aware execution order. Each entry: (module, why-it-runs-here).
-# Rationale — the suite flows from the most foundational invariant to the most derived:
+# Dependency-aware execution order. Each entry: (repo-relative path, why-it-runs-here).
+# Rationale — the suite flows from the most foundational invariant to the most derived, ending
+# with the publish-integrity check (ADR-0004):
 #   1 evidence must be intact and its automated grades preserved before anything trusts it;
 #   2 Phase-1 counts/consistency across manifest/taxonomy/matrix/corpus must hold;
 #   3 the taxonomy + dimensions must be internally valid (rules reference taxa);
@@ -50,16 +51,18 @@ VALDIR = ROOT / "knowledge" / "validation"
 #   5 the negative-indicator library must be valid (rules + extraction consume it);
 #   6 rules validate against schema + the linter, which reads indicators/taxonomy/manifest/library;
 #   7 extraction contracts build on rules + families + library + taxonomy/dimensions;
-#   8 the rule runner executes the whole encoded set over the corpus + suppression suite last.
+#   8 the rule runner executes the whole encoded set over the corpus + suppression suite;
+#   9 the published knowledge bundle builds deterministically and its hashes verify (ADR-0004 WP8).
 ORDER = [
-    ("manual_evidence_check.py", "durable-truth: evidence integrity + automated-status preservation"),
-    ("phase1_consistency_check.py", "Phase-1 counts consistent across manifest / taxonomy / matrix / corpus"),
-    ("validate_taxonomy.py", "taxonomy + dimensions integrity; rule taxonomy_refs resolve"),
-    ("validate_kb.py", "KB governance: global ID uniqueness + version syntax + PUBLISHED review metadata"),
-    ("validate_negative_library.py", "negative-indicator library integrity + overrides"),
-    ("validate_rules.py", "rule JSON Schema + cross-file linter + negative fixtures"),
-    ("validate_extraction.py", "extraction contracts: schemas, families partition, fixtures, coverage matrix"),
-    ("rule_runner.py", "deterministic execution of the encoded rules over corpus + suppression suite"),
+    ("knowledge/validation/manual_evidence_check.py", "durable-truth: evidence integrity + automated-status preservation"),
+    ("knowledge/validation/phase1_consistency_check.py", "Phase-1 counts consistent across manifest / taxonomy / matrix / corpus"),
+    ("knowledge/validation/validate_taxonomy.py", "taxonomy + dimensions integrity; rule taxonomy_refs resolve"),
+    ("knowledge/validation/validate_kb.py", "KB governance: global ID uniqueness + version syntax + PUBLISHED review metadata"),
+    ("knowledge/validation/validate_negative_library.py", "negative-indicator library integrity + overrides"),
+    ("knowledge/validation/validate_rules.py", "rule JSON Schema + cross-file linter + negative fixtures"),
+    ("knowledge/validation/validate_extraction.py", "extraction contracts: schemas, families partition, fixtures, coverage matrix"),
+    ("knowledge/validation/rule_runner.py", "deterministic execution of the encoded rules over corpus + suppression suite"),
+    ("knowledge/publish/validate_bundle.py", "published knowledge bundle: deterministic build + SHA-256 integrity (ADR-0004)"),
 ]
 
 # Network-capable modules a validator must never import — the offline guarantee (WP7 STEP 7).
@@ -81,8 +84,9 @@ def preflight_offline():
     validator that quietly adds `import requests` fails the gate before it can run.
     """
     problems = []
-    for module, _ in ORDER:
-        path = VALDIR / module
+    for relpath, _ in ORDER:
+        module = Path(relpath).name
+        path = ROOT / relpath
         if not path.exists():
             problems.append(f"{module}: validator file is missing")
             continue
@@ -94,9 +98,10 @@ def preflight_offline():
     return problems
 
 
-def run_one(module: str):
+def run_one(relpath: str):
     """Run a single validator as an isolated subprocess; return a result dict."""
-    path = VALDIR / module
+    module = Path(relpath).name
+    path = ROOT / relpath
     start = time.perf_counter()
     proc = subprocess.run(
         [sys.executable, str(path), "--quiet"],
@@ -147,18 +152,18 @@ def main() -> int:
                 print("  -", p)
         return 2
 
-    log(f"TrustLens knowledge quality gate — {len(ORDER)} validators, dependency order, offline")
+    log(f"TrustLens knowledge quality gate — {len(ORDER)} checks (8 validators + bundle integrity), dependency order, offline")
     log(f"interpreter: {sys.executable}")
     log(f"repo root  : {ROOT}\n")
 
     results = []
-    for module, why in ORDER:
-        res = run_one(module)
+    for relpath, why in ORDER:
+        res = run_one(relpath)
         res["rationale"] = why
         results.append(res)
         if not as_json:
             mark = "ok  " if res["status"] == "PASS" else "FAIL"
-            print(f"  {mark}  {module:<30} {res['duration_s']:>6.2f}s  {why}")
+            print(f"  {mark}  {res['validator']:<30} {res['duration_s']:>6.2f}s  {why}")
             if res["status"] == "FAIL":
                 print(f"        └─ {res['reason']}")
             if verbose or res["status"] == "FAIL":
@@ -185,7 +190,7 @@ def main() -> int:
             print(f"QUALITY GATE: FAIL — {len(failed)}/{len(results)} validator(s) failed in {total_s:.2f}s: "
                   f"{[r['validator'] for r in failed]}")
         else:
-            print(f"QUALITY GATE: PASS — all {len(results)} validators green in {total_s:.2f}s")
+            print(f"QUALITY GATE: PASS — all {len(results)} checks green in {total_s:.2f}s")
 
     if report_path is not None:
         report_path.write_text(json.dumps({

@@ -8,7 +8,7 @@
 | Owner role | Chief Architect |
 | Dependencies | RESEARCH-001…006, [ADR-0003](../../adr/ADR-0003-rule-representation-format.md), [ADR-0015](../../adr/ADR-0015-evidence-hierarchy-and-official-alternate-provenance.md), [DEC-003](../00-program/decision-log.md), [DEC-005](../00-program/decision-log.md), [DEC-006](../00-program/decision-log.md) |
 | Feeds | DET-001, ARCH-001, DATA-001, OPS-001 |
-| Last updated | 2026-08-29 (v1.1 — §11 CI enforcement) |
+| Last updated | 2026-08-29 (v1.2 — §10 ADR-0004 storage, §11 CI enforcement) |
 
 ---
 
@@ -209,11 +209,14 @@ audit trail.** Over-encoding governance as software creates false assurance.
 
 ## 10. Storage boundary
 
-The above is a **logical** model. Physical persistence — whether sources/evidence/rules/taxonomy live
-in files (as now), a relational schema, a graph, or a hybrid, and how a published rule-set version is
-distributed — is **[ADR-0004](../../adr/README.md) (knowledge storage), which is unresolved.** KB-001
-must not be read as choosing one. Where DATA-001 or ADR-0004 later fix persistence, they inherit this
-logical model and its lifecycles.
+The above is a **logical** model. Physical persistence is now decided by
+**[ADR-0004](../../adr/ADR-0004-knowledge-storage-architecture.md) (knowledge storage) — Accepted**: the
+**Git repository remains the single authoritative source of truth** (files as now), and a deterministic,
+immutable, SHA-256-hashed **published knowledge bundle** carries the runtime-necessary knowledge to an
+**in-memory** runtime; no database is authoritative for knowledge (any Postgres is operational/audit or a
+one-way materialized cache), and a graph store is not justified. ADR-0004 **inherits this logical model
+and its lifecycles unchanged** — it decides *where* knowledge lives and *how it is published*, not *what*
+it means. Raw evidence stays in Git referenced by SHA-256 (migration-safe to LFS/object storage).
 
 ## 11. Continuous enforcement — the CI quality gate (WP7)
 
@@ -253,3 +256,4 @@ would create false assurance (§9); the gate is deliberately scoped to what is o
 |---|---|---|---|
 | 1.0 | 2026-08-28 | Initial KB-001. Pipeline, seven artifact lifecycles, rule state machine reconciled with ADR-0003, PUBLISHED checklist with machine/human split, change-response playbook, provenance model (preserving ADR-0015), versioning policy, storage boundary deferred to ADR-0004. | Chief Architect |
 | 1.1 | 2026-08-29 | Added §11 continuous enforcement: the WP7 CI quality gate (`run_all.py` + `knowledge-validation.yml`) makes a change merge-ineligible while the machine-enforced suite fails, without replacing the §9 human controls. | Chief Architect |
+| 1.2 | 2026-08-29 | §10 storage boundary resolved by ADR-0004 (Accepted): Git source of truth + immutable hashed runtime bundle; DB operational-only; graph not justified. Logical model unchanged. | Chief Architect |

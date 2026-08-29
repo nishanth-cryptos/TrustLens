@@ -148,7 +148,7 @@ operate on *described* behaviour rather than *observed* state, and note the narr
 
 | | |
 |---|---|
-| **Status** | `OPEN` — needs sponsor decision |
+| **Status** | `RESOLVED-APPROVED` (2026-08-29) — Sponsor chose **option (a)** via [OI-04](PROGRAM-001-program-charter.md#11-open-issues) / [DEC-008](decision-log.md): **English-only MVP detection**, schemas language/script-extensible, non-English input flagged `UNSUPPORTED`; multilingual is roadmapped. See [ADR-0014](../../adr/ADR-0014-language-and-script-strategy.md). |
 | **Raised** | 2026-07-31, Phase 0 |
 | **Sources in conflict** | `MP §1` (*"Indian, explainable, **multilingual** digital-scam detection"*), `MP §11` (*"major Indian-language scenarios"*) vs `RP p.5–12` — **every trigger cue in all 30 rules is English** |
 
@@ -281,13 +281,14 @@ shortfalls are stated in advance rather than discovered at the gate. Tracked as
 | CONF-001 | Single risk score vs separated quantities | `RESOLVED-PROPOSED` | No |
 | CONF-002 | Keyword rules vs combinational detection | `RESOLVED-PROPOSED` | No |
 | CONF-003 | Rules requiring unobservable evidence | `RESOLVED-PROPOSED` | No |
-| **CONF-004** | **Multilingual claim vs English-only knowledge** | **`OPEN`** | **Yes — OI-04** |
+| CONF-004 | Multilingual claim vs English-only knowledge | `RESOLVED-APPROVED` | Done — DEC-008 (OI-04, option a) |
 | CONF-005 | Commercial sources as authoritative; brand in rule IDs | `RESOLVED-PROPOSED` | No |
 | CONF-006 | Secondary research vs official traceability | `RESOLVED-APPROVED` | Done — DEC-003 |
 | CONF-007 | Assumed repository does not exist | `CLOSED` | No |
 | CONF-008 | Scope vs capacity | `RESOLVED-APPROVED` | Done — DEC-001 |
 
-**One conflict requires a sponsor decision: CONF-004.**
+**All eight conflicts are now resolved. CONF-004 was resolved on 2026-08-29 by the Sponsor's OI-04
+decision (DEC-008): English-only MVP detection, schemas language/script-extensible, multilingual roadmapped.**
 
 ## Change history
 

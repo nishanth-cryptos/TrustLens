@@ -26,7 +26,7 @@ sequencing is by dependency. Relative sizing uses `S / M / L / XL` rather than f
 |---|---|---|---|---|---|
 | **0** | Program definition | PROGRAM-001, BASELINE-001, 4 registers, glossary, roadmap, ADR index + 2 ADRs | M | ✅ **Complete** | **`PARTIAL`** — achieved |
 | **1** | Research normalisation | RESEARCH-001…005, 3 knowledge files, seed corpus | L | ✅ **Complete** | **`PARTIAL`** — achieved ([GATE-001](GATE-001-phase-1-assessment.md)) |
-| 2 | Knowledge engineering | KB-001, rule JSON Schema, encoded rules, taxonomy | XL | 🟡 **In progress** | `PASS` achievable |
+| 2 | Knowledge engineering | KB-001, rule JSON Schema, encoded rules, taxonomy | XL | ✅ **Complete** ([GATE-008](GATE-008-phase-2-closure.md)) | **`PASS`** — achieved (all WPs green, 9-check gate, CONF-004 resolved). Phase 1's `PARTIAL` is independent. |
 | 3 | Detection engine design | DET-001 | XL | ⬜ | `PASS` achievable |
 | 4 | AI intelligence layer | AI-001 | L | ⬜ | `PASS` achievable |
 | 5 | Enterprise architecture | ARCH-001, ADR-0008…0013 | XL | ⬜ | `PASS` achievable |
@@ -85,7 +85,7 @@ were graded honestly rather than promoted, so `PASS` was never reachable from th
 The shortfall was predicted, not discovered. See [GATE-001](GATE-001-phase-1-assessment.md) for
 the criterion-by-criterion assessment and the consequences it binds onto Phase 2.
 
-## Phase 2 — Knowledge engineering ⬅ next
+## Phase 2 — Knowledge engineering ✅
 
 **Outputs.** KB-001 · rule **JSON Schema** · indicator-family and negative-indicator files under
 `knowledge/` · 27 encoded rules, of which **18 publishable** · ADR-0003, ADR-0004, ADR-0014.
@@ -117,8 +117,7 @@ score), [CONF-002](conflict-register.md) (three-layer indicator/composite/suppre
 5. ✅ **Taxonomy completion** — `TAX-11` sextortion added, detection **deferred** ([DEC-007](decision-log.md));
    six-axis multidimensional model ([`dimensions-v1.json`](../../knowledge/taxonomies/dimensions-v1.json));
    `evidence_maturity` layer; loan-app/mule (G-12) preserved with no fabricated rule. Taxonomy v2.0.
-6. ✅ **KB-001** — [knowledge governance, lifecycle, provenance, versioning](../02-knowledge/KB-001-knowledge-governance.md);
-   storage deferred to ADR-0004.
+6. ✅ **KB-001** — [knowledge governance, lifecycle, provenance, versioning](../02-knowledge/KB-001-knowledge-governance.md).
 7. ✅ **Schema validation in CI** — [GATE-006](GATE-006-phase-2-ci-quality-gates.md). Canonical
    [`run_all.py`](../../knowledge/validation/run_all.py) gate over the eight validators
    (`manual_evidence_check`, `phase1_consistency_check`, `validate_taxonomy`, `validate_kb`,
@@ -126,12 +125,16 @@ score), [CONF-002](conflict-register.md) (three-layer indicator/composite/suppre
    dependency order, offline preflight, `ci_selftest.py` non-vacuity proof, and a GitHub Actions
    workflow ([`knowledge-validation.yml`](../../.github/workflows/knowledge-validation.yml)) on
    path-filtered PRs + `main`. Reproducible via `requirements.txt`. Knowledge base unaffected.
-8. **ADR-0004** (knowledge storage) · **ADR-0014** (language and script strategy).
+8. 🟡 **Architecture decisions** — ✅ **[ADR-0004](../../adr/ADR-0004-knowledge-storage-architecture.md) Accepted**
+   ([GATE-007](GATE-007-phase-2-storage.md)): Git source of truth + immutable, SHA-256-hashed runtime
+   **knowledge bundle** (builder + manifest schema + integrity validator, wired as the 9th gate check);
+   DB operational-only; graph not justified; evidence hash-addressed in Git. ✅ **[ADR-0014](../../adr/ADR-0014-language-and-script-strategy.md)
+   Accepted** — Sponsor resolved [OI-04](PROGRAM-001-program-charter.md#11-open-issues) ([DEC-008](decision-log.md))
+   as **English-only MVP detection**, schemas language/script-extensible, multilingual roadmapped. **Phase 2 COMPLETE.**
 
-**⚠ Partial blocker.** Work package 8's ADR-0014 is blocked on
-[OI-04](PROGRAM-001-program-charter.md#11-open-issues) — language scope. Packages 1–7 are
-unblocked, but the rule schema should reserve its language and script fields rather than assume
-English-only, so that OI-04's resolution is a data change, not a schema migration.
+**✅ Blocker cleared.** WP8's ADR-0014 was blocked on [OI-04](PROGRAM-001-program-charter.md#11-open-issues);
+the Sponsor resolved it (2026-08-29, DEC-008) as English-only. Because the rule schema already reserved
+language/script fields, this was a **data-scope decision with no schema migration** — exactly as designed.
 
 **Gate.** Machine-validatable, source-traceable, extensible: a new scam type must be addable
 through data alone. Per [DEC-004](decision-log.md), example rules are validated by a **real
@@ -239,15 +242,15 @@ absorb slippage without delaying the path.
 | ID | Blocker | Blocks | Needed from |
 |---|---|---|---|
 | [OI-02](PROGRAM-001-program-charter.md#11-open-issues) | Docker + PostgreSQL not installed | Phase 9 | Sponsor (admin install) |
-| [OI-04](PROGRAM-001-program-charter.md#11-open-issues) | Language scope undecided ([CONF-004](conflict-register.md)) | Phase 2 rule schema | Sponsor decision |
+| ~~[OI-04]~~ | ~~Language scope undecided~~ | ✅ **RESOLVED 2026-08-29 (DEC-008)** — English-only MVP | — |
 | [OI-05](PROGRAM-001-program-charter.md#11-open-issues) | Retention period and legal basis | Phase 6 data model | Sponsor + legal |
 | [OI-06](PROGRAM-001-program-charter.md#11-open-issues) | Deployment target unknown | Phase 5 topology | Sponsor |
 | [OI-01](PROGRAM-001-program-charter.md#11-open-issues) | No stakeholder access | Confidence in all `DERIVED` requirements | Sponsor |
 | [G-01](../01-research/RESEARCH-005-gap-register.md) | I4C unreachable — 7 rules unsupported | Promotion of those rules to the published set | Sponsor + TI Lead (manual retrieval) |
 
-**OI-04** blocks only ADR-0014 inside Phase 2; the other seven work packages proceed without it.
-**G-01** does not block Phase 2 either — the affected rules are encoded as `DRAFT` and promoted if
-and when the sources are retrieved. The rest have runway.
+**OI-04 is resolved** (2026-08-29, DEC-008 — English-only MVP), so Phase 2 has no remaining blockers.
+**G-01** never blocked Phase 2 — the affected rules are encoded as `DRAFT` and promoted if and when the
+sources are retrieved. The remaining open issues (OI-01/02/05/06) bind later phases, not Phase 2.
 
 ## Change history
 
@@ -260,3 +263,5 @@ and when the sources are retrieved. The rest have runway.
 | 1.4 | 2026-08-28 | **WP5 done (taxonomy v2.0, TAX-11 deferred, multidimensional model, KB-001)** and **WP6 done (KB-001)**. Checkpoint [GATE-004](GATE-004-phase-2-taxonomy-kb.md). WP2 + CI wiring + ADR-0004/0014 remain. | Technical Program Director |
 | 1.5 | 2026-08-29 | **WP2 done (indicator families + extraction contracts, KB-002)**: four contract schemas, 28 families over 63 positives, 15 golden fixtures, 26-entry coverage matrix (25 starters + TL-SUP-001), 8th validator. Checkpoint [GATE-005](GATE-005-phase-2-extraction-contracts.md). Rule engine and prior gates unaffected. WP7 CI wiring + ADR-0004/0014 remain. | Technical Program Director |
 | 1.6 | 2026-08-29 | **WP7 done (CI quality-gate wiring)**: canonical `run_all.py` gate over the 8 validators (dependency order, offline preflight), `ci_selftest.py` non-vacuity proof, GitHub Actions workflow, `requirements.txt`, KB-001 §11 governance. Checkpoint [GATE-006](GATE-006-phase-2-ci-quality-gates.md). Knowledge base unaffected. **Only WP8 (ADR-0004 storage, ADR-0014 language) remains in Phase 2.** | Technical Program Director |
+| 1.7 | 2026-08-29 | **WP8: ADR-0004 Accepted** (Git source of truth + immutable hashed runtime bundle; bundle builder + manifest schema + integrity validator wired as the 9th gate check; DB operational-only; graph not justified). Checkpoint [GATE-007](GATE-007-phase-2-storage.md). **ADR-0014 authored as Proposed — BLOCKED on OI-04** (Sponsor language-scope decision). Phase 2 IN PROGRESS pending that one owner decision. | Technical Program Director |
+| 1.8 | 2026-08-29 | **Phase 2 COMPLETE (`PASS`).** Sponsor resolved OI-04 (DEC-008) as English-only MVP detection; ADR-0014 Accepted; CONF-004 resolved. All WP2–WP8 green (9-check gate). Closure gate [GATE-008](GATE-008-phase-2-closure.md). Phase 1 stays `PARTIAL`; Phase 3 (DET-001) not started, awaiting approval. | Technical Program Director |
