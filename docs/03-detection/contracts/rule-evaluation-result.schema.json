@@ -1,0 +1,123 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://trustlens/schemas/detection/rule-evaluation-result.schema.json",
+  "title": "TrustLens Rule Evaluation Result (DET-001 design contract)",
+  "description": "Phase 3 DET-001 / ADR-0005. The structured result of evaluating ONE published rule against one submission's indicator observations. DESIGN CONTRACT — it fixes the shape of a per-rule result so the deterministic engine (a later phase) is built to it; it does not itself run. Distinct from the Phase-2 rule_runner, which computes only MATCHED/severity over a declared, closed-world signal set. The critical additions here are (a) a three-valued required_combination_result (TRUE/FALSE/UNKNOWN) so an UNKNOWN required indicator yields INDETERMINATE rather than NOT_MATCHED, and (b) the separation of rule_evidence_verdict, effective_severity and rule_confidence as independent quantities (CONF-001). No numeric risk/probability appears anywhere.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "rule_id",
+    "rule_version",
+    "kind",
+    "evaluation_state",
+    "required_combination_result"
+  ],
+  "properties": {
+    "rule_id": { "type": "string", "pattern": "^TL-[A-Z]{3,5}-\\d{3}$" },
+    "rule_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "kind": { "enum": ["COMPOSITE", "SUPPRESSION"] },
+
+    "evaluation_state": {
+      "enum": ["MATCHED", "NOT_MATCHED", "INDETERMINATE", "SUPPRESSED", "NOT_APPLICABLE"],
+      "description": "MATCHED: require evaluated TRUE and evidence-class diversity met. NOT_MATCHED: require evaluated FALSE. INDETERMINATE: require evaluated UNKNOWN (a decisive operand is UNKNOWN/AMBIGUOUS) — carries uncertainty forward rather than collapsing to benign (STEP 7). SUPPRESSED: matched then cancelled by an override-aware SUPPRESS_RULE. NOT_APPLICABLE: language_scope excludes the input, rule not PUBLISHED, or a per-rule evaluation error (degraded)."
+    },
+    "required_combination_result": {
+      "enum": ["TRUE", "FALSE", "UNKNOWN"],
+      "description": "Kleene three-valued evaluation of logic.require. OBSERVED->TRUE; NOT_OBSERVED/NOT_APPLICABLE->FALSE; UNKNOWN/AMBIGUOUS->UNKNOWN. all_of: FALSE if any FALSE, TRUE if all TRUE, else UNKNOWN. any_of: TRUE if any TRUE, FALSE if all FALSE, else UNKNOWN. n_of(n): TRUE if TRUE-count>=n, FALSE if TRUE+UNKNOWN < n, else UNKNOWN."
+    },
+
+    "matched_positive_indicators": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]{2,63}$" },
+      "description": "Positive indicators OBSERVED (extraction confidence >= gate) that satisfied require branches."
+    },
+    "matched_negative_indicators": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]{2,63}$" }
+    },
+    "neutralised_indicators": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]{2,63}$" },
+      "description": "Positive indicators removed by directional SUPPRESS_INDICATOR before evaluation (not override-blockable)."
+    },
+
+    "evidence_classes_spanned": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "enum": ["PRETEXT", "PRESSURE", "IDENTITY_CLAIM", "CREDENTIAL_ACTION", "PAYMENT_ACTION", "DEVICE_ACTION", "FINANCIAL_CLAIM", "CHANNEL_ARTIFACT"]
+      },
+      "description": "Distinct parent_evidence_class values among the TRUE operands. Its size must be >= min_evidence_classes_required for a MATCH (CONF-002)."
+    },
+    "min_evidence_classes_required": { "type": "integer", "minimum": 2 },
+    "evidence_class_diversity_met": { "type": "boolean" },
+
+    "suppression": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "How suppression acted on this rule (STEP 11).",
+      "properties": {
+        "suppressed_by": { "type": "string", "description": "Negative-indicator id or SUPPRESSION rule id that cancelled the finding, if any." },
+        "effect": { "enum": ["SUPPRESS_RULE", "CAP_SEVERITY", "SUPPRESS_INDICATOR", "CONTEXT_ONLY", "NONE"] },
+        "severity_caps_applied": { "type": "array", "items": { "enum": ["LOW", "MEDIUM", "HIGH"] } },
+        "blocked_suppressors": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Suppressors that WOULD have applied but were blocked by an active hard-risk override; recorded as explanation (FR-042)."
+        }
+      }
+    },
+    "active_overrides": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^HR_[A-Z_]+$" },
+      "description": "Hard-risk overrides active for this rule. Active only when their decisive indicators are OBSERVED at >= the extraction-confidence gate (STEP 8/10). Overrides gate suppression; they never set severity nor bypass require (STEP 10)."
+    },
+
+    "extraction_confidence_inputs": {
+      "type": "object",
+      "additionalProperties": { "enum": ["HIGH", "MEDIUM", "LOW", "UNKNOWN"] },
+      "description": "Per decisive indicator, the extraction confidence that fed the confidence gate. Keys are indicator ids. Never multiplied (STEP 8)."
+    },
+
+    "rule_evidence_verdict": {
+      "enum": ["SUPPORTED", "PARTIAL", "UNSUPPORTED", "HEURISTIC"],
+      "description": "Carried from the rule's evidence.verdict. PARTIAL/HEURISTIC cap rule_confidence at MEDIUM and (via severity_cap) cap severity — the mechanism by which evidence quality changes behaviour (RESEARCH-004 section 7)."
+    },
+    "rule_severity_declared": { "enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL"] },
+    "effective_severity": {
+      "enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL"],
+      "description": "min(rule_severity_declared, evidence.severity_cap, any CAP_SEVERITY). Ordinal; not a number."
+    },
+    "rule_confidence": {
+      "enum": ["LOW", "MEDIUM", "HIGH"],
+      "description": "Per-rule detection confidence (STEP 9) — completeness of require, extraction confidence of decisive indicators, independent-class corroboration within the rule, evidence verdict, ambiguity. NOT a probability."
+    },
+
+    "explanation_fragment": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "plain": { "type": "string" },
+        "technical": { "type": "string" },
+        "why_confidence_limited": { "type": "string" }
+      },
+      "description": "Sourced from the rule's explanation object; runtime facts are interpolated, never invented."
+    },
+    "source_references": {
+      "type": "array",
+      "description": "The rule's evidence.source_references, echoed so the decision is self-contained and citations are auditable. The explanation may assert an official fact ONLY if it appears here as a quote (DET-001 explanation-provenance constraint).",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": ["source_id", "issuing_body", "verification_status"],
+        "properties": {
+          "source_id": { "type": "string", "pattern": "^SRC-\\d{3}$" },
+          "issuing_body": { "type": "string" },
+          "authority": { "type": "string" },
+          "verification_status": { "type": "string" },
+          "quote": { "type": "string" }
+        }
+      }
+    }
+  }
+}

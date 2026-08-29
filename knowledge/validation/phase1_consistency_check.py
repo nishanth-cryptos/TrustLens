@@ -168,8 +168,8 @@ check("corpus: benign authored first (CONF-002) — benign IDs lead",
       all(i["id"].startswith("B-") for i in corpus["benign"]))
 check("corpus: every benign case declares must_not_match",
       all(i.get("must_not_match") for i in corpus["benign"]))
-check("corpus: every case declares an expected_outcome",
-      all(i.get("expected_outcome") for i in items))
+check("corpus: every case declares a phase2_expected_outcome",
+      all(i.get("phase2_expected_outcome") for i in items))
 
 ref_rules = {r for i in items for r in i.get("expected_rules", []) + i.get("must_not_match", [])}
 check("corpus: every referenced rule ID exists in RESEARCH-004",
