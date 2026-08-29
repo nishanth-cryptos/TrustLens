@@ -1,0 +1,177 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://trustlens/schemas/detection/rule-evaluation-result.schema.json",
+  "title": "TrustLens Rule Evaluation Result (P3-WP1 runtime contract)",
+  "description": "Phase 3 DET-001 / ADR-0005. The RUNTIME contract for the result of evaluating ONE published rule against one submission's indicator observations. Promoted and frozen from the Phase-3 design copy (docs/03-detection/contracts/) at P3-WP1; the design copy is superseded by this file. This contract fixes the SHAPE the deterministic engine (a later work package) must produce; it contains NO evaluation logic. Three-valued: required_combination_result is TRUE/FALSE/UNKNOWN so an UNKNOWN required indicator yields INDETERMINATE, not NOT_MATCHED (DET-001 section 7). rule_evidence_verdict, effective_severity, rule_evidence_strength and rule_detection_confidence are INDEPENDENT quantities (CONF-001). No numeric risk or probability appears anywhere. Instance references (observation ids, source ids, evidence ids) are opaque/pattern-checked, deliberately NOT JSON-Schema $refs, so the output contract stays decoupled from the knowledge schemas and API-neutral (P3-WP1 STEP 17).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "rule_id",
+    "rule_version",
+    "kind",
+    "evaluation_state",
+    "required_combination_result"
+  ],
+  "$defs": {
+    "indicatorId": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]{2,63}$" },
+    "overrideId": { "type": "string", "pattern": "^HR_[A-Z_]+$" },
+    "instanceRef": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{1,127}$" },
+    "evidenceClass": {
+      "enum": ["PRETEXT", "PRESSURE", "IDENTITY_CLAIM", "CREDENTIAL_ACTION", "PAYMENT_ACTION", "DEVICE_ACTION", "FINANCIAL_CLAIM", "CHANNEL_ARTIFACT"]
+    },
+    "sourceReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_id", "issuing_body", "verification_status"],
+      "description": "Runtime-facing echo of the fired rule's evidence.source_references. A subset of the knowledge sourceReference (rule.schema.json) — enough to make the citation self-contained and auditable, not the full manual_retrieval provenance. The explanation may assert an official fact ONLY if it appears here as a quote (DET-001 explanation-provenance constraint).",
+      "properties": {
+        "source_id": { "type": "string", "pattern": "^SRC-\\d{3}$" },
+        "issuing_body": { "type": "string" },
+        "authority": {
+          "enum": ["OFFICIAL_REGULATOR", "OFFICIAL_GOVERNMENT", "OFFICIAL_PAYMENT_OPERATOR", "FOREIGN_OFFICIAL", "INDUSTRY"]
+        },
+        "verification_status": {
+          "enum": ["PRIMARY_VERIFIED", "PRIMARY_CITED_UNVERIFIED", "INDEX_ONLY", "RETRIEVAL_FAILED"]
+        },
+        "evidence_class": {
+          "enum": ["PRIMARY", "OFFICIAL_ALTERNATE", "OFFICIAL_REPLACEMENT", "INDUSTRY", "SECONDARY"],
+          "description": "ADR-0015 hierarchy of the manually-retrieved evidence layer, where present."
+        },
+        "quote": { "type": "string" }
+      }
+    }
+  },
+  "properties": {
+    "rule_id": { "type": "string", "pattern": "^TL-[A-Z]{3,5}-\\d{3}$" },
+    "rule_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "kind": { "enum": ["COMPOSITE", "SUPPRESSION"] },
+
+    "evaluation_state": {
+      "enum": ["MATCHED", "NOT_MATCHED", "INDETERMINATE", "SUPPRESSED", "NOT_APPLICABLE"],
+      "description": "MATCHED: require=TRUE and evidence-class diversity met. NOT_MATCHED: require=FALSE. INDETERMINATE: require=UNKNOWN (a decisive operand is UNKNOWN/AMBIGUOUS) — carries uncertainty forward (STEP 7). SUPPRESSED: matched then cancelled by an override-aware SUPPRESS_RULE. NOT_APPLICABLE: language_scope excludes the input, rule not PUBLISHED, or a per-rule evaluation error (degraded — see evaluation_error)."
+    },
+    "required_combination_result": {
+      "enum": ["TRUE", "FALSE", "UNKNOWN"],
+      "description": "Kleene three-valued evaluation of logic.require (ADR-0005). OBSERVED->TRUE; NOT_OBSERVED/NOT_APPLICABLE->FALSE; UNKNOWN/AMBIGUOUS->UNKNOWN."
+    },
+
+    "governing": {
+      "type": "boolean",
+      "description": "True if this rule is the governing rule of the decision (sets decision_severity). Aggregation/tie-break is P3-WP5; WP1 only reserves the shape."
+    },
+    "governing_reason": { "type": "string", "description": "Why this rule governs (e.g. 'highest effective severity; SUPPORTED tie-break'). Populated by P3-WP5." },
+
+    "matched_positive_indicators": { "type": "array", "items": { "$ref": "#/$defs/indicatorId" } },
+    "matched_negative_indicators": { "type": "array", "items": { "$ref": "#/$defs/indicatorId" } },
+    "neutralised_indicators": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/indicatorId" },
+      "description": "Positives removed by directional SUPPRESS_INDICATOR before evaluation (not override-blockable)."
+    },
+
+    "observation_refs": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/instanceRef" },
+      "description": "observation_ids (observation.schema.json instances) supporting this rule's matched operands. Instance references, not raw content (privacy, STEP 18)."
+    },
+    "indicator_observation_refs": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/instanceRef" },
+      "description": "Indicator-observation instance ids (indicator-observation.schema.json) this rule consumed."
+    },
+
+    "evidence_classes_spanned": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/evidenceClass" },
+      "description": "Distinct parent_evidence_class values among the TRUE operands. Size must be >= min_evidence_classes_required for a MATCH (CONF-002)."
+    },
+    "min_evidence_classes_required": { "type": "integer", "minimum": 2 },
+    "evidence_class_diversity_met": { "type": "boolean" },
+
+    "suppression": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "How suppression acted on this rule (STEP 3 suppression_effects). Semantics from negative-indicator-library-v1.json.",
+      "properties": {
+        "suppressed_by": { "type": "string", "description": "Negative-indicator id or SUPPRESSION rule id that cancelled the finding, if any." },
+        "effect": { "enum": ["SUPPRESS_RULE", "CAP_SEVERITY", "SUPPRESS_INDICATOR", "CONTEXT_ONLY", "NONE"] },
+        "severity_caps_applied": { "type": "array", "items": { "enum": ["LOW", "MEDIUM", "HIGH"] } },
+        "blocked_suppressors": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/indicatorId" },
+          "description": "Suppressors that WOULD have applied but were blocked by an active hard-risk override; recorded as explanation (FR-042)."
+        },
+        "context_only_present": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/indicatorId" },
+          "description": "CONTEXT_ONLY benign-context indicators recorded (never change the finding)."
+        }
+      }
+    },
+    "active_overrides": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/overrideId" },
+      "description": "Hard-risk overrides active for this rule. Active only when their decisive indicators are OBSERVED at >= the extraction-confidence gate (DET-001 sections 8/10). Overrides gate suppression; they never set severity nor bypass require."
+    },
+
+    "extraction_confidence_inputs": {
+      "type": "object",
+      "additionalProperties": { "enum": ["HIGH", "MEDIUM", "LOW", "UNKNOWN"] },
+      "propertyNames": { "$ref": "#/$defs/indicatorId" },
+      "description": "Per decisive indicator, the extraction confidence that fed the confidence gate. Keys are indicator ids. Never multiplied (STEP 8)."
+    },
+
+    "rule_evidence_verdict": {
+      "enum": ["SUPPORTED", "PARTIAL", "UNSUPPORTED", "HEURISTIC"],
+      "description": "Carried from the rule's evidence.verdict (rule.schema.json). PARTIAL/HEURISTIC cap rule_detection_confidence at MEDIUM and (via severity_cap) cap severity."
+    },
+    "rule_evidence_strength": {
+      "enum": ["NONE", "WEAK", "MODERATE", "STRONG"],
+      "description": "Strength of the evidence THIS rule matched on — decisive-indicator strength combined with the evidence verdict and active override. Feeds the decision-level matched_evidence_strength (ADR-0006). Distinct from rule_detection_confidence."
+    },
+    "rule_severity_declared": { "enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL"] },
+    "effective_severity": {
+      "enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL"],
+      "description": "min(rule_severity_declared, evidence.severity_cap, any CAP_SEVERITY). Ordinal; never a number."
+    },
+    "rule_detection_confidence": {
+      "enum": ["LOW", "MEDIUM", "HIGH"],
+      "description": "Per-rule detection confidence (STEP 3). NOT a probability. Aggregated at the decision level in P3-WP5."
+    },
+
+    "ambiguities": { "type": "array", "items": { "type": "string" }, "description": "Decisive operands that were AMBIGUOUS for this rule (e.g. payment direction unresolved)." },
+    "unknowns": { "type": "array", "items": { "type": "string" }, "description": "Decisive operands that were UNKNOWN for this rule." },
+
+    "explanation_fragment": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "plain": { "type": "string" },
+        "technical": { "type": "string" },
+        "why_confidence_limited": { "type": "string" }
+      },
+      "description": "Sourced from the rule's explanation object; runtime facts are interpolated, never invented (DET-001 explanation-provenance constraint)."
+    },
+    "source_references": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/sourceReference" }
+    },
+    "evidence_ids": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^MR-EVID-\\d{3}$" },
+      "description": "Manual-retrieval evidence ids behind the fired rule (evidence-records.json), where the rule relies on the manual pass."
+    },
+
+    "evaluation_error": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "message"],
+      "description": "Present only when evaluation_state=NOT_APPLICABLE due to a per-rule error (degraded, DET-001 section 16). A single-rule error must NOT poison the whole evaluation; the decision is flagged degraded and routed to review.",
+      "properties": {
+        "code": { "type": "string" },
+        "message": { "type": "string" }
+      }
+    }
+  }
+}

@@ -74,8 +74,8 @@ malformed rules that must all be rejected**, each declaring which layer should c
 ## Validation quality gate (Phase 2 WP7)
 
 One canonical command runs the **complete** knowledge-validation suite (8 validators + published-bundle
-integrity + Phase-3 DET-001 design validation = **10 checks**) in dependency order. **Run it before every
-commit** — CI runs exactly the same command.
+integrity + Phase-3 DET-001 design validation + Phase-3 runtime-contract validation = **11 checks**) in
+dependency order. **Run it before every commit** — CI runs exactly the same command.
 
 ```bash
 # one-time setup (the only dependency mechanism — pins jsonschema + referencing)

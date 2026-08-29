@@ -10,20 +10,21 @@ Wired into knowledge/validation/run_all.py as the **10th canonical check** at th
 contracts and golden decision cases. It remains independently runnable. It is offline (no network or
 subprocess imports), so it passes run_all.py's offline preflight.
 
-Checks:
-  1. Both design schemas (detection-result, rule-evaluation-result) are valid Draft 2020-12.
-  2. Two synthetic detection-result examples validate against detection-result.schema.json (the $ref to
-     rule-evaluation-result resolves) — proves the output contract is usable.
-  3. Every golden decision case:
-       - fired rule ids resolve to real rule files; severity/verdict/status read from them;
-       - declared indicator ids resolve to the positive registry or the negative library;
-       - active overrides resolve to the negative library;
-       - risk_level == RISK_MATRIX[severity][matched_evidence_strength] (ADR-0006);
-       - classification is consistent with input_support_status, fired rules and detection_confidence;
-       - decision severity == max effective severity (min(declared, PARTIAL cap)) over fired rules;
-       - recommended actions are in the controlled vocabulary;
-       - live_publishable == (all fired rules are PUBLISHED) for supported detections.
-  Offline by construction. Exit 0 iff every check passes.
+Checks — every golden decision case:
+   - fired rule ids resolve to real rule files; severity/verdict/status read from them;
+   - declared indicator ids resolve to the positive registry or the negative library;
+   - active overrides resolve to the negative library;
+   - risk_level == RISK_MATRIX[severity][matched_evidence_strength] (ADR-0006);
+   - classification is consistent with input_support_status, fired rules and detection_confidence;
+   - decision severity == max effective severity (min(declared, PARTIAL cap)) over fired rules;
+   - recommended actions are in the controlled vocabulary;
+   - live_publishable == (all fired rules are PUBLISHED) for supported detections.
+Offline by construction. Exit 0 iff every check passes.
+
+Schema/contract validation (schema validity, fixtures, enum sync, golden-case representability) is owned
+by knowledge/validation/validate_runtime_contracts.py (P3-WP1), which validates the PROMOTED, authoritative
+runtime contracts under knowledge/schemas/detection/. This validator therefore no longer loads any schema —
+it is purely the design-consistency check over the golden cases and the live knowledge base.
 
 Usage:  .venv/bin/python docs/03-detection/validate_det_design.py [--quiet]
 """
@@ -34,14 +35,8 @@ import json
 import sys
 from pathlib import Path
 
-from jsonschema import Draft202012Validator
-from referencing import Registry, Resource
-
 ROOT = Path(__file__).resolve().parents[2]
 DET_DIR = ROOT / "docs" / "03-detection"
-CONTRACTS = DET_DIR / "contracts"
-DETECTION_RESULT_SCHEMA = CONTRACTS / "detection-result.schema.json"
-RULE_EVAL_SCHEMA = CONTRACTS / "rule-evaluation-result.schema.json"
 GOLDEN = DET_DIR / "golden-decision-cases-v1.json"
 
 RULES_DIR = ROOT / "knowledge" / "rules"
@@ -86,74 +81,6 @@ def max_severity(sevs):
     return max(live, key=SEV_ORDER.index)
 
 
-# --- synthetic detection-result examples (contract usability proof) ---------
-def synthetic_examples():
-    base_prov = {
-        "bundle_version": "1.0.0",
-        "bundle_content_digest": "0" * 64,
-        "engine_version": "0.0.0-design",
-        "evaluation_profile": {
-            "profile_id": "mvp-default",
-            "extraction_confidence_gate": "MEDIUM",
-            "risk_matrix_id": "adr-0006-risk-matrix-v1",
-            "confidence_policy_id": "adr-0006-confidence-policy-v1",
-        },
-        "component_versions": {"rule_schema": "1.0.0"},
-    }
-    detected = {
-        "result_schema_version": "1.0.0-design",
-        "evaluation_id": "EVAL-EXAMPLE-DETECTED",
-        "timestamp": "2026-08-29T00:00:00Z",
-        "input_id": "IN-EX-1",
-        "language": ["en"], "script": ["Latn"],
-        "input_support_status": "SUPPORTED",
-        "classification": "SCAM_PATTERN_DETECTED",
-        "severity": "CRITICAL", "matched_evidence_strength": "STRONG",
-        "risk_level": "CRITICAL", "detection_confidence": "HIGH",
-        "provenance": base_prov,
-        "rule_results": [{
-            "rule_id": "TL-PAY-001", "rule_version": "1.0.0", "kind": "COMPOSITE",
-            "evaluation_state": "MATCHED", "required_combination_result": "TRUE",
-            "matched_positive_indicators": ["RECEIVE_FRAMING", "UPI_PIN_PROMPT"],
-            "evidence_classes_spanned": ["PAYMENT_ACTION", "CREDENTIAL_ACTION"],
-            "min_evidence_classes_required": 2, "evidence_class_diversity_met": True,
-            "active_overrides": ["HR_UPI_PIN_TO_RECEIVE"],
-            "rule_evidence_verdict": "SUPPORTED", "rule_severity_declared": "CRITICAL",
-            "effective_severity": "CRITICAL", "rule_confidence": "HIGH",
-        }],
-        "explanation": {
-            "what": "PIN entry demanded to receive money.",
-            "why": "RECEIVE_FRAMING + UPI_PIN_PROMPT.",
-            "detection_confidence_reason": "decisive indicators observed at high confidence; official categorical boundary.",
-        },
-        "recommended_actions": [{"action": "DO_NOT_ENTER_PIN", "justified_by": "TL-PAY-001"}],
-    }
-    insufficient = {
-        "result_schema_version": "1.0.0-design",
-        "evaluation_id": "EVAL-EXAMPLE-INSUFFICIENT",
-        "timestamp": "2026-08-29T00:00:00Z",
-        "input_id": "IN-EX-2",
-        "language": ["en"], "script": ["Latn"],
-        "input_support_status": "SUPPORTED",
-        "classification": "INSUFFICIENT_EVIDENCE",
-        "severity": "NONE", "matched_evidence_strength": "NONE",
-        "risk_level": "NONE", "detection_confidence": "NOT_APPLICABLE",
-        "provenance": base_prov,
-        "rule_results": [{
-            "rule_id": "TL-PAY-001", "rule_version": "1.0.0", "kind": "COMPOSITE",
-            "evaluation_state": "INDETERMINATE", "required_combination_result": "UNKNOWN",
-        }],
-        "explanation": {
-            "what": "A PIN prompt with unresolved payment direction.",
-            "why": "RECEIVE_FRAMING is AMBIGUOUS; the combination is indeterminate.",
-            "detection_confidence_reason": "no rule fired; uncertainty preserved.",
-        },
-        "recommended_actions": [{"action": "SEEK_HUMAN_REVIEW", "justified_by": "TL-PAY-001 INDETERMINATE"}],
-        "ambiguities": ["payment_direction unresolved"],
-    }
-    return {"detected": detected, "insufficient": insufficient}
-
-
 def main() -> int:
     quiet = "--quiet" in sys.argv
     problems = []
@@ -161,28 +88,6 @@ def main() -> int:
     def log(*a):
         if not quiet:
             print(*a)
-
-    # ---- 1. schemas are valid Draft 2020-12
-    det_schema = load(DETECTION_RESULT_SCHEMA)
-    rule_schema = load(RULE_EVAL_SCHEMA)
-    for name, sch in (("detection-result", det_schema), ("rule-evaluation-result", rule_schema)):
-        try:
-            Draft202012Validator.check_schema(sch)
-        except Exception as e:  # noqa: BLE001
-            problems.append(f"schema {name} is not valid Draft 2020-12: {e}")
-    log("  ok    both design schemas are valid Draft 2020-12" if not problems else "  FAIL  schema validity")
-
-    # ---- 2. synthetic examples validate against detection-result (with $ref resolved)
-    registry = Registry().with_resources([
-        (det_schema["$id"], Resource.from_contents(det_schema)),
-        (rule_schema["$id"], Resource.from_contents(rule_schema)),
-    ])
-    dr_validator = Draft202012Validator(det_schema, registry=registry)
-    for label, ex in synthetic_examples().items():
-        errs = sorted(dr_validator.iter_errors(ex), key=lambda e: e.path)
-        for e in errs:
-            problems.append(f"synthetic example '{label}' violates detection-result schema: {e.message} at /{'/'.join(map(str, e.path))}")
-    log(f"  ok    2 synthetic detection-result examples validate" if not any('synthetic' in p for p in problems) else "  FAIL  synthetic examples")
 
     # ---- load knowledge
     rules = {p.stem: load(p) for p in RULES_DIR.glob("*.json") if not p.name.startswith("_")}
@@ -289,7 +194,8 @@ def main() -> int:
         for p in problems:
             print("  -", p)
         return 1
-    print(f"DET-001 DESIGN GATE: PASS — schemas valid, contract usable, {n_cases} golden cases consistent with the KB and ADR-0006 risk model")
+    print(f"DET-001 DESIGN GATE: PASS — {n_cases} golden cases consistent with the KB and the ADR-0006 risk model "
+          f"(schema/contract validation owned by validate_runtime_contracts.py)")
     return 0
 
 

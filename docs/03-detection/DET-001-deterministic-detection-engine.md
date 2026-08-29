@@ -17,10 +17,13 @@
 > and changes no Phase-2 knowledge semantics. Two ADRs freeze its decisions:
 > [ADR-0005](../../adr/ADR-0005-rule-execution-model.md) (execution model) and
 > [ADR-0006](../../adr/ADR-0006-risk-and-confidence-aggregation.md) (risk/confidence mathematics).
-> Machine-checkable artefacts accompany it: [`contracts/detection-result.schema.json`](contracts/detection-result.schema.json),
-> [`contracts/rule-evaluation-result.schema.json`](contracts/rule-evaluation-result.schema.json),
-> [`golden-decision-cases-v1.json`](golden-decision-cases-v1.json) and
-> [`validate_det_design.py`](validate_det_design.py).
+> Machine-checkable artefacts accompany it. The result contracts were **promoted at P3-WP1** to the
+> runtime schema tree — [`knowledge/schemas/detection/detection-result.schema.json`](../../knowledge/schemas/detection/detection-result.schema.json)
+> and [`knowledge/schemas/detection/rule-evaluation-result.schema.json`](../../knowledge/schemas/detection/rule-evaluation-result.schema.json)
+> (see [`contracts/README.md`](contracts/README.md) and [`DET-001-WP1-runtime-contracts.md`](DET-001-WP1-runtime-contracts.md)) —
+> alongside [`golden-decision-cases-v1.json`](golden-decision-cases-v1.json),
+> [`validate_det_design.py`](validate_det_design.py) (design consistency) and
+> [`../../knowledge/validation/validate_runtime_contracts.py`](../../knowledge/validation/validate_runtime_contracts.py) (contract validation).
 
 ---
 
@@ -52,8 +55,8 @@ MVP.
 
 ## 2. The canonical detection result (STEP 2)
 
-One evaluation produces one **detection result**, whose shape is fixed by
-[`contracts/detection-result.schema.json`](contracts/detection-result.schema.json). It is designed for
+One evaluation produces one **detection result**, whose shape is fixed by the runtime contract
+[`knowledge/schemas/detection/detection-result.schema.json`](../../knowledge/schemas/detection/detection-result.schema.json). It is designed for
 **full reproducibility and full explanation**. Fields (existing repository conventions preferred over
 the placeholder names in the brief):
 
@@ -139,8 +142,8 @@ evaluation time from severity × evidence strength (done here).
 
 ## 6. The rule result (STEP 6)
 
-Each evaluated rule yields a structured result — shape fixed by
-[`contracts/rule-evaluation-result.schema.json`](contracts/rule-evaluation-result.schema.json):
+Each evaluated rule yields a structured result — shape fixed by the runtime contract
+[`knowledge/schemas/detection/rule-evaluation-result.schema.json`](../../knowledge/schemas/detection/rule-evaluation-result.schema.json):
 `rule_id`, `rule_version`, `kind`, `evaluation_state`, `required_combination_result`,
 `matched_positive_indicators`, `matched_negative_indicators`, `neutralised_indicators`,
 `evidence_classes_spanned` + `evidence_class_diversity_met`, `suppression` (effect, caps, blocked),
