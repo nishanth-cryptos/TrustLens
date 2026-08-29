@@ -1,0 +1,498 @@
+{
+  "$comment": "TrustLens Phase 3 DET-001 GOLDEN DECISION CASES. DESIGN-LEVEL specification of the decision DET-001 must produce for canonical inputs. Each case declares an indicator-observation set (the signal an extractor would produce — extraction itself is Phase 9) and the EXPECTED decision across every DET-001 axis. These encode design intent, NOT measured accuracy (G-09): they may never be used to claim precision/recall (RSK-003). All inputs are SYNTHETIC. Rule/indicator/override ids are real and are resolved by validate_det_design.py against the live knowledge base; risk_level is checked against the ADR-0006 risk matrix; classification is checked for consistency with support status and fired rules. Where a governing rule is not yet PUBLISHED, live_publishable=false records that a PUBLISHED-only live engine routes the case to review pending governance promotion — the case still documents the designed on-promotion behaviour.",
+  "cases_version": "1.0.0",
+  "generated": "2026-08-29",
+  "provenance": "SYNTHETIC",
+  "evaluated_against": "encoded evaluable set (status in {PUBLISHED, APPROVED, PEER_REVIEW}); the live engine evaluates PUBLISHED only (DET-001 section 5). live_publishable annotates the difference per case.",
+  "risk_matrix_ref": "ADR-0006 risk matrix v1 (severity x matched_evidence_strength -> risk_level)",
+  "cases": [
+    {
+      "id": "GDC-01",
+      "title": "Live OTP disclosure request with bank impersonation",
+      "maps_to_corpus": "M-003 / S-A",
+      "input_gloss": "Example Bank Security: unusual activity. Share the 6-digit OTP you just received with our officer now to stop the block.",
+      "language": ["en"], "script": ["Latn"],
+      "declared_indicators": [
+        {"id": "CREDENTIAL_REQUEST_OTP", "polarity": "POSITIVE", "matched": "OBSERVED", "confidence": "HIGH"},
+        {"id": "AUTHORITY_IMPERSONATION_BANK", "polarity": "POSITIVE", "matched": "OBSERVED", "confidence": "HIGH"},
+        {"id": "ACCOUNT_BLOCK_THREAT", "polarity": "POSITIVE", "matched": "OBSERVED", "confidence": "HIGH"},
+        {"id": "URGENCY", "polarity": "POSITIVE", "matched": "OBSERVED", "confidence": "MEDIUM"}
+      ],
+      "expected": {
+        "input_support_status": "SUPPORTED",
+        "classification": "SCAM_PATTERN_DETECTED",
+        "fired_rules": ["TL-CRED-001"],
+        "rule_states": {"TL-CRED-001": "MATCHED"},
+        "active_overrides": ["HR_OTP_DISCLOSURE_REQUEST"],
+        "severity": "CRITICAL",
+        "matched_evidence_strength": "STRONG",
+        "risk_level": "CRITICAL",
+        "detection_confidence": "HIGH",
+        "corroboration_band": "HIGH",
+        "recommended_actions": ["DO_NOT_SHARE_CREDENTIALS", "CONTACT_BANK", "VERIFY_INDEPENDENTLY", "REPORT_CYBERCRIME"],
+        "unknowns": [], "ambiguities": [],
+        "live_publishable": true
+      },
+      "explanation_ingredients": [
+        "A live request to disclose an OTP (CREDENTIAL_REQUEST_OTP, FIRST_PARTY AFFIRMED DIRECTIVE) combined with bank impersonation and an account-block threat spans three evidence classes.",
+        "SRC-004 (RBI): institutions never ask for OTP/PIN/CVV. HR_OTP_DISCLOSURE_REQUEST is active."
+      ],
+      "notes": "Corpus label M-003=HIGH is a coarse Phase-2 band; DET-001 derives severity from the fired rule TL-CRED-001 (CRITICAL). Contrast GDC-02: same keyword, opposite direction."
+    },
+    {
+      "id": "GDC-02",
+      "title": "Bank OTP delivery with self-protective warning (benign)",
+      "maps_to_corpus": "B-001",
+      "input_gloss": "Your OTP is 452901 for your transaction. Never share this OTP with anyone. -Example Bank",
+      "language": ["en"], "script": ["Latn"],
+      "declared_indicators": [
+        {"id": "OTP_DELIVERED_NOT_REQUESTED", "polarity": "NEGATIVE", "matched": "OBSERVED", "confidence": "HIGH"},
+        {"id": "SELF_PROTECTIVE_WARNING", "polarity": "NEGATIVE", "matched": "OBSERVED", "confidence": "HIGH"},
+        {"id": "NEGATED_CREDENTIAL_REQUEST", "polarity": "NEGATIVE", "matched": "OBSERVED", "confidence": "HIGH"}
+      ],
+      "expected": {
+        "input_support_status": "SUPPORTED",
+        "classification": "NO_SCAM_PATTERN",
+        "fired_rules": [],
+        "rule_states": {},
+        "active_overrides": [],
+        "severity": "NONE",
+        "matched_evidence_strength": "NONE",
+        "risk_level": "NONE",
+        "detection_confidence": "NOT_APPLICABLE",
+        "corroboration_band": "NONE",
+        "recommended_actions": [],
+        "unknowns": [], "ambiguities": [],
+        "live_publishable": true
+      },
+      "explanation_ingredients": [
+        "The OTP is DELIVERED to the recipient and named inside a negation; no live CREDENTIAL_REQUEST_OTP positive is emitted, so nothing matches.",
+        "This is the highest-value regression test: flagging a bank's own warning trains users to ignore warnings."
+      ],
+      "notes": "No hard-risk override (no live disclosure request). UNKNOWN is not SAFE, but this is affirmatively benign, not unknown."
+    },
+    {
+      "id": "GDC-03",
+      "title": "Reported scam narrative (past tense, not a live directive)",
+      "maps_to_corpus": "S-E family / reported-speech model",
+      "input_gloss": "The scammer asked me to share my OTP and install AnyDesk. Is this a fraud?",
+      "language": ["en"], "script": ["Latn"],
+      "declared_indicators": [
+        {"id": "REPORTED_SCAM_NARRATIVE", "polarity": "NEGATIVE", "matched": "OBSERVED", "confidence": "HIGH"}
+      ],
+      "expected": {
+        "input_support_status": "SUPPORTED",
+        "classification": "NO_SCAM_PATTERN",
+        "fired_rules": [],
+        "rule_states": {},
+        "active_overrides": [],
+        "severity": "NONE",
+        "matched_evidence_strength": "NONE",
+        "risk_level": "NONE",
+        "detection_confidence": "NOT_APPLICABLE",
+        "corroboration_band": "NONE",
+        "recommended_actions": ["REPORT_CYBERCRIME", "PRESERVE_EVIDENCE"],
+        "unknowns": [], "ambiguities": [],
+        "live_publishable": true
+      },
+      "explanation_ingredients": [
+        "The credential/device actions are attributed REPORTED (past tense), not a FIRST_PARTY AFFIRMED DIRECTIVE, so no live positive is emitted.",
+        "The reporter is not treated as attacker text; suggested actions are informational (reporting/evidence), not a determination."
+      ],
+      "notes": "Attribution model (observation.attribution=REPORTED) prevents mis-classifying the reporter. Reporting UX is Phase 7."
+    },
+    {
+      "id": "GDC-04",
+      "title": "UPI PIN demanded to RECEIVE money (hard-risk)",
+      "maps_to_corpus": "S-G / M-002",
+      "input_gloss": "Your refund is pending. Enter your UPI PIN to RECEIVE Rs 5,000 now.",
+      "language": ["en"], "script": ["Latn"],
+      "declared_indicators": [
+        {"id": "RECEIVE_FRAMING", "polarity": "POSITIVE", "matched": "OBSERVED", "confidence": "HIGH"},
+        {"id": "UPI_PIN_PROMPT", "polarity": "POSITIVE", "matched": "OBSERVED", "confidence": "HIGH"}
+      ],
+      "expected": {
+        "input_support_status": "SUPPORTED",
+        "classification": "SCAM_PATTERN_DETECTED",
+        "fired_rules": ["TL-PAY-001"],
+        "rule_states": {"TL-PAY-001": "MATCHED"},
+        "active_overrides": ["HR_UPI_PIN_TO_RECEIVE"],
+        "severity": "CRITICAL",
+        "matched_evidence_strength": "STRONG",
+        "risk_level": "CRITICAL",
+        "detection_confidence": "HIGH",
+        "corroboration_band": "MEDIUM",
+        "recommended_actions": ["DO_NOT_ENTER_PIN", "VERIFY_INDEPENDENTLY", "CONTACT_BANK"],
+        "unknowns": [], "ambiguities": [],
+        "live_publishable": true
+      },
+      "explanation_ingredients": [
+        "Entering a UPI PIN never receives money (SRC-021, CERT-In: 'you don't need a UPI PIN or OTP to receive money').",
+        "RECEIVE_FRAMING + UPI_PIN_PROMPT is a directional contradiction; HR_UPI_PIN_TO_RECEIVE is active."
+      ],
+      "notes": "Direction comes from payment_direction=USER_RECEIVES, not the word UPI. Contrast GDC-05 and GDC-11."
+    },
+    {
+      "id": "GDC-05",
+      "title": "UPI PIN to PAY a known merchant (legitimate direction)",
+      "maps_to_corpus": "S-F",
+      "input_gloss": "You will enter your UPI PIN in your bank app to PAY the merchant Rs 5,000. Normal outgoing payment.",
+      "language": ["en"], "script": ["Latn"],
+      "declared_indicators": [
+        {"id": "UPI_PIN_PROMPT", "polarity": "POSITIVE", "matched": "OBSERVED", "confidence": "HIGH"},
+        {"id": "PAY_MERCHANT_DIRECTION", "polarity": "NEGATIVE", "matched": "OBSERVED", "confidence": "HIGH"}
+      ],
+      "expected": {
+        "input_support_status": "SUPPORTED",
+        "classification": "NO_SCAM_PATTERN",
+        "fired_rules": [],
+        "rule_states": {"TL-PAY-001": "NOT_MATCHED"},
+        "active_overrides": [],
+        "severity": "NONE",
+        "matched_evidence_strength": "NONE",
+        "risk_level": "NONE",
+        "detection_confidence": "NOT_APPLICABLE",
+        "corroboration_band": "NONE",
+        "recommended_actions": [],
+        "unknowns": [], "ambiguities": [],
+        "live_publishable": true
+      },
+      "explanation_ingredients": [
+        "payment_direction=USER_PAYS to a named merchant: RECEIVE_FRAMING is affirmatively NOT_OBSERVED, so TL-PAY-001's all_of is FALSE.",
+        "A lone UPI_PIN_PROMPT cannot satisfy any composite (CONF-002)."
+      ],
+      "notes": "Contrast GDC-04. PAY_MERCHANT_DIRECTION is a belt-and-braces guard; the decisive fact is the direction."
+    },
+    {
+      "id": "GDC-06",
+      "title": "KYC pretext + link + OTP/card capture (multi-signal chain)",
+      "maps_to_corpus": "M-011",
+      "input_gloss": "Example Bank: account will be BLOCKED today. Complete KYC at <lookalike link> and enter your card number and OTP to reactivate.",
+      "language": ["en"], "script": ["Latn"],
+      "declared_indicators": [
+        {"id": "KYC_PRETEXT", "polarity": "POSITIVE", "matched": "OBSERVED", "confidence": "MEDIUM"},
+        {"id": "ACCOUNT_BLOCK_THREAT", "polarity": "POSITIVE", "matched": "OBSERVED", "confidence": "HIGH"},
+        {"id": "URGENCY", "polarity": "POSITIVE", "matched": "OBSERVED", "confidence": "MEDIUM"},
+        {"id": "LOOKALIKE_DOMAIN", "polarity": "POSITIVE", "matched": "OBSERVED", "confidence": "MEDIUM"},
+        {"id": "LINK_PRESENT", "polarity": "POSITIVE", "matched": "OBSERVED", "confidence": "HIGH"},
+        {"id": "CREDENTIAL_REQUEST_OTP", "polarity": "POSITIVE", "matched": "OBSERVED", "confidence": "HIGH"},
+        {"id": "CREDENTIAL_REQUEST_CARD", "polarity": "POSITIVE", "matched": "OBSERVED", "confidence": "HIGH"}
+      ],
+      "expected": {
+        "input_support_status": "SUPPORTED",
+        "classification": "SCAM_PATTERN_DETECTED",
+        "fired_rules": ["TL-CRED-001", "TL-CRED-003", "TL-KYC-001"],
+        "rule_states": {"TL-CRED-001": "MATCHED", "TL-CRED-003": "MATCHED", "TL-KYC-001": "MATCHED"},
+        "active_overrides": ["HR_OTP_DISCLOSURE_REQUEST"],
+        "severity": "CRITICAL",
+        "matched_evidence_strength": "STRONG",
+        "risk_level": "CRITICAL",
+        "detection_confidence": "HIGH",
+        "corroboration_band": "HIGH",
+        "recommended_actions": ["DO_NOT_SHARE_CREDENTIALS", "CONTACT_BANK", "VERIFY_INDEPENDENTLY", "REPORT_CYBERCRIME"],
+        "unknowns": [], "ambiguities": [],
+        "live_publishable": true
+      },
+      "explanation_ingredients": [
+        "Governing rule TL-CRED-001 (CRITICAL, SUPPORTED). TL-KYC-001 is PARTIAL and contributes at capped MEDIUM.",
+        "Corroboration is HIGH because the decisive positives span four independent evidence classes (PRETEXT, PRESSURE, CHANNEL_ARTIFACT, CREDENTIAL_ACTION) — not because three rules fired."
+      ],
+      "notes": "Anti-double-counting (STEP 12/13): corroboration is over independent evidence classes, not rule count. Refines corpus coarse CRITICAL into decomposed axes."
+    },
+    {
+      "id": "GDC-07",
+      "title": "Remote-access app in a refund/payment context (hard-risk)",
+      "maps_to_corpus": "S-L",
+      "input_gloss": "To process your refund I need to guide you — install AnyDesk and give me the code so I can complete the payment on your screen.",
+      "language": ["en"], "script": ["Latn"],
+      "declared_indicators": [
+        {"id": "SCREEN_SHARE_APP_REQUEST", "polarity": "POSITIVE", "matched": "OBSERVED", "confidence": "HIGH"},
+        {"id": "PAYMENT_CONTEXT", "polarity": "POSITIVE", "matched": "OBSERVED", "confidence": "MEDIUM"},
+        {"id": "BENIGN_PRETEXT_FOR_TECHNICAL_ACTION", "polarity": "POSITIVE", "matched": "OBSERVED", "confidence": "MEDIUM"}
+      ],
+      "expected": {
+        "input_support_status": "SUPPORTED",
+        "classification": "SCAM_PATTERN_DETECTED",
+        "fired_rules": ["TL-MAL-003"],
+        "rule_states": {"TL-MAL-003": "MATCHED"},
+        "active_overrides": ["HR_BANKING_REMOTE_ACCESS"],
+        "severity": "HIGH",
+        "matched_evidence_strength": "MODERATE",
+        "risk_level": "HIGH",
+        "detection_confidence": "MEDIUM",
+        "corroboration_band": "MEDIUM",
+        "recommended_actions": ["DISCONNECT_REMOTE_ACCESS", "DO_NOT_INSTALL_APP", "CONTACT_BANK", "VERIFY_INDEPENDENTLY"],
+        "unknowns": [], "ambiguities": [],
+        "live_publishable": false
+      },
+      "explanation_ingredients": [
+        "Screen-share in a payment context: HR_BANKING_REMOTE_ACCESS is active and BLOCKS IT_SUPPORT_CONTEXT suppression.",
+        "TL-MAL-003 is PARTIAL (INDUSTRY-corroborated), so detection_confidence is capped at MEDIUM and severity at its cap (HIGH)."
+      ],
+      "notes": "TL-MAL-003 is PEER_REVIEW, not PUBLISHED: a PUBLISHED-only live engine routes this to review (INSUFFICIENT_EVIDENCE) pending promotion. This documents the designed on-promotion behaviour."
+    },
+    {
+      "id": "GDC-08",
+      "title": "Corporate IT remote support, non-banking (benign, suppression)",
+      "maps_to_corpus": "S-K",
+      "input_gloss": "As you requested, corporate IT will start a TeamViewer session at 3pm to fix your laptop display. Do not open banking apps.",
+      "language": ["en"], "script": ["Latn"],
+      "declared_indicators": [
+        {"id": "SCREEN_SHARE_APP_REQUEST", "polarity": "POSITIVE", "matched": "OBSERVED", "confidence": "HIGH"},
+        {"id": "BENIGN_PRETEXT_FOR_TECHNICAL_ACTION", "polarity": "POSITIVE", "matched": "OBSERVED", "confidence": "MEDIUM"},
+        {"id": "IT_SUPPORT_CONTEXT", "polarity": "NEGATIVE", "matched": "OBSERVED", "confidence": "HIGH"}
+      ],
+      "expected": {
+        "input_support_status": "SUPPORTED",
+        "classification": "NO_SCAM_PATTERN",
+        "fired_rules": [],
+        "rule_states": {"TL-MAL-003": "SUPPRESSED"},
+        "active_overrides": [],
+        "severity": "NONE",
+        "matched_evidence_strength": "NONE",
+        "risk_level": "NONE",
+        "detection_confidence": "NOT_APPLICABLE",
+        "corroboration_band": "NONE",
+        "recommended_actions": [],
+        "unknowns": [], "ambiguities": [],
+        "live_publishable": true
+      },
+      "explanation_ingredients": [
+        "TL-MAL-003 matches on SCREEN_SHARE_APP_REQUEST + benign pretext, but there is NO banking/payment/KYC context, so no hard-risk override is active.",
+        "IT_SUPPORT_CONTEXT (SUPPRESS_RULE) therefore cancels the finding — recorded as negative evidence (FR-042), never silently."
+      ],
+      "notes": "Contrast GDC-07: identical device action, opposite outcome, decided by the override, not by keywords. Suppression is visible in the explanation."
+    },
+    {
+      "id": "GDC-09",
+      "title": "Crypto wallet-connect at a fake verification site",
+      "maps_to_corpus": "M-013",
+      "input_gloss": "Your airdrop is ready. Verify holdings at trust-wallet-verify.example and connect your wallet. Continue with our agent on Telegram.",
+      "language": ["en"], "script": ["Latn"],
+      "declared_indicators": [
+        {"id": "WALLET_CONNECT_REQUEST", "polarity": "POSITIVE", "matched": "OBSERVED", "confidence": "HIGH"},
+        {"id": "FAKE_VERIFICATION_SITE", "polarity": "POSITIVE", "matched": "OBSERVED", "confidence": "MEDIUM"},
+        {"id": "VERIFICATION_PRETEXT", "polarity": "POSITIVE", "matched": "OBSERVED", "confidence": "MEDIUM"},
+        {"id": "OFF_PLATFORM_HANDOFF", "polarity": "POSITIVE", "matched": "OBSERVED", "confidence": "MEDIUM"},
+        {"id": "LINK_PRESENT", "polarity": "POSITIVE", "matched": "OBSERVED", "confidence": "HIGH"},
+        {"id": "LOOKALIKE_DOMAIN", "polarity": "POSITIVE", "matched": "OBSERVED", "confidence": "MEDIUM"}
+      ],
+      "expected": {
+        "input_support_status": "SUPPORTED",
+        "classification": "SCAM_PATTERN_DETECTED",
+        "fired_rules": ["TL-CRYP-001"],
+        "rule_states": {"TL-CRYP-001": "MATCHED"},
+        "active_overrides": ["HR_WALLET_CONNECT_UNKNOWN"],
+        "severity": "HIGH",
+        "matched_evidence_strength": "MODERATE",
+        "risk_level": "HIGH",
+        "detection_confidence": "MEDIUM",
+        "corroboration_band": "MEDIUM",
+        "recommended_actions": ["DO_NOT_CONNECT_WALLET", "VERIFY_INDEPENDENTLY", "REPORT_CYBERCRIME"],
+        "unknowns": [], "ambiguities": [],
+        "live_publishable": true
+      },
+      "explanation_ingredients": [
+        "Wallet-connect + fake verification site + off-platform handoff matches the I4C CyberDost Trust Wallet chain (SRC-024). HR_WALLET_CONNECT_UNKNOWN is active.",
+        "TL-CRYP-001 is PARTIAL (OFFICIAL_ALTERNATE), so confidence is capped at MEDIUM."
+      ],
+      "notes": "Contrast B-012 (exchange notice mentions wallets but requests no connection -> no finding)."
+    },
+    {
+      "id": "GDC-10",
+      "title": "Task-app deposit-to-earn with blocked withdrawal",
+      "maps_to_corpus": "S-C (inverse) / TL-JOB-003",
+      "input_gloss": "Complete simple tasks and earn daily. Deposit Rs 5,000 to unlock premium tasks; your withdrawal is frozen until you pay a 10% tax.",
+      "language": ["en"], "script": ["Latn"],
+      "declared_indicators": [
+        {"id": "TASK_EARNING_LURE", "polarity": "POSITIVE", "matched": "OBSERVED", "confidence": "MEDIUM"},
+        {"id": "DEPOSIT_FOR_EARNINGS", "polarity": "POSITIVE", "matched": "OBSERVED", "confidence": "HIGH"},
+        {"id": "WITHDRAWAL_BLOCKED_PRETEXT", "polarity": "POSITIVE", "matched": "OBSERVED", "confidence": "HIGH"}
+      ],
+      "expected": {
+        "input_support_status": "SUPPORTED",
+        "classification": "SCAM_PATTERN_DETECTED",
+        "fired_rules": ["TL-JOB-003"],
+        "rule_states": {"TL-JOB-003": "MATCHED"},
+        "active_overrides": [],
+        "severity": "HIGH",
+        "matched_evidence_strength": "STRONG",
+        "risk_level": "HIGH",
+        "detection_confidence": "HIGH",
+        "corroboration_band": "HIGH",
+        "recommended_actions": ["DO_NOT_TRANSFER_MONEY", "VERIFY_INDEPENDENTLY", "REPORT_CYBERCRIME"],
+        "unknowns": [], "ambiguities": [],
+        "live_publishable": false
+      },
+      "explanation_ingredients": [
+        "Lure + deposit-to-unlock + blocked-withdrawal spans three independent evidence classes (PRETEXT, PAYMENT_ACTION, PRESSURE); SUPPORTED via official replacement (PIB-2023 + I4C-2025).",
+        "No hard-risk override applies to the job family; the finding rests on the combination alone."
+      ],
+      "notes": "TL-JOB-003 is APPROVED, not PUBLISHED, and only PARTIAL-implementable (multi-step narrative). Live PUBLISHED-only engine routes to review; documents on-promotion behaviour."
+    },
+    {
+      "id": "GDC-11",
+      "title": "PIN prompt with UNKNOWN payment direction (ambiguity preserved)",
+      "maps_to_corpus": "A-005 (direction variant)",
+      "input_gloss": "Enter your UPI PIN for Rs 5,000.",
+      "language": ["en"], "script": ["Latn"],
+      "declared_indicators": [
+        {"id": "UPI_PIN_PROMPT", "polarity": "POSITIVE", "matched": "OBSERVED", "confidence": "HIGH"},
+        {"id": "PAYMENT_CONTEXT", "polarity": "POSITIVE", "matched": "OBSERVED", "confidence": "MEDIUM"},
+        {"id": "RECEIVE_FRAMING", "polarity": "POSITIVE", "matched": "AMBIGUOUS", "confidence": "LOW"}
+      ],
+      "expected": {
+        "input_support_status": "SUPPORTED",
+        "classification": "INSUFFICIENT_EVIDENCE",
+        "fired_rules": [],
+        "rule_states": {"TL-PAY-001": "INDETERMINATE"},
+        "active_overrides": [],
+        "severity": "NONE",
+        "matched_evidence_strength": "NONE",
+        "risk_level": "NONE",
+        "detection_confidence": "NOT_APPLICABLE",
+        "corroboration_band": "NONE",
+        "recommended_actions": ["SEEK_HUMAN_REVIEW", "VERIFY_INDEPENDENTLY", "PROCEED_WITH_CAUTION"],
+        "unknowns": [],
+        "ambiguities": ["payment_direction unresolved: RECEIVE_FRAMING vs PAY_MERCHANT_DIRECTION cannot be established"],
+        "live_publishable": true
+      },
+      "explanation_ingredients": [
+        "payment_direction=UNKNOWN_DIRECTION, so RECEIVE_FRAMING is AMBIGUOUS (not affirmatively absent). TL-PAY-001's all_of evaluates to UNKNOWN -> INDETERMINATE, not NOT_MATCHED.",
+        "The result explicitly names the unresolved question rather than guessing pay vs receive."
+      ],
+      "notes": "STEP 14/17 keystone: not classified as legitimate (pay) nor fraud (receive) without evidence. Kleene three-valued logic keeps uncertainty as uncertainty."
+    },
+    {
+      "id": "GDC-12",
+      "title": "Transliterated Hinglish scam (unsupported language)",
+      "maps_to_corpus": "A-006",
+      "input_gloss": "Aapka account block ho jayega. Turant KYC update karne ke liye OTP bhejo warna account band ho jayega.",
+      "language": ["hi-Latn"], "script": ["Latn"],
+      "declared_indicators": [],
+      "expected": {
+        "input_support_status": "UNSUPPORTED",
+        "classification": "UNSUPPORTED",
+        "fired_rules": [],
+        "rule_states": {},
+        "active_overrides": [],
+        "severity": "NONE",
+        "matched_evidence_strength": "NONE",
+        "risk_level": "NONE",
+        "detection_confidence": "NOT_APPLICABLE",
+        "corroboration_band": "NONE",
+        "recommended_actions": ["RESUBMIT_IN_SUPPORTED_LANGUAGE", "SEEK_HUMAN_REVIEW"],
+        "unknowns": [], "ambiguities": [],
+        "live_publishable": true
+      },
+      "explanation_ingredients": [
+        "The language (hi) is outside the MVP scope (en/Latn); detection is NOT attempted (ADR-0014, G-08).",
+        "This message is unambiguously malicious to a human, which is exactly why it must be flagged UNSUPPORTED rather than silently scored low."
+      ],
+      "notes": "Never silently classify unsupported input as benign. UNSUPPORTED is decided at the support-status gate, before any rule runs."
+    },
+    {
+      "id": "GDC-13",
+      "title": "Single weak cue only (insufficient, not safe)",
+      "maps_to_corpus": "A-001",
+      "input_gloss": "Important update regarding your account: http://exmpl.co/x9k2",
+      "language": ["en"], "script": ["Latn"],
+      "declared_indicators": [
+        {"id": "SHORTENED_URL", "polarity": "POSITIVE", "matched": "OBSERVED", "confidence": "MEDIUM"},
+        {"id": "VAGUE_PRETEXT", "polarity": "POSITIVE", "matched": "OBSERVED", "confidence": "LOW"}
+      ],
+      "expected": {
+        "input_support_status": "SUPPORTED",
+        "classification": "INSUFFICIENT_EVIDENCE",
+        "fired_rules": [],
+        "rule_states": {},
+        "active_overrides": [],
+        "severity": "NONE",
+        "matched_evidence_strength": "NONE",
+        "risk_level": "NONE",
+        "detection_confidence": "NOT_APPLICABLE",
+        "corroboration_band": "LOW",
+        "recommended_actions": ["PROCEED_WITH_CAUTION", "VERIFY_INDEPENDENTLY"],
+        "unknowns": ["no credential/payment/device action observed; pretext unspecified"],
+        "ambiguities": [],
+        "live_publishable": true
+      },
+      "explanation_ingredients": [
+        "Two WEAK indicators and no decisive action; no published rule combination is satisfied (RP p.13: one weak signal must never suffice).",
+        "The result states what is missing rather than returning 'safe'."
+      ],
+      "notes": "UNKNOWN is not SAFE. VAGUE_PRETEXT at LOW extraction confidence is treated as UNKNOWN by the confidence gate, never as FALSE-benign."
+    },
+    {
+      "id": "GDC-14",
+      "title": "Digital-arrest coercion (multiple independent strong indicators)",
+      "maps_to_corpus": "M-001",
+      "input_gloss": "CBI Cyber Crime: a warrant is issued, you are under digital arrest. Do NOT contact family or a lawyer. Transfer Rs 85,000 as a security deposit.",
+      "language": ["en"], "script": ["Latn"],
+      "declared_indicators": [
+        {"id": "AUTHORITY_IMPERSONATION", "polarity": "POSITIVE", "matched": "OBSERVED", "confidence": "HIGH"},
+        {"id": "LEGAL_ACCUSATION", "polarity": "POSITIVE", "matched": "OBSERVED", "confidence": "HIGH"},
+        {"id": "ARREST_THREAT", "polarity": "POSITIVE", "matched": "OBSERVED", "confidence": "HIGH"},
+        {"id": "ISOLATION_FROM_FAMILY_OR_LAWYER", "polarity": "POSITIVE", "matched": "OBSERVED", "confidence": "HIGH"},
+        {"id": "IMMEDIATE_PAYMENT_DEMAND", "polarity": "POSITIVE", "matched": "OBSERVED", "confidence": "HIGH"},
+        {"id": "PARCEL_PRETEXT", "polarity": "POSITIVE", "matched": "OBSERVED", "confidence": "MEDIUM"}
+      ],
+      "expected": {
+        "input_support_status": "SUPPORTED",
+        "classification": "SCAM_PATTERN_DETECTED",
+        "fired_rules": ["TL-AUTH-001", "TL-AUTH-002"],
+        "rule_states": {"TL-AUTH-001": "MATCHED", "TL-AUTH-002": "MATCHED"},
+        "active_overrides": ["HR_PAYMENT_UNDER_COERCION"],
+        "severity": "CRITICAL",
+        "matched_evidence_strength": "STRONG",
+        "risk_level": "CRITICAL",
+        "detection_confidence": "HIGH",
+        "corroboration_band": "HIGH",
+        "recommended_actions": ["DO_NOT_TRANSFER_MONEY", "CONTACT_OFFICIAL_CHANNEL", "VERIFY_INDEPENDENTLY", "REPORT_CYBERCRIME", "PRESERVE_EVIDENCE"],
+        "unknowns": [], "ambiguities": [],
+        "live_publishable": true
+      },
+      "explanation_ingredients": [
+        "Every element of the NITI Aayog digital-arrest modus operandi (SRC-012) is present: impersonation + legal threat + isolation + coerced payment.",
+        "Corroboration is HIGH across four independent evidence classes; HR_PAYMENT_UNDER_COERCION is active."
+      ],
+      "notes": "Both governing rules are SUPPORTED and CRITICAL; strong independent corroboration yields HIGH confidence."
+    },
+    {
+      "id": "GDC-15",
+      "title": "Live OTP request wrapped in decoy safety wording (override beats suppression)",
+      "maps_to_corpus": "S-I",
+      "input_gloss": "We will NEVER ask for your OTP. That said, confirm the OTP you just received now to avoid your account being blocked.",
+      "language": ["en"], "script": ["Latn"],
+      "declared_indicators": [
+        {"id": "CREDENTIAL_REQUEST_OTP", "polarity": "POSITIVE", "matched": "OBSERVED", "confidence": "HIGH"},
+        {"id": "ACCOUNT_BLOCK_THREAT", "polarity": "POSITIVE", "matched": "OBSERVED", "confidence": "HIGH"},
+        {"id": "URGENCY", "polarity": "POSITIVE", "matched": "OBSERVED", "confidence": "MEDIUM"},
+        {"id": "NEGATED_CREDENTIAL_REQUEST", "polarity": "NEGATIVE", "matched": "OBSERVED", "confidence": "HIGH"},
+        {"id": "EDUCATIONAL_CONTENT", "polarity": "NEGATIVE", "matched": "OBSERVED", "confidence": "MEDIUM"},
+        {"id": "SUPPORT_NEVER_ASKS", "polarity": "NEGATIVE", "matched": "OBSERVED", "confidence": "MEDIUM"}
+      ],
+      "expected": {
+        "input_support_status": "SUPPORTED",
+        "classification": "SCAM_PATTERN_DETECTED",
+        "fired_rules": ["TL-CRED-001"],
+        "rule_states": {"TL-CRED-001": "MATCHED"},
+        "active_overrides": ["HR_OTP_DISCLOSURE_REQUEST"],
+        "blocked_suppressors": ["EDUCATIONAL_CONTENT", "SUPPORT_NEVER_ASKS"],
+        "severity": "CRITICAL",
+        "matched_evidence_strength": "STRONG",
+        "risk_level": "CRITICAL",
+        "detection_confidence": "HIGH",
+        "corroboration_band": "MEDIUM",
+        "recommended_actions": ["DO_NOT_SHARE_CREDENTIALS", "CONTACT_BANK", "VERIFY_INDEPENDENTLY", "REPORT_CYBERCRIME"],
+        "unknowns": [], "ambiguities": [],
+        "live_publishable": true
+      },
+      "explanation_ingredients": [
+        "The override HR_OTP_DISCLOSURE_REQUEST is computed on the raw signal set (a live CREDENTIAL_REQUEST_OTP is present), so directional neutralisation is skipped and the live request survives.",
+        "EDUCATIONAL_CONTENT and SUPPORT_NEVER_ASKS (EDUCATIONAL_SAFETY / CUSTOMER_SUPPORT_SAFETY) are BLOCKED by the override and recorded as considered-but-blocked."
+      ],
+      "notes": "Decoy resistance: safety wording cannot cancel a live hard-risk request. The suppression reasoning is fully visible in the explanation."
+    }
+  ]
+}

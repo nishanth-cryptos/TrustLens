@@ -19,7 +19,7 @@ Design guarantees:
 Order (dependency-aware, see ORDER below):
   manual evidence integrity → Phase-1 consistency → taxonomy → KB governance →
   negative-indicator library → rule schema/lint → extraction contracts → rule runner →
-  published-bundle integrity (ADR-0004)
+  published-bundle integrity (ADR-0004) → Phase-3 DET-001 design (contracts + golden cases)
 
 Usage:
   python knowledge/validation/run_all.py             # human-readable; runs all; non-zero on any failure
@@ -43,7 +43,7 @@ ROOT = Path(__file__).resolve().parents[2]
 
 # Dependency-aware execution order. Each entry: (repo-relative path, why-it-runs-here).
 # Rationale — the suite flows from the most foundational invariant to the most derived, ending
-# with the publish-integrity check (ADR-0004):
+# with the publish-integrity check (ADR-0004) and the Phase-3 DET-001 design gate:
 #   1 evidence must be intact and its automated grades preserved before anything trusts it;
 #   2 Phase-1 counts/consistency across manifest/taxonomy/matrix/corpus must hold;
 #   3 the taxonomy + dimensions must be internally valid (rules reference taxa);
@@ -52,7 +52,9 @@ ROOT = Path(__file__).resolve().parents[2]
 #   6 rules validate against schema + the linter, which reads indicators/taxonomy/manifest/library;
 #   7 extraction contracts build on rules + families + library + taxonomy/dimensions;
 #   8 the rule runner executes the whole encoded set over the corpus + suppression suite;
-#   9 the published knowledge bundle builds deterministically and its hashes verify (ADR-0004 WP8).
+#   9 the published knowledge bundle builds deterministically and its hashes verify (ADR-0004 WP8);
+#  10 the Phase-3 DET-001 design contracts are valid and the golden decision cases are consistent
+#     with the governed KB and the ADR-0006 risk model (Phase-3 closure, GATE-009).
 ORDER = [
     ("knowledge/validation/manual_evidence_check.py", "durable-truth: evidence integrity + automated-status preservation"),
     ("knowledge/validation/phase1_consistency_check.py", "Phase-1 counts consistent across manifest / taxonomy / matrix / corpus"),
@@ -63,6 +65,7 @@ ORDER = [
     ("knowledge/validation/validate_extraction.py", "extraction contracts: schemas, families partition, fixtures, coverage matrix"),
     ("knowledge/validation/rule_runner.py", "deterministic execution of the encoded rules over corpus + suppression suite"),
     ("knowledge/publish/validate_bundle.py", "published knowledge bundle: deterministic build + SHA-256 integrity (ADR-0004)"),
+    ("docs/03-detection/validate_det_design.py", "Phase-3 DET-001 design: contracts valid + golden decision cases consistent with the governed KB and the ADR-0006 risk model"),
 ]
 
 # Network-capable modules a validator must never import — the offline guarantee (WP7 STEP 7).
@@ -152,7 +155,7 @@ def main() -> int:
                 print("  -", p)
         return 2
 
-    log(f"TrustLens knowledge quality gate — {len(ORDER)} checks (8 validators + bundle integrity), dependency order, offline")
+    log(f"TrustLens knowledge quality gate — {len(ORDER)} checks (8 validators + bundle integrity + Phase-3 design), dependency order, offline")
     log(f"interpreter: {sys.executable}")
     log(f"repo root  : {ROOT}\n")
 

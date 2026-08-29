@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Document ID | ADR-INDEX |
-| Version | 1.2 |
+| Version | 1.3 |
 | Status | Active |
 | Owner role | Chief Architect |
 | Last updated | 2026-08-29 |
@@ -27,6 +27,8 @@ Programme-level scope, process and evidence decisions live in the
 | [ADR-0002](ADR-0002-defer-python-intelligence-service.md) | Defer the Python intelligence service to the AI phase | Accepted | 2026-07-31 | Very low |
 | [ADR-0003](ADR-0003-rule-representation-format.md) | Rule representation — JSON Schema plus a cross-file linter | Accepted | 2026-08-15 | Low |
 | [ADR-0004](ADR-0004-knowledge-storage-architecture.md) | Knowledge storage — Git source of truth + immutable hashed runtime bundle | Accepted | 2026-08-29 | Low |
+| [ADR-0005](ADR-0005-rule-execution-model.md) | Rule execution model — three-valued (Kleene) interpreter over the immutable bundle | Accepted | 2026-08-29 | Low |
+| [ADR-0006](ADR-0006-risk-and-confidence-aggregation.md) | Risk and confidence aggregation — categorical, decomposable, non-probabilistic (implements CONF-001) | Accepted | 2026-08-29 | Low–Medium |
 | [ADR-0014](ADR-0014-language-and-script-strategy.md) | Language and script strategy — MVP English-only, schemas extensible (OI-04 → option A) | Accepted | 2026-08-29 | Low |
 | [ADR-0015](ADR-0015-evidence-hierarchy-and-official-alternate-provenance.md) | Evidence hierarchy and official-alternate provenance | Accepted | 2026-08-28 | Low |
 
@@ -37,8 +39,6 @@ analysis that belongs to a later phase. Recording them now prevents them being m
 
 | ID | Decision needed | Phase | Depends on |
 |---|---|---|---|
-| ADR-0005 | Rule execution model — interpreter design, dependency resolution, determinism guarantees | 3 | DET-001 |
-| ADR-0006 | Risk and confidence aggregation mathematics | 3 | DET-001, [CONF-001](../docs/00-program/conflict-register.md) |
 | ADR-0007 | AI model strategy — local/open vs managed API vs hybrid | 4 | AI-001, `MP §11` |
 | ADR-0008 | Architecture style — modular monolith vs service-oriented, with extraction criteria | 5 | ARCH-001 |
 | ADR-0009 | Identity, authentication and authorisation approach | 5 | ARCH-001 |
@@ -47,10 +47,11 @@ analysis that belongs to a later phase. Recording them now prevents them being m
 | ADR-0012 | Threat-intelligence adapter architecture and provider selection | 6 | INT-001 |
 | ADR-0013 | Rule-set publication and version distribution mechanism | 5 | ARCH-001 |
 
-**Numbering note.** ADR-0004 and ADR-0014 are now issued and Accepted (WP8); ADR-0005…0013 remain
-**reserved** for the planned topics above. ADR-0015 was issued ahead of them because the RESEARCH-006
-manual retrieval reconciliation forced an evidence-model decision (the evidence hierarchy) that could not
-wait for those later phases.
+**Numbering note.** ADR-0004 and ADR-0014 were issued and Accepted at the Phase-2 close (WP8);
+**ADR-0005 and ADR-0006 are now issued and Accepted at the Phase-3 design gate** (DET-001). ADR-0007…0013
+remain **reserved** for the planned topics above. ADR-0015 was issued ahead of them because the
+RESEARCH-006 manual retrieval reconciliation forced an evidence-model decision (the evidence hierarchy)
+that could not wait for those later phases.
 
 ## Template
 

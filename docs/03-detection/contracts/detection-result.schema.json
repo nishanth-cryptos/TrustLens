@@ -1,0 +1,178 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://trustlens/schemas/detection/detection-result.schema.json",
+  "title": "TrustLens Detection Result (DET-001 design contract)",
+  "description": "Phase 3 DET-001. The canonical output contract for ONE TrustLens evaluation: what TrustLens concluded, how strongly, why, and under exactly which pinned knowledge — such that the decision is fully reproducible and fully explainable. DESIGN CONTRACT: it fixes the shape the deterministic engine (a later phase) must produce; the engine is not built here. The four decision quantities are SEPARATE fields (severity, risk_level, detection_confidence, matched_evidence_strength) and are NEVER collapsed into one number or a probability (CONF-001, glossary section 1). input_support_status is decided BEFORE classification, and UNSUPPORTED / INSUFFICIENT_EVIDENCE are never mapped to a benign outcome (STEP 3; UNKNOWN is not SAFE).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "result_schema_version",
+    "evaluation_id",
+    "timestamp",
+    "input_id",
+    "language",
+    "script",
+    "input_support_status",
+    "classification",
+    "risk_level",
+    "severity",
+    "detection_confidence",
+    "provenance",
+    "rule_results",
+    "explanation",
+    "recommended_actions"
+  ],
+  "properties": {
+    "result_schema_version": { "const": "1.0.0-design" },
+    "evaluation_id": { "type": "string", "minLength": 1 },
+    "timestamp": { "type": "string", "description": "ISO-8601 instant of evaluation. Provenance only; not an input to any decision quantity." },
+    "input_id": { "type": "string", "minLength": 1 },
+
+    "language": { "type": "array", "items": { "type": "string" }, "description": "Detected/declared language tags of the input." },
+    "script": { "type": "array", "items": { "type": "string" }, "description": "Detected/declared script codes of the input." },
+
+    "input_support_status": {
+      "enum": ["SUPPORTED", "PARTIALLY_SUPPORTED", "UNSUPPORTED", "INSUFFICIENT_INFORMATION", "ERROR"],
+      "description": "STEP 3, decided FIRST. SUPPORTED: en/Latn with an evaluable observation frame. PARTIALLY_SUPPORTED: supported language but some required channel missing (e.g. OCR failed). UNSUPPORTED: outside MVP language/script scope (G-08/ADR-0014) — detection is NOT attempted and the result is NEVER benign. INSUFFICIENT_INFORMATION: supported input, too few observations for any rule combination. ERROR: fail-closed integrity/exception state. None of these maps to LOW RISK automatically."
+    },
+
+    "classification": {
+      "enum": ["NO_SCAM_PATTERN", "INSUFFICIENT_EVIDENCE", "SCAM_PATTERN_SUSPECTED", "SCAM_PATTERN_DETECTED", "UNSUPPORTED", "ERROR"],
+      "description": "STEP 4 — what TrustLens CONCLUDES from observable evidence, distinct from severity (harm if genuine). NO_SCAM_PATTERN: no composite rule fires (or all suppressed) on supported input. INSUFFICIENT_EVIDENCE: supported input, no rule combination satisfied and/or an unresolved decisive ambiguity (UNKNOWN is not SAFE). SCAM_PATTERN_SUSPECTED: a rule fired but detection_confidence is LOW. SCAM_PATTERN_DETECTED: a rule fired at detection_confidence MEDIUM/HIGH. UNSUPPORTED / ERROR mirror input_support_status."
+    },
+
+    "severity": {
+      "enum": ["NONE", "LOW", "MEDIUM", "HIGH", "CRITICAL"],
+      "description": "Highest EFFECTIVE severity among fired rules (harm IF the pattern is genuine). Ordinal, never numeric. NONE when no rule fires."
+    },
+    "matched_evidence_strength": {
+      "enum": ["NONE", "WEAK", "MODERATE", "STRONG"],
+      "description": "Strength of the matched evidence behind the governing rule: derived from the decisive indicators' strength, the rule's evidence verdict (SUPPORTED>PARTIAL>HEURISTIC) and whether a hard-risk override is active. Feeds risk_level; distinct from detection_confidence (glossary section 1)."
+    },
+    "risk_level": {
+      "enum": ["NONE", "LOW", "MEDIUM", "HIGH", "CRITICAL"],
+      "description": "Computed exposure for THIS submission = ordinal lookup of (severity x matched_evidence_strength) per ADR-0006's fixed matrix. Bounded, decomposable, reproducible, user-visible as a band. NOT a probability and NOT a percentage. Independent of detection_confidence, which is reported alongside and never averaged in."
+    },
+    "detection_confidence": {
+      "enum": ["NOT_APPLICABLE", "LOW", "MEDIUM", "HIGH"],
+      "description": "STEP 9 — how much TrustLens trusts its own analysis of THIS submission: completeness of required observations, extraction confidence of decisive indicators, corroboration across INDEPENDENT evidence classes, evidence verdict, ambiguity, benign context. Categorical. NOT a calibrated fraud probability. NOT_APPLICABLE when no rule fires or input is UNSUPPORTED/ERROR."
+    },
+
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["bundle_version", "bundle_content_digest", "engine_version", "evaluation_profile", "component_versions"],
+      "description": "STEP 23 — everything that affects the output, pinned. Same (observations + bundle + engine_version + evaluation_profile) MUST yield an identical result.",
+      "properties": {
+        "bundle_version": { "type": "string" },
+        "bundle_content_digest": { "type": "string", "pattern": "^[0-9a-f]{64}$", "description": "SHA-256 content digest of the published knowledge bundle (ADR-0004). Answers 'which knowledge executed'." },
+        "commit_sha": { "type": "string" },
+        "engine_version": { "type": "string", "description": "Version of the deterministic detection engine (ADR-0005)." },
+        "evaluation_profile": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["profile_id", "extraction_confidence_gate", "risk_matrix_id", "confidence_policy_id"],
+          "description": "The tunable, pinned configuration. No hidden configuration may affect the result.",
+          "properties": {
+            "profile_id": { "type": "string" },
+            "extraction_confidence_gate": { "enum": ["HIGH", "MEDIUM", "LOW"], "description": "Minimum extraction confidence for an indicator to count as OBSERVED; below it the indicator is treated as UNKNOWN, not FALSE (STEP 8). MVP default MEDIUM." },
+            "risk_matrix_id": { "type": "string", "description": "Identifier of the fixed severity x evidence-strength -> risk matrix (ADR-0006)." },
+            "confidence_policy_id": { "type": "string", "description": "Identifier of the fixed detection-confidence banding policy (ADR-0006)." }
+          }
+        },
+        "component_versions": {
+          "type": "object",
+          "additionalProperties": true,
+          "description": "Pinned versions of every knowledge component consulted (rule_schema, indicator_registry, indicator_families, negative_library, taxonomy, dimensions, extraction_contracts) plus per-fired-rule rule_version echoed in rule_results."
+        }
+      }
+    },
+
+    "rule_results": {
+      "type": "array",
+      "items": { "$ref": "https://trustlens/schemas/detection/rule-evaluation-result.schema.json" },
+      "description": "One entry per rule that MATCHED, was SUPPRESSED, or came out INDETERMINATE. NOT_MATCHED rules may be omitted for brevity but INDETERMINATE ones must be kept (they explain unresolved uncertainty)."
+    },
+
+    "matched_positive_indicators": { "type": "array", "items": { "type": "string" } },
+    "matched_negative_indicators": { "type": "array", "items": { "type": "string" } },
+    "suppressed_indicators": { "type": "array", "items": { "type": "string" }, "description": "Positives neutralised by directional SUPPRESS_INDICATOR." },
+    "active_overrides": { "type": "array", "items": { "type": "string", "pattern": "^HR_[A-Z_]+$" } },
+
+    "corroboration": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "STEP 13 — corroboration measured over INDEPENDENT evidence classes/families, NOT rule count. Five rules off one URL keyword corroborate weakly; five independent observations corroborate strongly.",
+      "properties": {
+        "independent_evidence_classes": { "type": "array", "uniqueItems": true, "items": { "type": "string" } },
+        "evidence_class_count": { "type": "integer", "minimum": 0 },
+        "independent_families": { "type": "array", "uniqueItems": true, "items": { "type": "string" } },
+        "family_count": { "type": "integer", "minimum": 0 },
+        "band": { "enum": ["NONE", "LOW", "MEDIUM", "HIGH"] }
+      }
+    },
+
+    "explanation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["what", "why", "detection_confidence_reason"],
+      "description": "STEP 15 — structured first. Every field is derived from runtime facts + the fired rules' stored explanation/evidence; no unsupported factual claim may appear (explanation-provenance constraint).",
+      "properties": {
+        "what": { "type": "string", "description": "What TrustLens detected, in plain language." },
+        "why": { "type": "string", "description": "Why — the combination that matched." },
+        "supporting_observations": { "type": "array", "items": { "type": "object", "additionalProperties": true }, "description": "The exact observations/spans that supported the finding." },
+        "matched_positive_indicators": { "type": "array", "items": { "type": "string" } },
+        "matched_negative_indicators": { "type": "array", "items": { "type": "string" } },
+        "suppressors_considered": { "type": "array", "items": { "type": "object", "additionalProperties": true }, "description": "Each suppressor and whether it applied or was blocked by an override, and why." },
+        "active_overrides": { "type": "array", "items": { "type": "object", "additionalProperties": true } },
+        "fired_rules": { "type": "array", "items": { "type": "string" } },
+        "evidence_citations": {
+          "type": "array",
+          "description": "Official citations behind the fired rules — issuing body, verification status, evidence class, and the stored quote. The ONLY facts the narrative may assert.",
+          "items": { "type": "object", "additionalProperties": true }
+        },
+        "detection_confidence_reason": { "type": "string", "description": "Operational meaning of the confidence band for this decision (STEP 9)." },
+        "verification_steps": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+
+    "recommended_actions": {
+      "type": "array",
+      "description": "STEP 16 — controlled vocabulary; each action MUST trace to a fired rule / active override / matched family. Never emitted beyond the evidence.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["action", "justified_by"],
+        "properties": {
+          "action": {
+            "enum": [
+              "DO_NOT_SHARE_CREDENTIALS",
+              "DO_NOT_ENTER_PIN",
+              "DO_NOT_TRANSFER_MONEY",
+              "DO_NOT_INSTALL_APP",
+              "DO_NOT_CONNECT_WALLET",
+              "DO_NOT_DIAL_CODE",
+              "DISCONNECT_REMOTE_ACCESS",
+              "VERIFY_INDEPENDENTLY",
+              "CONTACT_BANK",
+              "CONTACT_OFFICIAL_CHANNEL",
+              "REPORT_CYBERCRIME",
+              "PRESERVE_EVIDENCE",
+              "PROCEED_WITH_CAUTION",
+              "SEEK_HUMAN_REVIEW",
+              "RESUBMIT_IN_SUPPORTED_LANGUAGE"
+            ]
+          },
+          "justified_by": { "type": "string", "description": "Rule id / override id / family id that supports this action." }
+        }
+      }
+    },
+
+    "limitations": { "type": "array", "items": { "type": "string" }, "description": "STEP 22 — e.g. synthetic-only validation, no accuracy claim (G-09), capped PARTIAL evidence." },
+    "unknowns": { "type": "array", "items": { "type": "string" }, "description": "Decisive observations that were UNKNOWN." },
+    "ambiguities": { "type": "array", "items": { "type": "string" }, "description": "Decisive observations that were AMBIGUOUS, e.g. payment direction unresolved (STEP 14/17)." },
+
+    "degraded": { "type": "boolean", "description": "True if a per-rule error occurred but evaluation continued; caps confidence and routes to review (STEP 25)." },
+    "errors": { "type": "array", "items": { "type": "object", "additionalProperties": true }, "description": "Fail-closed diagnostics when input_support_status=ERROR or degraded=true." }
+  }
+}
