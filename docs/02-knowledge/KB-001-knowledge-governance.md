@@ -8,7 +8,7 @@
 | Owner role | Chief Architect |
 | Dependencies | RESEARCH-001…006, [ADR-0003](../../adr/ADR-0003-rule-representation-format.md), [ADR-0015](../../adr/ADR-0015-evidence-hierarchy-and-official-alternate-provenance.md), [DEC-003](../00-program/decision-log.md), [DEC-005](../00-program/decision-log.md), [DEC-006](../00-program/decision-log.md) |
 | Feeds | DET-001, ARCH-001, DATA-001, OPS-001 |
-| Last updated | 2026-08-28 |
+| Last updated | 2026-08-29 (v1.1 — §11 CI enforcement) |
 
 ---
 
@@ -215,8 +215,41 @@ distributed — is **[ADR-0004](../../adr/README.md) (knowledge storage), which 
 must not be read as choosing one. Where DATA-001 or ADR-0004 later fix persistence, they inherit this
 logical model and its lifecycles.
 
-## 11. Change history
+## 11. Continuous enforcement — the CI quality gate (WP7)
+
+The machine-enforced controls in §5 and §9 are wired into a **continuous quality gate** so they run
+on every relevant change rather than on request. The gate is one canonical command,
+`knowledge/validation/run_all.py`, which runs the complete validation suite (the eight validators) in
+dependency order; the GitHub Actions workflow
+[`knowledge-validation.yml`](../../.github/workflows/knowledge-validation.yml) runs that same command
+on pull requests and pushes to `main` that touch knowledge, governance/research/knowledge docs, ADRs,
+the dependency file, or the workflow itself. Full description: [GATE-006](../00-program/GATE-006-phase-2-ci-quality-gates.md).
+
+**Merge-eligibility rule.** A change **cannot become merge-eligible while the mandatory machine-enforced
+TrustLens validation suite fails.** A red gate means an evidence, taxonomy, indicator, rule,
+suppression, extraction-contract or governance regression is present and must be fixed before merge.
+The gate runs **offline** against the committed evidence bundle (a preflight refuses to run if any
+validator imports a network module), so a green result is a statement about the repository's durable
+truth, not about a live source.
+
+**CI does not replace human review.** The gate enforces exactly the objectively checkable controls
+(§9, machine column); it makes **no** judgement about the controls §9 reserves for a named human, all
+of which remain mandatory:
+
+- evidence **interpretation** and whether a concept is genuinely supported (§5 item 14);
+- whether an **official-channel identity** is genuinely official (ADR-0015);
+- **safeguarding** decisions (e.g. TAX-11 sextortion detection deferral);
+- **semantic rule review** — peer/security/approval diligence;
+- whether to **weaken a hard-risk override**;
+- **publication approval** — the transition to `PUBLISHED`.
+
+A green gate is **necessary but not sufficient** for merge or publication: it certifies the machine
+controls hold, and the human controls are then applied on top. Over-encoding governance as software
+would create false assurance (§9); the gate is deliberately scoped to what is objectively decidable.
+
+## 12. Change history
 
 | Version | Date | Change | Author role |
 |---|---|---|---|
 | 1.0 | 2026-08-28 | Initial KB-001. Pipeline, seven artifact lifecycles, rule state machine reconciled with ADR-0003, PUBLISHED checklist with machine/human split, change-response playbook, provenance model (preserving ADR-0015), versioning policy, storage boundary deferred to ADR-0004. | Chief Architect |
+| 1.1 | 2026-08-29 | Added §11 continuous enforcement: the WP7 CI quality gate (`run_all.py` + `knowledge-validation.yml`) makes a change merge-ineligible while the machine-enforced suite fails, without replacing the §9 human controls. | Chief Architect |

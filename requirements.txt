@@ -1,0 +1,19 @@
+# TrustLens knowledge-validation dependencies (Phase 2 WP7).
+# The ONLY dependency mechanism for the knowledge/validation suite. CI and local
+# developers install from this file so the quality gate is reproducible and never
+# depends on a developer's ad-hoc .venv contents.
+#
+# Only two of the eight validators need a third-party package (validate_rules.py and
+# validate_extraction.py use jsonschema Draft 2020-12 + referencing); the other six are
+# pure Python standard library. Versions are pinned for a deterministic gate.
+#
+# Install:  python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
+
+# --- direct (imported by the validators) ---
+jsonschema==4.26.0
+referencing==0.37.0
+
+# --- transitive, pinned for a reproducible gate (installed via jsonschema/referencing) ---
+attrs==26.1.0
+jsonschema-specifications==2025.9.1
+rpds-py==2026.6.3

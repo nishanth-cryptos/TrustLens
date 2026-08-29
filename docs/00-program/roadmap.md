@@ -119,9 +119,13 @@ score), [CONF-002](conflict-register.md) (three-layer indicator/composite/suppre
    `evidence_maturity` layer; loan-app/mule (G-12) preserved with no fabricated rule. Taxonomy v2.0.
 6. ✅ **KB-001** — [knowledge governance, lifecycle, provenance, versioning](../02-knowledge/KB-001-knowledge-governance.md);
    storage deferred to ADR-0004.
-7. 🟡 **Schema validation in CI** — eight validators exist (`manual_evidence_check`,
-   `phase1_consistency_check`, `validate_taxonomy`, `validate_kb`, `validate_negative_library`,
-   `validate_rules`, `rule_runner`, `validate_extraction`); wiring into a CI workflow remains.
+7. ✅ **Schema validation in CI** — [GATE-006](GATE-006-phase-2-ci-quality-gates.md). Canonical
+   [`run_all.py`](../../knowledge/validation/run_all.py) gate over the eight validators
+   (`manual_evidence_check`, `phase1_consistency_check`, `validate_taxonomy`, `validate_kb`,
+   `validate_negative_library`, `validate_rules`, `validate_extraction`, `rule_runner`) in
+   dependency order, offline preflight, `ci_selftest.py` non-vacuity proof, and a GitHub Actions
+   workflow ([`knowledge-validation.yml`](../../.github/workflows/knowledge-validation.yml)) on
+   path-filtered PRs + `main`. Reproducible via `requirements.txt`. Knowledge base unaffected.
 8. **ADR-0004** (knowledge storage) · **ADR-0014** (language and script strategy).
 
 **⚠ Partial blocker.** Work package 8's ADR-0014 is blocked on
@@ -255,3 +259,4 @@ and when the sources are retrieved. The rest have runway.
 | 1.3 | 2026-08-28 | **WP3 done (G-07 closed)**; WP4 advanced to **25/30 encoded, 18 published**. Checkpoint [GATE-003](GATE-003-phase-2-g07-and-encoding.md). WP2/5/6/8 remain open. | Technical Program Director |
 | 1.4 | 2026-08-28 | **WP5 done (taxonomy v2.0, TAX-11 deferred, multidimensional model, KB-001)** and **WP6 done (KB-001)**. Checkpoint [GATE-004](GATE-004-phase-2-taxonomy-kb.md). WP2 + CI wiring + ADR-0004/0014 remain. | Technical Program Director |
 | 1.5 | 2026-08-29 | **WP2 done (indicator families + extraction contracts, KB-002)**: four contract schemas, 28 families over 63 positives, 15 golden fixtures, 26-entry coverage matrix (25 starters + TL-SUP-001), 8th validator. Checkpoint [GATE-005](GATE-005-phase-2-extraction-contracts.md). Rule engine and prior gates unaffected. WP7 CI wiring + ADR-0004/0014 remain. | Technical Program Director |
+| 1.6 | 2026-08-29 | **WP7 done (CI quality-gate wiring)**: canonical `run_all.py` gate over the 8 validators (dependency order, offline preflight), `ci_selftest.py` non-vacuity proof, GitHub Actions workflow, `requirements.txt`, KB-001 §11 governance. Checkpoint [GATE-006](GATE-006-phase-2-ci-quality-gates.md). Knowledge base unaffected. **Only WP8 (ADR-0004 storage, ADR-0014 language) remains in Phase 2.** | Technical Program Director |
