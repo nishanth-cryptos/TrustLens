@@ -95,7 +95,7 @@ SUPPORTED_COMPONENT_VERSIONS: dict[str, frozenset[str]] = {
     "dimensions": frozenset({"1.0.0"}),
     "indicator_registry": frozenset({"0.3.0-interim"}),
     "indicator_families": frozenset({"1.0.0"}),
-    "negative_library": frozenset({"1.0.0"}),
+    "negative_library": frozenset({"2.0.0"}),
     "evidence_manifest": frozenset({"1.2"}),
     "evidence_records": frozenset({"1.0"}),
     "extraction_schemas": frozenset({"1.0.0"}),

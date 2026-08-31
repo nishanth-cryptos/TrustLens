@@ -1,7 +1,20 @@
 {
-  "$comment": "TrustLens Phase 3 DET-001 GOLDEN DECISION CASES. DESIGN-LEVEL specification of the decision DET-001 must produce for canonical inputs. Each case declares an indicator-observation set (the signal an extractor would produce — extraction itself is Phase 9) and the EXPECTED decision across every DET-001 axis. These encode design intent, NOT measured accuracy (G-09): they may never be used to claim precision/recall (RSK-003). All inputs are SYNTHETIC. Rule/indicator/override ids are real and are resolved by validate_det_design.py against the live knowledge base; risk_level is checked against the ADR-0006 risk matrix; classification is checked for consistency with support status and fired rules. Where a governing rule is not yet PUBLISHED, live_publishable=false records that a PUBLISHED-only live engine routes the case to review pending governance promotion — the case still documents the designed on-promotion behaviour.",
-  "cases_version": "1.0.0",
+  "$comment": "TrustLens Phase 3 DET-001 GOLDEN DECISION CASES. DESIGN-LEVEL specification of the decision DET-001 must produce for canonical inputs. Each case declares an indicator-observation set (the signal an extractor would produce — extraction itself is Phase 9) and the EXPECTED decision across every DET-001 axis. These encode design intent, NOT measured accuracy (G-09): they may never be used to claim precision/recall (RSK-003). All inputs are SYNTHETIC. Rule/indicator/override ids are real and are resolved by validate_det_design.py against the live knowledge base; risk_level is checked against the ADR-0006 risk matrix; classification is checked for consistency with support status and fired rules. Where a governing rule is not yet PUBLISHED, live_publishable=false records that a PUBLISHED-only live engine routes the case to review pending governance promotion — the case still documents the designed on-promotion behaviour. declared_indicators sets are SPARSE (programme decision 1, 2026-08-30): an absent indicator is UNKNOWN at the operand level, not FALSE — a case that needs an affirmative absence declares an explicit matched=NOT_OBSERVED (e.g. GDC-05 RECEIVE_FRAMING). declared_indicators is a TEST/DESIGN compact shorthand. A case whose outcome depends on exact occurrence association may additionally store governed_input with schema-valid indicator_observations plus the normalized_observations they reference; the WP3 corpus replay passes that data unchanged to the normal *_from_governed production API. Occurrence structural attributes are authored ONLY on normalized observations. Structural semantics and governed SUPPRESS_INDICATOR association are both resolved through observation_refs; neither is input-global.",
+  "cases_version": "1.1.0",
   "generated": "2026-08-29",
+  "last_updated": "2026-08-31",
+  "change_history": [
+    {
+      "version": "1.0.0",
+      "date": "2026-08-29",
+      "change": "Initial governed golden decision corpus."
+    },
+    {
+      "version": "1.1.0",
+      "date": "2026-08-31",
+      "change": "MINOR (KB-001): added an optional exact governed_input executable representation and upgraded GDC-15 to use it. GDC-15 remains MATCHED. Its disclaimer/negated OTP occurrence and separate live OTP-request occurrence are explicitly linked through observation_refs and replay through the normal production data-in API. This records the programme-level deterministic safety decision on occurrence association; it adds no fraud evidence and changes no expected decision."
+    }
+  ],
   "provenance": "SYNTHETIC",
   "evaluated_against": "encoded evaluable set (status in {PUBLISHED, APPROVED, PEER_REVIEW}); the live engine evaluates PUBLISHED only (DET-001 section 5). live_publishable annotates the difference per case.",
   "risk_matrix_ref": "ADR-0006 risk matrix v1 (severity x matched_evidence_strength -> risk_level)",
@@ -140,6 +153,7 @@
       "language": ["en"], "script": ["Latn"],
       "declared_indicators": [
         {"id": "UPI_PIN_PROMPT", "polarity": "POSITIVE", "matched": "OBSERVED", "confidence": "HIGH"},
+        {"id": "RECEIVE_FRAMING", "polarity": "POSITIVE", "matched": "NOT_OBSERVED", "confidence": "HIGH"},
         {"id": "PAY_MERCHANT_DIRECTION", "polarity": "NEGATIVE", "matched": "OBSERVED", "confidence": "HIGH"}
       ],
       "expected": {
@@ -460,7 +474,7 @@
     },
     {
       "id": "GDC-15",
-      "title": "Live OTP request wrapped in decoy safety wording (override beats suppression)",
+      "title": "Live OTP request separate from disclaimer occurrence",
       "maps_to_corpus": "S-I",
       "input_gloss": "We will NEVER ask for your OTP. That said, confirm the OTP you just received now to avoid your account being blocked.",
       "language": ["en"], "script": ["Latn"],
@@ -472,6 +486,130 @@
         {"id": "EDUCATIONAL_CONTENT", "polarity": "NEGATIVE", "matched": "OBSERVED", "confidence": "MEDIUM"},
         {"id": "SUPPORT_NEVER_ASKS", "polarity": "NEGATIVE", "matched": "OBSERVED", "confidence": "MEDIUM"}
       ],
+      "governed_input": {
+        "normalized_observations": [
+          {
+            "observation_id": "g15-otp-neg",
+            "observation_type": "AUTHENTICATION_ACTION",
+            "source_input_id": "GDC-15-input",
+            "status": "OBSERVED",
+            "polarity": "NEGATED",
+            "attribution": "FIRST_PARTY",
+            "mood": "DIRECTIVE",
+            "raw_span": "We will NEVER ask for your OTP.",
+            "provenance": {"extractor_id": "golden-corpus", "extractor_type": "USER_SUPPLIED", "extractor_version": "1.1.0"}
+          },
+          {
+            "observation_id": "g15-otp-live",
+            "observation_type": "AUTHENTICATION_ACTION",
+            "source_input_id": "GDC-15-input",
+            "status": "OBSERVED",
+            "polarity": "AFFIRMED",
+            "attribution": "FIRST_PARTY",
+            "mood": "DIRECTIVE",
+            "raw_span": "confirm the OTP you just received now",
+            "provenance": {"extractor_id": "golden-corpus", "extractor_type": "USER_SUPPLIED", "extractor_version": "1.1.0"}
+          },
+          {
+            "observation_id": "g15-threat",
+            "observation_type": "THREAT",
+            "source_input_id": "GDC-15-input",
+            "status": "OBSERVED",
+            "polarity": "AFFIRMED",
+            "attribution": "FIRST_PARTY",
+            "mood": "DIRECTIVE",
+            "raw_span": "to avoid your account being blocked",
+            "provenance": {"extractor_id": "golden-corpus", "extractor_type": "USER_SUPPLIED", "extractor_version": "1.1.0"}
+          },
+          {
+            "observation_id": "g15-urgency",
+            "observation_type": "TEMPORAL_PRESSURE",
+            "source_input_id": "GDC-15-input",
+            "status": "OBSERVED",
+            "polarity": "AFFIRMED",
+            "attribution": "FIRST_PARTY",
+            "mood": "DIRECTIVE",
+            "raw_span": "now",
+            "provenance": {"extractor_id": "golden-corpus", "extractor_type": "USER_SUPPLIED", "extractor_version": "1.1.0"}
+          },
+          {
+            "observation_id": "g15-education",
+            "observation_type": "CLAIM",
+            "source_input_id": "GDC-15-input",
+            "status": "OBSERVED",
+            "polarity": "AFFIRMED",
+            "attribution": "FIRST_PARTY",
+            "mood": "DESCRIPTIVE",
+            "raw_span": "We will NEVER ask for your OTP.",
+            "provenance": {"extractor_id": "golden-corpus", "extractor_type": "USER_SUPPLIED", "extractor_version": "1.1.0"}
+          }
+        ],
+        "indicator_observations": [
+          {
+            "indicator_id": "CREDENTIAL_REQUEST_OTP",
+            "polarity": "POSITIVE",
+            "matched": "OBSERVED",
+            "confidence": {"level": "HIGH"},
+            "observation_refs": ["g15-otp-neg"],
+            "input_id": "GDC-15-input",
+            "provenance": {"extractor_id": "golden-corpus", "extractor_type": "USER_SUPPLIED", "extractor_version": "1.1.0"}
+          },
+          {
+            "indicator_id": "CREDENTIAL_REQUEST_OTP",
+            "polarity": "POSITIVE",
+            "matched": "OBSERVED",
+            "confidence": {"level": "HIGH"},
+            "observation_refs": ["g15-otp-live"],
+            "input_id": "GDC-15-input",
+            "provenance": {"extractor_id": "golden-corpus", "extractor_type": "USER_SUPPLIED", "extractor_version": "1.1.0"}
+          },
+          {
+            "indicator_id": "NEGATED_CREDENTIAL_REQUEST",
+            "polarity": "NEGATIVE",
+            "matched": "OBSERVED",
+            "confidence": {"level": "HIGH"},
+            "observation_refs": ["g15-otp-neg"],
+            "input_id": "GDC-15-input",
+            "provenance": {"extractor_id": "golden-corpus", "extractor_type": "USER_SUPPLIED", "extractor_version": "1.1.0"}
+          },
+          {
+            "indicator_id": "ACCOUNT_BLOCK_THREAT",
+            "polarity": "POSITIVE",
+            "matched": "OBSERVED",
+            "confidence": {"level": "HIGH"},
+            "observation_refs": ["g15-threat"],
+            "input_id": "GDC-15-input",
+            "provenance": {"extractor_id": "golden-corpus", "extractor_type": "USER_SUPPLIED", "extractor_version": "1.1.0"}
+          },
+          {
+            "indicator_id": "URGENCY",
+            "polarity": "POSITIVE",
+            "matched": "OBSERVED",
+            "confidence": {"level": "MEDIUM"},
+            "observation_refs": ["g15-urgency"],
+            "input_id": "GDC-15-input",
+            "provenance": {"extractor_id": "golden-corpus", "extractor_type": "USER_SUPPLIED", "extractor_version": "1.1.0"}
+          },
+          {
+            "indicator_id": "EDUCATIONAL_CONTENT",
+            "polarity": "NEGATIVE",
+            "matched": "OBSERVED",
+            "confidence": {"level": "MEDIUM"},
+            "observation_refs": ["g15-education"],
+            "input_id": "GDC-15-input",
+            "provenance": {"extractor_id": "golden-corpus", "extractor_type": "USER_SUPPLIED", "extractor_version": "1.1.0"}
+          },
+          {
+            "indicator_id": "SUPPORT_NEVER_ASKS",
+            "polarity": "NEGATIVE",
+            "matched": "OBSERVED",
+            "confidence": {"level": "MEDIUM"},
+            "observation_refs": ["g15-otp-neg"],
+            "input_id": "GDC-15-input",
+            "provenance": {"extractor_id": "golden-corpus", "extractor_type": "USER_SUPPLIED", "extractor_version": "1.1.0"}
+          }
+        ]
+      },
       "expected": {
         "input_support_status": "SUPPORTED",
         "classification": "SCAM_PATTERN_DETECTED",
@@ -489,10 +627,10 @@
         "live_publishable": true
       },
       "explanation_ingredients": [
-        "The override HR_OTP_DISCLOSURE_REQUEST is computed on the raw signal set (a live CREDENTIAL_REQUEST_OTP is present), so directional neutralisation is skipped and the live request survives.",
-        "EDUCATIONAL_CONTENT and SUPPORT_NEVER_ASKS (EDUCATIONAL_SAFETY / CUSTOMER_SUPPORT_SAFETY) are BLOCKED by the override and recorded as considered-but-blocked."
+        "Directional suppression is OCCURRENCE-ASSOCIATED: NEGATED_CREDENTIAL_REQUEST references only the disclaimer occurrence ('we will never ask for your OTP'). It neutralises the positive projection on that same occurrence but cannot neutralise the explicitly separate, genuinely live CREDENTIAL_REQUEST_OTP occurrence ('confirm the OTP you just received now'). The two occurrence values combine FALSE OR TRUE = TRUE, so HR_OTP_DISCLOSURE_REQUEST is active and TL-CRED-001 remains MATCHED.",
+        "EDUCATIONAL_CONTENT and SUPPORT_NEVER_ASKS (EDUCATIONAL_SAFETY / CUSTOMER_SUPPORT_SAFETY) are override-blockable soft suppressors that the active override BLOCKS and records as considered-but-blocked."
       ],
-      "notes": "Decoy resistance: safety wording cannot cancel a live hard-risk request. The suppression reasoning is fully visible in the explanation."
+      "notes": "Decoy resistance: safety wording cannot cancel a separate live hard-risk request. This is a programme-level deterministic safety decision addressing ambiguous/global suppression, not a newly sourced fraud fact. The exact governed_input fixture replays through the normal production data-in API; no GDC-15-specific evaluator or validator workaround is used."
     }
   ]
 }

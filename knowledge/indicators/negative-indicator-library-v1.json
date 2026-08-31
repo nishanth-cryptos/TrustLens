@@ -1,10 +1,33 @@
 {
-  "$comment": "TrustLens formal negative-indicator & suppression library (WP3, closes G-07). Authoritative home for negative (SUPPRESSIVE) indicators, replacing the NEGATIVE half of indicator-registry-v0.json. Consumed by validate_rules.py (resolution + checks) and rule_runner.py (deterministic, explainable suppression). Numeric score-reduction magnitudes are NOT defined here - they are deferred to DET-001 (CONF-001); effects here are ordinal/categorical.",
-  "library_version": "1.0.0",
+  "$comment": "TrustLens formal negative-indicator & suppression library (WP3, closes G-07). Authoritative home for negative (SUPPRESSIVE) indicators, replacing the NEGATIVE half of indicator-registry-v0.json. Consumed by the validators and deterministic rule runtime. Numeric score-reduction magnitudes are NOT defined here - they are deferred to DET-001 (CONF-001); effects here are ordinal/categorical.",
+  "library_version": "2.0.0",
   "generated": "2026-08-28",
+  "last_updated": "2026-08-31",
   "status": "ACTIVE",
   "supersedes": "NEGATIVE half of knowledge/indicators/indicator-registry-v0.json",
   "provenance": "Authored from the inverse of verified official guidance (SRC-004/006/021 et al.) and the ADR-0015 evidence hierarchy. Evidence-class/strength/effect assignments are HEURISTIC programme judgements (G-07).",
+  "change_history": [
+    {
+      "version": "1.0.0",
+      "date": "2026-08-28",
+      "change": "Authored as part of the G-07 formal negative-indicator library (WP3)."
+    },
+    {
+      "version": "1.0.1",
+      "date": "2026-08-30",
+      "change": "PATCH (KB-001 §8: clarified description / metadata; no change to any indicator's interpretation). Rewrote resolution_order to the authoritative P3-WP3 override order (structural occurrence eligibility -> raw structurally-eligible live-positive set -> hard-risk overrides -> override-blockable soft suppressors -> CONTEXT_ONLY), removing the contradictory 'overrides computed on the reduced set' wording; added a structural_semantics statement that negation/reported/quoted/hypothetical attribution is non-overridable. No indicator id, suppression_effect, suppresses_indicators target, category, evidence, source_basis or override changed."
+    },
+    {
+      "version": "1.0.2",
+      "date": "2026-08-30",
+      "change": "PATCH (KB-001 §8: clarified description / metadata; no change to any indicator's interpretation). Reconciled resolution_order to the programme-approved P3WP3-006 execution order: hard-risk OVERRIDES are computed FIRST from the raw structurally-eligible live positives, and the governed SUPPRESS_INDICATOR effect is then EXECUTED at the WP3 pre-match stage (driving a target operand to FALSE before the required combination), blocked only by an EXPLICITLY override-blockable flag. Separated structural occurrence semantics (non-overridable, sourced from observation.schema.json via observation_refs) from the governed SUPPRESS_INDICATOR library effect. No indicator id, suppression_effect, blockable_by_overrides value, suppresses_indicators target, category, evidence, source_basis or override changed."
+    },
+    {
+      "version": "2.0.0",
+      "date": "2026-08-31",
+      "change": "MAJOR (KB-001): governed semantic change approved by programme authority. SUPPRESS_INDICATOR is occurrence-associated through governed observation_refs, not input-global. An active suppressor sets only an associated target-positive occurrence FALSE; explicitly disjoint occurrences do not interact; an unresolved association yields UNKNOWN rather than global FALSE. Occurrences for one indicator still combine by three-valued OR. Structural NEGATED/REPORTED/QUOTED/HYPOTHETICAL/non-live DESCRIPTIVE observations remain independently authoritative and non-overridable before suppression. This is a programme-level deterministic safety decision addressing ambiguous/global suppression, not a newly sourced fraud fact; source_basis and evidence assignments are unchanged."
+    }
+  ],
   "categories": {
     "EDUCATIONAL_SAFETY": "Scam-awareness / safety guidance: warns the user, does not instruct them.",
     "CUSTOMER_SUPPORT_SAFETY": "Official 'we will never ask for X' support language.",
@@ -14,22 +37,24 @@
     "USER_INITIATED": "The user themselves initiated the action (only trustworthy if the context model can observe it).",
     "ALLOWLIST_DOMAIN": "A verified/allowlisted domain context. Weak by design; never cancels a hard-risk pattern.",
     "REPORTED_SCAM": "The user is reporting/quoting scam wording, not receiving a live instruction.",
-    "NEGATION_DIRECTIONAL": "A directional negation that neutralises a specific positive indicator ('do NOT share your OTP').",
+    "NEGATION_DIRECTIONAL": "A directional negation that neutralises associated occurrences of a specific positive indicator through governed observation_refs ('do NOT share your OTP').",
     "BENIGN_CONTEXT": "Weak benign context (low amount, no urgency). Adds evidence; never cancels alone."
   },
   "suppression_effects": {
     "SUPPRESS_RULE": "Cancels the whole matched rule (unless a hard-risk override is active).",
-    "SUPPRESS_INDICATOR": "Neutralises specific positive indicator(s) before the rule is evaluated (directional). Not blocked by overrides.",
+    "SUPPRESS_INDICATOR": "Neutralises only associated occurrences of specific positive indicator(s), linked through governed observation_refs, before the rule is evaluated. Explicitly different occurrences are unaffected; unresolved association is UNKNOWN, never global FALSE. Not blocked by overrides unless explicitly declared blockable.",
     "CAP_SEVERITY": "Caps the fired rule's severity to an ordinal ceiling; does not cancel.",
     "CONTEXT_ONLY": "Records benign context; never changes the finding. (No numeric score-reduction here — REDUCE magnitudes are deferred to DET-001, CONF-001.)"
   },
   "resolution_order": [
-    "1. SUPPRESS_INDICATOR (directional negation) removes its target positives from the signal set; the rule's require is re-evaluated.",
-    "2. If the rule still matches, active hard-risk OVERRIDES are computed on the reduced set.",
-    "3. If any applicable override is active, it BLOCKS all SUPPRESS_RULE and CAP_SEVERITY effects from its blocked categories; the rule fires and the block is recorded as an explanation.",
-    "4. Otherwise, an active SUPPRESS_RULE cancels the rule; active CAP_SEVERITY caps its severity ordinally.",
-    "5. CONTEXT_ONLY indicators are recorded as benign evidence and never change the finding."
+    "1. STRUCTURAL OCCURRENCE ELIGIBILITY (non-overridable). Derived from the normalized observation contract only (observation.schema.json status/polarity/attribution/mood), reached via indicator_observation.observation_refs. An occurrence is a LIVE first-party directive only when its backing observation status is OBSERVED and it is AFFIRMED + FIRST_PARTY + non-DESCRIPTIVE; a NEGATED/REPORTED/QUOTED/HYPOTHETICAL/DESCRIPTIVE occurrence, or a NOT_OBSERVED/NOT_APPLICABLE backing, is structurally non-live and NEVER projects to a live positive; UNKNOWN/AMBIGUOUS backing (or an unresolvable association) is UNRESOLVED (the operand stays UNKNOWN — never guessed live nor guessed benign). This is a semantic property of the occurrence, NOT a negative-library effect, and cannot be overridden.",
+    "2. RAW LIVE-POSITIVE SET. The structurally-eligible, confidence-gated live positives form the raw set. This is what 'the raw OBSERVED set' in DET-001 §10 / ADR-0005 §4 means: raw structurally-eligible live positives, NOT the naive presence of a keyword and NOT ignoring negation/attribution.",
+    "3. HARD-RISK OVERRIDES are computed FROM that raw live-positive set, per applicable rule/family. An active override can NEVER turn a structurally non-live occurrence into a live positive and can NEVER defeat structural negation/attribution.",
+    "4. GOVERNED SUPPRESS_INDICATOR effects are then EXECUTED (WP3 pre-match) at occurrence scope: an active, applicable suppressor neutralises only target-positive occurrences associated to it by at least one shared governed observation_ref. An associated otherwise-live/uncertain occurrence becomes FALSE; two non-empty disjoint ref sets are explicitly different occurrences and do not interact; if either occurrence lacks refs, association is unresolved and the otherwise-live/uncertain target occurrence becomes UNKNOWN, never global FALSE. Per-indicator occurrences then combine by three-valued OR (FALSE + TRUE = TRUE; FALSE + UNKNOWN = UNKNOWN). A suppressor is skipped only if blockable_by_overrides:true and an active override blocks its category; all directional suppressors here are false, so an override never rescues an associated occurrence. Suppression never resurrects or weakens a structural FALSE.",
+    "5. OVERRIDE-BLOCKABLE SOFT SUPPRESSORS (SUPPRESS_RULE / CAP_SEVERITY, blockable_by_overrides:true) are resolved by WP4: an active override BLOCKS these for its blocked categories (recorded as explanation); otherwise an active SUPPRESS_RULE cancels the rule and active CAP_SEVERITY caps its severity ordinally.",
+    "6. CONTEXT_ONLY indicators are recorded as benign evidence and never change the finding."
   ],
+  "structural_semantics": "There are TWO distinct concepts. (1) STRUCTURAL OCCURRENCE SEMANTICS — negation, reported/quoted/hypothetical attribution and non-live descriptive mood — are semantic properties of each normalized observation occurrence, resolved via observation_refs before overrides/suppression. They are NON-OVERRIDABLE and are not negative-library SUPPRESS_INDICATOR effects. (2) GOVERNED SUPPRESS_INDICATOR is a negative-library behaviour applied only between associated positive/negative occurrences through observation_refs; it never neutralises an explicitly different occurrence input-globally. Missing association is UNKNOWN. A hard-risk override can neither turn structural NON_LIVE into LIVE nor rescue an associated occurrence from a non-blockable suppressor.",
   "negative_indicators": [
     {
       "negative_indicator_id": "EDUCATIONAL_CONTENT",
@@ -162,10 +187,10 @@
     },
     {
       "negative_indicator_id": "NEGATED_CREDENTIAL_REQUEST",
-      "version": "1.0.0",
+      "version": "2.0.0",
       "status": "ACTIVE",
       "name": "A credential is named inside a negation ('we will never ask for your OTP')",
-      "description": "A credential is named inside a negation ('we will never ask for your OTP'). Neutralises the credential-request positives.",
+      "description": "A credential is named inside a negation ('we will never ask for your OTP'). Neutralises only credential-request positive occurrences associated through governed observation_refs; it does not suppress a separate live request.",
       "category": "NEGATION_DIRECTIONAL",
       "evidence_class": "SUPPRESSIVE",
       "strength": "STRONG",
@@ -195,6 +220,11 @@
           "version": "1.0.0",
           "date": "2026-08-28",
           "change": "Authored as part of the G-07 formal negative-indicator library (WP3)."
+        },
+        {
+          "version": "2.0.0",
+          "date": "2026-08-31",
+          "change": "MAJOR (KB-001): programme-approved occurrence-associated SUPPRESS_INDICATOR semantics. Association is determined only through governed observation_refs; separate live occurrences survive and unresolved association is UNKNOWN. No source/evidence change."
         }
       ],
       "suppresses_indicators": [
@@ -212,7 +242,7 @@
     },
     {
       "negative_indicator_id": "OTP_DELIVERED_NOT_REQUESTED",
-      "version": "1.0.0",
+      "version": "2.0.0",
       "status": "ACTIVE",
       "name": "An OTP is being supplied TO the recipient rather than solicited FROM them",
       "description": "An OTP is being supplied TO the recipient rather than solicited FROM them. Directionality.",
@@ -243,6 +273,11 @@
           "version": "1.0.0",
           "date": "2026-08-28",
           "change": "Authored as part of the G-07 formal negative-indicator library (WP3)."
+        },
+        {
+          "version": "2.0.0",
+          "date": "2026-08-31",
+          "change": "MAJOR (KB-001): programme-approved occurrence-associated SUPPRESS_INDICATOR semantics. Association is determined only through governed observation_refs; separate occurrences are unaffected and unresolved association is UNKNOWN. No source/evidence change."
         }
       ],
       "suppresses_indicators": [
@@ -257,7 +292,7 @@
     },
     {
       "negative_indicator_id": "NEGATED_ACTION_REQUEST",
-      "version": "1.0.0",
+      "version": "2.0.0",
       "status": "ACTIVE",
       "name": "A risky device/payment action named inside a negation ('do not connect your wall",
       "description": "A risky device/payment action named inside a negation ('do not connect your wallet / do not install').",
@@ -288,6 +323,11 @@
           "version": "1.0.0",
           "date": "2026-08-28",
           "change": "Authored as part of the G-07 formal negative-indicator library (WP3)."
+        },
+        {
+          "version": "2.0.0",
+          "date": "2026-08-31",
+          "change": "MAJOR (KB-001): programme-approved occurrence-associated SUPPRESS_INDICATOR semantics. Association is determined only through governed observation_refs; separate occurrences are unaffected and unresolved association is UNKNOWN. No source/evidence change."
         }
       ],
       "suppresses_indicators": [
@@ -307,7 +347,7 @@
     },
     {
       "negative_indicator_id": "NO_CODE_DIAL_REQUEST",
-      "version": "1.0.0",
+      "version": "2.0.0",
       "status": "ACTIVE",
       "name": "No USSD/short code is presented for dialling; neutralises a spurious dial-reques",
       "description": "No USSD/short code is presented for dialling; neutralises a spurious dial-request tag.",
@@ -338,6 +378,11 @@
           "version": "1.0.0",
           "date": "2026-08-28",
           "change": "Authored as part of the G-07 formal negative-indicator library (WP3)."
+        },
+        {
+          "version": "2.0.0",
+          "date": "2026-08-31",
+          "change": "MAJOR (KB-001): programme-approved occurrence-associated SUPPRESS_INDICATOR semantics. Association is determined only through governed observation_refs; separate occurrences are unaffected and unresolved association is UNKNOWN. No source/evidence change."
         }
       ],
       "suppresses_indicators": [
@@ -346,7 +391,7 @@
     },
     {
       "negative_indicator_id": "NO_PERMISSION_REQUEST",
-      "version": "1.0.0",
+      "version": "2.0.0",
       "status": "ACTIVE",
       "name": "No device permission, Accessibility grant, app install or wallet connection is r",
       "description": "No device permission, Accessibility grant, app install or wallet connection is requested.",
@@ -378,6 +423,11 @@
           "version": "1.0.0",
           "date": "2026-08-28",
           "change": "Authored as part of the G-07 formal negative-indicator library (WP3)."
+        },
+        {
+          "version": "2.0.0",
+          "date": "2026-08-31",
+          "change": "MAJOR (KB-001): programme-approved occurrence-associated SUPPRESS_INDICATOR semantics. Association is determined only through governed observation_refs; separate occurrences are unaffected and unresolved association is UNKNOWN. No source/evidence change."
         }
       ],
       "suppresses_indicators": [
@@ -388,7 +438,7 @@
     },
     {
       "negative_indicator_id": "NO_RETURN_GUARANTEE",
-      "version": "1.0.0",
+      "version": "2.0.0",
       "status": "ACTIVE",
       "name": "Returns are discussed without any guarantee; neutralises a spurious guarantee ta",
       "description": "Returns are discussed without any guarantee; neutralises a spurious guarantee tag.",
@@ -419,6 +469,11 @@
           "version": "1.0.0",
           "date": "2026-08-28",
           "change": "Authored as part of the G-07 formal negative-indicator library (WP3)."
+        },
+        {
+          "version": "2.0.0",
+          "date": "2026-08-31",
+          "change": "MAJOR (KB-001): programme-approved occurrence-associated SUPPRESS_INDICATOR semantics. Association is determined only through governed observation_refs; separate occurrences are unaffected and unresolved association is UNKNOWN. No source/evidence change."
         }
       ],
       "suppresses_indicators": [
@@ -427,7 +482,7 @@
     },
     {
       "negative_indicator_id": "RISK_DISCLOSURE_PRESENT",
-      "version": "1.0.0",
+      "version": "2.0.0",
       "status": "ACTIVE",
       "name": "Standard investment risk disclosure present - the inverse of RISK_DENIAL",
       "description": "Standard investment risk disclosure present - the inverse of RISK_DENIAL.",
@@ -460,6 +515,11 @@
           "version": "1.0.0",
           "date": "2026-08-28",
           "change": "Authored as part of the G-07 formal negative-indicator library (WP3)."
+        },
+        {
+          "version": "2.0.0",
+          "date": "2026-08-31",
+          "change": "MAJOR (KB-001): programme-approved occurrence-associated SUPPRESS_INDICATOR semantics. Association is determined only through governed observation_refs; separate occurrences are unaffected and unresolved association is UNKNOWN. No source/evidence change."
         }
       ],
       "suppresses_indicators": [
@@ -1150,7 +1210,7 @@
     },
     {
       "negative_indicator_id": "OFFICIAL_APP_STORE_SOURCE",
-      "version": "1.0.0",
+      "version": "2.0.0",
       "status": "ACTIVE",
       "name": "Recipient is directed to an official app store / verified app - inverse of untru",
       "description": "Recipient is directed to an official app store / verified app - inverse of untrusted-source install.",
@@ -1183,6 +1243,11 @@
           "version": "1.0.0",
           "date": "2026-08-28",
           "change": "Authored as part of the G-07 formal negative-indicator library (WP3)."
+        },
+        {
+          "version": "2.0.0",
+          "date": "2026-08-31",
+          "change": "MAJOR (KB-001): programme-approved occurrence-associated SUPPRESS_INDICATOR semantics. Association is determined only through governed observation_refs; separate occurrences are unaffected and unresolved association is UNKNOWN. No source/evidence change."
         }
       ],
       "suppresses_indicators": [

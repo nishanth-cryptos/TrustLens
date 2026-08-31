@@ -22,18 +22,29 @@ rules stay data (FR-020).
 Adopt a **deterministic three-valued (Kleene strong) interpreter** over the immutable published bundle:
 
 1. **Signal states.** Each indicator observation maps `OBSERVED→TRUE`, `NOT_OBSERVED`/`NOT_APPLICABLE→
-   FALSE`, `UNKNOWN`/`AMBIGUOUS→UNKNOWN`. Extraction confidence below the pinned gate (default `MEDIUM`)
-   demotes an indicator to `UNKNOWN`, never `FALSE` (DET-001 §8).
+   FALSE`, `UNKNOWN`/`AMBIGUOUS→UNKNOWN`. Extraction confidence below the pinned gate (default `MEDIUM`),
+   or absent, demotes an indicator to `UNKNOWN`, never `FALSE` (DET-001 §8). Observation sets are **sparse**:
+   an operand with no observation is `UNKNOWN`, not `FALSE` (clarified 2026-08-30 — no complete-frame
+   assumption).
 2. **Operators (Kleene).** `all_of`: FALSE if any FALSE, TRUE if all TRUE, else UNKNOWN. `any_of`: TRUE
    if any TRUE, FALSE if all FALSE, else UNKNOWN. `n_of(n)`: TRUE if `#TRUE≥n`, FALSE if `#TRUE+#UNKNOWN<n`,
    else UNKNOWN.
 3. **Rule states.** `require=TRUE` and evidence-class diversity (`min_evidence_classes`) met → `MATCHED`;
    `require=FALSE` → `NOT_MATCHED`; `require=UNKNOWN` → `INDETERMINATE`; matched-then-cancelled →
    `SUPPRESSED`; out-of-scope/error → `NOT_APPLICABLE`.
-4. **Resolution order** (unchanged from the WP3 library): directional `SUPPRESS_INDICATOR` → override
-   computation on the raw `OBSERVED` set (confidence-gated) → `SUPPRESS_RULE`/`CAP_SEVERITY`
-   (override-aware) → `CONTEXT_ONLY` recorded. Overrides gate suppression only; they never set severity
-   nor bypass `require` (DET-001 §10).
+4. **Resolution order** (negative-indicator-library-v1.json §resolution_order, updated by programme
+   authority 2026-08-31): **structural occurrence eligibility** (status/polarity/attribution/mood — non-overridable,
+   sourced from the normalized `observation.schema.json` via `observation_refs`) → raw **structurally-eligible
+   live-positive** set (confidence-gated) → **hard-risk override computation FROM that live set** →
+   **execute governed `SUPPRESS_INDICATOR` at occurrence scope** (a shared `observation_ref` drives only the
+   associated target-positive occurrence `FALSE`; explicitly disjoint occurrences are unaffected; unresolved
+   association is `UNKNOWN`; occurrences then combine by three-valued OR; blocked only if the suppressor is
+   EXPLICITLY override-blockable) → `require` → (WP4) override-blockable
+   `SUPPRESS_RULE`/`CAP_SEVERITY` → `CONTEXT_ONLY` recorded. "Raw `OBSERVED` set" means the raw
+   structurally-eligible live positives; it does **not** mean ignoring negation/reported/quoted attribution.
+   Overrides never set severity, never bypass `require`, can **never** turn a structurally non-live
+   occurrence into a live positive. A non-blockable suppressor defeats an associated occurrence, but never a
+   separate live occurrence (DET-001 §10/§11).
 5. **Live set.** Only `PUBLISHED` rules are evaluated against live submissions; lifecycle is read from the
    bundle, not hard-coded.
 6. **Determinism.** Evaluation order is fixed (lexical rule id); the interpreter is pure over
@@ -64,7 +75,8 @@ keeping rules as data preserves the ADR-0003 guarantee.
   DET-001 §4/§15.
 - The Phase-2 `rule_runner` is unchanged and remains the Phase-2 conformance harness; the two coexist
   (harness over declared sets vs live engine over extracted observations).
-- Golden cases GDC-04/05/11 exercise the TRUE/FALSE/UNKNOWN branches of the same rule.
+- Golden cases GDC-04/05/11 exercise the TRUE/FALSE/UNKNOWN branches of the same rule. GDC-15 stores and
+  replays separate disclaimer and live-request occurrences, proving occurrence-associated suppression.
 
 ## Risks
 

@@ -96,7 +96,7 @@ interpretation and no "latest"** — governed values are matched verbatim, prese
 | `dimensions` | `1.0.0` |
 | `indicator_registry` | `0.3.0-interim` |
 | `indicator_families` | `1.0.0` |
-| `negative_library` | `1.0.0` |
+| `negative_library` | `2.0.0` |
 | `evidence_manifest` | `1.2` |
 | `evidence_records` | `1.0` |
 | `extraction_schemas` | `1.0.0` |
