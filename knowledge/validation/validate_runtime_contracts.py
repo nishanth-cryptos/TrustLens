@@ -170,8 +170,18 @@ def golden_case_result(case):
     rcr = {"MATCHED": "TRUE", "SUPPRESSED": "TRUE", "NOT_MATCHED": "FALSE", "INDETERMINATE": "UNKNOWN", "NOT_APPLICABLE": "UNKNOWN"}
     rule_results = []
     for rid, state in exp.get("rule_states", {}).items():
-        rule_results.append({"rule_id": rid, "rule_version": "1.0.0", "kind": "COMPOSITE",
-                             "evaluation_state": state, "required_combination_result": rcr.get(state, "UNKNOWN")})
+        rule_result = {"rule_id": rid, "rule_version": "1.0.0", "kind": "COMPOSITE",
+                       "evaluation_state": state, "required_combination_result": rcr.get(state, "UNKNOWN")}
+        if state == "SUPPRESSED":
+            suppressors = sorted({i["id"] for i in case.get("declared_indicators", [])
+                                  if i.get("polarity") == "NEGATIVE"})
+            if suppressors:
+                rule_result["suppression"] = {
+                    "effect": "SUPPRESS_RULE",
+                    "applied_suppressors": suppressors,
+                    "suppressed_by": suppressors[0],
+                }
+        rule_results.append(rule_result)
     return {
         "result_contract_version": "1.0.0",
         "evaluation_id": f"GDC-ALIGN-{case['id']}",

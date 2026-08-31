@@ -1,16 +1,18 @@
-"""TrustLens Phase 3 runtime knowledge package (P3-WP2 loader + P3-WP3 rule evaluator).
+"""TrustLens Phase 3 runtime knowledge package (P3-WP2 loader through P3-WP4 suppression).
 
 P3-WP2 loads an ADR-0004 published knowledge bundle into an immutable, indexed, read-only
 `RuntimeKnowledge` — or fails closed with a typed error. P3-WP3 adds the deterministic three-valued
 (Kleene) rule evaluator that consumes that RuntimeKnowledge plus a submission's indicator observations
-and returns per-rule `RuleEvaluationResult`s. The evaluator produces PER-RULE results ONLY: no
-aggregation, risk, severity, classification or explanation prose (those are P3-WP4+).
+and returns per-rule `RuleEvaluationResult`s. P3-WP4 then applies post-match rule suppression and
+severity caps. These stages produce PER-RULE results ONLY: no decision aggregation, risk,
+classification, confidence aggregation, or decision explanation (those are P3-WP5+).
 
 Public API::
 
     from knowledge.runtime import (
         load_bundle, RuntimeKnowledge, BundleLoadError,          # P3-WP2
         RuleEvaluator, evaluate_rule_from_governed, evaluate_rules_from_governed,   # P3-WP3 production
+        RuleSuppressionExecutor, evaluate_rule_with_suppression_from_governed,       # P3-WP4 production
         IndicatorObservation, Observation, EvaluationProfile,
         build_validated_context, EvaluationObservationContext,    # governed input boundary (internal ctx)
     )
@@ -44,6 +46,13 @@ from .evaluator import (
     evaluate_rules_from_governed,
 )
 from .loader import load_bundle
+from .suppression import (
+    RuleSuppressionExecutor,
+    SuppressionExecutionError,
+    apply_rule_suppression,
+    evaluate_rule_with_suppression_from_governed,
+    evaluate_rules_with_suppression_from_governed,
+)
 from .observations import (
     EvaluationObservationContext,
     IndicatorObservation,
@@ -79,4 +88,10 @@ __all__ = [
     "EvaluationProfile",
     "DEFAULT_PROFILE",
     "EvaluatorError",
+    # P3-WP4 (rule-level suppression / severity orchestration)
+    "RuleSuppressionExecutor",
+    "SuppressionExecutionError",
+    "apply_rule_suppression",
+    "evaluate_rule_with_suppression_from_governed",
+    "evaluate_rules_with_suppression_from_governed",
 ]

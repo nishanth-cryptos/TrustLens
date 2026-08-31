@@ -117,6 +117,71 @@
         "decision_severity": "NONE", "matched_evidence_strength": "NONE", "risk_level": "NONE", "detection_confidence": "NOT_APPLICABLE",
         "rule_results": [], "explanation": {"summary": "x", "what_was_detected": "x", "why": "x", "detection_confidence_reason": "x"}, "recommended_actions": []
       }
+    },
+    {
+      "reason": "duplicate applied_suppressors violates deterministic duplicate-free WP4 metadata",
+      "expected_rejection": "schema",
+      "result": {
+        "result_contract_version": "1.0.0", "evaluation_id": "BAD-11", "evaluation_timestamp": "2026-08-29T11:10:00Z", "input_id": "IN-BAD-11",
+        "language": ["en"], "script": ["Latn"], "input_support_status": "SUPPORTED", "classification": "NO_SCAM_PATTERN",
+        "decision_severity": "NONE", "matched_evidence_strength": "NONE", "risk_level": "NONE", "detection_confidence": "NOT_APPLICABLE",
+        "provenance": {"bundle_version": "1.0.0", "bundle_content_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "engine_version": "0.1.0-wp1", "evaluation_profile": {"profile_id": "mvp-default", "extraction_confidence_gate": "MEDIUM", "risk_matrix_id": "adr-0006-risk-matrix-v1", "confidence_policy_id": "adr-0006-confidence-policy-v1"}, "component_versions": {"rule_schema": "1.0.0", "indicator_registry": "0.3.0-interim", "indicator_families": "1.0.0", "negative_library": "1.0.0", "taxonomy": "2.0.0", "dimensions": "1.0.0", "extraction_contracts": "1.0.0"}},
+        "matched_rules": [],
+        "rule_results": [{"rule_id": "TL-MAL-003", "rule_version": "1.0.0", "kind": "COMPOSITE", "evaluation_state": "SUPPRESSED", "required_combination_result": "TRUE", "suppression": {"suppressed_by": "IT_SUPPORT_CONTEXT", "effect": "SUPPRESS_RULE", "applied_suppressors": ["IT_SUPPORT_CONTEXT", "IT_SUPPORT_CONTEXT"]}, "rule_severity_declared": "HIGH", "effective_severity": "HIGH"}],
+        "explanation": {"summary": "x", "what_was_detected": "x", "why": "x", "detection_confidence_reason": "x"}, "recommended_actions": []
+      }
+    },
+    {
+      "reason": "SUPPRESSED rule must preserve TRUE required-combination result",
+      "expected_rejection": "schema",
+      "result": {
+        "result_contract_version": "1.0.0", "evaluation_id": "BAD-12", "evaluation_timestamp": "2026-08-29T11:11:00Z", "input_id": "IN-BAD-12",
+        "language": ["en"], "script": ["Latn"], "input_support_status": "SUPPORTED", "classification": "NO_SCAM_PATTERN",
+        "decision_severity": "NONE", "matched_evidence_strength": "NONE", "risk_level": "NONE", "detection_confidence": "NOT_APPLICABLE",
+        "provenance": {"bundle_version": "1.0.0", "bundle_content_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "engine_version": "0.1.0-wp1", "evaluation_profile": {"profile_id": "mvp-default", "extraction_confidence_gate": "MEDIUM", "risk_matrix_id": "adr-0006-risk-matrix-v1", "confidence_policy_id": "adr-0006-confidence-policy-v1"}, "component_versions": {"rule_schema": "1.0.0", "indicator_registry": "0.3.0-interim", "indicator_families": "1.0.0", "negative_library": "1.0.0", "taxonomy": "2.0.0", "dimensions": "1.0.0", "extraction_contracts": "1.0.0"}},
+        "matched_rules": [],
+        "rule_results": [{"rule_id": "TL-MAL-003", "rule_version": "1.0.0", "kind": "COMPOSITE", "evaluation_state": "SUPPRESSED", "required_combination_result": "FALSE", "suppression": {"suppressed_by": "IT_SUPPORT_CONTEXT", "effect": "SUPPRESS_RULE", "applied_suppressors": ["IT_SUPPORT_CONTEXT"]}, "rule_severity_declared": "HIGH", "effective_severity": "HIGH"}],
+        "explanation": {"summary": "x", "what_was_detected": "x", "why": "x", "detection_confidence_reason": "x"}, "recommended_actions": []
+      }
+    },
+    {
+      "reason": "SUPPRESSED rule missing required applied_suppressors metadata",
+      "expected_rejection": "schema",
+      "result": {
+        "result_contract_version": "1.0.0", "evaluation_id": "BAD-13", "evaluation_timestamp": "2026-08-29T11:12:00Z", "input_id": "IN-BAD-13",
+        "language": ["en"], "script": ["Latn"], "input_support_status": "SUPPORTED", "classification": "NO_SCAM_PATTERN",
+        "decision_severity": "NONE", "matched_evidence_strength": "NONE", "risk_level": "NONE", "detection_confidence": "NOT_APPLICABLE",
+        "provenance": {"bundle_version": "1.0.0", "bundle_content_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "engine_version": "0.1.0-wp1", "evaluation_profile": {"profile_id": "mvp-default", "extraction_confidence_gate": "MEDIUM", "risk_matrix_id": "adr-0006-risk-matrix-v1", "confidence_policy_id": "adr-0006-confidence-policy-v1"}, "component_versions": {"rule_schema": "1.0.0", "indicator_registry": "0.3.0-interim", "indicator_families": "1.0.0", "negative_library": "1.0.0", "taxonomy": "2.0.0", "dimensions": "1.0.0", "extraction_contracts": "1.0.0"}},
+        "matched_rules": [],
+        "rule_results": [{"rule_id": "TL-MAL-003", "rule_version": "1.0.0", "kind": "COMPOSITE", "evaluation_state": "SUPPRESSED", "required_combination_result": "TRUE", "suppression": {"suppressed_by": "IT_SUPPORT_CONTEXT", "effect": "SUPPRESS_RULE"}, "rule_severity_declared": "HIGH", "effective_severity": "HIGH"}],
+        "explanation": {"summary": "x", "what_was_detected": "x", "why": "x", "detection_confidence_reason": "x"}, "recommended_actions": []
+      }
+    },
+    {
+      "reason": "SUPPRESSED rule missing required suppressed_by metadata",
+      "expected_rejection": "schema",
+      "result": {
+        "result_contract_version": "1.0.0", "evaluation_id": "BAD-14", "evaluation_timestamp": "2026-08-29T11:13:00Z", "input_id": "IN-BAD-14",
+        "language": ["en"], "script": ["Latn"], "input_support_status": "SUPPORTED", "classification": "NO_SCAM_PATTERN",
+        "decision_severity": "NONE", "matched_evidence_strength": "NONE", "risk_level": "NONE", "detection_confidence": "NOT_APPLICABLE",
+        "provenance": {"bundle_version": "1.0.0", "bundle_content_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "engine_version": "0.1.0-wp1", "evaluation_profile": {"profile_id": "mvp-default", "extraction_confidence_gate": "MEDIUM", "risk_matrix_id": "adr-0006-risk-matrix-v1", "confidence_policy_id": "adr-0006-confidence-policy-v1"}, "component_versions": {"rule_schema": "1.0.0", "indicator_registry": "0.3.0-interim", "indicator_families": "1.0.0", "negative_library": "1.0.0", "taxonomy": "2.0.0", "dimensions": "1.0.0", "extraction_contracts": "1.0.0"}},
+        "matched_rules": [],
+        "rule_results": [{"rule_id": "TL-MAL-003", "rule_version": "1.0.0", "kind": "COMPOSITE", "evaluation_state": "SUPPRESSED", "required_combination_result": "TRUE", "suppression": {"effect": "SUPPRESS_RULE", "applied_suppressors": ["IT_SUPPORT_CONTEXT"]}, "rule_severity_declared": "HIGH", "effective_severity": "HIGH"}],
+        "explanation": {"summary": "x", "what_was_detected": "x", "why": "x", "detection_confidence_reason": "x"}, "recommended_actions": []
+      }
+    },
+    {
+      "reason": "MATCHED rule must not contain non-empty applied_suppressors",
+      "expected_rejection": "schema",
+      "result": {
+        "result_contract_version": "1.0.0", "evaluation_id": "BAD-15", "evaluation_timestamp": "2026-08-29T11:14:00Z", "input_id": "IN-BAD-15",
+        "language": ["en"], "script": ["Latn"], "input_support_status": "SUPPORTED", "classification": "SCAM_PATTERN_DETECTED",
+        "decision_severity": "HIGH", "matched_evidence_strength": "STRONG", "risk_level": "HIGH", "detection_confidence": "HIGH",
+        "provenance": {"bundle_version": "1.0.0", "bundle_content_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "engine_version": "0.1.0-wp1", "evaluation_profile": {"profile_id": "mvp-default", "extraction_confidence_gate": "MEDIUM", "risk_matrix_id": "adr-0006-risk-matrix-v1", "confidence_policy_id": "adr-0006-confidence-policy-v1"}, "component_versions": {"rule_schema": "1.0.0", "indicator_registry": "0.3.0-interim", "indicator_families": "1.0.0", "negative_library": "1.0.0", "taxonomy": "2.0.0", "dimensions": "1.0.0", "extraction_contracts": "1.0.0"}},
+        "matched_rules": ["TL-MAL-003"],
+        "rule_results": [{"rule_id": "TL-MAL-003", "rule_version": "1.0.0", "kind": "COMPOSITE", "evaluation_state": "MATCHED", "required_combination_result": "TRUE", "suppression": {"suppressed_by": "IT_SUPPORT_CONTEXT", "effect": "SUPPRESS_RULE", "applied_suppressors": ["IT_SUPPORT_CONTEXT"]}, "rule_severity_declared": "HIGH", "effective_severity": "HIGH"}],
+        "explanation": {"summary": "x", "what_was_detected": "x", "why": "x", "detection_confidence_reason": "x"}, "recommended_actions": []
+      }
     }
   ]
 }

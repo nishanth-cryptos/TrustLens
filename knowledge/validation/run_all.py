@@ -22,7 +22,8 @@ Order (dependency-aware, see ORDER below):
   published-bundle integrity (ADR-0004) → Phase-3 DET-001 design (golden cases) →
   Phase-3 runtime contracts (P3-WP1: schemas + fixtures) →
   Phase-3 runtime loader (P3-WP2: bundle load + integrity + indexes) →
-  Phase-3 rule evaluator (P3-WP3: Kleene three-valued evaluation + evidence-class diversity)
+  Phase-3 rule evaluator (P3-WP3: Kleene three-valued evaluation + evidence-class diversity) →
+  Phase-3 suppression executor (P3-WP4: rule suppression + severity caps)
 
 Usage:
   python knowledge/validation/run_all.py             # human-readable; runs all; non-zero on any failure
@@ -66,6 +67,8 @@ ROOT = Path(__file__).resolve().parents[2]
 #  13 the Phase-3 rule evaluator (P3-WP3) interprets each PUBLISHED rule against indicator observations
 #     in Kleene three-valued logic (UNKNOWN != NOT_OBSERVED), gates evidence-class diversity, and emits
 #     schema-valid per-rule results with NO final risk/classification — over the real published bundle.
+#  14 the Phase-3 suppression executor (P3-WP4) consumes WP3 per-rule results and applies governed,
+#     override-aware SUPPRESS_RULE / CAP_SEVERITY / CONTEXT_ONLY effects with per-rule fail-closed isolation.
 ORDER = [
     ("knowledge/validation/manual_evidence_check.py", "durable-truth: evidence integrity + automated-status preservation"),
     ("knowledge/validation/phase1_consistency_check.py", "Phase-1 counts consistent across manifest / taxonomy / matrix / corpus"),
@@ -80,6 +83,7 @@ ORDER = [
     ("knowledge/validation/validate_runtime_contracts.py", "Phase-3 P3-WP1 runtime contracts: detection-result / rule-evaluation-result schemas + fixtures + enum sync + golden-case representability"),
     ("knowledge/validation/validate_runtime_loader.py", "Phase-3 P3-WP2 runtime loader: fail-closed bundle load, integrity, exact-token compatibility, reference integrity, immutable indexes"),
     ("knowledge/validation/validate_rule_evaluator.py", "Phase-3 P3-WP3 rule evaluator: Kleene three-valued evaluation, confidence gate, evidence-class diversity, PUBLISHED-only, determinism, schema validity, no final risk/classification"),
+    ("knowledge/validation/validate_wp4_suppression.py", "Phase-3 P3-WP4 suppression executor: override-aware SUPPRESS_RULE, ordinal CAP_SEVERITY, inert CONTEXT_ONLY, deterministic metadata, per-rule fail-closed isolation, no WP5 fields"),
 ]
 
 # Network-capable modules a validator must never import — the offline guarantee (WP7 STEP 7).
@@ -169,7 +173,7 @@ def main() -> int:
                 print("  -", p)
         return 2
 
-    log(f"TrustLens knowledge quality gate — {len(ORDER)} checks (8 validators + bundle integrity + Phase-3 design + runtime contracts + runtime loader + runtime evaluator), dependency order, offline")
+    log(f"TrustLens knowledge quality gate — {len(ORDER)} checks (8 validators + bundle integrity + Phase-3 design + runtime contracts + runtime loader + runtime evaluator + suppression executor), dependency order, offline")
     log(f"interpreter: {sys.executable}")
     log(f"repo root  : {ROOT}\n")
 

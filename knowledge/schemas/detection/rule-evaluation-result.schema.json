@@ -92,18 +92,38 @@
     "suppression": {
       "type": "object",
       "additionalProperties": false,
-      "description": "How suppression acted on this rule (STEP 3 suppression_effects). Semantics from negative-indicator-library-v1.json.",
+      "description": "How suppression acted on this rule (STEP 3 suppression_effects). Semantics from negative-indicator-library-v1.json. The `applied_*`/`blocked_*` id arrays are resolved by the P3-WP4 rule-level suppression/severity executor; all id arrays are canonically sorted and duplicate-free.",
       "properties": {
-        "suppressed_by": { "type": "string", "description": "Negative-indicator id or SUPPRESSION rule id that cancelled the finding, if any." },
-        "effect": { "enum": ["SUPPRESS_RULE", "CAP_SEVERITY", "SUPPRESS_INDICATOR", "CONTEXT_ONLY", "NONE"] },
-        "severity_caps_applied": { "type": "array", "items": { "enum": ["LOW", "MEDIUM", "HIGH"] } },
+        "suppressed_by": { "$ref": "#/$defs/indicatorId", "description": "Deterministic PRIMARY suppressor (the lexically-first id in `applied_suppressors`) that cancelled the finding, for backward compatibility. See `applied_suppressors` for the full set." },
+        "effect": { "enum": ["SUPPRESS_RULE", "CAP_SEVERITY", "SUPPRESS_INDICATOR", "CONTEXT_ONLY", "NONE"], "description": "Primary rule-level effect after WP4 resolution (precedence SUPPRESS_RULE > CAP_SEVERITY > CONTEXT_ONLY > NONE). SUPPRESS_INDICATOR is executed pre-match by WP3 and is not re-applied here." },
+        "applied_suppressors": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/indicatorId" },
+          "description": "SUPPRESS_RULE negative-indicator ids that survived override-blocking and actually cancelled this rule (evaluation_state=SUPPRESSED). `suppressed_by` is the lexically-first of these (P3-WP4)."
+        },
+        "severity_caps_applied": { "type": "array", "uniqueItems": true, "items": { "enum": ["LOW", "MEDIUM", "HIGH"] }, "description": "The ordinal governed ceiling value(s) of surviving CAP_SEVERITY effects that participated in effective-severity resolution. A ceiling higher than an already-lower WP3 base is recorded but never increases it. See `applied_severity_caps` for the indicator ids responsible." },
+        "applied_severity_caps": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/indicatorId" },
+          "description": "CAP_SEVERITY negative-indicator ids that survived override-blocking and participate in the effective_severity ceiling resolution; their ordinal ceilings are in `severity_caps_applied` (P3-WP4)."
+        },
         "blocked_suppressors": {
           "type": "array",
+          "uniqueItems": true,
           "items": { "$ref": "#/$defs/indicatorId" },
-          "description": "Suppressors that WOULD have applied but were blocked by an active hard-risk override; recorded as explanation (FR-042)."
+          "description": "SUPPRESS_RULE suppressors that WOULD have applied but were blocked by an active hard-risk override; recorded as explanation (FR-042)."
+        },
+        "blocked_severity_caps": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/indicatorId" },
+          "description": "CAP_SEVERITY negative-indicator ids blocked by an active hard-risk override (recorded, never applied; FR-042) (P3-WP4)."
         },
         "context_only_present": {
           "type": "array",
+          "uniqueItems": true,
           "items": { "$ref": "#/$defs/indicatorId" },
           "description": "CONTEXT_ONLY benign-context indicators recorded (never change the finding)."
         }
@@ -173,5 +193,44 @@
         "message": { "type": "string" }
       }
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "evaluation_state": { "const": "SUPPRESSED" } },
+        "required": ["evaluation_state"]
+      },
+      "then": {
+        "required": ["suppression"],
+        "properties": {
+          "required_combination_result": { "const": "TRUE" },
+          "suppression": {
+            "required": ["applied_suppressors", "suppressed_by"],
+            "properties": {
+              "applied_suppressors": { "minItems": 1 }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "suppression": {
+            "required": ["applied_suppressors"],
+            "properties": {
+              "applied_suppressors": { "minItems": 1 }
+            }
+          }
+        },
+        "required": ["suppression"]
+      },
+      "then": {
+        "properties": {
+          "evaluation_state": { "const": "SUPPRESSED" },
+          "required_combination_result": { "const": "TRUE" }
+        }
+      }
+    }
+  ]
 }
