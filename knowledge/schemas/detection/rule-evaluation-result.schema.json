@@ -66,7 +66,7 @@
     "neutralised_indicators": {
       "type": "array",
       "items": { "$ref": "#/$defs/indicatorId" },
-      "description": "Positives removed by directional SUPPRESS_INDICATOR before evaluation (not override-blockable)."
+      "description": "Positive indicator ids whose combined occurrence truth is FALSE after structural eligibility and/or occurrence-associated directional SUPPRESS_INDICATOR execution. Association is through governed observation_refs; explicitly separate occurrences are not neutralised input-globally."
     },
 
     "observation_refs": {

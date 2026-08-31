@@ -21,7 +21,8 @@ Order (dependency-aware, see ORDER below):
   negative-indicator library → rule schema/lint → extraction contracts → rule runner →
   published-bundle integrity (ADR-0004) → Phase-3 DET-001 design (golden cases) →
   Phase-3 runtime contracts (P3-WP1: schemas + fixtures) →
-  Phase-3 runtime loader (P3-WP2: bundle load + integrity + indexes)
+  Phase-3 runtime loader (P3-WP2: bundle load + integrity + indexes) →
+  Phase-3 rule evaluator (P3-WP3: Kleene three-valued evaluation + evidence-class diversity)
 
 Usage:
   python knowledge/validation/run_all.py             # human-readable; runs all; non-zero on any failure
@@ -61,7 +62,10 @@ ROOT = Path(__file__).resolve().parents[2]
 #     the enums are synchronised with DET-001/ADR-0006, and all 15 golden cases are representable;
 #  12 the Phase-3 runtime loader (P3-WP2) loads the published bundle fail-closed — manifest schema,
 #     per-file SHA-256 + content digest, exact-token version compatibility, cross-reference integrity,
-#     the PUBLISHED-only executable boundary and immutable indexes — with typed errors on every defect.
+#     the PUBLISHED-only executable boundary and immutable indexes — with typed errors on every defect;
+#  13 the Phase-3 rule evaluator (P3-WP3) interprets each PUBLISHED rule against indicator observations
+#     in Kleene three-valued logic (UNKNOWN != NOT_OBSERVED), gates evidence-class diversity, and emits
+#     schema-valid per-rule results with NO final risk/classification — over the real published bundle.
 ORDER = [
     ("knowledge/validation/manual_evidence_check.py", "durable-truth: evidence integrity + automated-status preservation"),
     ("knowledge/validation/phase1_consistency_check.py", "Phase-1 counts consistent across manifest / taxonomy / matrix / corpus"),
@@ -75,6 +79,7 @@ ORDER = [
     ("docs/03-detection/validate_det_design.py", "Phase-3 DET-001 design: golden decision cases consistent with the governed KB and the ADR-0006 risk model"),
     ("knowledge/validation/validate_runtime_contracts.py", "Phase-3 P3-WP1 runtime contracts: detection-result / rule-evaluation-result schemas + fixtures + enum sync + golden-case representability"),
     ("knowledge/validation/validate_runtime_loader.py", "Phase-3 P3-WP2 runtime loader: fail-closed bundle load, integrity, exact-token compatibility, reference integrity, immutable indexes"),
+    ("knowledge/validation/validate_rule_evaluator.py", "Phase-3 P3-WP3 rule evaluator: Kleene three-valued evaluation, confidence gate, evidence-class diversity, PUBLISHED-only, determinism, schema validity, no final risk/classification"),
 ]
 
 # Network-capable modules a validator must never import — the offline guarantee (WP7 STEP 7).
@@ -164,7 +169,7 @@ def main() -> int:
                 print("  -", p)
         return 2
 
-    log(f"TrustLens knowledge quality gate — {len(ORDER)} checks (8 validators + bundle integrity + Phase-3 design + runtime contracts + runtime loader), dependency order, offline")
+    log(f"TrustLens knowledge quality gate — {len(ORDER)} checks (8 validators + bundle integrity + Phase-3 design + runtime contracts + runtime loader + runtime evaluator), dependency order, offline")
     log(f"interpreter: {sys.executable}")
     log(f"repo root  : {ROOT}\n")
 

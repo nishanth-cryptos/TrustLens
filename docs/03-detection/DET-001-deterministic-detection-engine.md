@@ -164,6 +164,10 @@ collapses them to Boolean because its inputs are *declared* sets. The DET-001 en
 
 - Map each operand: `OBSERVED → TRUE`; `NOT_OBSERVED`/`NOT_APPLICABLE → FALSE`; `UNKNOWN`/`AMBIGUOUS →
   UNKNOWN`.
+- Observation sets are **sparse** (programme decision, 2026-08-30): an operand with **no** observation is
+  `UNKNOWN` (missing information is not negative evidence), **not** `FALSE`. Only an *explicit*
+  `NOT_OBSERVED`/`NOT_APPLICABLE` is `FALSE`. There is no complete-frame assumption — an extractor is not
+  required to emit an observation for every indicator.
 - `all_of`: `FALSE` if any `FALSE`; `TRUE` if all `TRUE`; else `UNKNOWN`.
 - `any_of`: `TRUE` if any `TRUE`; `FALSE` if all `FALSE`; else `UNKNOWN`.
 - `n_of(n)`: `TRUE` if `#TRUE ≥ n`; `FALSE` if `#TRUE + #UNKNOWN < n`; else `UNKNOWN`.
@@ -233,7 +237,11 @@ Phase 2 defines six overrides in the negative-indicator library. DET-001 fixes t
 
 - **Computed on the raw `OBSERVED` signal set**, per applicable rule/family, and only when their decisive
   indicators are `OBSERVED` at ≥ the extraction-confidence gate (a `LOW`-confidence decisive read leaves
-  the override **inactive**).
+  the override **inactive**). "Raw `OBSERVED` set" here means the **raw structurally-eligible LIVE positives**
+  (programme decision, 2026-08-30): it does **not** mean ignoring negation, reported speech or quotation. A
+  structurally non-live occurrence (`NEGATED`/`REPORTED`/`QUOTED`/`HYPOTHETICAL`/`DESCRIPTIVE`, per
+  `observation.schema.json`) is not part of the raw live set, so an override can never be activated by it and
+  can never turn it into a live positive.
 - **They gate suppression, nothing else.** When active they **block** the listed soft-suppression
   categories (`EDUCATIONAL_SAFETY`, `CUSTOMER_SUPPORT_SAFETY`, `LEGIT_SERVICE_COMMS`,
   `LEGIT_PAYMENT_DIRECTION`, `IT_SUPPORT`, `USER_INITIATED`, `ALLOWLIST_DOMAIN`, `REPORTED_SCAM`), and
@@ -257,18 +265,36 @@ preserves a live positive against decoy suppression; a `LOW`-confidence underlyi
 
 ## 11. Negative indicators & aggregation (STEP 11–13)
 
-**Suppression semantics** are preserved exactly from the WP3 library and its resolution order:
+**Suppression semantics** are preserved exactly from negative-indicator-library `2.0.0` and its resolution
+order (programme authority decision, 2026-08-31):
 
-1. `SUPPRESS_INDICATOR` (directional negation) removes its target positives **before** evaluation; **not**
-   override-blockable. Skipped when an override is active (the live pattern is trusted).
-2. Overrides computed on the (raw) set; active overrides block their soft categories.
-3. `SUPPRESS_RULE` cancels a matched rule (→ `SUPPRESSED`) unless its category is blocked.
-4. `CAP_SEVERITY` caps effective severity ordinally unless blocked.
-5. `CONTEXT_ONLY` records benign evidence, never changes the finding, feeds confidence down slightly.
+1. **Structural occurrence eligibility (non-overridable).** Resolved from the normalized
+   `observation.schema.json` via `observation_refs`: a backing observation that is `NEGATED`/`REPORTED`/
+   `QUOTED`/`HYPOTHETICAL`/purely-`DESCRIPTIVE`, or whose `status` is `NOT_OBSERVED`/`NOT_APPLICABLE`, is
+   structurally non-live and never projects to a live positive; `UNKNOWN`/`AMBIGUOUS` status (or an
+   unresolvable association) is `UNRESOLVED` (operand stays `UNKNOWN`). This is a semantic property of the
+   occurrence, not a negative-library effect, and cannot be overridden.
+2. **Overrides computed FROM the raw structurally-eligible live-positive set.** An override can never
+   resurrect a structurally non-live occurrence.
+3. **Governed `SUPPRESS_INDICATOR` is EXECUTED at the WP3 pre-match stage at occurrence scope:** an active,
+   applicable negative neutralises only target-positive occurrences sharing a governed `observation_ref`.
+   Explicitly disjoint occurrences do not interact; a missing ref on either side leaves association unresolved
+   and makes an otherwise-live/uncertain target occurrence `UNKNOWN`, never global `FALSE`. Occurrences for the
+   same indicator then combine by three-valued OR (`FALSE + TRUE → TRUE`; `FALSE + UNKNOWN → UNKNOWN`). A
+   suppressor is skipped only when **explicitly** override-blockable and blocked by an active override. Every
+   directional suppressor in the library is non-blockable; an override cannot rescue an associated occurrence.
+   Structural non-live remains authoritative and can never be resurrected.
+4. (WP4) `SUPPRESS_RULE` cancels a matched rule (→ `SUPPRESSED`) unless its category is blocked.
+5. (WP4) `CAP_SEVERITY` caps effective severity ordinally unless blocked.
+6. `CONTEXT_ONLY` records benign evidence, never changes the finding, feeds confidence down slightly.
 
-The decoy *"Never share OTP. Now send me the OTP you just received"* keeps its live hard-risk request
-detectable because the override blocks the educational/support suppressors (GDC-15) — while a genuine
-*"Never share your OTP"* emits only the negated form and nothing matches (GDC-02).
+The decoy *"We will never ask for your OTP. Now send me the OTP you just received"* keeps its live hard-risk
+request detectable because GDC-15 explicitly stores two occurrences. `NEGATED_CREDENTIAL_REQUEST` references
+the disclaimer occurrence and neutralises only its positive projection; the separate affirmed live request has
+a disjoint ref and survives. Their positive values combine `FALSE OR TRUE = TRUE`; the override independently
+blocks the educational/support soft suppressors. A negated-only request remains structurally non-live and no
+override can resurrect it. This occurrence-association rule is a programme-level deterministic safety decision
+addressing ambiguous/global suppression, not a newly sourced fraud fact.
 
 **Multi-rule aggregation (STEP 12).** Not additive. Decision severity = max effective severity across
 fired rules; the **governing rule** is the one setting it (ties broken by `SUPPORTED > PARTIAL`, then more
@@ -378,20 +404,27 @@ Stages, each deterministic and individually explainable:
    payment-direction resolved.
 4. **Indicator observations** (`indicator-observation.schema.json`) — five-valued `matched` + extraction
    confidence.
-5. **Confidence gate** (§8) — `LOW` extraction → `UNKNOWN`.
-6. **Directional neutralisation** — `SUPPRESS_INDICATOR` (skipped when an override is active).
-7. **Hard-risk override computation** (§10) — confidence-gated, on the raw `OBSERVED` set.
-8. **Rule evaluation** (§7) — Kleene three-valued `require`; `min_evidence_classes` diversity;
+5. **Confidence gate** (§8) — `LOW` or absent extraction confidence → `UNKNOWN` (never `FALSE`, never
+   silently `HIGH`).
+6. **Structural occurrence eligibility** (§11) — resolved from the normalized observation via
+   `observation_refs` (`status`/`polarity`/`attribution`/`mood`); fixes which positive occurrences are LIVE.
+   Non-overridable; unresolved association / `UNKNOWN`-`AMBIGUOUS` status → `UNKNOWN`.
+7. **Hard-risk override computation** (§10) — confidence-gated, computed FROM the raw **structurally-eligible
+   live-positive** set.
+8. **Execute governed `SUPPRESS_INDICATOR`** (§11) — apply it only to target occurrences associated by
+   `observation_refs`; explicit disjoint occurrences survive and unresolved association is `UNKNOWN`; recombine
+   occurrences with three-valued OR. Blocked only by an EXPLICITLY override-blockable flag (none currently).
+9. **Rule evaluation** (§7) — Kleene three-valued `require`; `min_evidence_classes` diversity;
    `MATCHED`/`NOT_MATCHED`/`INDETERMINATE`/`NOT_APPLICABLE`. PUBLISHED-only, live.
-9. **Suppression** (§11) — override-aware `SUPPRESS_RULE`/`CAP_SEVERITY`.
-10. **Per-rule results** (§6).
-11. **Aggregation** (§11) — governing rule + corroboration over independent classes.
-12. **Severity + matched-evidence strength → risk** (§5, ADR-0006 matrix).
-13. **Detection-confidence banding** (§9).
-14. **Classification** (§4).
-15. **Explanation build** (§13) — provenance-constrained.
-16. **Recommended actions** (§14).
-17. **Result assembly** with full version pinning (§16).
+11. **Suppression** (§11, WP4) — override-aware `SUPPRESS_RULE`/`CAP_SEVERITY`.
+12. **Per-rule results** (§6).
+13. **Aggregation** (§11) — governing rule + corroboration over independent classes.
+14. **Severity + matched-evidence strength → risk** (§5, ADR-0006 matrix).
+15. **Detection-confidence banding** (§9).
+16. **Classification** (§4).
+17. **Explanation build** (§13) — provenance-constrained.
+18. **Recommended actions** (§14).
+19. **Result assembly** with full version pinning (§16).
 
 ## 19. False positive / false negative — measurement hooks only (STEP 22)
 

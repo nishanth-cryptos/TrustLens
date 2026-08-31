@@ -20,6 +20,7 @@ Governed contracts enforced here (WP2 remediation):
 from __future__ import annotations
 
 import re
+from collections.abc import Mapping as ABCMapping
 from typing import Any, Iterable, Iterator
 
 from .dimensions import dimension_map_problems, terms_by_axis
@@ -56,18 +57,23 @@ def operands(condition: Any) -> Iterator[str]:
 
     Mirrors the walk in validate_rules.py so runtime and authoring agree on what a rule references.
     Handles the governed shapes: a bare string, {all_of:[...]}, {any_of:[...]}, {n_of:{n,of:[...]}}.
+
+    Works on BOTH authoring dicts/lists and the immutable RuntimeKnowledge shapes: a frozen rule is a
+    `types.MappingProxyType` (a `collections.abc.Mapping`, NOT a `dict`) whose lists are `tuple`s. It
+    therefore matches on `Mapping` and iterates any sequence, so it never silently misses an operand on
+    a frozen rule (P3-WP3 remediation 7). Traversal order is the mapping's own key order → deterministic.
     """
     if isinstance(condition, str):
         yield condition
         return
-    if not isinstance(condition, dict):
+    if not isinstance(condition, ABCMapping):
         return
     for op, val in condition.items():
         if op == "n_of":
-            of = val.get("of", []) if isinstance(val, dict) else []
+            of = val.get("of", ()) if isinstance(val, ABCMapping) else ()
             for item in of:
                 yield from operands(item)
-        elif isinstance(val, list):
+        elif isinstance(val, (list, tuple)):
             for item in val:
                 yield from operands(item)
 
