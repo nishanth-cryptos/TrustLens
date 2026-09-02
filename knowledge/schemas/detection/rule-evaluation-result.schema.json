@@ -48,7 +48,7 @@
 
     "evaluation_state": {
       "enum": ["MATCHED", "NOT_MATCHED", "INDETERMINATE", "SUPPRESSED", "NOT_APPLICABLE"],
-      "description": "MATCHED: require=TRUE and evidence-class diversity met. NOT_MATCHED: require=FALSE. INDETERMINATE: require=UNKNOWN (a decisive operand is UNKNOWN/AMBIGUOUS) — carries uncertainty forward (STEP 7). SUPPRESSED: matched then cancelled by an override-aware SUPPRESS_RULE. NOT_APPLICABLE: language_scope excludes the input, rule not PUBLISHED, or a per-rule evaluation error (degraded — see evaluation_error)."
+      "description": "State↔required_combination_result pairing: MATCHED => TRUE (require=TRUE AND evidence-class diversity met). NOT_MATCHED => TRUE or FALSE — FALSE when require=FALSE, but ALSO TRUE when require=TRUE yet a later gate (evidence-class diversity, min_evidence_classes) prevents the match; only NOT_MATCHED+FALSE is an affirmative benign clear at WP5. INDETERMINATE => UNKNOWN (a decisive operand is UNKNOWN/AMBIGUOUS) — carries uncertainty forward (STEP 7). SUPPRESSED => TRUE (matched then cancelled by an override-aware SUPPRESS_RULE). NOT_APPLICABLE => the governed combination truth is preserved (TRUE/FALSE/UNKNOWN) with an evaluation_error: language_scope excludes the input, rule not PUBLISHED, or a per-rule evaluation error (degraded)."
     },
     "required_combination_result": {
       "enum": ["TRUE", "FALSE", "UNKNOWN"],
@@ -78,6 +78,22 @@
       "type": "array",
       "items": { "$ref": "#/$defs/instanceRef" },
       "description": "Indicator-observation instance ids (indicator-observation.schema.json) this rule consumed."
+    },
+    "live_positive_provenance": {
+      "type": "object",
+      "propertyNames": { "$ref": "#/$defs/indicatorId" },
+      "additionalProperties": {
+        "type": "array",
+        "minItems": 1,
+        "uniqueItems": true,
+        "items": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/instanceRef" }
+        }
+      },
+      "description": "P3-WP3 provenance-output amendment (WP5 safety review; additive MINOR). For each MATCHED-positive TRUE indicator (key, an indicatorId), one GROUP per structurally-LIVE contributing IndicatorObservation occurrence; each group is that occurrence's governed observation_refs (grouping preserved — a single occurrence with multiple refs is ONE group, never several independent occurrences). Only occurrences whose existing WP3 per-occurrence result is TRUE after structural eligibility + confidence gating + occurrence-associated SUPPRESS_INDICATOR appear; NEGATED/REPORTED/QUOTED/HYPOTHETICAL/non-live-DESCRIPTIVE/unresolved/neutralised/FALSE/UNKNOWN occurrences are excluded. Adds NO new truth (provenance EXPOSURE only); WP5 builds evidence independence solely from this. Canonical: keys lexical, refs sorted+unique within each group, groups deterministically sorted, duplicate groups removed."
     },
 
     "evidence_classes_spanned": {

@@ -1,5 +1,5 @@
 {
-  "$comment": "SYNTHETIC NEGATIVE contract fixtures for the P3-WP1 runtime detection-result schema (STEP 14). Each element MUST be rejected — by the JSON Schema, by the runtime validator's defence-in-depth name-scan (no probability), or by its cross-field semantic checks (support/classification consistency; ERROR/UNSUPPORTED cannot appear safe). `expected_rejection` names the layer that should catch it: schema | namescan | semantic. Proves the validation is NON-VACUOUS. Validated by knowledge/validation/validate_runtime_contracts.py.",
+  "$comment": "SYNTHETIC NEGATIVE contract fixtures for the P3-WP1 runtime detection-result schema (STEP 14). Each element MUST be rejected \u2014 by the JSON Schema, by the runtime validator's defence-in-depth name-scan (no probability), or by its cross-field semantic checks (support/classification consistency; ERROR/UNSUPPORTED cannot appear safe). `expected_rejection` names the layer that should catch it: schema | namescan | semantic. Proves the validation is NON-VACUOUS. Validated by knowledge/validation/validate_runtime_contracts.py.",
   "fixtures_version": "1.0.0",
   "provenance": "SYNTHETIC",
   "invalid_fixtures": [
@@ -7,180 +7,1465 @@
       "reason": "probability field present (a smuggled fraud probability)",
       "expected_rejection": "schema_or_namescan",
       "result": {
-        "result_contract_version": "1.0.0", "evaluation_id": "BAD-01", "evaluation_timestamp": "2026-08-29T11:00:00Z", "input_id": "IN-BAD-01",
-        "language": ["en"], "script": ["Latn"], "input_support_status": "SUPPORTED", "classification": "NO_SCAM_PATTERN",
-        "decision_severity": "NONE", "matched_evidence_strength": "NONE", "risk_level": "NONE", "detection_confidence": "NOT_APPLICABLE",
+        "result_contract_version": "1.0.0",
+        "evaluation_id": "BAD-01",
+        "evaluation_timestamp": "2026-08-29T11:00:00Z",
+        "input_id": "IN-BAD-01",
+        "language": [
+          "en"
+        ],
+        "script": [
+          "Latn"
+        ],
+        "input_support_status": "SUPPORTED",
+        "classification": "NO_SCAM_PATTERN",
+        "decision_severity": "NONE",
+        "matched_evidence_strength": "NONE",
+        "risk_level": "NONE",
+        "detection_confidence": "NOT_APPLICABLE",
         "fraud_probability": 0.93,
-        "provenance": {"bundle_version": "1.0.0", "bundle_content_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "engine_version": "0.1.0-wp1", "evaluation_profile": {"profile_id": "mvp-default", "extraction_confidence_gate": "MEDIUM", "risk_matrix_id": "adr-0006-risk-matrix-v1", "confidence_policy_id": "adr-0006-confidence-policy-v1"}, "component_versions": {"rule_schema": "1.0.0", "indicator_registry": "0.3.0-interim", "indicator_families": "1.0.0", "negative_library": "1.0.0", "taxonomy": "2.0.0", "dimensions": "1.0.0", "extraction_contracts": "1.0.0"}},
-        "rule_results": [], "explanation": {"summary": "x", "what_was_detected": "x", "why": "x", "detection_confidence_reason": "x"}, "recommended_actions": []
+        "provenance": {
+          "bundle_version": "1.0.0",
+          "bundle_content_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "engine_version": "0.1.0-wp1",
+          "evaluation_profile": {
+            "profile_id": "mvp-default",
+            "extraction_confidence_gate": "MEDIUM",
+            "risk_matrix_id": "adr-0006-risk-matrix-v1",
+            "confidence_policy_id": "adr-0006-confidence-policy-v1"
+          },
+          "component_versions": {
+            "rule_schema": "1.0.0",
+            "indicator_registry": "0.3.0-interim",
+            "indicator_families": "1.0.0",
+            "negative_library": "1.0.0",
+            "taxonomy": "2.0.0",
+            "dimensions": "1.0.0",
+            "extraction_contracts": "1.0.0"
+          }
+        },
+        "rule_results": [],
+        "explanation": {
+          "summary": "x",
+          "what_was_detected": "x",
+          "why": "x",
+          "detection_confidence_reason": "x"
+        },
+        "recommended_actions": []
       }
     },
     {
       "reason": "unknown classification value",
       "expected_rejection": "schema",
       "result": {
-        "result_contract_version": "1.0.0", "evaluation_id": "BAD-02", "evaluation_timestamp": "2026-08-29T11:01:00Z", "input_id": "IN-BAD-02",
-        "language": ["en"], "script": ["Latn"], "input_support_status": "SUPPORTED", "classification": "DEFINITELY_FRAUD",
-        "decision_severity": "NONE", "matched_evidence_strength": "NONE", "risk_level": "NONE", "detection_confidence": "NOT_APPLICABLE",
-        "provenance": {"bundle_version": "1.0.0", "bundle_content_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "engine_version": "0.1.0-wp1", "evaluation_profile": {"profile_id": "mvp-default", "extraction_confidence_gate": "MEDIUM", "risk_matrix_id": "adr-0006-risk-matrix-v1", "confidence_policy_id": "adr-0006-confidence-policy-v1"}, "component_versions": {"rule_schema": "1.0.0", "indicator_registry": "0.3.0-interim", "indicator_families": "1.0.0", "negative_library": "1.0.0", "taxonomy": "2.0.0", "dimensions": "1.0.0", "extraction_contracts": "1.0.0"}},
-        "rule_results": [], "explanation": {"summary": "x", "what_was_detected": "x", "why": "x", "detection_confidence_reason": "x"}, "recommended_actions": []
+        "result_contract_version": "1.0.0",
+        "evaluation_id": "BAD-02",
+        "evaluation_timestamp": "2026-08-29T11:01:00Z",
+        "input_id": "IN-BAD-02",
+        "language": [
+          "en"
+        ],
+        "script": [
+          "Latn"
+        ],
+        "input_support_status": "SUPPORTED",
+        "classification": "DEFINITELY_FRAUD",
+        "decision_severity": "NONE",
+        "matched_evidence_strength": "NONE",
+        "risk_level": "NONE",
+        "detection_confidence": "NOT_APPLICABLE",
+        "provenance": {
+          "bundle_version": "1.0.0",
+          "bundle_content_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "engine_version": "0.1.0-wp1",
+          "evaluation_profile": {
+            "profile_id": "mvp-default",
+            "extraction_confidence_gate": "MEDIUM",
+            "risk_matrix_id": "adr-0006-risk-matrix-v1",
+            "confidence_policy_id": "adr-0006-confidence-policy-v1"
+          },
+          "component_versions": {
+            "rule_schema": "1.0.0",
+            "indicator_registry": "0.3.0-interim",
+            "indicator_families": "1.0.0",
+            "negative_library": "1.0.0",
+            "taxonomy": "2.0.0",
+            "dimensions": "1.0.0",
+            "extraction_contracts": "1.0.0"
+          }
+        },
+        "rule_results": [],
+        "explanation": {
+          "summary": "x",
+          "what_was_detected": "x",
+          "why": "x",
+          "detection_confidence_reason": "x"
+        },
+        "recommended_actions": []
       }
     },
     {
       "reason": "missing bundle_content_digest (provenance incomplete)",
       "expected_rejection": "schema",
       "result": {
-        "result_contract_version": "1.0.0", "evaluation_id": "BAD-03", "evaluation_timestamp": "2026-08-29T11:02:00Z", "input_id": "IN-BAD-03",
-        "language": ["en"], "script": ["Latn"], "input_support_status": "SUPPORTED", "classification": "NO_SCAM_PATTERN",
-        "decision_severity": "NONE", "matched_evidence_strength": "NONE", "risk_level": "NONE", "detection_confidence": "NOT_APPLICABLE",
-        "provenance": {"bundle_version": "1.0.0", "engine_version": "0.1.0-wp1", "evaluation_profile": {"profile_id": "mvp-default", "extraction_confidence_gate": "MEDIUM", "risk_matrix_id": "adr-0006-risk-matrix-v1", "confidence_policy_id": "adr-0006-confidence-policy-v1"}, "component_versions": {"rule_schema": "1.0.0", "indicator_registry": "0.3.0-interim", "indicator_families": "1.0.0", "negative_library": "1.0.0", "taxonomy": "2.0.0", "dimensions": "1.0.0", "extraction_contracts": "1.0.0"}},
-        "rule_results": [], "explanation": {"summary": "x", "what_was_detected": "x", "why": "x", "detection_confidence_reason": "x"}, "recommended_actions": []
+        "result_contract_version": "1.0.0",
+        "evaluation_id": "BAD-03",
+        "evaluation_timestamp": "2026-08-29T11:02:00Z",
+        "input_id": "IN-BAD-03",
+        "language": [
+          "en"
+        ],
+        "script": [
+          "Latn"
+        ],
+        "input_support_status": "SUPPORTED",
+        "classification": "NO_SCAM_PATTERN",
+        "decision_severity": "NONE",
+        "matched_evidence_strength": "NONE",
+        "risk_level": "NONE",
+        "detection_confidence": "NOT_APPLICABLE",
+        "provenance": {
+          "bundle_version": "1.0.0",
+          "engine_version": "0.1.0-wp1",
+          "evaluation_profile": {
+            "profile_id": "mvp-default",
+            "extraction_confidence_gate": "MEDIUM",
+            "risk_matrix_id": "adr-0006-risk-matrix-v1",
+            "confidence_policy_id": "adr-0006-confidence-policy-v1"
+          },
+          "component_versions": {
+            "rule_schema": "1.0.0",
+            "indicator_registry": "0.3.0-interim",
+            "indicator_families": "1.0.0",
+            "negative_library": "1.0.0",
+            "taxonomy": "2.0.0",
+            "dimensions": "1.0.0",
+            "extraction_contracts": "1.0.0"
+          }
+        },
+        "rule_results": [],
+        "explanation": {
+          "summary": "x",
+          "what_was_detected": "x",
+          "why": "x",
+          "detection_confidence_reason": "x"
+        },
+        "recommended_actions": []
       }
     },
     {
       "reason": "MATCHED rule result missing rule_id",
       "expected_rejection": "schema",
       "result": {
-        "result_contract_version": "1.0.0", "evaluation_id": "BAD-04", "evaluation_timestamp": "2026-08-29T11:03:00Z", "input_id": "IN-BAD-04",
-        "language": ["en"], "script": ["Latn"], "input_support_status": "SUPPORTED", "classification": "SCAM_PATTERN_DETECTED",
-        "decision_severity": "CRITICAL", "matched_evidence_strength": "STRONG", "risk_level": "CRITICAL", "detection_confidence": "HIGH",
-        "provenance": {"bundle_version": "1.0.0", "bundle_content_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "engine_version": "0.1.0-wp1", "evaluation_profile": {"profile_id": "mvp-default", "extraction_confidence_gate": "MEDIUM", "risk_matrix_id": "adr-0006-risk-matrix-v1", "confidence_policy_id": "adr-0006-confidence-policy-v1"}, "component_versions": {"rule_schema": "1.0.0", "indicator_registry": "0.3.0-interim", "indicator_families": "1.0.0", "negative_library": "1.0.0", "taxonomy": "2.0.0", "dimensions": "1.0.0", "extraction_contracts": "1.0.0"}},
-        "rule_results": [{"rule_version": "1.0.0", "kind": "COMPOSITE", "evaluation_state": "MATCHED", "required_combination_result": "TRUE"}],
-        "explanation": {"summary": "x", "what_was_detected": "x", "why": "x", "detection_confidence_reason": "x"}, "recommended_actions": []
+        "result_contract_version": "1.0.0",
+        "evaluation_id": "BAD-04",
+        "evaluation_timestamp": "2026-08-29T11:03:00Z",
+        "input_id": "IN-BAD-04",
+        "language": [
+          "en"
+        ],
+        "script": [
+          "Latn"
+        ],
+        "input_support_status": "SUPPORTED",
+        "classification": "SCAM_PATTERN_DETECTED",
+        "decision_severity": "CRITICAL",
+        "matched_evidence_strength": "STRONG",
+        "risk_level": "CRITICAL",
+        "detection_confidence": "HIGH",
+        "provenance": {
+          "bundle_version": "1.0.0",
+          "bundle_content_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "engine_version": "0.1.0-wp1",
+          "evaluation_profile": {
+            "profile_id": "mvp-default",
+            "extraction_confidence_gate": "MEDIUM",
+            "risk_matrix_id": "adr-0006-risk-matrix-v1",
+            "confidence_policy_id": "adr-0006-confidence-policy-v1"
+          },
+          "component_versions": {
+            "rule_schema": "1.0.0",
+            "indicator_registry": "0.3.0-interim",
+            "indicator_families": "1.0.0",
+            "negative_library": "1.0.0",
+            "taxonomy": "2.0.0",
+            "dimensions": "1.0.0",
+            "extraction_contracts": "1.0.0"
+          }
+        },
+        "rule_results": [
+          {
+            "rule_version": "1.0.0",
+            "kind": "COMPOSITE",
+            "evaluation_state": "MATCHED",
+            "required_combination_result": "TRUE"
+          }
+        ],
+        "explanation": {
+          "summary": "x",
+          "what_was_detected": "x",
+          "why": "x",
+          "detection_confidence_reason": "x"
+        },
+        "recommended_actions": []
       }
     },
     {
       "reason": "invalid rule evaluation_state",
       "expected_rejection": "schema",
       "result": {
-        "result_contract_version": "1.0.0", "evaluation_id": "BAD-05", "evaluation_timestamp": "2026-08-29T11:04:00Z", "input_id": "IN-BAD-05",
-        "language": ["en"], "script": ["Latn"], "input_support_status": "SUPPORTED", "classification": "SCAM_PATTERN_DETECTED",
-        "decision_severity": "CRITICAL", "matched_evidence_strength": "STRONG", "risk_level": "CRITICAL", "detection_confidence": "HIGH",
-        "matched_rules": ["TL-PAY-001"],
-        "provenance": {"bundle_version": "1.0.0", "bundle_content_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "engine_version": "0.1.0-wp1", "evaluation_profile": {"profile_id": "mvp-default", "extraction_confidence_gate": "MEDIUM", "risk_matrix_id": "adr-0006-risk-matrix-v1", "confidence_policy_id": "adr-0006-confidence-policy-v1"}, "component_versions": {"rule_schema": "1.0.0", "indicator_registry": "0.3.0-interim", "indicator_families": "1.0.0", "negative_library": "1.0.0", "taxonomy": "2.0.0", "dimensions": "1.0.0", "extraction_contracts": "1.0.0"}},
-        "rule_results": [{"rule_id": "TL-PAY-001", "rule_version": "1.0.0", "kind": "COMPOSITE", "evaluation_state": "MAYBE", "required_combination_result": "TRUE"}],
-        "explanation": {"summary": "x", "what_was_detected": "x", "why": "x", "detection_confidence_reason": "x"}, "recommended_actions": []
+        "result_contract_version": "1.0.0",
+        "evaluation_id": "BAD-05",
+        "evaluation_timestamp": "2026-08-29T11:04:00Z",
+        "input_id": "IN-BAD-05",
+        "language": [
+          "en"
+        ],
+        "script": [
+          "Latn"
+        ],
+        "input_support_status": "SUPPORTED",
+        "classification": "SCAM_PATTERN_DETECTED",
+        "decision_severity": "CRITICAL",
+        "matched_evidence_strength": "STRONG",
+        "risk_level": "CRITICAL",
+        "detection_confidence": "HIGH",
+        "matched_rules": [
+          "TL-PAY-001"
+        ],
+        "provenance": {
+          "bundle_version": "1.0.0",
+          "bundle_content_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "engine_version": "0.1.0-wp1",
+          "evaluation_profile": {
+            "profile_id": "mvp-default",
+            "extraction_confidence_gate": "MEDIUM",
+            "risk_matrix_id": "adr-0006-risk-matrix-v1",
+            "confidence_policy_id": "adr-0006-confidence-policy-v1"
+          },
+          "component_versions": {
+            "rule_schema": "1.0.0",
+            "indicator_registry": "0.3.0-interim",
+            "indicator_families": "1.0.0",
+            "negative_library": "1.0.0",
+            "taxonomy": "2.0.0",
+            "dimensions": "1.0.0",
+            "extraction_contracts": "1.0.0"
+          }
+        },
+        "rule_results": [
+          {
+            "rule_id": "TL-PAY-001",
+            "rule_version": "1.0.0",
+            "kind": "COMPOSITE",
+            "evaluation_state": "MAYBE",
+            "required_combination_result": "TRUE"
+          }
+        ],
+        "explanation": {
+          "summary": "x",
+          "what_was_detected": "x",
+          "why": "x",
+          "detection_confidence_reason": "x"
+        },
+        "recommended_actions": []
       }
     },
     {
       "reason": "UNSUPPORTED input claiming NO_SCAM_PATTERN (unknown must not be safe)",
       "expected_rejection": "semantic",
       "result": {
-        "result_contract_version": "1.0.0", "evaluation_id": "BAD-06", "evaluation_timestamp": "2026-08-29T11:05:00Z", "input_id": "IN-BAD-06",
-        "language": ["hi-Latn"], "script": ["Latn"], "input_support_status": "UNSUPPORTED", "classification": "NO_SCAM_PATTERN",
-        "decision_severity": "NONE", "matched_evidence_strength": "NONE", "risk_level": "NONE", "detection_confidence": "NOT_APPLICABLE",
-        "provenance": {"bundle_version": "1.0.0", "bundle_content_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "engine_version": "0.1.0-wp1", "evaluation_profile": {"profile_id": "mvp-default", "extraction_confidence_gate": "MEDIUM", "risk_matrix_id": "adr-0006-risk-matrix-v1", "confidence_policy_id": "adr-0006-confidence-policy-v1"}, "component_versions": {"rule_schema": "1.0.0", "indicator_registry": "0.3.0-interim", "indicator_families": "1.0.0", "negative_library": "1.0.0", "taxonomy": "2.0.0", "dimensions": "1.0.0", "extraction_contracts": "1.0.0"}},
-        "rule_results": [], "explanation": {"summary": "x", "what_was_detected": "x", "why": "x", "detection_confidence_reason": "x"}, "recommended_actions": []
+        "result_contract_version": "1.0.0",
+        "evaluation_id": "BAD-06",
+        "evaluation_timestamp": "2026-08-29T11:05:00Z",
+        "input_id": "IN-BAD-06",
+        "language": [
+          "hi-Latn"
+        ],
+        "script": [
+          "Latn"
+        ],
+        "input_support_status": "UNSUPPORTED",
+        "classification": "NO_SCAM_PATTERN",
+        "decision_severity": "NONE",
+        "matched_evidence_strength": "NONE",
+        "risk_level": "NONE",
+        "detection_confidence": "NOT_APPLICABLE",
+        "provenance": {
+          "bundle_version": "1.0.0",
+          "bundle_content_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "engine_version": "0.1.0-wp1",
+          "evaluation_profile": {
+            "profile_id": "mvp-default",
+            "extraction_confidence_gate": "MEDIUM",
+            "risk_matrix_id": "adr-0006-risk-matrix-v1",
+            "confidence_policy_id": "adr-0006-confidence-policy-v1"
+          },
+          "component_versions": {
+            "rule_schema": "1.0.0",
+            "indicator_registry": "0.3.0-interim",
+            "indicator_families": "1.0.0",
+            "negative_library": "1.0.0",
+            "taxonomy": "2.0.0",
+            "dimensions": "1.0.0",
+            "extraction_contracts": "1.0.0"
+          }
+        },
+        "rule_results": [],
+        "explanation": {
+          "summary": "x",
+          "what_was_detected": "x",
+          "why": "x",
+          "detection_confidence_reason": "x"
+        },
+        "recommended_actions": []
       }
     },
     {
       "reason": "ERROR input with a safe classification",
       "expected_rejection": "semantic",
       "result": {
-        "result_contract_version": "1.0.0", "evaluation_id": "BAD-07", "evaluation_timestamp": "2026-08-29T11:06:00Z", "input_id": "IN-BAD-07",
-        "language": ["en"], "script": ["Latn"], "input_support_status": "ERROR", "classification": "NO_SCAM_PATTERN",
-        "decision_severity": "NONE", "matched_evidence_strength": "NONE", "risk_level": "NONE", "detection_confidence": "NOT_APPLICABLE",
-        "provenance": {"bundle_version": "1.0.0", "bundle_content_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "engine_version": "0.1.0-wp1", "evaluation_profile": {"profile_id": "mvp-default", "extraction_confidence_gate": "MEDIUM", "risk_matrix_id": "adr-0006-risk-matrix-v1", "confidence_policy_id": "adr-0006-confidence-policy-v1"}, "component_versions": {"rule_schema": "1.0.0", "indicator_registry": "0.3.0-interim", "indicator_families": "1.0.0", "negative_library": "1.0.0", "taxonomy": "2.0.0", "dimensions": "1.0.0", "extraction_contracts": "1.0.0"}},
-        "rule_results": [], "explanation": {"summary": "x", "what_was_detected": "x", "why": "x", "detection_confidence_reason": "x"}, "recommended_actions": []
+        "result_contract_version": "1.0.0",
+        "evaluation_id": "BAD-07",
+        "evaluation_timestamp": "2026-08-29T11:06:00Z",
+        "input_id": "IN-BAD-07",
+        "language": [
+          "en"
+        ],
+        "script": [
+          "Latn"
+        ],
+        "input_support_status": "ERROR",
+        "classification": "NO_SCAM_PATTERN",
+        "decision_severity": "NONE",
+        "matched_evidence_strength": "NONE",
+        "risk_level": "NONE",
+        "detection_confidence": "NOT_APPLICABLE",
+        "provenance": {
+          "bundle_version": "1.0.0",
+          "bundle_content_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "engine_version": "0.1.0-wp1",
+          "evaluation_profile": {
+            "profile_id": "mvp-default",
+            "extraction_confidence_gate": "MEDIUM",
+            "risk_matrix_id": "adr-0006-risk-matrix-v1",
+            "confidence_policy_id": "adr-0006-confidence-policy-v1"
+          },
+          "component_versions": {
+            "rule_schema": "1.0.0",
+            "indicator_registry": "0.3.0-interim",
+            "indicator_families": "1.0.0",
+            "negative_library": "1.0.0",
+            "taxonomy": "2.0.0",
+            "dimensions": "1.0.0",
+            "extraction_contracts": "1.0.0"
+          }
+        },
+        "rule_results": [],
+        "explanation": {
+          "summary": "x",
+          "what_was_detected": "x",
+          "why": "x",
+          "detection_confidence_reason": "x"
+        },
+        "recommended_actions": []
       }
     },
     {
       "reason": "malformed evidence reference (source_id pattern)",
       "expected_rejection": "schema",
       "result": {
-        "result_contract_version": "1.0.0", "evaluation_id": "BAD-08", "evaluation_timestamp": "2026-08-29T11:07:00Z", "input_id": "IN-BAD-08",
-        "language": ["en"], "script": ["Latn"], "input_support_status": "SUPPORTED", "classification": "SCAM_PATTERN_DETECTED",
-        "decision_severity": "CRITICAL", "matched_evidence_strength": "STRONG", "risk_level": "CRITICAL", "detection_confidence": "HIGH",
-        "matched_rules": ["TL-PAY-001"],
-        "provenance": {"bundle_version": "1.0.0", "bundle_content_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "engine_version": "0.1.0-wp1", "evaluation_profile": {"profile_id": "mvp-default", "extraction_confidence_gate": "MEDIUM", "risk_matrix_id": "adr-0006-risk-matrix-v1", "confidence_policy_id": "adr-0006-confidence-policy-v1"}, "component_versions": {"rule_schema": "1.0.0", "indicator_registry": "0.3.0-interim", "indicator_families": "1.0.0", "negative_library": "1.0.0", "taxonomy": "2.0.0", "dimensions": "1.0.0", "extraction_contracts": "1.0.0"}},
-        "rule_results": [{"rule_id": "TL-PAY-001", "rule_version": "1.0.0", "kind": "COMPOSITE", "evaluation_state": "MATCHED", "required_combination_result": "TRUE", "source_references": [{"source_id": "SOURCE-4", "issuing_body": "CERT-In", "verification_status": "PRIMARY_VERIFIED"}]}],
-        "explanation": {"summary": "x", "what_was_detected": "x", "why": "x", "detection_confidence_reason": "x"}, "recommended_actions": []
+        "result_contract_version": "1.0.0",
+        "evaluation_id": "BAD-08",
+        "evaluation_timestamp": "2026-08-29T11:07:00Z",
+        "input_id": "IN-BAD-08",
+        "language": [
+          "en"
+        ],
+        "script": [
+          "Latn"
+        ],
+        "input_support_status": "SUPPORTED",
+        "classification": "SCAM_PATTERN_DETECTED",
+        "decision_severity": "CRITICAL",
+        "matched_evidence_strength": "STRONG",
+        "risk_level": "CRITICAL",
+        "detection_confidence": "HIGH",
+        "matched_rules": [
+          "TL-PAY-001"
+        ],
+        "provenance": {
+          "bundle_version": "1.0.0",
+          "bundle_content_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "engine_version": "0.1.0-wp1",
+          "evaluation_profile": {
+            "profile_id": "mvp-default",
+            "extraction_confidence_gate": "MEDIUM",
+            "risk_matrix_id": "adr-0006-risk-matrix-v1",
+            "confidence_policy_id": "adr-0006-confidence-policy-v1"
+          },
+          "component_versions": {
+            "rule_schema": "1.0.0",
+            "indicator_registry": "0.3.0-interim",
+            "indicator_families": "1.0.0",
+            "negative_library": "1.0.0",
+            "taxonomy": "2.0.0",
+            "dimensions": "1.0.0",
+            "extraction_contracts": "1.0.0"
+          }
+        },
+        "rule_results": [
+          {
+            "rule_id": "TL-PAY-001",
+            "rule_version": "1.0.0",
+            "kind": "COMPOSITE",
+            "evaluation_state": "MATCHED",
+            "required_combination_result": "TRUE",
+            "source_references": [
+              {
+                "source_id": "SOURCE-4",
+                "issuing_body": "CERT-In",
+                "verification_status": "PRIMARY_VERIFIED"
+              }
+            ]
+          }
+        ],
+        "explanation": {
+          "summary": "x",
+          "what_was_detected": "x",
+          "why": "x",
+          "detection_confidence_reason": "x"
+        },
+        "recommended_actions": []
       }
     },
     {
       "reason": "invalid detection_confidence value",
       "expected_rejection": "schema",
       "result": {
-        "result_contract_version": "1.0.0", "evaluation_id": "BAD-09", "evaluation_timestamp": "2026-08-29T11:08:00Z", "input_id": "IN-BAD-09",
-        "language": ["en"], "script": ["Latn"], "input_support_status": "SUPPORTED", "classification": "NO_SCAM_PATTERN",
-        "decision_severity": "NONE", "matched_evidence_strength": "NONE", "risk_level": "NONE", "detection_confidence": "VERY_HIGH",
-        "provenance": {"bundle_version": "1.0.0", "bundle_content_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "engine_version": "0.1.0-wp1", "evaluation_profile": {"profile_id": "mvp-default", "extraction_confidence_gate": "MEDIUM", "risk_matrix_id": "adr-0006-risk-matrix-v1", "confidence_policy_id": "adr-0006-confidence-policy-v1"}, "component_versions": {"rule_schema": "1.0.0", "indicator_registry": "0.3.0-interim", "indicator_families": "1.0.0", "negative_library": "1.0.0", "taxonomy": "2.0.0", "dimensions": "1.0.0", "extraction_contracts": "1.0.0"}},
-        "rule_results": [], "explanation": {"summary": "x", "what_was_detected": "x", "why": "x", "detection_confidence_reason": "x"}, "recommended_actions": []
+        "result_contract_version": "1.0.0",
+        "evaluation_id": "BAD-09",
+        "evaluation_timestamp": "2026-08-29T11:08:00Z",
+        "input_id": "IN-BAD-09",
+        "language": [
+          "en"
+        ],
+        "script": [
+          "Latn"
+        ],
+        "input_support_status": "SUPPORTED",
+        "classification": "NO_SCAM_PATTERN",
+        "decision_severity": "NONE",
+        "matched_evidence_strength": "NONE",
+        "risk_level": "NONE",
+        "detection_confidence": "VERY_HIGH",
+        "provenance": {
+          "bundle_version": "1.0.0",
+          "bundle_content_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "engine_version": "0.1.0-wp1",
+          "evaluation_profile": {
+            "profile_id": "mvp-default",
+            "extraction_confidence_gate": "MEDIUM",
+            "risk_matrix_id": "adr-0006-risk-matrix-v1",
+            "confidence_policy_id": "adr-0006-confidence-policy-v1"
+          },
+          "component_versions": {
+            "rule_schema": "1.0.0",
+            "indicator_registry": "0.3.0-interim",
+            "indicator_families": "1.0.0",
+            "negative_library": "1.0.0",
+            "taxonomy": "2.0.0",
+            "dimensions": "1.0.0",
+            "extraction_contracts": "1.0.0"
+          }
+        },
+        "rule_results": [],
+        "explanation": {
+          "summary": "x",
+          "what_was_detected": "x",
+          "why": "x",
+          "detection_confidence_reason": "x"
+        },
+        "recommended_actions": []
       }
     },
     {
       "reason": "missing required provenance block",
       "expected_rejection": "schema",
       "result": {
-        "result_contract_version": "1.0.0", "evaluation_id": "BAD-10", "evaluation_timestamp": "2026-08-29T11:09:00Z", "input_id": "IN-BAD-10",
-        "language": ["en"], "script": ["Latn"], "input_support_status": "SUPPORTED", "classification": "NO_SCAM_PATTERN",
-        "decision_severity": "NONE", "matched_evidence_strength": "NONE", "risk_level": "NONE", "detection_confidence": "NOT_APPLICABLE",
-        "rule_results": [], "explanation": {"summary": "x", "what_was_detected": "x", "why": "x", "detection_confidence_reason": "x"}, "recommended_actions": []
+        "result_contract_version": "1.0.0",
+        "evaluation_id": "BAD-10",
+        "evaluation_timestamp": "2026-08-29T11:09:00Z",
+        "input_id": "IN-BAD-10",
+        "language": [
+          "en"
+        ],
+        "script": [
+          "Latn"
+        ],
+        "input_support_status": "SUPPORTED",
+        "classification": "NO_SCAM_PATTERN",
+        "decision_severity": "NONE",
+        "matched_evidence_strength": "NONE",
+        "risk_level": "NONE",
+        "detection_confidence": "NOT_APPLICABLE",
+        "rule_results": [],
+        "explanation": {
+          "summary": "x",
+          "what_was_detected": "x",
+          "why": "x",
+          "detection_confidence_reason": "x"
+        },
+        "recommended_actions": []
       }
     },
     {
       "reason": "duplicate applied_suppressors violates deterministic duplicate-free WP4 metadata",
       "expected_rejection": "schema",
       "result": {
-        "result_contract_version": "1.0.0", "evaluation_id": "BAD-11", "evaluation_timestamp": "2026-08-29T11:10:00Z", "input_id": "IN-BAD-11",
-        "language": ["en"], "script": ["Latn"], "input_support_status": "SUPPORTED", "classification": "NO_SCAM_PATTERN",
-        "decision_severity": "NONE", "matched_evidence_strength": "NONE", "risk_level": "NONE", "detection_confidence": "NOT_APPLICABLE",
-        "provenance": {"bundle_version": "1.0.0", "bundle_content_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "engine_version": "0.1.0-wp1", "evaluation_profile": {"profile_id": "mvp-default", "extraction_confidence_gate": "MEDIUM", "risk_matrix_id": "adr-0006-risk-matrix-v1", "confidence_policy_id": "adr-0006-confidence-policy-v1"}, "component_versions": {"rule_schema": "1.0.0", "indicator_registry": "0.3.0-interim", "indicator_families": "1.0.0", "negative_library": "1.0.0", "taxonomy": "2.0.0", "dimensions": "1.0.0", "extraction_contracts": "1.0.0"}},
+        "result_contract_version": "1.0.0",
+        "evaluation_id": "BAD-11",
+        "evaluation_timestamp": "2026-08-29T11:10:00Z",
+        "input_id": "IN-BAD-11",
+        "language": [
+          "en"
+        ],
+        "script": [
+          "Latn"
+        ],
+        "input_support_status": "SUPPORTED",
+        "classification": "NO_SCAM_PATTERN",
+        "decision_severity": "NONE",
+        "matched_evidence_strength": "NONE",
+        "risk_level": "NONE",
+        "detection_confidence": "NOT_APPLICABLE",
+        "provenance": {
+          "bundle_version": "1.0.0",
+          "bundle_content_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "engine_version": "0.1.0-wp1",
+          "evaluation_profile": {
+            "profile_id": "mvp-default",
+            "extraction_confidence_gate": "MEDIUM",
+            "risk_matrix_id": "adr-0006-risk-matrix-v1",
+            "confidence_policy_id": "adr-0006-confidence-policy-v1"
+          },
+          "component_versions": {
+            "rule_schema": "1.0.0",
+            "indicator_registry": "0.3.0-interim",
+            "indicator_families": "1.0.0",
+            "negative_library": "1.0.0",
+            "taxonomy": "2.0.0",
+            "dimensions": "1.0.0",
+            "extraction_contracts": "1.0.0"
+          }
+        },
         "matched_rules": [],
-        "rule_results": [{"rule_id": "TL-MAL-003", "rule_version": "1.0.0", "kind": "COMPOSITE", "evaluation_state": "SUPPRESSED", "required_combination_result": "TRUE", "suppression": {"suppressed_by": "IT_SUPPORT_CONTEXT", "effect": "SUPPRESS_RULE", "applied_suppressors": ["IT_SUPPORT_CONTEXT", "IT_SUPPORT_CONTEXT"]}, "rule_severity_declared": "HIGH", "effective_severity": "HIGH"}],
-        "explanation": {"summary": "x", "what_was_detected": "x", "why": "x", "detection_confidence_reason": "x"}, "recommended_actions": []
+        "rule_results": [
+          {
+            "rule_id": "TL-MAL-003",
+            "rule_version": "1.0.0",
+            "kind": "COMPOSITE",
+            "evaluation_state": "SUPPRESSED",
+            "required_combination_result": "TRUE",
+            "suppression": {
+              "suppressed_by": "IT_SUPPORT_CONTEXT",
+              "effect": "SUPPRESS_RULE",
+              "applied_suppressors": [
+                "IT_SUPPORT_CONTEXT",
+                "IT_SUPPORT_CONTEXT"
+              ]
+            },
+            "rule_severity_declared": "HIGH",
+            "effective_severity": "HIGH"
+          }
+        ],
+        "explanation": {
+          "summary": "x",
+          "what_was_detected": "x",
+          "why": "x",
+          "detection_confidence_reason": "x"
+        },
+        "recommended_actions": []
       }
     },
     {
       "reason": "SUPPRESSED rule must preserve TRUE required-combination result",
       "expected_rejection": "schema",
       "result": {
-        "result_contract_version": "1.0.0", "evaluation_id": "BAD-12", "evaluation_timestamp": "2026-08-29T11:11:00Z", "input_id": "IN-BAD-12",
-        "language": ["en"], "script": ["Latn"], "input_support_status": "SUPPORTED", "classification": "NO_SCAM_PATTERN",
-        "decision_severity": "NONE", "matched_evidence_strength": "NONE", "risk_level": "NONE", "detection_confidence": "NOT_APPLICABLE",
-        "provenance": {"bundle_version": "1.0.0", "bundle_content_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "engine_version": "0.1.0-wp1", "evaluation_profile": {"profile_id": "mvp-default", "extraction_confidence_gate": "MEDIUM", "risk_matrix_id": "adr-0006-risk-matrix-v1", "confidence_policy_id": "adr-0006-confidence-policy-v1"}, "component_versions": {"rule_schema": "1.0.0", "indicator_registry": "0.3.0-interim", "indicator_families": "1.0.0", "negative_library": "1.0.0", "taxonomy": "2.0.0", "dimensions": "1.0.0", "extraction_contracts": "1.0.0"}},
+        "result_contract_version": "1.0.0",
+        "evaluation_id": "BAD-12",
+        "evaluation_timestamp": "2026-08-29T11:11:00Z",
+        "input_id": "IN-BAD-12",
+        "language": [
+          "en"
+        ],
+        "script": [
+          "Latn"
+        ],
+        "input_support_status": "SUPPORTED",
+        "classification": "NO_SCAM_PATTERN",
+        "decision_severity": "NONE",
+        "matched_evidence_strength": "NONE",
+        "risk_level": "NONE",
+        "detection_confidence": "NOT_APPLICABLE",
+        "provenance": {
+          "bundle_version": "1.0.0",
+          "bundle_content_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "engine_version": "0.1.0-wp1",
+          "evaluation_profile": {
+            "profile_id": "mvp-default",
+            "extraction_confidence_gate": "MEDIUM",
+            "risk_matrix_id": "adr-0006-risk-matrix-v1",
+            "confidence_policy_id": "adr-0006-confidence-policy-v1"
+          },
+          "component_versions": {
+            "rule_schema": "1.0.0",
+            "indicator_registry": "0.3.0-interim",
+            "indicator_families": "1.0.0",
+            "negative_library": "1.0.0",
+            "taxonomy": "2.0.0",
+            "dimensions": "1.0.0",
+            "extraction_contracts": "1.0.0"
+          }
+        },
         "matched_rules": [],
-        "rule_results": [{"rule_id": "TL-MAL-003", "rule_version": "1.0.0", "kind": "COMPOSITE", "evaluation_state": "SUPPRESSED", "required_combination_result": "FALSE", "suppression": {"suppressed_by": "IT_SUPPORT_CONTEXT", "effect": "SUPPRESS_RULE", "applied_suppressors": ["IT_SUPPORT_CONTEXT"]}, "rule_severity_declared": "HIGH", "effective_severity": "HIGH"}],
-        "explanation": {"summary": "x", "what_was_detected": "x", "why": "x", "detection_confidence_reason": "x"}, "recommended_actions": []
+        "rule_results": [
+          {
+            "rule_id": "TL-MAL-003",
+            "rule_version": "1.0.0",
+            "kind": "COMPOSITE",
+            "evaluation_state": "SUPPRESSED",
+            "required_combination_result": "FALSE",
+            "suppression": {
+              "suppressed_by": "IT_SUPPORT_CONTEXT",
+              "effect": "SUPPRESS_RULE",
+              "applied_suppressors": [
+                "IT_SUPPORT_CONTEXT"
+              ]
+            },
+            "rule_severity_declared": "HIGH",
+            "effective_severity": "HIGH"
+          }
+        ],
+        "explanation": {
+          "summary": "x",
+          "what_was_detected": "x",
+          "why": "x",
+          "detection_confidence_reason": "x"
+        },
+        "recommended_actions": []
       }
     },
     {
       "reason": "SUPPRESSED rule missing required applied_suppressors metadata",
       "expected_rejection": "schema",
       "result": {
-        "result_contract_version": "1.0.0", "evaluation_id": "BAD-13", "evaluation_timestamp": "2026-08-29T11:12:00Z", "input_id": "IN-BAD-13",
-        "language": ["en"], "script": ["Latn"], "input_support_status": "SUPPORTED", "classification": "NO_SCAM_PATTERN",
-        "decision_severity": "NONE", "matched_evidence_strength": "NONE", "risk_level": "NONE", "detection_confidence": "NOT_APPLICABLE",
-        "provenance": {"bundle_version": "1.0.0", "bundle_content_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "engine_version": "0.1.0-wp1", "evaluation_profile": {"profile_id": "mvp-default", "extraction_confidence_gate": "MEDIUM", "risk_matrix_id": "adr-0006-risk-matrix-v1", "confidence_policy_id": "adr-0006-confidence-policy-v1"}, "component_versions": {"rule_schema": "1.0.0", "indicator_registry": "0.3.0-interim", "indicator_families": "1.0.0", "negative_library": "1.0.0", "taxonomy": "2.0.0", "dimensions": "1.0.0", "extraction_contracts": "1.0.0"}},
+        "result_contract_version": "1.0.0",
+        "evaluation_id": "BAD-13",
+        "evaluation_timestamp": "2026-08-29T11:12:00Z",
+        "input_id": "IN-BAD-13",
+        "language": [
+          "en"
+        ],
+        "script": [
+          "Latn"
+        ],
+        "input_support_status": "SUPPORTED",
+        "classification": "NO_SCAM_PATTERN",
+        "decision_severity": "NONE",
+        "matched_evidence_strength": "NONE",
+        "risk_level": "NONE",
+        "detection_confidence": "NOT_APPLICABLE",
+        "provenance": {
+          "bundle_version": "1.0.0",
+          "bundle_content_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "engine_version": "0.1.0-wp1",
+          "evaluation_profile": {
+            "profile_id": "mvp-default",
+            "extraction_confidence_gate": "MEDIUM",
+            "risk_matrix_id": "adr-0006-risk-matrix-v1",
+            "confidence_policy_id": "adr-0006-confidence-policy-v1"
+          },
+          "component_versions": {
+            "rule_schema": "1.0.0",
+            "indicator_registry": "0.3.0-interim",
+            "indicator_families": "1.0.0",
+            "negative_library": "1.0.0",
+            "taxonomy": "2.0.0",
+            "dimensions": "1.0.0",
+            "extraction_contracts": "1.0.0"
+          }
+        },
         "matched_rules": [],
-        "rule_results": [{"rule_id": "TL-MAL-003", "rule_version": "1.0.0", "kind": "COMPOSITE", "evaluation_state": "SUPPRESSED", "required_combination_result": "TRUE", "suppression": {"suppressed_by": "IT_SUPPORT_CONTEXT", "effect": "SUPPRESS_RULE"}, "rule_severity_declared": "HIGH", "effective_severity": "HIGH"}],
-        "explanation": {"summary": "x", "what_was_detected": "x", "why": "x", "detection_confidence_reason": "x"}, "recommended_actions": []
+        "rule_results": [
+          {
+            "rule_id": "TL-MAL-003",
+            "rule_version": "1.0.0",
+            "kind": "COMPOSITE",
+            "evaluation_state": "SUPPRESSED",
+            "required_combination_result": "TRUE",
+            "suppression": {
+              "suppressed_by": "IT_SUPPORT_CONTEXT",
+              "effect": "SUPPRESS_RULE"
+            },
+            "rule_severity_declared": "HIGH",
+            "effective_severity": "HIGH"
+          }
+        ],
+        "explanation": {
+          "summary": "x",
+          "what_was_detected": "x",
+          "why": "x",
+          "detection_confidence_reason": "x"
+        },
+        "recommended_actions": []
       }
     },
     {
       "reason": "SUPPRESSED rule missing required suppressed_by metadata",
       "expected_rejection": "schema",
       "result": {
-        "result_contract_version": "1.0.0", "evaluation_id": "BAD-14", "evaluation_timestamp": "2026-08-29T11:13:00Z", "input_id": "IN-BAD-14",
-        "language": ["en"], "script": ["Latn"], "input_support_status": "SUPPORTED", "classification": "NO_SCAM_PATTERN",
-        "decision_severity": "NONE", "matched_evidence_strength": "NONE", "risk_level": "NONE", "detection_confidence": "NOT_APPLICABLE",
-        "provenance": {"bundle_version": "1.0.0", "bundle_content_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "engine_version": "0.1.0-wp1", "evaluation_profile": {"profile_id": "mvp-default", "extraction_confidence_gate": "MEDIUM", "risk_matrix_id": "adr-0006-risk-matrix-v1", "confidence_policy_id": "adr-0006-confidence-policy-v1"}, "component_versions": {"rule_schema": "1.0.0", "indicator_registry": "0.3.0-interim", "indicator_families": "1.0.0", "negative_library": "1.0.0", "taxonomy": "2.0.0", "dimensions": "1.0.0", "extraction_contracts": "1.0.0"}},
+        "result_contract_version": "1.0.0",
+        "evaluation_id": "BAD-14",
+        "evaluation_timestamp": "2026-08-29T11:13:00Z",
+        "input_id": "IN-BAD-14",
+        "language": [
+          "en"
+        ],
+        "script": [
+          "Latn"
+        ],
+        "input_support_status": "SUPPORTED",
+        "classification": "NO_SCAM_PATTERN",
+        "decision_severity": "NONE",
+        "matched_evidence_strength": "NONE",
+        "risk_level": "NONE",
+        "detection_confidence": "NOT_APPLICABLE",
+        "provenance": {
+          "bundle_version": "1.0.0",
+          "bundle_content_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "engine_version": "0.1.0-wp1",
+          "evaluation_profile": {
+            "profile_id": "mvp-default",
+            "extraction_confidence_gate": "MEDIUM",
+            "risk_matrix_id": "adr-0006-risk-matrix-v1",
+            "confidence_policy_id": "adr-0006-confidence-policy-v1"
+          },
+          "component_versions": {
+            "rule_schema": "1.0.0",
+            "indicator_registry": "0.3.0-interim",
+            "indicator_families": "1.0.0",
+            "negative_library": "1.0.0",
+            "taxonomy": "2.0.0",
+            "dimensions": "1.0.0",
+            "extraction_contracts": "1.0.0"
+          }
+        },
         "matched_rules": [],
-        "rule_results": [{"rule_id": "TL-MAL-003", "rule_version": "1.0.0", "kind": "COMPOSITE", "evaluation_state": "SUPPRESSED", "required_combination_result": "TRUE", "suppression": {"effect": "SUPPRESS_RULE", "applied_suppressors": ["IT_SUPPORT_CONTEXT"]}, "rule_severity_declared": "HIGH", "effective_severity": "HIGH"}],
-        "explanation": {"summary": "x", "what_was_detected": "x", "why": "x", "detection_confidence_reason": "x"}, "recommended_actions": []
+        "rule_results": [
+          {
+            "rule_id": "TL-MAL-003",
+            "rule_version": "1.0.0",
+            "kind": "COMPOSITE",
+            "evaluation_state": "SUPPRESSED",
+            "required_combination_result": "TRUE",
+            "suppression": {
+              "effect": "SUPPRESS_RULE",
+              "applied_suppressors": [
+                "IT_SUPPORT_CONTEXT"
+              ]
+            },
+            "rule_severity_declared": "HIGH",
+            "effective_severity": "HIGH"
+          }
+        ],
+        "explanation": {
+          "summary": "x",
+          "what_was_detected": "x",
+          "why": "x",
+          "detection_confidence_reason": "x"
+        },
+        "recommended_actions": []
       }
     },
     {
       "reason": "MATCHED rule must not contain non-empty applied_suppressors",
       "expected_rejection": "schema",
       "result": {
-        "result_contract_version": "1.0.0", "evaluation_id": "BAD-15", "evaluation_timestamp": "2026-08-29T11:14:00Z", "input_id": "IN-BAD-15",
-        "language": ["en"], "script": ["Latn"], "input_support_status": "SUPPORTED", "classification": "SCAM_PATTERN_DETECTED",
-        "decision_severity": "HIGH", "matched_evidence_strength": "STRONG", "risk_level": "HIGH", "detection_confidence": "HIGH",
-        "provenance": {"bundle_version": "1.0.0", "bundle_content_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "engine_version": "0.1.0-wp1", "evaluation_profile": {"profile_id": "mvp-default", "extraction_confidence_gate": "MEDIUM", "risk_matrix_id": "adr-0006-risk-matrix-v1", "confidence_policy_id": "adr-0006-confidence-policy-v1"}, "component_versions": {"rule_schema": "1.0.0", "indicator_registry": "0.3.0-interim", "indicator_families": "1.0.0", "negative_library": "1.0.0", "taxonomy": "2.0.0", "dimensions": "1.0.0", "extraction_contracts": "1.0.0"}},
-        "matched_rules": ["TL-MAL-003"],
-        "rule_results": [{"rule_id": "TL-MAL-003", "rule_version": "1.0.0", "kind": "COMPOSITE", "evaluation_state": "MATCHED", "required_combination_result": "TRUE", "suppression": {"suppressed_by": "IT_SUPPORT_CONTEXT", "effect": "SUPPRESS_RULE", "applied_suppressors": ["IT_SUPPORT_CONTEXT"]}, "rule_severity_declared": "HIGH", "effective_severity": "HIGH"}],
-        "explanation": {"summary": "x", "what_was_detected": "x", "why": "x", "detection_confidence_reason": "x"}, "recommended_actions": []
+        "result_contract_version": "1.0.0",
+        "evaluation_id": "BAD-15",
+        "evaluation_timestamp": "2026-08-29T11:14:00Z",
+        "input_id": "IN-BAD-15",
+        "language": [
+          "en"
+        ],
+        "script": [
+          "Latn"
+        ],
+        "input_support_status": "SUPPORTED",
+        "classification": "SCAM_PATTERN_DETECTED",
+        "decision_severity": "HIGH",
+        "matched_evidence_strength": "STRONG",
+        "risk_level": "HIGH",
+        "detection_confidence": "HIGH",
+        "provenance": {
+          "bundle_version": "1.0.0",
+          "bundle_content_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "engine_version": "0.1.0-wp1",
+          "evaluation_profile": {
+            "profile_id": "mvp-default",
+            "extraction_confidence_gate": "MEDIUM",
+            "risk_matrix_id": "adr-0006-risk-matrix-v1",
+            "confidence_policy_id": "adr-0006-confidence-policy-v1"
+          },
+          "component_versions": {
+            "rule_schema": "1.0.0",
+            "indicator_registry": "0.3.0-interim",
+            "indicator_families": "1.0.0",
+            "negative_library": "1.0.0",
+            "taxonomy": "2.0.0",
+            "dimensions": "1.0.0",
+            "extraction_contracts": "1.0.0"
+          }
+        },
+        "matched_rules": [
+          "TL-MAL-003"
+        ],
+        "rule_results": [
+          {
+            "rule_id": "TL-MAL-003",
+            "rule_version": "1.0.0",
+            "kind": "COMPOSITE",
+            "evaluation_state": "MATCHED",
+            "required_combination_result": "TRUE",
+            "suppression": {
+              "suppressed_by": "IT_SUPPORT_CONTEXT",
+              "effect": "SUPPRESS_RULE",
+              "applied_suppressors": [
+                "IT_SUPPORT_CONTEXT"
+              ]
+            },
+            "rule_severity_declared": "HIGH",
+            "effective_severity": "HIGH"
+          }
+        ],
+        "explanation": {
+          "summary": "x",
+          "what_was_detected": "x",
+          "why": "x",
+          "detection_confidence_reason": "x"
+        },
+        "recommended_actions": []
+      }
+    },
+    {
+      "reason": "live_positive_provenance has an EMPTY occurrence group (minItems)",
+      "expected_rejection": "schema",
+      "result": {
+        "result_contract_version": "1.0.0",
+        "evaluation_id": "BAD-LPP",
+        "evaluation_timestamp": "2026-08-29T10:03:00Z",
+        "input_id": "IN-FIX-04",
+        "language": [
+          "en"
+        ],
+        "script": [
+          "Latn"
+        ],
+        "input_support_status": "SUPPORTED",
+        "classification": "SCAM_PATTERN_DETECTED",
+        "decision_severity": "CRITICAL",
+        "matched_evidence_strength": "STRONG",
+        "risk_level": "CRITICAL",
+        "detection_confidence": "HIGH",
+        "provenance": {
+          "bundle_version": "1.0.0",
+          "bundle_content_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "engine_version": "0.1.0-wp1",
+          "evaluation_profile": {
+            "profile_id": "mvp-default",
+            "extraction_confidence_gate": "MEDIUM",
+            "risk_matrix_id": "adr-0006-risk-matrix-v1",
+            "confidence_policy_id": "adr-0006-confidence-policy-v1"
+          },
+          "component_versions": {
+            "rule_schema": "1.0.0",
+            "indicator_registry": "0.3.0-interim",
+            "indicator_families": "1.0.0",
+            "negative_library": "1.0.0",
+            "taxonomy": "2.0.0",
+            "dimensions": "1.0.0",
+            "extraction_contracts": "1.0.0"
+          }
+        },
+        "matched_rules": [
+          "TL-PAY-001"
+        ],
+        "active_overrides": [
+          "HR_UPI_PIN_TO_RECEIVE"
+        ],
+        "matched_positive_indicators": [
+          "RECEIVE_FRAMING",
+          "UPI_PIN_PROMPT"
+        ],
+        "rule_results": [
+          {
+            "rule_id": "TL-PAY-001",
+            "rule_version": "1.0.0",
+            "kind": "COMPOSITE",
+            "evaluation_state": "MATCHED",
+            "required_combination_result": "TRUE",
+            "governing": true,
+            "governing_reason": "only fired rule; SUPPORTED, CRITICAL",
+            "matched_positive_indicators": [
+              "RECEIVE_FRAMING",
+              "UPI_PIN_PROMPT"
+            ],
+            "evidence_classes_spanned": [
+              "PAYMENT_ACTION",
+              "CREDENTIAL_ACTION"
+            ],
+            "min_evidence_classes_required": 2,
+            "evidence_class_diversity_met": true,
+            "active_overrides": [
+              "HR_UPI_PIN_TO_RECEIVE"
+            ],
+            "extraction_confidence_inputs": {
+              "RECEIVE_FRAMING": "HIGH",
+              "UPI_PIN_PROMPT": "HIGH"
+            },
+            "rule_evidence_verdict": "SUPPORTED",
+            "rule_evidence_strength": "STRONG",
+            "rule_severity_declared": "CRITICAL",
+            "effective_severity": "CRITICAL",
+            "rule_detection_confidence": "HIGH",
+            "source_references": [
+              {
+                "source_id": "SRC-021",
+                "issuing_body": "CERT-In",
+                "authority": "OFFICIAL_GOVERNMENT",
+                "verification_status": "PRIMARY_VERIFIED",
+                "quote": "Always remember, you don't need a UPI PIN or OTP to receive money."
+              }
+            ],
+            "live_positive_provenance": {
+              "RECEIVE_FRAMING": [
+                []
+              ]
+            }
+          }
+        ],
+        "corroboration_summary": {
+          "independent_evidence_classes": [
+            "PAYMENT_ACTION",
+            "CREDENTIAL_ACTION"
+          ],
+          "evidence_class_count": 2,
+          "band": "MEDIUM"
+        },
+        "explanation": {
+          "summary": "You were asked to enter a UPI PIN to RECEIVE money \u2014 a directional contradiction and a known fraud pattern.",
+          "what_was_detected": "A UPI PIN entry framed as necessary to receive a payment.",
+          "why": "RECEIVE_FRAMING combined with UPI_PIN_PROMPT; entering a PIN never receives money.",
+          "detection_confidence_reason": "HIGH: both decisive indicators observed at high confidence, an active hard-risk override, and a categorical official boundary.",
+          "evidence_basis": [
+            {
+              "source_id": "SRC-021",
+              "issuing_body": "CERT-In",
+              "verification_status": "PRIMARY_VERIFIED",
+              "quote": "you don't need a UPI PIN or OTP to receive money"
+            }
+          ],
+          "rules_fired": [
+            "TL-PAY-001"
+          ]
+        },
+        "recommended_actions": [
+          {
+            "action_code": "DO_NOT_ENTER_PIN",
+            "priority": "IMMEDIATE",
+            "reason_rule_ids": [
+              "TL-PAY-001"
+            ],
+            "reason_override_ids": [
+              "HR_UPI_PIN_TO_RECEIVE"
+            ],
+            "evidence_refs": [
+              "SRC-021"
+            ]
+          },
+          {
+            "action_code": "VERIFY_INDEPENDENTLY",
+            "priority": "HIGH",
+            "reason_rule_ids": [
+              "TL-PAY-001"
+            ]
+          },
+          {
+            "action_code": "CONTACT_BANK",
+            "priority": "ADVISORY"
+          }
+        ]
+      }
+    },
+    {
+      "reason": "live_positive_provenance group has DUPLICATE refs (uniqueItems)",
+      "expected_rejection": "schema",
+      "result": {
+        "result_contract_version": "1.0.0",
+        "evaluation_id": "BAD-LPP",
+        "evaluation_timestamp": "2026-08-29T10:03:00Z",
+        "input_id": "IN-FIX-04",
+        "language": [
+          "en"
+        ],
+        "script": [
+          "Latn"
+        ],
+        "input_support_status": "SUPPORTED",
+        "classification": "SCAM_PATTERN_DETECTED",
+        "decision_severity": "CRITICAL",
+        "matched_evidence_strength": "STRONG",
+        "risk_level": "CRITICAL",
+        "detection_confidence": "HIGH",
+        "provenance": {
+          "bundle_version": "1.0.0",
+          "bundle_content_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "engine_version": "0.1.0-wp1",
+          "evaluation_profile": {
+            "profile_id": "mvp-default",
+            "extraction_confidence_gate": "MEDIUM",
+            "risk_matrix_id": "adr-0006-risk-matrix-v1",
+            "confidence_policy_id": "adr-0006-confidence-policy-v1"
+          },
+          "component_versions": {
+            "rule_schema": "1.0.0",
+            "indicator_registry": "0.3.0-interim",
+            "indicator_families": "1.0.0",
+            "negative_library": "1.0.0",
+            "taxonomy": "2.0.0",
+            "dimensions": "1.0.0",
+            "extraction_contracts": "1.0.0"
+          }
+        },
+        "matched_rules": [
+          "TL-PAY-001"
+        ],
+        "active_overrides": [
+          "HR_UPI_PIN_TO_RECEIVE"
+        ],
+        "matched_positive_indicators": [
+          "RECEIVE_FRAMING",
+          "UPI_PIN_PROMPT"
+        ],
+        "rule_results": [
+          {
+            "rule_id": "TL-PAY-001",
+            "rule_version": "1.0.0",
+            "kind": "COMPOSITE",
+            "evaluation_state": "MATCHED",
+            "required_combination_result": "TRUE",
+            "governing": true,
+            "governing_reason": "only fired rule; SUPPORTED, CRITICAL",
+            "matched_positive_indicators": [
+              "RECEIVE_FRAMING",
+              "UPI_PIN_PROMPT"
+            ],
+            "evidence_classes_spanned": [
+              "PAYMENT_ACTION",
+              "CREDENTIAL_ACTION"
+            ],
+            "min_evidence_classes_required": 2,
+            "evidence_class_diversity_met": true,
+            "active_overrides": [
+              "HR_UPI_PIN_TO_RECEIVE"
+            ],
+            "extraction_confidence_inputs": {
+              "RECEIVE_FRAMING": "HIGH",
+              "UPI_PIN_PROMPT": "HIGH"
+            },
+            "rule_evidence_verdict": "SUPPORTED",
+            "rule_evidence_strength": "STRONG",
+            "rule_severity_declared": "CRITICAL",
+            "effective_severity": "CRITICAL",
+            "rule_detection_confidence": "HIGH",
+            "source_references": [
+              {
+                "source_id": "SRC-021",
+                "issuing_body": "CERT-In",
+                "authority": "OFFICIAL_GOVERNMENT",
+                "verification_status": "PRIMARY_VERIFIED",
+                "quote": "Always remember, you don't need a UPI PIN or OTP to receive money."
+              }
+            ],
+            "live_positive_provenance": {
+              "RECEIVE_FRAMING": [
+                [
+                  "obs-a",
+                  "obs-a"
+                ]
+              ]
+            }
+          }
+        ],
+        "corroboration_summary": {
+          "independent_evidence_classes": [
+            "PAYMENT_ACTION",
+            "CREDENTIAL_ACTION"
+          ],
+          "evidence_class_count": 2,
+          "band": "MEDIUM"
+        },
+        "explanation": {
+          "summary": "You were asked to enter a UPI PIN to RECEIVE money \u2014 a directional contradiction and a known fraud pattern.",
+          "what_was_detected": "A UPI PIN entry framed as necessary to receive a payment.",
+          "why": "RECEIVE_FRAMING combined with UPI_PIN_PROMPT; entering a PIN never receives money.",
+          "detection_confidence_reason": "HIGH: both decisive indicators observed at high confidence, an active hard-risk override, and a categorical official boundary.",
+          "evidence_basis": [
+            {
+              "source_id": "SRC-021",
+              "issuing_body": "CERT-In",
+              "verification_status": "PRIMARY_VERIFIED",
+              "quote": "you don't need a UPI PIN or OTP to receive money"
+            }
+          ],
+          "rules_fired": [
+            "TL-PAY-001"
+          ]
+        },
+        "recommended_actions": [
+          {
+            "action_code": "DO_NOT_ENTER_PIN",
+            "priority": "IMMEDIATE",
+            "reason_rule_ids": [
+              "TL-PAY-001"
+            ],
+            "reason_override_ids": [
+              "HR_UPI_PIN_TO_RECEIVE"
+            ],
+            "evidence_refs": [
+              "SRC-021"
+            ]
+          },
+          {
+            "action_code": "VERIFY_INDEPENDENTLY",
+            "priority": "HIGH",
+            "reason_rule_ids": [
+              "TL-PAY-001"
+            ]
+          },
+          {
+            "action_code": "CONTACT_BANK",
+            "priority": "ADVISORY"
+          }
+        ]
+      }
+    },
+    {
+      "reason": "live_positive_provenance has DUPLICATE occurrence groups (uniqueItems)",
+      "expected_rejection": "schema",
+      "result": {
+        "result_contract_version": "1.0.0",
+        "evaluation_id": "BAD-LPP",
+        "evaluation_timestamp": "2026-08-29T10:03:00Z",
+        "input_id": "IN-FIX-04",
+        "language": [
+          "en"
+        ],
+        "script": [
+          "Latn"
+        ],
+        "input_support_status": "SUPPORTED",
+        "classification": "SCAM_PATTERN_DETECTED",
+        "decision_severity": "CRITICAL",
+        "matched_evidence_strength": "STRONG",
+        "risk_level": "CRITICAL",
+        "detection_confidence": "HIGH",
+        "provenance": {
+          "bundle_version": "1.0.0",
+          "bundle_content_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "engine_version": "0.1.0-wp1",
+          "evaluation_profile": {
+            "profile_id": "mvp-default",
+            "extraction_confidence_gate": "MEDIUM",
+            "risk_matrix_id": "adr-0006-risk-matrix-v1",
+            "confidence_policy_id": "adr-0006-confidence-policy-v1"
+          },
+          "component_versions": {
+            "rule_schema": "1.0.0",
+            "indicator_registry": "0.3.0-interim",
+            "indicator_families": "1.0.0",
+            "negative_library": "1.0.0",
+            "taxonomy": "2.0.0",
+            "dimensions": "1.0.0",
+            "extraction_contracts": "1.0.0"
+          }
+        },
+        "matched_rules": [
+          "TL-PAY-001"
+        ],
+        "active_overrides": [
+          "HR_UPI_PIN_TO_RECEIVE"
+        ],
+        "matched_positive_indicators": [
+          "RECEIVE_FRAMING",
+          "UPI_PIN_PROMPT"
+        ],
+        "rule_results": [
+          {
+            "rule_id": "TL-PAY-001",
+            "rule_version": "1.0.0",
+            "kind": "COMPOSITE",
+            "evaluation_state": "MATCHED",
+            "required_combination_result": "TRUE",
+            "governing": true,
+            "governing_reason": "only fired rule; SUPPORTED, CRITICAL",
+            "matched_positive_indicators": [
+              "RECEIVE_FRAMING",
+              "UPI_PIN_PROMPT"
+            ],
+            "evidence_classes_spanned": [
+              "PAYMENT_ACTION",
+              "CREDENTIAL_ACTION"
+            ],
+            "min_evidence_classes_required": 2,
+            "evidence_class_diversity_met": true,
+            "active_overrides": [
+              "HR_UPI_PIN_TO_RECEIVE"
+            ],
+            "extraction_confidence_inputs": {
+              "RECEIVE_FRAMING": "HIGH",
+              "UPI_PIN_PROMPT": "HIGH"
+            },
+            "rule_evidence_verdict": "SUPPORTED",
+            "rule_evidence_strength": "STRONG",
+            "rule_severity_declared": "CRITICAL",
+            "effective_severity": "CRITICAL",
+            "rule_detection_confidence": "HIGH",
+            "source_references": [
+              {
+                "source_id": "SRC-021",
+                "issuing_body": "CERT-In",
+                "authority": "OFFICIAL_GOVERNMENT",
+                "verification_status": "PRIMARY_VERIFIED",
+                "quote": "Always remember, you don't need a UPI PIN or OTP to receive money."
+              }
+            ],
+            "live_positive_provenance": {
+              "RECEIVE_FRAMING": [
+                [
+                  "obs-a"
+                ],
+                [
+                  "obs-a"
+                ]
+              ]
+            }
+          }
+        ],
+        "corroboration_summary": {
+          "independent_evidence_classes": [
+            "PAYMENT_ACTION",
+            "CREDENTIAL_ACTION"
+          ],
+          "evidence_class_count": 2,
+          "band": "MEDIUM"
+        },
+        "explanation": {
+          "summary": "You were asked to enter a UPI PIN to RECEIVE money \u2014 a directional contradiction and a known fraud pattern.",
+          "what_was_detected": "A UPI PIN entry framed as necessary to receive a payment.",
+          "why": "RECEIVE_FRAMING combined with UPI_PIN_PROMPT; entering a PIN never receives money.",
+          "detection_confidence_reason": "HIGH: both decisive indicators observed at high confidence, an active hard-risk override, and a categorical official boundary.",
+          "evidence_basis": [
+            {
+              "source_id": "SRC-021",
+              "issuing_body": "CERT-In",
+              "verification_status": "PRIMARY_VERIFIED",
+              "quote": "you don't need a UPI PIN or OTP to receive money"
+            }
+          ],
+          "rules_fired": [
+            "TL-PAY-001"
+          ]
+        },
+        "recommended_actions": [
+          {
+            "action_code": "DO_NOT_ENTER_PIN",
+            "priority": "IMMEDIATE",
+            "reason_rule_ids": [
+              "TL-PAY-001"
+            ],
+            "reason_override_ids": [
+              "HR_UPI_PIN_TO_RECEIVE"
+            ],
+            "evidence_refs": [
+              "SRC-021"
+            ]
+          },
+          {
+            "action_code": "VERIFY_INDEPENDENTLY",
+            "priority": "HIGH",
+            "reason_rule_ids": [
+              "TL-PAY-001"
+            ]
+          },
+          {
+            "action_code": "CONTACT_BANK",
+            "priority": "ADVISORY"
+          }
+        ]
+      }
+    },
+    {
+      "reason": "live_positive_provenance key is not a valid indicatorId (propertyNames)",
+      "expected_rejection": "schema",
+      "result": {
+        "result_contract_version": "1.0.0",
+        "evaluation_id": "BAD-LPP",
+        "evaluation_timestamp": "2026-08-29T10:03:00Z",
+        "input_id": "IN-FIX-04",
+        "language": [
+          "en"
+        ],
+        "script": [
+          "Latn"
+        ],
+        "input_support_status": "SUPPORTED",
+        "classification": "SCAM_PATTERN_DETECTED",
+        "decision_severity": "CRITICAL",
+        "matched_evidence_strength": "STRONG",
+        "risk_level": "CRITICAL",
+        "detection_confidence": "HIGH",
+        "provenance": {
+          "bundle_version": "1.0.0",
+          "bundle_content_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "engine_version": "0.1.0-wp1",
+          "evaluation_profile": {
+            "profile_id": "mvp-default",
+            "extraction_confidence_gate": "MEDIUM",
+            "risk_matrix_id": "adr-0006-risk-matrix-v1",
+            "confidence_policy_id": "adr-0006-confidence-policy-v1"
+          },
+          "component_versions": {
+            "rule_schema": "1.0.0",
+            "indicator_registry": "0.3.0-interim",
+            "indicator_families": "1.0.0",
+            "negative_library": "1.0.0",
+            "taxonomy": "2.0.0",
+            "dimensions": "1.0.0",
+            "extraction_contracts": "1.0.0"
+          }
+        },
+        "matched_rules": [
+          "TL-PAY-001"
+        ],
+        "active_overrides": [
+          "HR_UPI_PIN_TO_RECEIVE"
+        ],
+        "matched_positive_indicators": [
+          "RECEIVE_FRAMING",
+          "UPI_PIN_PROMPT"
+        ],
+        "rule_results": [
+          {
+            "rule_id": "TL-PAY-001",
+            "rule_version": "1.0.0",
+            "kind": "COMPOSITE",
+            "evaluation_state": "MATCHED",
+            "required_combination_result": "TRUE",
+            "governing": true,
+            "governing_reason": "only fired rule; SUPPORTED, CRITICAL",
+            "matched_positive_indicators": [
+              "RECEIVE_FRAMING",
+              "UPI_PIN_PROMPT"
+            ],
+            "evidence_classes_spanned": [
+              "PAYMENT_ACTION",
+              "CREDENTIAL_ACTION"
+            ],
+            "min_evidence_classes_required": 2,
+            "evidence_class_diversity_met": true,
+            "active_overrides": [
+              "HR_UPI_PIN_TO_RECEIVE"
+            ],
+            "extraction_confidence_inputs": {
+              "RECEIVE_FRAMING": "HIGH",
+              "UPI_PIN_PROMPT": "HIGH"
+            },
+            "rule_evidence_verdict": "SUPPORTED",
+            "rule_evidence_strength": "STRONG",
+            "rule_severity_declared": "CRITICAL",
+            "effective_severity": "CRITICAL",
+            "rule_detection_confidence": "HIGH",
+            "source_references": [
+              {
+                "source_id": "SRC-021",
+                "issuing_body": "CERT-In",
+                "authority": "OFFICIAL_GOVERNMENT",
+                "verification_status": "PRIMARY_VERIFIED",
+                "quote": "Always remember, you don't need a UPI PIN or OTP to receive money."
+              }
+            ],
+            "live_positive_provenance": {
+              "bad-id": [
+                [
+                  "obs-a"
+                ]
+              ]
+            }
+          }
+        ],
+        "corroboration_summary": {
+          "independent_evidence_classes": [
+            "PAYMENT_ACTION",
+            "CREDENTIAL_ACTION"
+          ],
+          "evidence_class_count": 2,
+          "band": "MEDIUM"
+        },
+        "explanation": {
+          "summary": "You were asked to enter a UPI PIN to RECEIVE money \u2014 a directional contradiction and a known fraud pattern.",
+          "what_was_detected": "A UPI PIN entry framed as necessary to receive a payment.",
+          "why": "RECEIVE_FRAMING combined with UPI_PIN_PROMPT; entering a PIN never receives money.",
+          "detection_confidence_reason": "HIGH: both decisive indicators observed at high confidence, an active hard-risk override, and a categorical official boundary.",
+          "evidence_basis": [
+            {
+              "source_id": "SRC-021",
+              "issuing_body": "CERT-In",
+              "verification_status": "PRIMARY_VERIFIED",
+              "quote": "you don't need a UPI PIN or OTP to receive money"
+            }
+          ],
+          "rules_fired": [
+            "TL-PAY-001"
+          ]
+        },
+        "recommended_actions": [
+          {
+            "action_code": "DO_NOT_ENTER_PIN",
+            "priority": "IMMEDIATE",
+            "reason_rule_ids": [
+              "TL-PAY-001"
+            ],
+            "reason_override_ids": [
+              "HR_UPI_PIN_TO_RECEIVE"
+            ],
+            "evidence_refs": [
+              "SRC-021"
+            ]
+          },
+          {
+            "action_code": "VERIFY_INDEPENDENTLY",
+            "priority": "HIGH",
+            "reason_rule_ids": [
+              "TL-PAY-001"
+            ]
+          },
+          {
+            "action_code": "CONTACT_BANK",
+            "priority": "ADVISORY"
+          }
+        ]
       }
     }
   ]

@@ -1197,6 +1197,66 @@ def check_performance(ev: RuleEvaluator, iterations: int) -> dict:
 
 # ================================================================ main
 
+def check_live_provenance(c: Check, ev: RuleEvaluator) -> None:
+    """P3-WP3 provenance-output amendment (WP5 safety review): `live_positive_provenance` exposes, per
+    MATCHED-positive TRUE indicator, one GROUP per structurally-LIVE contributing occurrence (its
+    observation_refs), derived from the SAME per-occurrence evaluation — adding NO new truth."""
+    OTP = "CREDENTIAL_REQUEST_OTP"
+
+    def prov_for(ind, obs, indicator=OTP):
+        r = _eval_rule(ev, "TL-CRED-001", _Data(ind, obs))
+        return r, (r.get("live_positive_provenance") or {}).get(indicator)
+
+    # 1. one live occurrence -> one group
+    r, p = prov_for([_gio(OTP, ["rlive"])], [_gobs("rlive")])
+    c.eq(p, [["rlive"]], "prov1: one live occurrence -> one group")
+    c.ok(OTP in (r.get("matched_positive_indicators") or []), "prov1: live indicator is a matched positive")
+
+    # 2-6. a non-live co-occurrence is excluded (only the live group remains)
+    for label, kw in (("negated", {"polarity": "NEGATED"}), ("reported", {"attribution": "REPORTED"}),
+                      ("quoted", {"attribution": "QUOTED"}), ("hypothetical", {"attribution": "HYPOTHETICAL"}),
+                      ("descriptive", {"mood": "DESCRIPTIVE"})):
+        _, p = prov_for([_gio(OTP, ["rlive"]), _gio(OTP, ["rnl"])],
+                        [_gobs("rlive"), _gobs("rnl", **kw)])
+        c.eq(p, [["rlive"]], f"prov: {label} occurrence excluded -> only the live group")
+
+    # 7. an uncertain (UNKNOWN) occurrence is excluded from TRUE provenance
+    _, p = prov_for([_gio(OTP, ["rlive"]), _gio(OTP, ["ramb"], matched="AMBIGUOUS")],
+                    [_gobs("rlive"), _gobs("ramb")])
+    c.eq(p, [["rlive"]], "prov7: an uncertain (AMBIGUOUS) occurrence is excluded")
+
+    # 9. occurrence-associated SUPPRESS_INDICATOR neutralises only the shared-ref occurrence -> surviving live
+    ind = [_gio(OTP, ["rsup"]), _gio(OTP, ["rlive"]), _gio("NEGATED_CREDENTIAL_REQUEST", ["rsup"], polarity="NEGATIVE")]
+    obs = [_gobs("rsup"), _gobs("rlive")]
+    _, p = prov_for(ind, obs)
+    c.eq(p, [["rlive"]], "prov9: neutralised occurrence dropped -> only the surviving live group")
+
+    # 10. one live occurrence backed by multiple refs -> ONE grouped occurrence
+    _, p = prov_for([_gio(OTP, ["ra", "rb"])], [_gobs("ra"), _gobs("rb")])
+    c.eq(p, [["ra", "rb"]], "prov10: one occurrence with multiple refs -> ONE group")
+
+    # 11. multiple genuinely-live occurrences -> multiple canonical groups
+    _, p = prov_for([_gio(OTP, ["l1"]), _gio(OTP, ["l2"])], [_gobs("l1"), _gobs("l2")])
+    c.eq(p, [["l1"], ["l2"]], "prov11: multiple live occurrences -> multiple groups (sorted)")
+
+    # 12. caller ordering does not affect provenance
+    a_ind = [_gio(OTP, ["l2"]), _gio(OTP, ["l1"])]
+    a_obs = [_gobs("l2"), _gobs("l1")]
+    _, p2 = prov_for(a_ind, a_obs)
+    c.eq(p2, [["l1"], ["l2"]], "prov12: occurrence ordering does not affect provenance")
+
+    # 13. truth-invariance: adding provenance changes NO existing field for a real MATCHED case
+    ind = [_gio(OTP, ["ro"]), _gio("AUTHORITY_IMPERSONATION_BANK", ["ri"])]
+    obs = [_gobs("ro"), _gobs("ri")]
+    r = _eval_rule(ev, "TL-CRED-001", _Data(ind, obs))
+    c.eq(r["evaluation_state"], "MATCHED", "prov13: state unchanged (MATCHED)")
+    c.eq(r["required_combination_result"], "TRUE", "prov13: required unchanged (TRUE)")
+    c.eq(sorted(r["matched_positive_indicators"]), sorted([OTP, "AUTHORITY_IMPERSONATION_BANK"]), "prov13: matched positives unchanged")
+    c.ok("live_positive_provenance" in r, "prov13: provenance present on a MATCHED result")
+    c.ok(all(k in r["matched_positive_indicators"] for k in r["live_positive_provenance"]),
+         "prov13: provenance keys are matched positives")
+
+
 def main() -> int:
     quiet = "--quiet" in sys.argv
     iterations = 200
@@ -1235,6 +1295,7 @@ def main() -> int:
     check_normalized_status(c, ev, produced)
     check_multiref(c, ev, produced)
     check_suppress_indicator(c, ev, produced)
+    check_live_provenance(c, ev)
     check_trust_boundary(c, ev, produced)
     check_mappingproxy_operands(c, ev)
     check_schema_and_boundary(c, produced, validator)

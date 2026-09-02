@@ -1,8 +1,8 @@
 {
   "$comment": "TrustLens Phase 3 DET-001 GOLDEN DECISION CASES. DESIGN-LEVEL specification of the decision DET-001 must produce for canonical inputs. Each case declares an indicator-observation set (the signal an extractor would produce — extraction itself is Phase 9) and the EXPECTED decision across every DET-001 axis. These encode design intent, NOT measured accuracy (G-09): they may never be used to claim precision/recall (RSK-003). All inputs are SYNTHETIC. Rule/indicator/override ids are real and are resolved by validate_det_design.py against the live knowledge base; risk_level is checked against the ADR-0006 risk matrix; classification is checked for consistency with support status and fired rules. Where a governing rule is not yet PUBLISHED, live_publishable=false records that a PUBLISHED-only live engine routes the case to review pending governance promotion — the case still documents the designed on-promotion behaviour. declared_indicators sets are SPARSE (programme decision 1, 2026-08-30): an absent indicator is UNKNOWN at the operand level, not FALSE — a case that needs an affirmative absence declares an explicit matched=NOT_OBSERVED (e.g. GDC-05 RECEIVE_FRAMING). declared_indicators is a TEST/DESIGN compact shorthand. A case whose outcome depends on exact occurrence association may additionally store governed_input with schema-valid indicator_observations plus the normalized_observations they reference; the WP3 corpus replay passes that data unchanged to the normal *_from_governed production API. Occurrence structural attributes are authored ONLY on normalized observations. Structural semantics and governed SUPPRESS_INDICATOR association are both resolved through observation_refs; neither is input-global.",
-  "cases_version": "1.1.0",
+  "cases_version": "1.2.0",
   "generated": "2026-08-29",
-  "last_updated": "2026-08-31",
+  "last_updated": "2026-09-02",
   "change_history": [
     {
       "version": "1.0.0",
@@ -13,6 +13,11 @@
       "version": "1.1.0",
       "date": "2026-08-31",
       "change": "MINOR (KB-001): added an optional exact governed_input executable representation and upgraded GDC-15 to use it. GDC-15 remains MATCHED. Its disclaimer/negated OTP occurrence and separate live OTP-request occurrence are explicitly linked through observation_refs and replay through the normal production data-in API. This records the programme-level deterministic safety decision on occurrence association; it adds no fraud evidence and changes no expected decision."
+    },
+    {
+      "version": "1.2.0",
+      "date": "2026-09-02",
+      "change": "GDC-02/GDC-03 governed input representations were enriched to make their existing benign/non-live evidence explicit under the sparse-observation model: GDC-02 now declares its delivered (not requested) OTP as an explicit CREDENTIAL_REQUEST_OTP=NOT_OBSERVED, and GDC-03 declares its reported credential request as a REPORTED (structurally non-live) occurrence, so a governed COMPOSITE rule affirmatively evaluates to required_combination_result=FALSE (a rule-local, effect-aware benign clear) instead of relying on the mere presence of a negative indicator. Expected outcomes were unchanged (both remain NO_SCAM_PATTERN / NONE / NOT_APPLICABLE). No new source evidence or scam knowledge was introduced; this is a fixture representation correction, not a decision-outcome change."
     }
   ],
   "provenance": "SYNTHETIC",
@@ -59,6 +64,7 @@
       "input_gloss": "Your OTP is 452901 for your transaction. Never share this OTP with anyone. -Example Bank",
       "language": ["en"], "script": ["Latn"],
       "declared_indicators": [
+        {"id": "CREDENTIAL_REQUEST_OTP", "polarity": "POSITIVE", "matched": "NOT_OBSERVED", "confidence": "HIGH"},
         {"id": "OTP_DELIVERED_NOT_REQUESTED", "polarity": "NEGATIVE", "matched": "OBSERVED", "confidence": "HIGH"},
         {"id": "SELF_PROTECTIVE_WARNING", "polarity": "NEGATIVE", "matched": "OBSERVED", "confidence": "HIGH"},
         {"id": "NEGATED_CREDENTIAL_REQUEST", "polarity": "NEGATIVE", "matched": "OBSERVED", "confidence": "HIGH"}
@@ -91,6 +97,7 @@
       "input_gloss": "The scammer asked me to share my OTP and install AnyDesk. Is this a fraud?",
       "language": ["en"], "script": ["Latn"],
       "declared_indicators": [
+        {"id": "CREDENTIAL_REQUEST_OTP", "polarity": "POSITIVE", "matched": "OBSERVED", "confidence": "HIGH", "attribution": "REPORTED"},
         {"id": "REPORTED_SCAM_NARRATIVE", "polarity": "NEGATIVE", "matched": "OBSERVED", "confidence": "HIGH"}
       ],
       "expected": {

@@ -266,7 +266,7 @@ class RuleEvaluator:
         #    (observation_refs), so it never yields a live positive and a *separate* live occurrence is
         #    unaffected. This is distinct from the governed SUPPRESS_INDICATOR library effect (executed in
         #    step 3). Multiple occurrences combine by three-valued OR.
-        pos_truth, neutralised = self._positive_truth_map(ctx)
+        pos_truth, neutralised, live_prov = self._positive_truth_map(ctx)
         neutralised = set(neutralised)
 
         def truth(indicator_id: str) -> str:
@@ -291,8 +291,13 @@ class RuleEvaluator:
         for tgt, suppressors in sorted(suppressors_by_target.items()):
             if tgt not in pos_truth:
                 continue
-            val, reason, occurrence_neutralised = self._combine_positive(ctx, tgt, suppressors)
+            val, reason, occurrence_neutralised, groups = self._combine_positive(ctx, tgt, suppressors)
             pos_truth[tgt] = (val, reason)
+            # recompute provenance from the SAME combination path so neutralised occurrences disappear
+            if groups:
+                live_prov[tgt] = groups
+            else:
+                live_prov.pop(tgt, None)
             if val == FALSE and occurrence_neutralised:
                 neutralised.add(tgt)
             elif val != FALSE:
@@ -360,6 +365,17 @@ class RuleEvaluator:
         obs_refs = self._collect_refs(pos_operands, matched_negative, ctx)
         if obs_refs:
             result["observation_refs"] = obs_refs
+
+        # live-positive provenance (P3-WP3 amendment for the WP5 safety review): per MATCHED-positive TRUE
+        # indicator, the grouped observation_refs of its structurally-live TRUE occurrences. Canonical:
+        # indicator keys lexical, groups sorted (already), refs sorted within each group (already).
+        live_positive_provenance = {
+            o: [list(group) for group in live_prov[o]]
+            for o in matched_positive if live_prov.get(o)
+        }
+        if live_positive_provenance:
+            result["live_positive_provenance"] = live_positive_provenance
+
         if ambiguities:
             result["ambiguities"] = ambiguities
         if unknowns:
@@ -408,20 +424,26 @@ class RuleEvaluator:
 
     # ================================================================ positive truth (structural + OR)
 
-    def _positive_truth_map(self, ctx: EvaluationObservationContext) -> tuple[dict[str, tuple[str, str]], frozenset[str]]:
+    def _positive_truth_map(self, ctx: EvaluationObservationContext
+                            ) -> tuple[dict[str, tuple[str, str]], frozenset[str],
+                                       dict[str, tuple[tuple[str, ...], ...]]]:
         out: dict[str, tuple[str, str]] = {}
         neutralised: set[str] = set()
+        live_prov: dict[str, tuple[tuple[str, ...], ...]] = {}   # TRUE-only live occurrence provenance groups
         for iid in ctx.present_indicator_ids():
             if iid not in self._positive_ids:
                 continue  # negatives handled separately; unknown ids ignored
-            val, reason, structurally_neutralised = self._combine_positive(ctx, iid)
+            val, reason, structurally_neutralised, groups = self._combine_positive(ctx, iid)
             out[iid] = (val, reason)
+            if groups:                         # non-empty iff the indicator is TRUE (>=1 live TRUE occurrence)
+                live_prov[iid] = groups
             if val == FALSE and structurally_neutralised:
                 neutralised.add(iid)
-        return out, frozenset(neutralised)
+        return out, frozenset(neutralised), live_prov
 
     def _combine_positive(self, ctx: EvaluationObservationContext, iid: str,
-                          suppressors: Iterable[IndicatorObservation] = ()) -> tuple[str, str, bool]:
+                          suppressors: Iterable[IndicatorObservation] = ()
+                          ) -> tuple[str, str, bool, tuple[tuple[str, ...], ...]]:
         """Combine a positive indicator's occurrences into one Kleene value + reason via three-valued OR
         over per-occurrence live truth (P3WP3-011). Each occurrence's live truth is its confidence-gated
         truth GATED BY structural eligibility (resolved from observation_refs): NON_LIVE → FALSE; LIVE →
@@ -430,9 +452,17 @@ class RuleEvaluator:
         observation_ref. Explicitly disjoint refs do not interact; a missing ref on either side makes the
         association unresolved and turns an otherwise-live/uncertain occurrence UNKNOWN. Order-independent.
         The third return flag records occurrence neutralisation (structural or associated suppression), not an
-        affirmative NOT_OBSERVED absence."""
+        affirmative NOT_OBSERVED absence.
+
+        The fourth return value is the **live-positive provenance** (P3-WP3 provenance-output amendment for
+        the WP5 safety review): one GROUP per occurrence whose per-occurrence Kleene value is TRUE, each group
+        being that occurrence's own governed `observation_refs` (grouping preserved — one occurrence with two
+        refs is ONE group). It is derived from the SAME per-occurrence evaluation that produces the truth
+        value; it adds no new truth. Occurrences that are FALSE/UNKNOWN/non-live/unresolved/neutralised (and
+        those with no refs) contribute no group. Deterministically sorted + duplicate-free."""
         suppressors = tuple(suppressors)
         occ: list[tuple[str, str]] = []          # (kleene, reason) per occurrence
+        live_groups: set[tuple[str, ...]] = set()  # provenance: refs of each TRUE-contributing occurrence
         occurrence_neutralised = False
         for io in ctx.observations_for(iid):
             if io.polarity is not None and io.polarity != "POSITIVE":
@@ -459,17 +489,20 @@ class RuleEvaluator:
                 elif unresolved:
                     value, reason = UNKNOWN, "unresolved_suppression_association"
             occ.append((value, reason))
+            if value == TRUE and io.observation_refs:   # provenance from the SAME occurrence evaluation
+                live_groups.add(tuple(sorted(set(io.observation_refs))))
 
+        groups = tuple(sorted(live_groups))
         if any(t == TRUE for t, _ in occ):
-            return (TRUE, "observed_live", occurrence_neutralised)
+            return (TRUE, "observed_live", occurrence_neutralised, groups)
         unknown_reasons = [r for t, r in occ if t == UNKNOWN]
         if unknown_reasons:
             for pref in ("unresolved_suppression_association", "ambiguous", "unresolved_structure", "polarity_mismatch",
                          "low_confidence", "confidence_absent", "unknown_extraction"):
                 if pref in unknown_reasons:
-                    return (UNKNOWN, pref, occurrence_neutralised)
-            return (UNKNOWN, "unknown_extraction", occurrence_neutralised)
-        return (FALSE, "neutralised" if occurrence_neutralised else "not_observed", occurrence_neutralised)
+                    return (UNKNOWN, pref, occurrence_neutralised, groups)
+            return (UNKNOWN, "unknown_extraction", occurrence_neutralised, groups)
+        return (FALSE, "neutralised" if occurrence_neutralised else "not_observed", occurrence_neutralised, groups)
 
     @staticmethod
     def _suppression_association(positive: IndicatorObservation,
