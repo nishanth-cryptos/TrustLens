@@ -1,5 +1,5 @@
 {
-  "$comment": "SYNTHETIC contract fixtures for the P3-WP1 runtime detection-result schema. Each element is a COMPLETE, valid detection-result illustrating one required shape (STEP 13). These are CONTRACT EXAMPLES, not engine-generated decisions — no engine exists yet (P3-WP2+). They may never be used to claim accuracy (G-09). bundle_content_digest is a placeholder SHA-256. Decision axes match the DET-001 golden decision cases where applicable and satisfy the ADR-0006 risk matrix (risk = f(severity, evidence_strength)) and the classification-consistency rules. Validated by knowledge/validation/validate_runtime_contracts.py.",
+  "$comment": "SYNTHETIC contract fixtures for the P3-WP1 runtime detection-result schema. Each element is a COMPLETE, valid detection-result illustrating one required shape (STEP 13). These are CONTRACT EXAMPLES, not engine-generated decisions \u2014 no engine exists yet (P3-WP2+). They may never be used to claim accuracy (G-09). bundle_content_digest is a placeholder SHA-256. Decision axes match the DET-001 golden decision cases where applicable and satisfy the ADR-0006 risk matrix (risk = f(severity, evidence_strength)) and the classification-consistency rules. Validated by knowledge/validation/validate_runtime_contracts.py.",
   "fixtures_version": "1.0.0",
   "provenance": "SYNTHETIC",
   "fixtures": [
@@ -8,15 +8,52 @@
       "evaluation_id": "FIXTURE-01-NO-SCAM",
       "evaluation_timestamp": "2026-08-29T10:00:00Z",
       "input_id": "IN-FIX-01",
-      "language": ["en"], "script": ["Latn"],
+      "language": [
+        "en"
+      ],
+      "script": [
+        "Latn"
+      ],
       "input_support_status": "SUPPORTED",
       "classification": "NO_SCAM_PATTERN",
-      "decision_severity": "NONE", "matched_evidence_strength": "NONE", "risk_level": "NONE", "detection_confidence": "NOT_APPLICABLE",
-      "provenance": {"bundle_version": "1.0.0", "bundle_content_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "commit_sha": "abc1234", "engine_version": "0.1.0-wp1", "evaluation_profile": {"profile_id": "mvp-default", "extraction_confidence_gate": "MEDIUM", "risk_matrix_id": "adr-0006-risk-matrix-v1", "confidence_policy_id": "adr-0006-confidence-policy-v1"}, "component_versions": {"rule_schema": "1.0.0", "indicator_registry": "0.3.0-interim", "indicator_families": "1.0.0", "negative_library": "1.0.0", "taxonomy": "2.0.0", "dimensions": "1.0.0", "extraction_contracts": "1.0.0"}},
+      "decision_severity": "NONE",
+      "matched_evidence_strength": "NONE",
+      "risk_level": "NONE",
+      "detection_confidence": "NOT_APPLICABLE",
+      "provenance": {
+        "bundle_version": "1.0.0",
+        "bundle_content_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "commit_sha": "abc1234",
+        "engine_version": "0.1.0-wp1",
+        "evaluation_profile": {
+          "profile_id": "mvp-default",
+          "extraction_confidence_gate": "MEDIUM",
+          "risk_matrix_id": "adr-0006-risk-matrix-v1",
+          "confidence_policy_id": "adr-0006-confidence-policy-v1"
+        },
+        "component_versions": {
+          "rule_schema": "1.0.0",
+          "indicator_registry": "0.3.0-interim",
+          "indicator_families": "1.0.0",
+          "negative_library": "1.0.0",
+          "taxonomy": "2.0.0",
+          "dimensions": "1.0.0",
+          "extraction_contracts": "1.0.0"
+        }
+      },
       "matched_rules": [],
       "rule_results": [],
-      "matched_negative_indicators": ["OTP_DELIVERED_NOT_REQUESTED", "SELF_PROTECTIVE_WARNING", "NEGATED_CREDENTIAL_REQUEST"],
-      "explanation": {"summary": "A bank OTP delivered to you with a warning to keep it private — a genuine security message.", "what_was_detected": "An OTP delivered to the recipient and named inside a negation.", "why": "No live OTP-disclosure request is present, so no rule matches.", "detection_confidence_reason": "No rule fired; the message is affirmatively benign, not unknown."},
+      "matched_negative_indicators": [
+        "OTP_DELIVERED_NOT_REQUESTED",
+        "SELF_PROTECTIVE_WARNING",
+        "NEGATED_CREDENTIAL_REQUEST"
+      ],
+      "explanation": {
+        "summary": "A bank OTP delivered to you with a warning to keep it private \u2014 a genuine security message.",
+        "what_was_detected": "An OTP delivered to the recipient and named inside a negation.",
+        "why": "No live OTP-disclosure request is present, so no rule matches.",
+        "detection_confidence_reason": "No rule fired; the message is affirmatively benign, not unknown."
+      },
       "recommended_actions": []
     },
     {
@@ -24,19 +61,62 @@
       "evaluation_id": "FIXTURE-02-INSUFFICIENT",
       "evaluation_timestamp": "2026-08-29T10:01:00Z",
       "input_id": "IN-FIX-02",
-      "language": ["en"], "script": ["Latn"],
+      "language": [
+        "en"
+      ],
+      "script": [
+        "Latn"
+      ],
       "input_support_status": "SUPPORTED",
       "classification": "INSUFFICIENT_EVIDENCE",
-      "decision_severity": "NONE", "matched_evidence_strength": "NONE", "risk_level": "NONE", "detection_confidence": "NOT_APPLICABLE",
-      "provenance": {"bundle_version": "1.0.0", "bundle_content_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "engine_version": "0.1.0-wp1", "evaluation_profile": {"profile_id": "mvp-default", "extraction_confidence_gate": "MEDIUM", "risk_matrix_id": "adr-0006-risk-matrix-v1", "confidence_policy_id": "adr-0006-confidence-policy-v1"}, "component_versions": {"rule_schema": "1.0.0", "indicator_registry": "0.3.0-interim", "indicator_families": "1.0.0", "negative_library": "1.0.0", "taxonomy": "2.0.0", "dimensions": "1.0.0", "extraction_contracts": "1.0.0"}},
+      "decision_severity": "NONE",
+      "matched_evidence_strength": "NONE",
+      "risk_level": "NONE",
+      "detection_confidence": "NOT_APPLICABLE",
+      "provenance": {
+        "bundle_version": "1.0.0",
+        "bundle_content_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "engine_version": "0.1.0-wp1",
+        "evaluation_profile": {
+          "profile_id": "mvp-default",
+          "extraction_confidence_gate": "MEDIUM",
+          "risk_matrix_id": "adr-0006-risk-matrix-v1",
+          "confidence_policy_id": "adr-0006-confidence-policy-v1"
+        },
+        "component_versions": {
+          "rule_schema": "1.0.0",
+          "indicator_registry": "0.3.0-interim",
+          "indicator_families": "1.0.0",
+          "negative_library": "1.0.0",
+          "taxonomy": "2.0.0",
+          "dimensions": "1.0.0",
+          "extraction_contracts": "1.0.0"
+        }
+      },
       "matched_rules": [],
       "rule_results": [],
-      "matched_positive_indicators": ["SHORTENED_URL", "VAGUE_PRETEXT"],
-      "unknowns": ["no credential/payment/device action observed; pretext unspecified"],
-      "explanation": {"summary": "One weak cue and no decisive action — not enough to conclude anything.", "what_was_detected": "A shortened link with a vague pretext.", "why": "No published rule combination is satisfied; a single weak signal must never suffice (RP p.13).", "detection_confidence_reason": "No rule fired; the result states what is missing rather than returning 'safe'."},
+      "matched_positive_indicators": [
+        "SHORTENED_URL",
+        "VAGUE_PRETEXT"
+      ],
+      "unknowns": [
+        "no credential/payment/device action observed; pretext unspecified"
+      ],
+      "explanation": {
+        "summary": "One weak cue and no decisive action \u2014 not enough to conclude anything.",
+        "what_was_detected": "A shortened link with a vague pretext.",
+        "why": "No published rule combination is satisfied; a single weak signal must never suffice (RP p.13).",
+        "detection_confidence_reason": "No rule fired; the result states what is missing rather than returning 'safe'."
+      },
       "recommended_actions": [
-        {"action_code": "PROCEED_WITH_CAUTION", "priority": "ADVISORY"},
-        {"action_code": "VERIFY_INDEPENDENTLY", "priority": "ADVISORY"}
+        {
+          "action_code": "PROCEED_WITH_CAUTION",
+          "priority": "ADVISORY"
+        },
+        {
+          "action_code": "VERIFY_INDEPENDENTLY",
+          "priority": "ADVISORY"
+        }
       ]
     },
     {
@@ -44,19 +124,99 @@
       "evaluation_id": "FIXTURE-03-SUSPECTED",
       "evaluation_timestamp": "2026-08-29T10:02:00Z",
       "input_id": "IN-FIX-03",
-      "language": ["en"], "script": ["Latn"],
+      "language": [
+        "en"
+      ],
+      "script": [
+        "Latn"
+      ],
       "input_support_status": "SUPPORTED",
       "classification": "SCAM_PATTERN_SUSPECTED",
-      "decision_severity": "MEDIUM", "matched_evidence_strength": "WEAK", "risk_level": "LOW", "detection_confidence": "LOW",
-      "provenance": {"bundle_version": "1.0.0", "bundle_content_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "engine_version": "0.1.0-wp1", "evaluation_profile": {"profile_id": "mvp-default", "extraction_confidence_gate": "MEDIUM", "risk_matrix_id": "adr-0006-risk-matrix-v1", "confidence_policy_id": "adr-0006-confidence-policy-v1"}, "component_versions": {"rule_schema": "1.0.0", "indicator_registry": "0.3.0-interim", "indicator_families": "1.0.0", "negative_library": "1.0.0", "taxonomy": "2.0.0", "dimensions": "1.0.0", "extraction_contracts": "1.0.0"}},
-      "matched_rules": ["TL-KYC-001"],
-      "rule_results": [
-        {"rule_id": "TL-KYC-001", "rule_version": "1.0.0", "kind": "COMPOSITE", "evaluation_state": "MATCHED", "required_combination_result": "TRUE", "governing": true, "matched_positive_indicators": ["KYC_PRETEXT", "LINK_PRESENT", "URGENCY_DEADLINE"], "evidence_classes_spanned": ["PRETEXT", "CHANNEL_ARTIFACT", "PRESSURE"], "min_evidence_classes_required": 3, "evidence_class_diversity_met": true, "extraction_confidence_inputs": {"KYC_PRETEXT": "MEDIUM", "LINK_PRESENT": "MEDIUM", "URGENCY_DEADLINE": "LOW"}, "rule_evidence_verdict": "PARTIAL", "rule_evidence_strength": "WEAK", "rule_severity_declared": "HIGH", "effective_severity": "MEDIUM", "rule_detection_confidence": "LOW", "explanation_fragment": {"plain": "A KYC update demanded via a link with a deadline.", "technical": "KYC_PRETEXT + off-channel action + pressure; PARTIAL evidence capped at MEDIUM.", "why_confidence_limited": "Only a corroborating source; one decisive cue extracted at LOW confidence."}}
+      "decision_severity": "MEDIUM",
+      "matched_evidence_strength": "WEAK",
+      "risk_level": "LOW",
+      "detection_confidence": "LOW",
+      "provenance": {
+        "bundle_version": "1.0.0",
+        "bundle_content_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "engine_version": "0.1.0-wp1",
+        "evaluation_profile": {
+          "profile_id": "mvp-default",
+          "extraction_confidence_gate": "MEDIUM",
+          "risk_matrix_id": "adr-0006-risk-matrix-v1",
+          "confidence_policy_id": "adr-0006-confidence-policy-v1"
+        },
+        "component_versions": {
+          "rule_schema": "1.0.0",
+          "indicator_registry": "0.3.0-interim",
+          "indicator_families": "1.0.0",
+          "negative_library": "1.0.0",
+          "taxonomy": "2.0.0",
+          "dimensions": "1.0.0",
+          "extraction_contracts": "1.0.0"
+        }
+      },
+      "matched_rules": [
+        "TL-KYC-001"
       ],
-      "explanation": {"summary": "A possible KYC-phishing pattern, but the evidence is weak and low-confidence.", "what_was_detected": "A KYC update demanded through a link under a deadline.", "why": "TL-KYC-001 matched on pretext + link + pressure, but on PARTIAL evidence with a low-confidence cue.", "detection_confidence_reason": "LOW: capped PARTIAL evidence and a decisive indicator read at low extraction confidence."},
+      "rule_results": [
+        {
+          "rule_id": "TL-KYC-001",
+          "rule_version": "1.0.0",
+          "kind": "COMPOSITE",
+          "evaluation_state": "MATCHED",
+          "required_combination_result": "TRUE",
+          "governing": true,
+          "matched_positive_indicators": [
+            "KYC_PRETEXT",
+            "LINK_PRESENT",
+            "URGENCY_DEADLINE"
+          ],
+          "evidence_classes_spanned": [
+            "PRETEXT",
+            "CHANNEL_ARTIFACT",
+            "PRESSURE"
+          ],
+          "min_evidence_classes_required": 3,
+          "evidence_class_diversity_met": true,
+          "extraction_confidence_inputs": {
+            "KYC_PRETEXT": "MEDIUM",
+            "LINK_PRESENT": "MEDIUM",
+            "URGENCY_DEADLINE": "LOW"
+          },
+          "rule_evidence_verdict": "PARTIAL",
+          "rule_evidence_strength": "WEAK",
+          "rule_severity_declared": "HIGH",
+          "effective_severity": "MEDIUM",
+          "rule_detection_confidence": "LOW",
+          "explanation_fragment": {
+            "plain": "A KYC update demanded via a link with a deadline.",
+            "technical": "KYC_PRETEXT + off-channel action + pressure; PARTIAL evidence capped at MEDIUM.",
+            "why_confidence_limited": "Only a corroborating source; one decisive cue extracted at LOW confidence."
+          }
+        }
+      ],
+      "explanation": {
+        "summary": "A possible KYC-phishing pattern, but the evidence is weak and low-confidence.",
+        "what_was_detected": "A KYC update demanded through a link under a deadline.",
+        "why": "TL-KYC-001 matched on pretext + link + pressure, but on PARTIAL evidence with a low-confidence cue.",
+        "detection_confidence_reason": "LOW: capped PARTIAL evidence and a decisive indicator read at low extraction confidence."
+      },
       "recommended_actions": [
-        {"action_code": "VERIFY_INDEPENDENTLY", "priority": "HIGH", "reason_rule_ids": ["TL-KYC-001"]},
-        {"action_code": "SEEK_HUMAN_REVIEW", "priority": "ADVISORY", "reason_rule_ids": ["TL-KYC-001"]}
+        {
+          "action_code": "VERIFY_INDEPENDENTLY",
+          "priority": "HIGH",
+          "reason_rule_ids": [
+            "TL-KYC-001"
+          ]
+        },
+        {
+          "action_code": "SEEK_HUMAN_REVIEW",
+          "priority": "ADVISORY",
+          "reason_rule_ids": [
+            "TL-KYC-001"
+          ]
+        }
       ]
     },
     {
@@ -64,23 +224,152 @@
       "evaluation_id": "FIXTURE-04-DETECTED-HARDRISK",
       "evaluation_timestamp": "2026-08-29T10:03:00Z",
       "input_id": "IN-FIX-04",
-      "language": ["en"], "script": ["Latn"],
+      "language": [
+        "en"
+      ],
+      "script": [
+        "Latn"
+      ],
       "input_support_status": "SUPPORTED",
       "classification": "SCAM_PATTERN_DETECTED",
-      "decision_severity": "CRITICAL", "matched_evidence_strength": "STRONG", "risk_level": "CRITICAL", "detection_confidence": "HIGH",
-      "provenance": {"bundle_version": "1.0.0", "bundle_content_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "engine_version": "0.1.0-wp1", "evaluation_profile": {"profile_id": "mvp-default", "extraction_confidence_gate": "MEDIUM", "risk_matrix_id": "adr-0006-risk-matrix-v1", "confidence_policy_id": "adr-0006-confidence-policy-v1"}, "component_versions": {"rule_schema": "1.0.0", "indicator_registry": "0.3.0-interim", "indicator_families": "1.0.0", "negative_library": "1.0.0", "taxonomy": "2.0.0", "dimensions": "1.0.0", "extraction_contracts": "1.0.0"}},
-      "matched_rules": ["TL-PAY-001"],
-      "active_overrides": ["HR_UPI_PIN_TO_RECEIVE"],
-      "matched_positive_indicators": ["RECEIVE_FRAMING", "UPI_PIN_PROMPT"],
-      "rule_results": [
-        {"rule_id": "TL-PAY-001", "rule_version": "1.0.0", "kind": "COMPOSITE", "evaluation_state": "MATCHED", "required_combination_result": "TRUE", "governing": true, "governing_reason": "only fired rule; SUPPORTED, CRITICAL", "matched_positive_indicators": ["RECEIVE_FRAMING", "UPI_PIN_PROMPT"], "evidence_classes_spanned": ["PAYMENT_ACTION", "CREDENTIAL_ACTION"], "min_evidence_classes_required": 2, "evidence_class_diversity_met": true, "active_overrides": ["HR_UPI_PIN_TO_RECEIVE"], "extraction_confidence_inputs": {"RECEIVE_FRAMING": "HIGH", "UPI_PIN_PROMPT": "HIGH"}, "rule_evidence_verdict": "SUPPORTED", "rule_evidence_strength": "STRONG", "rule_severity_declared": "CRITICAL", "effective_severity": "CRITICAL", "rule_detection_confidence": "HIGH", "source_references": [{"source_id": "SRC-021", "issuing_body": "CERT-In", "authority": "OFFICIAL_GOVERNMENT", "verification_status": "PRIMARY_VERIFIED", "quote": "Always remember, you don't need a UPI PIN or OTP to receive money."}]}
+      "decision_severity": "CRITICAL",
+      "matched_evidence_strength": "STRONG",
+      "risk_level": "CRITICAL",
+      "detection_confidence": "HIGH",
+      "provenance": {
+        "bundle_version": "1.0.0",
+        "bundle_content_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "engine_version": "0.1.0-wp1",
+        "evaluation_profile": {
+          "profile_id": "mvp-default",
+          "extraction_confidence_gate": "MEDIUM",
+          "risk_matrix_id": "adr-0006-risk-matrix-v1",
+          "confidence_policy_id": "adr-0006-confidence-policy-v1"
+        },
+        "component_versions": {
+          "rule_schema": "1.0.0",
+          "indicator_registry": "0.3.0-interim",
+          "indicator_families": "1.0.0",
+          "negative_library": "1.0.0",
+          "taxonomy": "2.0.0",
+          "dimensions": "1.0.0",
+          "extraction_contracts": "1.0.0"
+        }
+      },
+      "matched_rules": [
+        "TL-PAY-001"
       ],
-      "corroboration_summary": {"independent_evidence_classes": ["PAYMENT_ACTION", "CREDENTIAL_ACTION"], "evidence_class_count": 2, "band": "MEDIUM"},
-      "explanation": {"summary": "You were asked to enter a UPI PIN to RECEIVE money — a directional contradiction and a known fraud pattern.", "what_was_detected": "A UPI PIN entry framed as necessary to receive a payment.", "why": "RECEIVE_FRAMING combined with UPI_PIN_PROMPT; entering a PIN never receives money.", "detection_confidence_reason": "HIGH: both decisive indicators observed at high confidence, an active hard-risk override, and a categorical official boundary.", "evidence_basis": [{"source_id": "SRC-021", "issuing_body": "CERT-In", "verification_status": "PRIMARY_VERIFIED", "quote": "you don't need a UPI PIN or OTP to receive money"}], "rules_fired": ["TL-PAY-001"]},
+      "active_overrides": [
+        "HR_UPI_PIN_TO_RECEIVE"
+      ],
+      "matched_positive_indicators": [
+        "RECEIVE_FRAMING",
+        "UPI_PIN_PROMPT"
+      ],
+      "rule_results": [
+        {
+          "rule_id": "TL-PAY-001",
+          "rule_version": "1.0.0",
+          "kind": "COMPOSITE",
+          "evaluation_state": "MATCHED",
+          "required_combination_result": "TRUE",
+          "governing": true,
+          "governing_reason": "only fired rule; SUPPORTED, CRITICAL",
+          "matched_positive_indicators": [
+            "RECEIVE_FRAMING",
+            "UPI_PIN_PROMPT"
+          ],
+          "evidence_classes_spanned": [
+            "PAYMENT_ACTION",
+            "CREDENTIAL_ACTION"
+          ],
+          "min_evidence_classes_required": 2,
+          "evidence_class_diversity_met": true,
+          "active_overrides": [
+            "HR_UPI_PIN_TO_RECEIVE"
+          ],
+          "extraction_confidence_inputs": {
+            "RECEIVE_FRAMING": "HIGH",
+            "UPI_PIN_PROMPT": "HIGH"
+          },
+          "rule_evidence_verdict": "SUPPORTED",
+          "rule_evidence_strength": "STRONG",
+          "rule_severity_declared": "CRITICAL",
+          "effective_severity": "CRITICAL",
+          "rule_detection_confidence": "HIGH",
+          "source_references": [
+            {
+              "source_id": "SRC-021",
+              "issuing_body": "CERT-In",
+              "authority": "OFFICIAL_GOVERNMENT",
+              "verification_status": "PRIMARY_VERIFIED",
+              "quote": "Always remember, you don't need a UPI PIN or OTP to receive money."
+            }
+          ],
+          "live_positive_provenance": {
+            "RECEIVE_FRAMING": [
+              [
+                "obs-rf-01"
+              ]
+            ],
+            "UPI_PIN_PROMPT": [
+              [
+                "obs-pin-01"
+              ]
+            ]
+          }
+        }
+      ],
+      "corroboration_summary": {
+        "independent_evidence_classes": [
+          "PAYMENT_ACTION",
+          "CREDENTIAL_ACTION"
+        ],
+        "evidence_class_count": 2,
+        "band": "MEDIUM"
+      },
+      "explanation": {
+        "summary": "You were asked to enter a UPI PIN to RECEIVE money \u2014 a directional contradiction and a known fraud pattern.",
+        "what_was_detected": "A UPI PIN entry framed as necessary to receive a payment.",
+        "why": "RECEIVE_FRAMING combined with UPI_PIN_PROMPT; entering a PIN never receives money.",
+        "detection_confidence_reason": "HIGH: both decisive indicators observed at high confidence, an active hard-risk override, and a categorical official boundary.",
+        "evidence_basis": [
+          {
+            "source_id": "SRC-021",
+            "issuing_body": "CERT-In",
+            "verification_status": "PRIMARY_VERIFIED",
+            "quote": "you don't need a UPI PIN or OTP to receive money"
+          }
+        ],
+        "rules_fired": [
+          "TL-PAY-001"
+        ]
+      },
       "recommended_actions": [
-        {"action_code": "DO_NOT_ENTER_PIN", "priority": "IMMEDIATE", "reason_rule_ids": ["TL-PAY-001"], "reason_override_ids": ["HR_UPI_PIN_TO_RECEIVE"], "evidence_refs": ["SRC-021"]},
-        {"action_code": "VERIFY_INDEPENDENTLY", "priority": "HIGH", "reason_rule_ids": ["TL-PAY-001"]},
-        {"action_code": "CONTACT_BANK", "priority": "ADVISORY"}
+        {
+          "action_code": "DO_NOT_ENTER_PIN",
+          "priority": "IMMEDIATE",
+          "reason_rule_ids": [
+            "TL-PAY-001"
+          ],
+          "reason_override_ids": [
+            "HR_UPI_PIN_TO_RECEIVE"
+          ],
+          "evidence_refs": [
+            "SRC-021"
+          ]
+        },
+        {
+          "action_code": "VERIFY_INDEPENDENTLY",
+          "priority": "HIGH",
+          "reason_rule_ids": [
+            "TL-PAY-001"
+          ]
+        },
+        {
+          "action_code": "CONTACT_BANK",
+          "priority": "ADVISORY"
+        }
       ]
     },
     {
@@ -88,18 +377,58 @@
       "evaluation_id": "FIXTURE-05-UNSUPPORTED",
       "evaluation_timestamp": "2026-08-29T10:04:00Z",
       "input_id": "IN-FIX-05",
-      "language": ["hi-Latn"], "script": ["Latn"],
+      "language": [
+        "hi-Latn"
+      ],
+      "script": [
+        "Latn"
+      ],
       "input_support_status": "UNSUPPORTED",
       "classification": "UNSUPPORTED",
-      "decision_severity": "NONE", "matched_evidence_strength": "NONE", "risk_level": "NONE", "detection_confidence": "NOT_APPLICABLE",
-      "provenance": {"bundle_version": "1.0.0", "bundle_content_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "engine_version": "0.1.0-wp1", "evaluation_profile": {"profile_id": "mvp-default", "extraction_confidence_gate": "MEDIUM", "risk_matrix_id": "adr-0006-risk-matrix-v1", "confidence_policy_id": "adr-0006-confidence-policy-v1"}, "component_versions": {"rule_schema": "1.0.0", "indicator_registry": "0.3.0-interim", "indicator_families": "1.0.0", "negative_library": "1.0.0", "taxonomy": "2.0.0", "dimensions": "1.0.0", "extraction_contracts": "1.0.0"}},
+      "decision_severity": "NONE",
+      "matched_evidence_strength": "NONE",
+      "risk_level": "NONE",
+      "detection_confidence": "NOT_APPLICABLE",
+      "provenance": {
+        "bundle_version": "1.0.0",
+        "bundle_content_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "engine_version": "0.1.0-wp1",
+        "evaluation_profile": {
+          "profile_id": "mvp-default",
+          "extraction_confidence_gate": "MEDIUM",
+          "risk_matrix_id": "adr-0006-risk-matrix-v1",
+          "confidence_policy_id": "adr-0006-confidence-policy-v1"
+        },
+        "component_versions": {
+          "rule_schema": "1.0.0",
+          "indicator_registry": "0.3.0-interim",
+          "indicator_families": "1.0.0",
+          "negative_library": "1.0.0",
+          "taxonomy": "2.0.0",
+          "dimensions": "1.0.0",
+          "extraction_contracts": "1.0.0"
+        }
+      },
       "matched_rules": [],
       "rule_results": [],
-      "limitations": ["Language hi is outside the MVP scope (en/Latn); detection not attempted (ADR-0014, G-08). Not benign."],
-      "explanation": {"summary": "This message is in an unsupported language, so TrustLens did not evaluate it.", "what_was_detected": "Input outside the supported language/script scope.", "why": "The MVP knowledge base is English/Latin-script only (ADR-0014).", "detection_confidence_reason": "Not applicable — no evaluation was performed. This is not a 'safe' result."},
+      "limitations": [
+        "Language hi is outside the MVP scope (en/Latn); detection not attempted (ADR-0014, G-08). Not benign."
+      ],
+      "explanation": {
+        "summary": "This message is in an unsupported language, so TrustLens did not evaluate it.",
+        "what_was_detected": "Input outside the supported language/script scope.",
+        "why": "The MVP knowledge base is English/Latin-script only (ADR-0014).",
+        "detection_confidence_reason": "Not applicable \u2014 no evaluation was performed. This is not a 'safe' result."
+      },
       "recommended_actions": [
-        {"action_code": "RESUBMIT_IN_SUPPORTED_LANGUAGE", "priority": "ADVISORY"},
-        {"action_code": "SEEK_HUMAN_REVIEW", "priority": "ADVISORY"}
+        {
+          "action_code": "RESUBMIT_IN_SUPPORTED_LANGUAGE",
+          "priority": "ADVISORY"
+        },
+        {
+          "action_code": "SEEK_HUMAN_REVIEW",
+          "priority": "ADVISORY"
+        }
       ]
     },
     {
@@ -107,18 +436,60 @@
       "evaluation_id": "FIXTURE-06-ERROR",
       "evaluation_timestamp": "2026-08-29T10:05:00Z",
       "input_id": "IN-FIX-06",
-      "language": ["en"], "script": ["Latn"],
+      "language": [
+        "en"
+      ],
+      "script": [
+        "Latn"
+      ],
       "input_support_status": "ERROR",
       "classification": "ERROR",
-      "decision_severity": "NONE", "matched_evidence_strength": "NONE", "risk_level": "NONE", "detection_confidence": "NOT_APPLICABLE",
-      "provenance": {"bundle_version": "1.0.0", "bundle_content_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "engine_version": "0.1.0-wp1", "evaluation_profile": {"profile_id": "mvp-default", "extraction_confidence_gate": "MEDIUM", "risk_matrix_id": "adr-0006-risk-matrix-v1", "confidence_policy_id": "adr-0006-confidence-policy-v1"}, "component_versions": {"rule_schema": "1.0.0", "indicator_registry": "0.3.0-interim", "indicator_families": "1.0.0", "negative_library": "1.0.0", "taxonomy": "2.0.0", "dimensions": "1.0.0", "extraction_contracts": "1.0.0"}},
+      "decision_severity": "NONE",
+      "matched_evidence_strength": "NONE",
+      "risk_level": "NONE",
+      "detection_confidence": "NOT_APPLICABLE",
+      "provenance": {
+        "bundle_version": "1.0.0",
+        "bundle_content_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "engine_version": "0.1.0-wp1",
+        "evaluation_profile": {
+          "profile_id": "mvp-default",
+          "extraction_confidence_gate": "MEDIUM",
+          "risk_matrix_id": "adr-0006-risk-matrix-v1",
+          "confidence_policy_id": "adr-0006-confidence-policy-v1"
+        },
+        "component_versions": {
+          "rule_schema": "1.0.0",
+          "indicator_registry": "0.3.0-interim",
+          "indicator_families": "1.0.0",
+          "negative_library": "1.0.0",
+          "taxonomy": "2.0.0",
+          "dimensions": "1.0.0",
+          "extraction_contracts": "1.0.0"
+        }
+      },
       "matched_rules": [],
       "rule_results": [],
       "degraded": false,
-      "errors": [{"scope": "WHOLE_EVALUATION", "stage": "BUNDLE_INTEGRITY", "code": "BUNDLE_DIGEST_MISMATCH", "message": "Published bundle content_digest did not match the manifest; refusing to evaluate (fail-closed)."}],
-      "explanation": {"summary": "TrustLens could not evaluate this input because the knowledge bundle failed its integrity check.", "what_was_detected": "A knowledge-bundle integrity failure.", "why": "The bundle content digest did not match its manifest (ADR-0004).", "detection_confidence_reason": "Not applicable — the engine refused to evaluate. This is not a 'safe' result."},
+      "errors": [
+        {
+          "scope": "WHOLE_EVALUATION",
+          "stage": "BUNDLE_INTEGRITY",
+          "code": "BUNDLE_DIGEST_MISMATCH",
+          "message": "Published bundle content_digest did not match the manifest; refusing to evaluate (fail-closed)."
+        }
+      ],
+      "explanation": {
+        "summary": "TrustLens could not evaluate this input because the knowledge bundle failed its integrity check.",
+        "what_was_detected": "A knowledge-bundle integrity failure.",
+        "why": "The bundle content digest did not match its manifest (ADR-0004).",
+        "detection_confidence_reason": "Not applicable \u2014 the engine refused to evaluate. This is not a 'safe' result."
+      },
       "recommended_actions": [
-        {"action_code": "SEEK_HUMAN_REVIEW", "priority": "IMMEDIATE"}
+        {
+          "action_code": "SEEK_HUMAN_REVIEW",
+          "priority": "IMMEDIATE"
+        }
       ]
     },
     {
@@ -126,17 +497,87 @@
       "evaluation_id": "FIXTURE-07-SUPPRESSED-BENIGN",
       "evaluation_timestamp": "2026-08-29T10:06:00Z",
       "input_id": "IN-FIX-07",
-      "language": ["en"], "script": ["Latn"],
+      "language": [
+        "en"
+      ],
+      "script": [
+        "Latn"
+      ],
       "input_support_status": "SUPPORTED",
       "classification": "NO_SCAM_PATTERN",
-      "decision_severity": "NONE", "matched_evidence_strength": "NONE", "risk_level": "NONE", "detection_confidence": "NOT_APPLICABLE",
-      "provenance": {"bundle_version": "1.0.0", "bundle_content_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "engine_version": "0.1.0-wp1", "evaluation_profile": {"profile_id": "mvp-default", "extraction_confidence_gate": "MEDIUM", "risk_matrix_id": "adr-0006-risk-matrix-v1", "confidence_policy_id": "adr-0006-confidence-policy-v1"}, "component_versions": {"rule_schema": "1.0.0", "indicator_registry": "0.3.0-interim", "indicator_families": "1.0.0", "negative_library": "1.0.0", "taxonomy": "2.0.0", "dimensions": "1.0.0", "extraction_contracts": "1.0.0"}},
+      "decision_severity": "NONE",
+      "matched_evidence_strength": "NONE",
+      "risk_level": "NONE",
+      "detection_confidence": "NOT_APPLICABLE",
+      "provenance": {
+        "bundle_version": "1.0.0",
+        "bundle_content_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "engine_version": "0.1.0-wp1",
+        "evaluation_profile": {
+          "profile_id": "mvp-default",
+          "extraction_confidence_gate": "MEDIUM",
+          "risk_matrix_id": "adr-0006-risk-matrix-v1",
+          "confidence_policy_id": "adr-0006-confidence-policy-v1"
+        },
+        "component_versions": {
+          "rule_schema": "1.0.0",
+          "indicator_registry": "0.3.0-interim",
+          "indicator_families": "1.0.0",
+          "negative_library": "1.0.0",
+          "taxonomy": "2.0.0",
+          "dimensions": "1.0.0",
+          "extraction_contracts": "1.0.0"
+        }
+      },
       "matched_rules": [],
-      "matched_negative_indicators": ["IT_SUPPORT_CONTEXT"],
-      "rule_results": [
-        {"rule_id": "TL-MAL-003", "rule_version": "1.0.0", "kind": "COMPOSITE", "evaluation_state": "SUPPRESSED", "required_combination_result": "TRUE", "matched_positive_indicators": ["SCREEN_SHARE_APP_REQUEST", "BENIGN_PRETEXT_FOR_TECHNICAL_ACTION"], "evidence_classes_spanned": ["DEVICE_ACTION", "PRETEXT"], "min_evidence_classes_required": 2, "evidence_class_diversity_met": true, "suppression": {"suppressed_by": "IT_SUPPORT_CONTEXT", "effect": "SUPPRESS_RULE", "applied_suppressors": ["IT_SUPPORT_CONTEXT"]}, "rule_evidence_verdict": "PARTIAL", "rule_severity_declared": "HIGH", "effective_severity": "HIGH", "explanation_fragment": {"technical": "Matched on screen-share + benign pretext, then cancelled by IT_SUPPORT_CONTEXT with no banking override active."}}
+      "matched_negative_indicators": [
+        "IT_SUPPORT_CONTEXT"
       ],
-      "explanation": {"summary": "A user-expected corporate IT support session — not a scam.", "what_was_detected": "A remote-support request in a non-banking context.", "why": "TL-MAL-003 matched, but with no banking/payment/KYC context IT_SUPPORT_CONTEXT suppressed it.", "detection_confidence_reason": "No finding stands; suppression recorded as negative evidence, not silent.", "suppression_considered": [{"suppressor": "IT_SUPPORT_CONTEXT", "outcome": "APPLIED", "reason": "No hard-risk override active in a non-banking context."}]},
+      "rule_results": [
+        {
+          "rule_id": "TL-MAL-003",
+          "rule_version": "1.0.0",
+          "kind": "COMPOSITE",
+          "evaluation_state": "SUPPRESSED",
+          "required_combination_result": "TRUE",
+          "matched_positive_indicators": [
+            "SCREEN_SHARE_APP_REQUEST",
+            "BENIGN_PRETEXT_FOR_TECHNICAL_ACTION"
+          ],
+          "evidence_classes_spanned": [
+            "DEVICE_ACTION",
+            "PRETEXT"
+          ],
+          "min_evidence_classes_required": 2,
+          "evidence_class_diversity_met": true,
+          "suppression": {
+            "suppressed_by": "IT_SUPPORT_CONTEXT",
+            "effect": "SUPPRESS_RULE",
+            "applied_suppressors": [
+              "IT_SUPPORT_CONTEXT"
+            ]
+          },
+          "rule_evidence_verdict": "PARTIAL",
+          "rule_severity_declared": "HIGH",
+          "effective_severity": "HIGH",
+          "explanation_fragment": {
+            "technical": "Matched on screen-share + benign pretext, then cancelled by IT_SUPPORT_CONTEXT with no banking override active."
+          }
+        }
+      ],
+      "explanation": {
+        "summary": "A user-expected corporate IT support session \u2014 not a scam.",
+        "what_was_detected": "A remote-support request in a non-banking context.",
+        "why": "TL-MAL-003 matched, but with no banking/payment/KYC context IT_SUPPORT_CONTEXT suppressed it.",
+        "detection_confidence_reason": "No finding stands; suppression recorded as negative evidence, not silent.",
+        "suppression_considered": [
+          {
+            "suppressor": "IT_SUPPORT_CONTEXT",
+            "outcome": "APPLIED",
+            "reason": "No hard-risk override active in a non-banking context."
+          }
+        ]
+      },
       "recommended_actions": []
     },
     {
@@ -144,23 +585,154 @@
       "evaluation_id": "FIXTURE-08-HARDRISK-DECOY",
       "evaluation_timestamp": "2026-08-29T10:07:00Z",
       "input_id": "IN-FIX-08",
-      "language": ["en"], "script": ["Latn"],
+      "language": [
+        "en"
+      ],
+      "script": [
+        "Latn"
+      ],
       "input_support_status": "SUPPORTED",
       "classification": "SCAM_PATTERN_DETECTED",
-      "decision_severity": "CRITICAL", "matched_evidence_strength": "STRONG", "risk_level": "CRITICAL", "detection_confidence": "HIGH",
-      "provenance": {"bundle_version": "1.0.0", "bundle_content_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "engine_version": "0.1.0-wp1", "evaluation_profile": {"profile_id": "mvp-default", "extraction_confidence_gate": "MEDIUM", "risk_matrix_id": "adr-0006-risk-matrix-v1", "confidence_policy_id": "adr-0006-confidence-policy-v1"}, "component_versions": {"rule_schema": "1.0.0", "indicator_registry": "0.3.0-interim", "indicator_families": "1.0.0", "negative_library": "1.0.0", "taxonomy": "2.0.0", "dimensions": "1.0.0", "extraction_contracts": "1.0.0"}},
-      "matched_rules": ["TL-CRED-001"],
-      "active_overrides": ["HR_OTP_DISCLOSURE_REQUEST"],
-      "matched_positive_indicators": ["CREDENTIAL_REQUEST_OTP", "ACCOUNT_BLOCK_THREAT", "URGENCY"],
-      "matched_negative_indicators": ["NEGATED_CREDENTIAL_REQUEST", "EDUCATIONAL_CONTENT", "SUPPORT_NEVER_ASKS"],
-      "rule_results": [
-        {"rule_id": "TL-CRED-001", "rule_version": "1.0.0", "kind": "COMPOSITE", "evaluation_state": "MATCHED", "required_combination_result": "TRUE", "governing": true, "matched_positive_indicators": ["CREDENTIAL_REQUEST_OTP", "ACCOUNT_BLOCK_THREAT"], "evidence_classes_spanned": ["CREDENTIAL_ACTION", "PRESSURE"], "min_evidence_classes_required": 2, "evidence_class_diversity_met": true, "active_overrides": ["HR_OTP_DISCLOSURE_REQUEST"], "suppression": {"effect": "NONE", "blocked_suppressors": ["EDUCATIONAL_CONTENT", "SUPPORT_NEVER_ASKS"]}, "extraction_confidence_inputs": {"CREDENTIAL_REQUEST_OTP": "HIGH", "ACCOUNT_BLOCK_THREAT": "HIGH"}, "rule_evidence_verdict": "SUPPORTED", "rule_evidence_strength": "STRONG", "rule_severity_declared": "CRITICAL", "effective_severity": "CRITICAL", "rule_detection_confidence": "HIGH", "source_references": [{"source_id": "SRC-004", "issuing_body": "Reserve Bank of India", "authority": "OFFICIAL_REGULATOR", "verification_status": "PRIMARY_VERIFIED", "quote": "banks and other payment systems operators never ask for details such as password, PIN, OTP, CVV number"}]}
+      "decision_severity": "CRITICAL",
+      "matched_evidence_strength": "STRONG",
+      "risk_level": "CRITICAL",
+      "detection_confidence": "HIGH",
+      "provenance": {
+        "bundle_version": "1.0.0",
+        "bundle_content_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "engine_version": "0.1.0-wp1",
+        "evaluation_profile": {
+          "profile_id": "mvp-default",
+          "extraction_confidence_gate": "MEDIUM",
+          "risk_matrix_id": "adr-0006-risk-matrix-v1",
+          "confidence_policy_id": "adr-0006-confidence-policy-v1"
+        },
+        "component_versions": {
+          "rule_schema": "1.0.0",
+          "indicator_registry": "0.3.0-interim",
+          "indicator_families": "1.0.0",
+          "negative_library": "1.0.0",
+          "taxonomy": "2.0.0",
+          "dimensions": "1.0.0",
+          "extraction_contracts": "1.0.0"
+        }
+      },
+      "matched_rules": [
+        "TL-CRED-001"
       ],
-      "explanation": {"summary": "A live request to confirm your OTP, wrapped in decoy 'we never ask' safety wording.", "what_was_detected": "A live OTP-disclosure request with an account-block threat.", "why": "A live CREDENTIAL_REQUEST_OTP is present; the safety wording is a decoy that the hard-risk override blocks from suppressing the finding.", "detection_confidence_reason": "HIGH: decisive indicators observed at high confidence and an active hard-risk override; the decoy suppressors were blocked.", "suppression_considered": [{"suppressor": "EDUCATIONAL_CONTENT", "outcome": "BLOCKED_BY_OVERRIDE", "reason": "HR_OTP_DISCLOSURE_REQUEST blocks EDUCATIONAL_SAFETY."}, {"suppressor": "SUPPORT_NEVER_ASKS", "outcome": "BLOCKED_BY_OVERRIDE", "reason": "HR_OTP_DISCLOSURE_REQUEST blocks CUSTOMER_SUPPORT_SAFETY."}], "overrides_applied": [{"override_id": "HR_OTP_DISCLOSURE_REQUEST", "blocked_categories": ["EDUCATIONAL_SAFETY", "CUSTOMER_SUPPORT_SAFETY"]}], "rules_fired": ["TL-CRED-001"]},
+      "active_overrides": [
+        "HR_OTP_DISCLOSURE_REQUEST"
+      ],
+      "matched_positive_indicators": [
+        "CREDENTIAL_REQUEST_OTP",
+        "ACCOUNT_BLOCK_THREAT",
+        "URGENCY"
+      ],
+      "matched_negative_indicators": [
+        "NEGATED_CREDENTIAL_REQUEST",
+        "EDUCATIONAL_CONTENT",
+        "SUPPORT_NEVER_ASKS"
+      ],
+      "rule_results": [
+        {
+          "rule_id": "TL-CRED-001",
+          "rule_version": "1.0.0",
+          "kind": "COMPOSITE",
+          "evaluation_state": "MATCHED",
+          "required_combination_result": "TRUE",
+          "governing": true,
+          "matched_positive_indicators": [
+            "CREDENTIAL_REQUEST_OTP",
+            "ACCOUNT_BLOCK_THREAT"
+          ],
+          "evidence_classes_spanned": [
+            "CREDENTIAL_ACTION",
+            "PRESSURE"
+          ],
+          "min_evidence_classes_required": 2,
+          "evidence_class_diversity_met": true,
+          "active_overrides": [
+            "HR_OTP_DISCLOSURE_REQUEST"
+          ],
+          "suppression": {
+            "effect": "NONE",
+            "blocked_suppressors": [
+              "EDUCATIONAL_CONTENT",
+              "SUPPORT_NEVER_ASKS"
+            ]
+          },
+          "extraction_confidence_inputs": {
+            "CREDENTIAL_REQUEST_OTP": "HIGH",
+            "ACCOUNT_BLOCK_THREAT": "HIGH"
+          },
+          "rule_evidence_verdict": "SUPPORTED",
+          "rule_evidence_strength": "STRONG",
+          "rule_severity_declared": "CRITICAL",
+          "effective_severity": "CRITICAL",
+          "rule_detection_confidence": "HIGH",
+          "source_references": [
+            {
+              "source_id": "SRC-004",
+              "issuing_body": "Reserve Bank of India",
+              "authority": "OFFICIAL_REGULATOR",
+              "verification_status": "PRIMARY_VERIFIED",
+              "quote": "banks and other payment systems operators never ask for details such as password, PIN, OTP, CVV number"
+            }
+          ]
+        }
+      ],
+      "explanation": {
+        "summary": "A live request to confirm your OTP, wrapped in decoy 'we never ask' safety wording.",
+        "what_was_detected": "A live OTP-disclosure request with an account-block threat.",
+        "why": "A live CREDENTIAL_REQUEST_OTP is present; the safety wording is a decoy that the hard-risk override blocks from suppressing the finding.",
+        "detection_confidence_reason": "HIGH: decisive indicators observed at high confidence and an active hard-risk override; the decoy suppressors were blocked.",
+        "suppression_considered": [
+          {
+            "suppressor": "EDUCATIONAL_CONTENT",
+            "outcome": "BLOCKED_BY_OVERRIDE",
+            "reason": "HR_OTP_DISCLOSURE_REQUEST blocks EDUCATIONAL_SAFETY."
+          },
+          {
+            "suppressor": "SUPPORT_NEVER_ASKS",
+            "outcome": "BLOCKED_BY_OVERRIDE",
+            "reason": "HR_OTP_DISCLOSURE_REQUEST blocks CUSTOMER_SUPPORT_SAFETY."
+          }
+        ],
+        "overrides_applied": [
+          {
+            "override_id": "HR_OTP_DISCLOSURE_REQUEST",
+            "blocked_categories": [
+              "EDUCATIONAL_SAFETY",
+              "CUSTOMER_SUPPORT_SAFETY"
+            ]
+          }
+        ],
+        "rules_fired": [
+          "TL-CRED-001"
+        ]
+      },
       "recommended_actions": [
-        {"action_code": "DO_NOT_SHARE_CREDENTIALS", "priority": "IMMEDIATE", "reason_rule_ids": ["TL-CRED-001"], "reason_override_ids": ["HR_OTP_DISCLOSURE_REQUEST"], "evidence_refs": ["SRC-004"]},
-        {"action_code": "CONTACT_BANK", "priority": "HIGH"},
-        {"action_code": "REPORT_CYBERCRIME", "priority": "ADVISORY"}
+        {
+          "action_code": "DO_NOT_SHARE_CREDENTIALS",
+          "priority": "IMMEDIATE",
+          "reason_rule_ids": [
+            "TL-CRED-001"
+          ],
+          "reason_override_ids": [
+            "HR_OTP_DISCLOSURE_REQUEST"
+          ],
+          "evidence_refs": [
+            "SRC-004"
+          ]
+        },
+        {
+          "action_code": "CONTACT_BANK",
+          "priority": "HIGH"
+        },
+        {
+          "action_code": "REPORT_CYBERCRIME",
+          "priority": "ADVISORY"
+        }
       ]
     },
     {
@@ -168,25 +740,148 @@
       "evaluation_id": "FIXTURE-09-CORROBORATED",
       "evaluation_timestamp": "2026-08-29T10:08:00Z",
       "input_id": "IN-FIX-09",
-      "language": ["en"], "script": ["Latn"],
+      "language": [
+        "en"
+      ],
+      "script": [
+        "Latn"
+      ],
       "input_support_status": "SUPPORTED",
       "classification": "SCAM_PATTERN_DETECTED",
-      "decision_severity": "CRITICAL", "matched_evidence_strength": "STRONG", "risk_level": "CRITICAL", "detection_confidence": "HIGH",
-      "provenance": {"bundle_version": "1.0.0", "bundle_content_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "engine_version": "0.1.0-wp1", "evaluation_profile": {"profile_id": "mvp-default", "extraction_confidence_gate": "MEDIUM", "risk_matrix_id": "adr-0006-risk-matrix-v1", "confidence_policy_id": "adr-0006-confidence-policy-v1"}, "component_versions": {"rule_schema": "1.0.0", "indicator_registry": "0.3.0-interim", "indicator_families": "1.0.0", "negative_library": "1.0.0", "taxonomy": "2.0.0", "dimensions": "1.0.0", "extraction_contracts": "1.0.0"}},
-      "matched_rules": ["TL-AUTH-001", "TL-AUTH-002"],
-      "active_overrides": ["HR_PAYMENT_UNDER_COERCION"],
-      "matched_positive_indicators": ["AUTHORITY_IMPERSONATION", "LEGAL_ACCUSATION", "ARREST_THREAT", "ISOLATION_FROM_FAMILY_OR_LAWYER", "IMMEDIATE_PAYMENT_DEMAND"],
-      "rule_results": [
-        {"rule_id": "TL-AUTH-001", "rule_version": "1.0.0", "kind": "COMPOSITE", "evaluation_state": "MATCHED", "required_combination_result": "TRUE", "governing": true, "governing_reason": "highest effective severity (CRITICAL, SUPPORTED)", "matched_positive_indicators": ["AUTHORITY_IMPERSONATION", "ARREST_THREAT", "IMMEDIATE_PAYMENT_DEMAND"], "evidence_classes_spanned": ["IDENTITY_CLAIM", "PRESSURE", "PAYMENT_ACTION"], "min_evidence_classes_required": 3, "evidence_class_diversity_met": true, "active_overrides": ["HR_PAYMENT_UNDER_COERCION"], "rule_evidence_verdict": "SUPPORTED", "rule_evidence_strength": "STRONG", "rule_severity_declared": "CRITICAL", "effective_severity": "CRITICAL", "rule_detection_confidence": "HIGH"},
-        {"rule_id": "TL-AUTH-002", "rule_version": "1.0.0", "kind": "COMPOSITE", "evaluation_state": "MATCHED", "required_combination_result": "TRUE", "matched_positive_indicators": ["ISOLATION_FROM_FAMILY_OR_LAWYER", "AUTHORITY_IMPERSONATION"], "evidence_classes_spanned": ["PRESSURE", "IDENTITY_CLAIM"], "min_evidence_classes_required": 2, "evidence_class_diversity_met": true, "rule_evidence_verdict": "SUPPORTED", "rule_evidence_strength": "STRONG", "rule_severity_declared": "CRITICAL", "effective_severity": "CRITICAL", "rule_detection_confidence": "HIGH"}
+      "decision_severity": "CRITICAL",
+      "matched_evidence_strength": "STRONG",
+      "risk_level": "CRITICAL",
+      "detection_confidence": "HIGH",
+      "provenance": {
+        "bundle_version": "1.0.0",
+        "bundle_content_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "engine_version": "0.1.0-wp1",
+        "evaluation_profile": {
+          "profile_id": "mvp-default",
+          "extraction_confidence_gate": "MEDIUM",
+          "risk_matrix_id": "adr-0006-risk-matrix-v1",
+          "confidence_policy_id": "adr-0006-confidence-policy-v1"
+        },
+        "component_versions": {
+          "rule_schema": "1.0.0",
+          "indicator_registry": "0.3.0-interim",
+          "indicator_families": "1.0.0",
+          "negative_library": "1.0.0",
+          "taxonomy": "2.0.0",
+          "dimensions": "1.0.0",
+          "extraction_contracts": "1.0.0"
+        }
+      },
+      "matched_rules": [
+        "TL-AUTH-001",
+        "TL-AUTH-002"
       ],
-      "corroboration_summary": {"independent_evidence_classes": ["IDENTITY_CLAIM", "PRESSURE", "PAYMENT_ACTION", "PRETEXT"], "evidence_class_count": 4, "band": "HIGH"},
-      "explanation": {"summary": "A digital-arrest coercion pattern: impersonation, legal threat, isolation, and a coerced payment.", "what_was_detected": "Authority impersonation with a legal threat, isolation, and a coerced payment demand.", "why": "TL-AUTH-001 and TL-AUTH-002 matched across four independent evidence classes; HR_PAYMENT_UNDER_COERCION is active.", "detection_confidence_reason": "HIGH: strong independent corroboration across four evidence classes, all SUPPORTED.", "rules_fired": ["TL-AUTH-001", "TL-AUTH-002"]},
+      "active_overrides": [
+        "HR_PAYMENT_UNDER_COERCION"
+      ],
+      "matched_positive_indicators": [
+        "AUTHORITY_IMPERSONATION",
+        "LEGAL_ACCUSATION",
+        "ARREST_THREAT",
+        "ISOLATION_FROM_FAMILY_OR_LAWYER",
+        "IMMEDIATE_PAYMENT_DEMAND"
+      ],
+      "rule_results": [
+        {
+          "rule_id": "TL-AUTH-001",
+          "rule_version": "1.0.0",
+          "kind": "COMPOSITE",
+          "evaluation_state": "MATCHED",
+          "required_combination_result": "TRUE",
+          "governing": true,
+          "governing_reason": "highest effective severity (CRITICAL, SUPPORTED)",
+          "matched_positive_indicators": [
+            "AUTHORITY_IMPERSONATION",
+            "ARREST_THREAT",
+            "IMMEDIATE_PAYMENT_DEMAND"
+          ],
+          "evidence_classes_spanned": [
+            "IDENTITY_CLAIM",
+            "PRESSURE",
+            "PAYMENT_ACTION"
+          ],
+          "min_evidence_classes_required": 3,
+          "evidence_class_diversity_met": true,
+          "active_overrides": [
+            "HR_PAYMENT_UNDER_COERCION"
+          ],
+          "rule_evidence_verdict": "SUPPORTED",
+          "rule_evidence_strength": "STRONG",
+          "rule_severity_declared": "CRITICAL",
+          "effective_severity": "CRITICAL",
+          "rule_detection_confidence": "HIGH"
+        },
+        {
+          "rule_id": "TL-AUTH-002",
+          "rule_version": "1.0.0",
+          "kind": "COMPOSITE",
+          "evaluation_state": "MATCHED",
+          "required_combination_result": "TRUE",
+          "matched_positive_indicators": [
+            "ISOLATION_FROM_FAMILY_OR_LAWYER",
+            "AUTHORITY_IMPERSONATION"
+          ],
+          "evidence_classes_spanned": [
+            "PRESSURE",
+            "IDENTITY_CLAIM"
+          ],
+          "min_evidence_classes_required": 2,
+          "evidence_class_diversity_met": true,
+          "rule_evidence_verdict": "SUPPORTED",
+          "rule_evidence_strength": "STRONG",
+          "rule_severity_declared": "CRITICAL",
+          "effective_severity": "CRITICAL",
+          "rule_detection_confidence": "HIGH"
+        }
+      ],
+      "corroboration_summary": {
+        "independent_evidence_classes": [
+          "IDENTITY_CLAIM",
+          "PRESSURE",
+          "PAYMENT_ACTION",
+          "PRETEXT"
+        ],
+        "evidence_class_count": 4,
+        "band": "HIGH"
+      },
+      "explanation": {
+        "summary": "A digital-arrest coercion pattern: impersonation, legal threat, isolation, and a coerced payment.",
+        "what_was_detected": "Authority impersonation with a legal threat, isolation, and a coerced payment demand.",
+        "why": "TL-AUTH-001 and TL-AUTH-002 matched across four independent evidence classes; HR_PAYMENT_UNDER_COERCION is active.",
+        "detection_confidence_reason": "HIGH: strong independent corroboration across four evidence classes, all SUPPORTED.",
+        "rules_fired": [
+          "TL-AUTH-001",
+          "TL-AUTH-002"
+        ]
+      },
       "recommended_actions": [
-        {"action_code": "DO_NOT_TRANSFER_MONEY", "priority": "IMMEDIATE", "reason_rule_ids": ["TL-AUTH-001"], "reason_override_ids": ["HR_PAYMENT_UNDER_COERCION"]},
-        {"action_code": "CONTACT_OFFICIAL_CHANNEL", "priority": "HIGH"},
-        {"action_code": "REPORT_CYBERCRIME", "priority": "ADVISORY"},
-        {"action_code": "PRESERVE_EVIDENCE", "priority": "ADVISORY"}
+        {
+          "action_code": "DO_NOT_TRANSFER_MONEY",
+          "priority": "IMMEDIATE",
+          "reason_rule_ids": [
+            "TL-AUTH-001"
+          ],
+          "reason_override_ids": [
+            "HR_PAYMENT_UNDER_COERCION"
+          ]
+        },
+        {
+          "action_code": "CONTACT_OFFICIAL_CHANNEL",
+          "priority": "HIGH"
+        },
+        {
+          "action_code": "REPORT_CYBERCRIME",
+          "priority": "ADVISORY"
+        },
+        {
+          "action_code": "PRESERVE_EVIDENCE",
+          "priority": "ADVISORY"
+        }
       ]
     },
     {
@@ -194,23 +889,120 @@
       "evaluation_id": "FIXTURE-10-DEGRADED",
       "evaluation_timestamp": "2026-08-29T10:09:00Z",
       "input_id": "IN-FIX-10",
-      "language": ["en"], "script": ["Latn"],
+      "language": [
+        "en"
+      ],
+      "script": [
+        "Latn"
+      ],
       "input_support_status": "SUPPORTED",
       "classification": "SCAM_PATTERN_DETECTED",
-      "decision_severity": "CRITICAL", "matched_evidence_strength": "STRONG", "risk_level": "CRITICAL", "detection_confidence": "MEDIUM",
-      "provenance": {"bundle_version": "1.0.0", "bundle_content_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "engine_version": "0.1.0-wp1", "evaluation_profile": {"profile_id": "mvp-default", "extraction_confidence_gate": "MEDIUM", "risk_matrix_id": "adr-0006-risk-matrix-v1", "confidence_policy_id": "adr-0006-confidence-policy-v1"}, "component_versions": {"rule_schema": "1.0.0", "indicator_registry": "0.3.0-interim", "indicator_families": "1.0.0", "negative_library": "1.0.0", "taxonomy": "2.0.0", "dimensions": "1.0.0", "extraction_contracts": "1.0.0"}},
-      "matched_rules": ["TL-PAY-001"],
-      "active_overrides": ["HR_UPI_PIN_TO_RECEIVE"],
+      "decision_severity": "CRITICAL",
+      "matched_evidence_strength": "STRONG",
+      "risk_level": "CRITICAL",
+      "detection_confidence": "MEDIUM",
+      "provenance": {
+        "bundle_version": "1.0.0",
+        "bundle_content_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "engine_version": "0.1.0-wp1",
+        "evaluation_profile": {
+          "profile_id": "mvp-default",
+          "extraction_confidence_gate": "MEDIUM",
+          "risk_matrix_id": "adr-0006-risk-matrix-v1",
+          "confidence_policy_id": "adr-0006-confidence-policy-v1"
+        },
+        "component_versions": {
+          "rule_schema": "1.0.0",
+          "indicator_registry": "0.3.0-interim",
+          "indicator_families": "1.0.0",
+          "negative_library": "1.0.0",
+          "taxonomy": "2.0.0",
+          "dimensions": "1.0.0",
+          "extraction_contracts": "1.0.0"
+        }
+      },
+      "matched_rules": [
+        "TL-PAY-001"
+      ],
+      "active_overrides": [
+        "HR_UPI_PIN_TO_RECEIVE"
+      ],
       "rule_results": [
-        {"rule_id": "TL-PAY-001", "rule_version": "1.0.0", "kind": "COMPOSITE", "evaluation_state": "MATCHED", "required_combination_result": "TRUE", "governing": true, "matched_positive_indicators": ["RECEIVE_FRAMING", "UPI_PIN_PROMPT"], "evidence_classes_spanned": ["PAYMENT_ACTION", "CREDENTIAL_ACTION"], "min_evidence_classes_required": 2, "evidence_class_diversity_met": true, "active_overrides": ["HR_UPI_PIN_TO_RECEIVE"], "rule_evidence_verdict": "SUPPORTED", "rule_evidence_strength": "STRONG", "rule_severity_declared": "CRITICAL", "effective_severity": "CRITICAL", "rule_detection_confidence": "HIGH"},
-        {"rule_id": "TL-CRED-001", "rule_version": "1.0.0", "kind": "COMPOSITE", "evaluation_state": "NOT_APPLICABLE", "required_combination_result": "UNKNOWN", "evaluation_error": {"code": "RULE_EXCEPTION", "message": "Rule evaluation raised an exception; excluded from the decision."}}
+        {
+          "rule_id": "TL-PAY-001",
+          "rule_version": "1.0.0",
+          "kind": "COMPOSITE",
+          "evaluation_state": "MATCHED",
+          "required_combination_result": "TRUE",
+          "governing": true,
+          "matched_positive_indicators": [
+            "RECEIVE_FRAMING",
+            "UPI_PIN_PROMPT"
+          ],
+          "evidence_classes_spanned": [
+            "PAYMENT_ACTION",
+            "CREDENTIAL_ACTION"
+          ],
+          "min_evidence_classes_required": 2,
+          "evidence_class_diversity_met": true,
+          "active_overrides": [
+            "HR_UPI_PIN_TO_RECEIVE"
+          ],
+          "rule_evidence_verdict": "SUPPORTED",
+          "rule_evidence_strength": "STRONG",
+          "rule_severity_declared": "CRITICAL",
+          "effective_severity": "CRITICAL",
+          "rule_detection_confidence": "HIGH"
+        },
+        {
+          "rule_id": "TL-CRED-001",
+          "rule_version": "1.0.0",
+          "kind": "COMPOSITE",
+          "evaluation_state": "NOT_APPLICABLE",
+          "required_combination_result": "UNKNOWN",
+          "evaluation_error": {
+            "code": "RULE_EXCEPTION",
+            "message": "Rule evaluation raised an exception; excluded from the decision."
+          }
+        }
       ],
       "degraded": true,
-      "errors": [{"scope": "SINGLE_RULE", "stage": "RULE_EVALUATION", "code": "RULE_EXCEPTION", "rule_id": "TL-CRED-001", "message": "One rule was unavailable; the decision continued and is flagged degraded."}],
-      "explanation": {"summary": "A receive-money PIN fraud was detected, but one rule failed to evaluate — the result is degraded and should be reviewed.", "what_was_detected": "A UPI PIN entry framed as necessary to receive money.", "why": "TL-PAY-001 matched; a second rule errored and was excluded.", "detection_confidence_reason": "MEDIUM: capped from HIGH because the evaluation is degraded (one rule unavailable).", "limitations": ["Degraded: TL-CRED-001 did not evaluate."], "rules_fired": ["TL-PAY-001"]},
+      "errors": [
+        {
+          "scope": "SINGLE_RULE",
+          "stage": "RULE_EVALUATION",
+          "code": "RULE_EXCEPTION",
+          "rule_id": "TL-CRED-001",
+          "message": "One rule was unavailable; the decision continued and is flagged degraded."
+        }
+      ],
+      "explanation": {
+        "summary": "A receive-money PIN fraud was detected, but one rule failed to evaluate \u2014 the result is degraded and should be reviewed.",
+        "what_was_detected": "A UPI PIN entry framed as necessary to receive money.",
+        "why": "TL-PAY-001 matched; a second rule errored and was excluded.",
+        "detection_confidence_reason": "MEDIUM: capped from HIGH because the evaluation is degraded (one rule unavailable).",
+        "limitations": [
+          "Degraded: TL-CRED-001 did not evaluate."
+        ],
+        "rules_fired": [
+          "TL-PAY-001"
+        ]
+      },
       "recommended_actions": [
-        {"action_code": "DO_NOT_ENTER_PIN", "priority": "IMMEDIATE", "reason_rule_ids": ["TL-PAY-001"], "reason_override_ids": ["HR_UPI_PIN_TO_RECEIVE"]},
-        {"action_code": "SEEK_HUMAN_REVIEW", "priority": "HIGH"}
+        {
+          "action_code": "DO_NOT_ENTER_PIN",
+          "priority": "IMMEDIATE",
+          "reason_rule_ids": [
+            "TL-PAY-001"
+          ],
+          "reason_override_ids": [
+            "HR_UPI_PIN_TO_RECEIVE"
+          ]
+        },
+        {
+          "action_code": "SEEK_HUMAN_REVIEW",
+          "priority": "HIGH"
+        }
       ]
     }
   ]

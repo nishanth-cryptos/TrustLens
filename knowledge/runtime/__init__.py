@@ -1,11 +1,12 @@
-"""TrustLens Phase 3 runtime knowledge package (P3-WP2 loader through P3-WP4 suppression).
+"""TrustLens Phase 3 runtime knowledge package (P3-WP2 loader through P3-WP5 aggregation).
 
 P3-WP2 loads an ADR-0004 published knowledge bundle into an immutable, indexed, read-only
 `RuntimeKnowledge` — or fails closed with a typed error. P3-WP3 adds the deterministic three-valued
 (Kleene) rule evaluator that consumes that RuntimeKnowledge plus a submission's indicator observations
 and returns per-rule `RuleEvaluationResult`s. P3-WP4 then applies post-match rule suppression and
-severity caps. These stages produce PER-RULE results ONLY: no decision aggregation, risk,
-classification, confidence aggregation, or decision explanation (those are P3-WP5+).
+severity caps. P3-WP5 (`aggregate_decision`) folds the governed per-rule results into ONE decision-level
+result — decision severity, matched-evidence strength, risk, detection confidence, corroboration and the
+final classification (ADR-0006). Decision explanation prose and recommended actions remain P3-WP6.
 
 Public API::
 
@@ -44,6 +45,13 @@ from .evaluator import (
     RuleEvaluator,
     evaluate_rule_from_governed,
     evaluate_rules_from_governed,
+)
+from .aggregation import (
+    RISK_MATRIX,
+    AggregationError,
+    DecisionResult,
+    aggregate_decision,
+    evaluate_decision_from_governed,
 )
 from .loader import load_bundle
 from .suppression import (
@@ -94,4 +102,10 @@ __all__ = [
     "apply_rule_suppression",
     "evaluate_rule_with_suppression_from_governed",
     "evaluate_rules_with_suppression_from_governed",
+    # P3-WP5 (decision aggregation / risk / confidence / classification)
+    "aggregate_decision",
+    "evaluate_decision_from_governed",
+    "DecisionResult",
+    "AggregationError",
+    "RISK_MATRIX",
 ]

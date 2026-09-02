@@ -192,6 +192,21 @@ resolution and the `SUPPRESSED` state. WP3 *exposes* the picture (`matched_negat
 deterministically. **Deferred to WP5:** `rule_evidence_strength`, `rule_detection_confidence`,
 `governing` — ADR-0006 aggregation quantities.
 
+**Live-positive provenance (P3-WP3 provenance-output amendment, 2026-09-02, required by the WP5 safety
+review).** For each MATCHED-positive TRUE indicator, WP3 also emits `live_positive_provenance` — one GROUP
+per structurally-LIVE contributing occurrence, each group being that occurrence's governed `observation_refs`
+(grouping preserved: one occurrence with two refs is ONE group). It is collected from the **same**
+per-occurrence evaluation in `_combine_positive` that already produces the Kleene truth value: only
+occurrences whose per-occurrence value is `TRUE` after structural eligibility + confidence gating +
+occurrence-associated `SUPPRESS_INDICATOR` contribute; `NEGATED`/`REPORTED`/`QUOTED`/`HYPOTHETICAL`/non-live
+`DESCRIPTIVE`/unresolved/neutralised occurrences do not. It **adds no new truth** (it changes no
+`evaluation_state`, `required_combination_result`, `matched_positive_indicators`, `neutralised_indicators`,
+severity, etc.) — it is provenance EXPOSURE only, so WP5 can prove evidence independence over authoritative
+live occurrences (a class→occurrence matching) instead of guessing from flat refs. Canonically ordered
+(keys lexical, refs sorted+unique within each group, groups sorted, duplicate-free) for determinism. The
+field is an additive optional MINOR amendment to `rule-evaluation-result.schema.json`; GDC-15 exposes only
+its live OTP occurrence (`g15-otp-live`), excluding the negated disclaimer (`g15-otp-neg`).
+
 Rule kind (STEP 11): a `SUPPRESSION`-kind rule takes a **distinct pathway** — its `require` is evaluated
 over negative operands and the outcome preserved for WP4; it never receives severity, evidence-class
 diversity or overrides, so suppression infrastructure can never masquerade as a fraud conclusion. (No

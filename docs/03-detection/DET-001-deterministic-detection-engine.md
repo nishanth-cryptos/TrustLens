@@ -214,21 +214,32 @@ deterministic categorical function — **not a calibrated probability** — of:
 6. **suppressive context** — active `CONTEXT_ONLY` benign evidence nudges it down, but never below the
    floor implied by an active hard-risk override.
 
-Banding (fixed policy, ADR-0006):
+Banding (fixed policy, ADR-0006) — **one normative rule per band** (WP5 implements this exactly;
+[DET-001-WP5](DET-001-WP5-decision-aggregation.md) §7):
 
-- **HIGH** — all decisive indicators `OBSERVED` at `HIGH`; governing rule `SUPPORTED`; **either** ≥3
-  independent evidence classes **or** an active hard-risk override whose decisive signals are
-  `OBSERVED`≥`MEDIUM`; no decisive `AMBIGUOUS`.
-- **MEDIUM** — decisive indicators `OBSERVED`≥`MEDIUM`; ≥2 independent evidence classes; verdict
-  `SUPPORTED` or `PARTIAL`; no unresolved decisive ambiguity blocking the combination.
-- **LOW** — fired but resting on capped/`PARTIAL`/`HEURISTIC` evidence, minimal (exactly-minimum)
-  corroboration, some decisive extraction at `LOW`, or benign context present.
+- **HIGH** — **all** of: governing verdict `SUPPORTED`; **no** decisive `AMBIGUOUS` evidence; **minimum**
+  decisive extraction confidence `≥ MEDIUM`; **and either** `proven_independent_evidence_count ≥ 3` (a
+  class→occurrence bipartite matching over the authoritative WP3 `live_positive_provenance`, **never** a raw
+  class-name count) **or** an active governed hard-risk override. `degraded = true` caps to `MEDIUM`;
+  `PARTIAL`/`HEURISTIC` cannot reach HIGH; a `LOW` decisive extraction cannot reach HIGH.
+- **MEDIUM** — a fired rule that does not meet the HIGH rule and is not LOW (e.g. `SUPPORTED` with < 3
+  proven-independent supports and no override, or `PARTIAL`).
+- **LOW** (→ `SCAM_PATTERN_SUSPECTED`) — governing verdict `HEURISTIC`/`UNSUPPORTED`, or active benign
+  `CONTEXT_ONLY` on the governing rule.
 
-**What "HIGH confidence" means operationally:** every indicator the conclusion rests on was extracted at
-high confidence; the governing rule is backed by a verified official source; and the conclusion is
-corroborated by multiple independent observation families (or by an active, evidence-backed hard-risk
-override that reflects a categorical official boundary), with no unresolved ambiguity. It does **not**
-mean a statistical probability of fraud.
+The **same** `proven_independent_evidence_count` drives the corroboration band and the HIGH path, so a raw
+class count can never bypass the provenance/independence cap. This supersedes any earlier phrasing that said
+"all decisive indicators at HIGH" / "every indicator high confidence"; the `≥ MEDIUM` floor is the only
+reading consistent with all 15 golden cases (GDC-10 is `HIGH` on three proven-independent occurrences with a
+`MEDIUM` decisive indicator). It remains categorical (never a probability) and changes no golden outcome.
+
+**What "HIGH confidence" means operationally:** every decisive indicator the conclusion rests on was
+extracted at **at least `MEDIUM`** confidence (none at `LOW`); the governing rule is backed by a verified
+official source (`SUPPORTED` verdict); and the conclusion is corroborated by **≥ 3 proven-independent
+governed evidence supports** (the class→occurrence matching over `live_positive_provenance`) **or** by an
+active, evidence-backed hard-risk override that reflects a categorical official boundary — with no
+unresolved ambiguity and no degraded rule. It does **not** require every indicator at `HIGH`, and it does
+**not** mean a statistical probability of fraud.
 
 ## 10. Hard-risk overrides (STEP 10)
 
@@ -497,3 +508,6 @@ canonical check** at the Phase-3 closure, GATE-009. P3-WP8 concerns the future *
 | Version | Date | Change | Author role |
 |---|---|---|---|
 | 1.0 (design) | 2026-08-29 | Initial DET-001 design: pipeline, three-valued execution, extraction-confidence gating, hard-risk override semantics, suppression, aggregation, corroboration, separated severity/risk/confidence model, classification vocabulary, explanation & action contracts, determinism & fail-closed behaviour, AI boundary, 15 machine-checked golden cases, and the Phase-3 WBS. Implements CONF-001; changes no Phase-2 semantics. Frozen by ADR-0005/ADR-0006. | Detection Architect |
+| 1.0.1 (clarification) | 2026-09-02 | P3-WP5 implemented (`knowledge/runtime/aggregation.py`, gate check #15). Recorded the ratified §9 confidence clarification: the HIGH band's decisive-extraction floor is `≥ MEDIUM` (categorical policy, no golden outcome changed) — see [DET-001-WP5](DET-001-WP5-decision-aggregation.md). No ADR-0006 change; no golden-case change. | Detection Architect |
+| 1.0.3 (contract amendment) | 2026-09-02 | P3-WP3 provenance-output amendment (WP5 safety review): the rule-evaluation-result contract gains an additive optional grouped `live_positive_provenance` (per matched-positive TRUE indicator, one group per structurally-LIVE contributing occurrence's observation_refs). §9 HIGH is now one normative rule — `proven_independent_evidence_count ≥ 3` is a class→occurrence matching over that authoritative provenance (union-find on shared refs), never a raw class count. Additive MINOR runtime-contract change; WP3 truth semantics unchanged; no golden-outcome change; no ADR-0006 change. | Detection Architect |
+| 1.0.2 (clarification) | 2026-09-02 | P3-WP5 adversarial-review remediation. §9 HIGH ≥3 path now uses a single `proven_independent_evidence_count` (class→occurrence matching over unambiguous single-ref governed occurrences) shared with the corroboration band — a raw class count never bypasses provenance. Degraded caps confidence at MEDIUM; explicit whole-evaluation ERROR; rule-local unresolved-harm + strict effect-aware benign clear. GDC-02/03 governed inputs enriched (golden cases_version 1.2.0), outcomes unchanged. No ADR-0006 change; no golden-outcome change. | Detection Architect |
