@@ -22,7 +22,6 @@ Exit 0 iff every check passes.
 from __future__ import annotations
 
 import json
-import re
 import sys
 from pathlib import Path
 
@@ -30,23 +29,19 @@ from jsonschema import Draft202012Validator
 from referencing import Registry, Resource
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT))  # import the runtime package when run as a standalone script
+
+# The cross-field semantic invariants + probability-key scan are OWNED by the runtime (P3-WP8,
+# knowledge/runtime/result.py) so the engine assembler and this CLI validator share ONE definition and can
+# never drift. semantic_violations reuses aggregation.RISK_MATRIX and the promoted action vocabulary.
+from knowledge.runtime.result import probability_keys, semantic_violations  # noqa: E402
+
 SCHEMA_DIR = ROOT / "knowledge" / "schemas" / "detection"
 DETECTION_RESULT_SCHEMA = SCHEMA_DIR / "detection-result.schema.json"
 RULE_EVAL_SCHEMA = SCHEMA_DIR / "rule-evaluation-result.schema.json"
 VALID_FIXTURES = SCHEMA_DIR / "fixtures" / "valid-detection-results.json"
 INVALID_FIXTURES = SCHEMA_DIR / "fixtures" / "invalid-detection-results.json"
 GOLDEN = ROOT / "docs" / "03-detection" / "golden-decision-cases-v1.json"
-
-SEV_ORDER = ["LOW", "MEDIUM", "HIGH", "CRITICAL"]
-
-# ADR-0006 risk matrix v1 (must match validate_det_design.py and ADR-0006).
-RISK_MATRIX = {
-    "NONE": {"NONE": "NONE"},
-    "LOW": {"WEAK": "LOW", "MODERATE": "LOW", "STRONG": "MEDIUM"},
-    "MEDIUM": {"WEAK": "LOW", "MODERATE": "MEDIUM", "STRONG": "MEDIUM"},
-    "HIGH": {"WEAK": "MEDIUM", "MODERATE": "HIGH", "STRONG": "HIGH"},
-    "CRITICAL": {"WEAK": "HIGH", "MODERATE": "HIGH", "STRONG": "CRITICAL"},
-}
 
 # Canonical vocabularies frozen by DET-001 / ADR-0005 / ADR-0006 (STEP 5).
 CANON = {
@@ -65,9 +60,6 @@ CANON_ACTIONS = {
     "PROCEED_WITH_CAUTION", "SEEK_HUMAN_REVIEW", "RESUBMIT_IN_SUPPORTED_LANGUAGE",
 }
 
-PROBABILITY_KEY = re.compile(r"probab|likelihood|percent", re.I)
-
-
 def load(p):
     return json.loads(Path(p).read_text())
 
@@ -80,90 +72,6 @@ def build_validator():
         (rev["$id"], Resource.from_contents(rev)),
     ])
     return det, rev, Draft202012Validator(det, registry=registry)
-
-
-def probability_keys(obj, path=""):
-    """Recursively find any key that looks like a probability/score (defence in depth)."""
-    hits = []
-    if isinstance(obj, dict):
-        for k, v in obj.items():
-            if PROBABILITY_KEY.search(k) or k.lower() == "score":
-                hits.append(f"{path}/{k}")
-            hits += probability_keys(v, f"{path}/{k}")
-    elif isinstance(obj, list):
-        for i, v in enumerate(obj):
-            hits += probability_keys(v, f"{path}/{i}")
-    return hits
-
-
-def matched_rule_ids(result):
-    return sorted(r["rule_id"] for r in result.get("rule_results", [])
-                  if r.get("evaluation_state") == "MATCHED" and "rule_id" in r)
-
-
-def semantic_violations(r):
-    """Cross-field invariants not expressible in JSON Schema (DET-001 / ADR-0006)."""
-    v = []
-    support = r.get("input_support_status")
-    cls = r.get("classification")
-    sev = r.get("decision_severity")
-    strength = r.get("matched_evidence_strength")
-    risk = r.get("risk_level")
-    conf = r.get("detection_confidence")
-    matched = set(r.get("matched_rules", []))
-    fired = set(matched_rule_ids(r))
-
-    # matched_rules must equal the MATCHED rule_results
-    if matched != fired:
-        v.append(f"matched_rules {sorted(matched)} != MATCHED rule_results {sorted(fired)}")
-
-    # risk matrix
-    expected_risk = RISK_MATRIX.get(sev, {}).get(strength)
-    if expected_risk is None:
-        v.append(f"illegal (severity={sev}, strength={strength}) for the risk matrix")
-    elif risk != expected_risk:
-        v.append(f"risk_level {risk} != RISK_MATRIX[{sev}][{strength}] = {expected_risk}")
-
-    # support/classification consistency; ERROR/UNSUPPORTED must not appear safe
-    if support == "UNSUPPORTED" and cls != "UNSUPPORTED":
-        v.append("UNSUPPORTED input must have classification UNSUPPORTED (unknown is not safe)")
-    if support == "ERROR" and cls != "ERROR":
-        v.append("ERROR input must have classification ERROR (a failure must not appear safe)")
-    if support == "INSUFFICIENT_INFORMATION" and cls != "INSUFFICIENT_EVIDENCE":
-        v.append("INSUFFICIENT_INFORMATION input must classify as INSUFFICIENT_EVIDENCE")
-
-    # fired vs classification/severity/confidence
-    if fired:
-        if cls not in ("SCAM_PATTERN_DETECTED", "SCAM_PATTERN_SUSPECTED"):
-            v.append(f"fired rules present but classification is {cls}")
-        if conf == "LOW" and cls != "SCAM_PATTERN_SUSPECTED":
-            v.append("LOW detection_confidence with a fired rule must be SCAM_PATTERN_SUSPECTED")
-        if conf in ("MEDIUM", "HIGH") and cls != "SCAM_PATTERN_DETECTED":
-            v.append(f"{conf} detection_confidence with a fired rule must be SCAM_PATTERN_DETECTED")
-        if sev == "NONE":
-            v.append("fired rules present but decision_severity is NONE")
-    else:
-        if cls in ("SCAM_PATTERN_DETECTED", "SCAM_PATTERN_SUSPECTED"):
-            v.append(f"no fired rules but classification is {cls}")
-        if sev != "NONE" or risk != "NONE" or conf != "NOT_APPLICABLE":
-            v.append("no fired rules must yield severity/risk NONE and confidence NOT_APPLICABLE")
-
-    # recommended action vocabulary
-    for a in r.get("recommended_actions", []):
-        if a.get("action_code") not in CANON_ACTIONS:
-            v.append(f"recommended action {a.get('action_code')} not in the controlled vocabulary")
-
-    # H2 (independent review): a result_contract_version=1.1.0 result is action-policy-dependent even when
-    # recommended_actions == [] (WP6 consults the governed policy to conclude that NO action applies), so the
-    # governed action_policy version MUST be pinned in provenance and be a valid semver. The runtime SEMANTIC
-    # validator enforces this (the schema conditional is defence in depth).
-    if r.get("result_contract_version") == "1.1.0":
-        ap = ((r.get("provenance") or {}).get("component_versions") or {}).get("action_policy")
-        if ap is None:
-            v.append("result_contract_version 1.1.0 without a provenance.component_versions.action_policy pin")
-        elif not re.match(r"^\d+\.\d+\.\d+$", str(ap)):
-            v.append(f"malformed provenance.component_versions.action_policy pin {ap!r}")
-    return v
 
 
 def golden_case_result(case):

@@ -87,12 +87,27 @@ def d_deprecated_negative(root: Path):
     return p, orig
 
 
+def d_bad_engine_version(root: Path):
+    p = root / "knowledge" / "runtime" / "engine.py"
+    orig = p.read_bytes()
+    text = orig.decode("utf-8")
+    # A malformed runtime-owned engine version is a WP8-EXCLUSIVE defect: no upstream validator reads
+    # ENGINE_VERSION, and engine.py deliberately does not raise at import, so only the P3-WP8 result-assembly
+    # gate (schema pattern on provenance.engine_version + explicit SemVer check) bites -> validate_wp8_integration.py.
+    mutated = text.replace('ENGINE_VERSION = "1.0.0"', 'ENGINE_VERSION = "banana"')
+    if mutated == text:
+        raise RuntimeError("ci_selftest could not inject a malformed ENGINE_VERSION (constant text changed?)")
+    p.write_bytes(mutated.encode("utf-8"))
+    return p, orig
+
+
 DEFECTS = [
     ("unknown indicator reference", d_unknown_indicator, "validate_rules.py"),
     ("invalid taxonomy ID", d_invalid_taxonomy, "validate_rules.py"),
     ("invalid evidence reference", d_invalid_evidence, "validate_rules.py"),
     ("malformed extraction projection", d_bad_projection, "validate_extraction.py"),
     ("deprecated negative-indicator reference", d_deprecated_negative, "validate_rules.py"),
+    ("malformed engine version (P3-WP8)", d_bad_engine_version, "validate_wp8_integration.py"),
 ]
 
 
