@@ -369,6 +369,13 @@ payment direction could not be established."* No input is forced into benign-or-
 carries an `unknowns[]`/`ambiguities[]` list naming exactly what is missing, plus `SEEK_HUMAN_REVIEW`.
 This is a first-class outcome, not a failure.
 
+`INSUFFICIENT_EVIDENCE` does **not** oblige the runtime to invent a textual `unknown`. `unknowns[]` and
+`ambiguities[]` are the **actual governed diagnostics emitted upstream**: WP5 rolls them up as the union of
+the `unknowns`/`ambiguities` that the COMPOSITE rule results actually produced (a sparse observation set that
+triggers no decisive-operand diagnostic yields an **empty** `unknowns[]`, and the case is still
+`INSUFFICIENT_EVIDENCE`). An ambiguity string is the exact WP3 occurrence-association diagnostic, verbatim —
+never paraphrased by a downstream stage.
+
 ## 16. Determinism, security & fail-closed (STEP 23, STEP 25)
 
 **Determinism.** For identical *(input observations, published bundle, engine version, evaluation
@@ -378,9 +385,14 @@ and confidence-policy id, and per-component versions). No hidden configuration a
 participate in the deterministic scoring path (§17).
 
 **Live rule set.** The engine evaluates **PUBLISHED rules only** (rule schema: only PUBLISHED rules run
-against live submissions). `APPROVED`/`PEER_REVIEW` rules are knowledge, not live detection; golden cases
-whose governing rule is not yet PUBLISHED (GDC-07 TL-MAL-003, GDC-10 TL-JOB-003) carry
-`live_publishable: false` and document the designed on-promotion behaviour — live, they route to review.
+against live submissions). `APPROVED`/`PEER_REVIEW` rules are knowledge, not live detection.
+`live_publishable: true` means the **COMPLETE binding golden rule topology is representable by the
+PUBLISHED-only live engine** — that is, *every* rule id in `expected.fired_rules` **and** *every* rule id
+carrying a binding `expected.rule_states` entry is PUBLISHED, not merely the governing rule. A case whose
+binding topology rests on an unpublished rule in **any** binding role — governing/fired (GDC-07 TL-MAL-003,
+GDC-10 TL-JOB-003) **or** a bound non-fired state such as SUPPRESSED (GDC-08 TL-MAL-003) — carries
+`live_publishable: false` and documents the designed on-promotion behaviour; live, it routes to review. The
+design gate (`validate_det_design.py`) enforces this biconditional over the full topology.
 
 **Fail-closed behaviour.** The engine must **never silently fall back to "safe."**
 
@@ -486,7 +498,7 @@ Fifteen design-level cases are specified and machine-checked in
 ¹ Governing rule not yet PUBLISHED (`live_publishable: false`): live, it routes to review pending
 governance promotion; the row shows designed on-promotion behaviour.
 
-## 22. Phase-3 implementation work packages (STEP 26 — NOT started here)
+## 22. Phase-3 implementation work packages (STEP 26)
 
 | WP | Deliverable | Depends on |
 |---|---|---|
@@ -496,12 +508,13 @@ governance promotion; the row shows designed on-promotion behaviour.
 | **P3-WP4** | Suppression + hard-risk override executor (confidence-gated, resolution order) | WP3 |
 | **P3-WP5** | Aggregation + risk/severity + confidence banding + classification | ADR-0006 |
 | **P3-WP6** | Explanation builder (provenance-constrained) + recommended-action mapper | WP5 |
-| **P3-WP7** | Golden decision-case runner (executes the engine over GDC + the Phase-2 corpus) | WP1–WP6 |
+| **P3-WP7** | Golden decision-case runner: governed fixture adaptation, public live replay, lifecycle-eligible design preview, exact expected-vs-actual comparison, determinism and runner self-tests | WP1–WP6 |
 | **P3-WP8** | Integration tests + CI wiring of the *engine* gate | WP7 |
 
-None of these is started; DET-001 stops at the design gate. (The *design* gate itself — the
-`validate_det_design.py` contract/golden-case validator — was wired into `run_all.py` as the **10th
-canonical check** at the Phase-3 closure, GATE-009. P3-WP8 concerns the future *engine* runner.)
+WP1–WP6 are implemented. WP7 is implemented as validation infrastructure in
+`knowledge/validation/validate_wp7_golden_runner.py` and appended as canonical check #17. It deliberately
+does not assemble the final detection-result/API/persistence envelope; that remains WP8, which is not started.
+The separate design gate remains canonical check #10.
 
 ## 23. Change history
 
@@ -510,5 +523,7 @@ canonical check** at the Phase-3 closure, GATE-009. P3-WP8 concerns the future *
 | 1.0 (design) | 2026-08-29 | Initial DET-001 design: pipeline, three-valued execution, extraction-confidence gating, hard-risk override semantics, suppression, aggregation, corroboration, separated severity/risk/confidence model, classification vocabulary, explanation & action contracts, determinism & fail-closed behaviour, AI boundary, 15 machine-checked golden cases, and the Phase-3 WBS. Implements CONF-001; changes no Phase-2 semantics. Frozen by ADR-0005/ADR-0006. | Detection Architect |
 | 1.0.1 (clarification) | 2026-09-02 | P3-WP5 implemented (`knowledge/runtime/aggregation.py`, gate check #15). Recorded the ratified §9 confidence clarification: the HIGH band's decisive-extraction floor is `≥ MEDIUM` (categorical policy, no golden outcome changed) — see [DET-001-WP5](DET-001-WP5-decision-aggregation.md). No ADR-0006 change; no golden-case change. | Detection Architect |
 | 1.0.4 (WP6 + provenance amendment) | 2026-09-03 | P3-WP6 implemented (`knowledge/runtime/explanation.py`, gate check #16): deterministic templated explanation (official facts only via exact stored `evidence_basis` quotes; no LLM, no `redacted_quote`, no numeric) + governed recommended actions from a NEW bundled, versioned, schema-validated **action-policy artifact** (`knowledge/detection/action-policy-v1.json`) — actions only from the promoted vocabulary, no `priority`, system-state actions carry no fabricated reason ids. **Phase-2 bundle-provenance additive amendment:** action_policy is a hashed, digest-covered, version-pinned bundle member; `bundle-manifest` `manifest_schema_version` 1.0.0→1.1.0 (+`component_versions.action_policy`); detection-result `result_contract_version` 1.0.0→1.1.0 (+ `provenance.component_versions.action_policy`, structurally optional in the shared JSON schema only for historical/contract compatibility). The runtime semantic contract requires a valid action-policy semver pin on **every** `result_contract_version == 1.1.0` result, even when `recommended_actions` is empty, because WP6 consulted the policy to produce that empty set; a 1.1 result without it is invalid. Historical pre-WP6 results do not fabricate a pin. Golden `recommended_actions` normalized to the policy (cases_version 1.3.0); no decision-axis / no other-outcome change; no ADR-0006 change. | Detection Architect |
+| 1.0.5 (WP7 runner) | 2026-09-04 | P3-WP7 implemented as an offline golden end-to-end validation runner (canonical check #17): one immutable built/loaded bundle; fixture-only adaptation; support derived from language/script metadata; public PUBLISHED live replay; full PUBLISHED+APPROVED+PEER_REVIEW design-preview replay; exact binding-axis and ordered-action comparison; structural explanation/provenance checks; deterministic replay, permutation and in-memory mutation self-tests; frozen internal `GoldenReplayResult`. Final envelope assembly remains WP8. The first exact run intentionally fails rather than self-fulfil expectations: GDC-04 has an extra live `TL-CRED-002` match; GDC-08's live metadata expects an unpublished `TL-MAL-003` state and different live outcome; GDC-11 ambiguity text and GDC-13 unknown text differ from runtime output. These upstream golden/runtime mismatches require programme remediation outside WP7. | Detection Architect |
+| 1.0.6 (golden oracle PATCH 1.3.1) | 2026-09-04 | Golden decision corpus **1.3.0 → 1.3.1** (PATCH), aligning the ORACLE to the already-ratified runtime that P3-WP7 end-to-end composition testing exposed — **no runtime, rule, evidence, schema or action-policy change**: (a) **GDC-08** `live_publishable` true→false (its binding topology rests on the unpublished `TL-MAL-003`, held as a SUPPRESSED state, so it routes to DESIGN_PREVIEW like GDC-07/GDC-10; the designed SUPPRESSED / `NO_SCAM_PATTERN` preview decision is unchanged and the live PUBLISHED-only lane is a lifecycle-safety proof, not compared to the design decision); (b) **GDC-04** `fired_rules`/`rule_states` now record the pre-existing legitimate overlap where `TL-CRED-002` also MATCHES alongside `TL-PAY-001` — governing rule (`TL-PAY-001`), severity, matched-evidence strength, risk, confidence, corroboration, active override and recommended actions all UNCHANGED; (c) **GDC-11** ambiguity text replaced with the exact governed WP3 occurrence-association diagnostic; (d) **GDC-13** removed a stale expected `unknown` the sparse WP3/WP5 rollup never emits. The `validate_det_design.py` lifecycle invariant was strengthened to the full binding topology (`fired_rules` ∪ binding `rule_states`). No decision-axis/policy change. | Detection Architect |
 | 1.0.3 (contract amendment) | 2026-09-02 | P3-WP3 provenance-output amendment (WP5 safety review): the rule-evaluation-result contract gains an additive optional grouped `live_positive_provenance` (per matched-positive TRUE indicator, one group per structurally-LIVE contributing occurrence's observation_refs). §9 HIGH is now one normative rule — `proven_independent_evidence_count ≥ 3` is a class→occurrence matching over that authoritative provenance (union-find on shared refs), never a raw class count. Additive MINOR runtime-contract change; WP3 truth semantics unchanged; no golden-outcome change; no ADR-0006 change. | Detection Architect |
 | 1.0.2 (clarification) | 2026-09-02 | P3-WP5 adversarial-review remediation. §9 HIGH ≥3 path now uses a single `proven_independent_evidence_count` (class→occurrence matching over unambiguous single-ref governed occurrences) shared with the corroboration band — a raw class count never bypasses provenance. Degraded caps confidence at MEDIUM; explicit whole-evaluation ERROR; rule-local unresolved-harm + strict effect-aware benign clear. GDC-02/03 governed inputs enriched (golden cases_version 1.2.0), outcomes unchanged. No ADR-0006 change; no golden-outcome change. | Detection Architect |

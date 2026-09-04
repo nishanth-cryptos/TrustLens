@@ -81,6 +81,34 @@ def max_severity(sevs):
     return max(live, key=SEV_ORDER.index)
 
 
+def binding_topology_problems(exp, rules):
+    """Validate the binding rule topology of an expected-decision block (P3-WP7 M1 fail-closed).
+
+    The binding topology is fired_rules UNION every rule id that carries a binding rule_states entry.
+    Fail-closed reference resolution: EVERY binding rule id must first resolve against governed rule
+    metadata. An unresolved id is an illegal governed reference and FAILS regardless of live_publishable
+    — an unknown governed reference is never legal, and lifecycle is never inferred from a rule-id name
+    or prefix. Only once every id resolves is the lifecycle biconditional applied (the GDC-08 check,
+    unweakened): live_publishable == (every binding rule is PUBLISHED). Returns a list of problem strings
+    (empty iff the topology is coherent).
+    """
+    problems = []
+    topology = sorted(set(exp.get("fired_rules", [])) | set(exp.get("rule_states", {})))
+    unresolved = [rid for rid in topology if rid not in rules]
+    for rid in unresolved:
+        problems.append(f"binding rule id {rid} (in fired_rules/rule_states) does not resolve to governed "
+                        f"rule metadata — fail closed (an unknown governed reference is never legal)")
+    if unresolved:
+        return problems  # never infer lifecycle for an unresolved id; the reference failure is authoritative
+    if topology:
+        statuses = {rid: rules[rid]["lifecycle"]["status"] for rid in topology}
+        all_pub = all(s == "PUBLISHED" for s in statuses.values())
+        if exp.get("live_publishable") is not None and exp["live_publishable"] != all_pub:
+            problems.append(f"live_publishable={exp.get('live_publishable')} but binding rule-topology "
+                            f"statuses are {statuses}")
+    return problems
+
+
 def main() -> int:
     quiet = "--quiet" in sys.argv
     problems = []
@@ -177,12 +205,46 @@ def main() -> int:
             if a not in ACTION_VOCAB:
                 fail(f"recommended action {a} is not in the controlled vocabulary")
 
-        # live_publishable == all fired rules PUBLISHED (for supported detections)
-        if fired:
-            statuses = {rid: rules[rid]["lifecycle"]["status"] for rid in fired if rid in rules}
-            all_pub = all(s == "PUBLISHED" for s in statuses.values())
-            if exp.get("live_publishable") is not None and exp["live_publishable"] != all_pub:
-                fail(f"live_publishable={exp.get('live_publishable')} but fired-rule statuses are {statuses}")
+        # live_publishable over the COMPLETE binding rule topology (P3-WP7 M1 fail-closed reference resolution).
+        # The binding topology is fired_rules UNION every rule id that carries a binding rule_states entry — not
+        # only the fired/governing rules. EVERY binding id is first resolved against governed rule metadata: an
+        # unresolved id fails closed (an unknown governed reference is never silently omitted from lifecycle
+        # validation, never inferred from a rule-id prefix, and is illegal irrespective of live_publishable). For
+        # a fully-resolved topology the unweakened lifecycle biconditional holds: live_publishable == (all binding
+        # rules PUBLISHED). This still catches a case that expects an unpublished rule to hold a binding state
+        # (e.g. a SUPPRESSED design outcome) while claiming live_publishable=true.
+        for msg in binding_topology_problems(exp, rules):
+            fail(msg)
+
+    # ---- P3-WP7 M1 fail-closed reference-resolution regressions (corpus-independent). These drive the EXACT
+    #      production binding-topology check (binding_topology_problems) over synthetic expected-blocks and add a
+    #      REGRESSION problem only if it misbehaves. They prove that an unknown governed reference fails closed in
+    #      every direction of live_publishable, and that the GDC-08 lifecycle shapes are unchanged. No case-id
+    #      special handling — the lifecycle shapes are exercised through the real non-PUBLISHED rule TL-MAL-003.
+    def _fails(exp_block):
+        return bool(binding_topology_problems(exp_block, rules))
+
+    # CASE A — unknown rule id in rule_states with live_publishable=true MUST fail closed.
+    if not _fails({"fired_rules": [], "rule_states": {"UNKNOWN_RULE_ID": "SUPPRESSED"}, "live_publishable": True}):
+        problems.append("REGRESSION M1-A: unknown rule_states id + live_publishable=true must FAIL closed but did not")
+    # CASE B — unknown rule id in fired_rules with live_publishable=true MUST fail closed.
+    if not _fails({"fired_rules": ["UNKNOWN_RULE_ID"], "rule_states": {}, "live_publishable": True}):
+        problems.append("REGRESSION M1-B: unknown fired_rules id + live_publishable=true must FAIL closed but did not")
+    # CASE C — unknown rule id in rule_states MUST fail closed EVEN WITH live_publishable=false. live_publishable=false
+    #          never legalises an unknown governed reference.
+    if not _fails({"fired_rules": [], "rule_states": {"UNKNOWN_RULE_ID": "SUPPRESSED"}, "live_publishable": False}):
+        problems.append("REGRESSION M1-C: unknown rule_states id must FAIL closed even with live_publishable=false but did not")
+
+    # GDC-08 lifecycle shapes over the real non-PUBLISHED binding rule TL-MAL-003 (biconditional unweakened).
+    if "TL-MAL-003" in rules and rules["TL-MAL-003"]["lifecycle"]["status"] != "PUBLISHED":
+        # old GDC-08 shape: live_publishable=true + unpublished TL-MAL-003 in binding rule_states MUST fail.
+        if not _fails({"fired_rules": [], "rule_states": {"TL-MAL-003": "SUPPRESSED"}, "live_publishable": True}):
+            problems.append("REGRESSION GDC-08(old): live_publishable=true + unpublished TL-MAL-003 in binding "
+                            "rule_states must FAIL the lifecycle invariant but did not")
+        # corrected GDC-08 shape: live_publishable=false + known non-PUBLISHED TL-MAL-003 MUST pass.
+        if _fails({"fired_rules": [], "rule_states": {"TL-MAL-003": "SUPPRESSED"}, "live_publishable": False}):
+            problems.append("REGRESSION GDC-08(corrected): live_publishable=false + known non-PUBLISHED TL-MAL-003 "
+                            "must PASS the lifecycle invariant but did not")
 
     log(f"  ok    {n_cases} golden decision cases internally consistent" if not any(p.split(':')[0].startswith('GDC') for p in problems)
         else f"  FAIL  golden decision cases")

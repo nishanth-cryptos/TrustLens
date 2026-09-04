@@ -1,8 +1,8 @@
 {
   "$comment": "TrustLens Phase 3 DET-001 GOLDEN DECISION CASES. DESIGN-LEVEL specification of the decision DET-001 must produce for canonical inputs. Each case declares an indicator-observation set (the signal an extractor would produce — extraction itself is Phase 9) and the EXPECTED decision across every DET-001 axis. These encode design intent, NOT measured accuracy (G-09): they may never be used to claim precision/recall (RSK-003). All inputs are SYNTHETIC. Rule/indicator/override ids are real and are resolved by validate_det_design.py against the live knowledge base; risk_level is checked against the ADR-0006 risk matrix; classification is checked for consistency with support status and fired rules. Where a governing rule is not yet PUBLISHED, live_publishable=false records that a PUBLISHED-only live engine routes the case to review pending governance promotion — the case still documents the designed on-promotion behaviour. declared_indicators sets are SPARSE (programme decision 1, 2026-08-30): an absent indicator is UNKNOWN at the operand level, not FALSE — a case that needs an affirmative absence declares an explicit matched=NOT_OBSERVED (e.g. GDC-05 RECEIVE_FRAMING). declared_indicators is a TEST/DESIGN compact shorthand. A case whose outcome depends on exact occurrence association may additionally store governed_input with schema-valid indicator_observations plus the normalized_observations they reference; the WP3 corpus replay passes that data unchanged to the normal *_from_governed production API. Occurrence structural attributes are authored ONLY on normalized observations. Structural semantics and governed SUPPRESS_INDICATOR association are both resolved through observation_refs; neither is input-global.",
-  "cases_version": "1.3.0",
+  "cases_version": "1.3.1",
   "generated": "2026-08-29",
-  "last_updated": "2026-09-03",
+  "last_updated": "2026-09-04",
   "change_history": [
     {
       "version": "1.0.0",
@@ -23,6 +23,11 @@
       "version": "1.3.0",
       "date": "2026-09-03",
       "change": "WP6: recommended_actions normalized to the governed action-policy artifact (knowledge/detection/action-policy-v1.json). No detection/classification/severity/risk/confidence/governing/corroboration expectation changed. Golden expectations do not author policy; they test the ratified policy. Net action changes: GDC-04 +REPORT_CYBERCRIME; GDC-07 +REPORT_CYBERCRIME; GDC-11 -PROCEED_WITH_CAUTION (no governed trigger); GDC-13 -> SEEK_HUMAN_REVIEW (sparse INDETERMINATE is not decision-relevant, so VERIFY_INDEPENDENTLY does not apply); GDC-10 -DO_NOT_TRANSFER_MONEY (the broad TAX-06 transfer-money mapping was not ratified; only HR_PAYMENT_UNDER_COERCION governs DO_NOT_TRANSFER_MONEY)."
+    },
+    {
+      "version": "1.3.1",
+      "date": "2026-09-04",
+      "change": "PATCH discovered by P3-WP7 end-to-end composition testing: the golden ORACLE was aligned to the already-ratified runtime; no runtime, rule, evidence, or policy change. (a) GDC-08 lifecycle metadata corrected live_publishable true->false: its binding topology rests on the unpublished TL-MAL-003, so under the PUBLISHED-only live engine it routes to DESIGN_PREVIEW exactly like GDC-07/GDC-10 (its designed SUPPRESSED/NO_SCAM_PATTERN preview decision is unchanged; the live PUBLISHED-only lane is a lifecycle-safety proof, not compared to the design decision). (b) GDC-04 fired_rules/rule_states now record the pre-existing legitimate overlap where TL-CRED-002 also MATCHES alongside TL-PAY-001 under the current ratified runtime; the governing rule (TL-PAY-001), severity, matched_evidence_strength, risk, detection_confidence, corroboration, active override and recommended_actions are all UNCHANGED. (c) GDC-11 ambiguity text replaced with the EXACT governed WP3 occurrence-association diagnostic the runtime emits. (d) GDC-13 removed a stale expected unknown that the current sparse WP3/WP5 unknown rollup (union of actual COMPOSITE-result unknowns) never produces. NO runtime semantic change, NO new fraud evidence, NO new scam knowledge, NO rule semantic change, NO severity/risk/confidence/classification policy change, NO action-policy change, NO new case."
     }
   ],
   "provenance": "SYNTHETIC",
@@ -139,8 +144,8 @@
       "expected": {
         "input_support_status": "SUPPORTED",
         "classification": "SCAM_PATTERN_DETECTED",
-        "fired_rules": ["TL-PAY-001"],
-        "rule_states": {"TL-PAY-001": "MATCHED"},
+        "fired_rules": ["TL-CRED-002", "TL-PAY-001"],
+        "rule_states": {"TL-CRED-002": "MATCHED", "TL-PAY-001": "MATCHED"},
         "active_overrides": ["HR_UPI_PIN_TO_RECEIVE"],
         "severity": "CRITICAL",
         "matched_evidence_strength": "STRONG",
@@ -281,7 +286,7 @@
         "corroboration_band": "NONE",
         "recommended_actions": [],
         "unknowns": [], "ambiguities": [],
-        "live_publishable": true
+        "live_publishable": false
       },
       "explanation_ingredients": [
         "TL-MAL-003 matches on SCREEN_SHARE_APP_REQUEST + benign pretext, but there is NO banking/payment/KYC context, so no hard-risk override is active.",
@@ -380,7 +385,7 @@
         "corroboration_band": "NONE",
         "recommended_actions": ["VERIFY_INDEPENDENTLY", "SEEK_HUMAN_REVIEW"],
         "unknowns": [],
-        "ambiguities": ["payment_direction unresolved: RECEIVE_FRAMING vs PAY_MERCHANT_DIRECTION cannot be established"],
+        "ambiguities": ["RECEIVE_FRAMING: decisive operand occurrence association unresolved (live vs negated/reported cannot be established)"],
         "live_publishable": true
       },
       "explanation_ingredients": [
@@ -439,7 +444,7 @@
         "detection_confidence": "NOT_APPLICABLE",
         "corroboration_band": "LOW",
         "recommended_actions": ["SEEK_HUMAN_REVIEW"],
-        "unknowns": ["no credential/payment/device action observed; pretext unspecified"],
+        "unknowns": [],
         "ambiguities": [],
         "live_publishable": true
       },

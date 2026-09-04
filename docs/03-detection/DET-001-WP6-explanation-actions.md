@@ -7,7 +7,7 @@
 | Owner role | Detection Architect |
 | Authority | [DET-001](DET-001-deterministic-detection-engine.md) §§13–17, [ADR-0006](../../adr/ADR-0006-risk-and-confidence-aggregation.md) |
 | Consumes | The P3-WP5 `DecisionResult` + the immutable `RuntimeKnowledge` (+ optional validated normalized observations) |
-| Produces | An `ExplanationResult` (`explanation` + `recommended_actions`); full result assembly is WP7/WP8 |
+| Produces | An `ExplanationResult` (`explanation` + `recommended_actions`); final result-envelope assembly is WP8 |
 | Runtime | `knowledge/runtime/explanation.py` |
 | Governed policy | `knowledge/detection/action-policy-v1.json` (`action-policy.schema.json`), bundled + pinned |
 | Gate | Canonical quality-gate **check #16** (`knowledge/validation/validate_wp6_explanation.py`) |
@@ -27,7 +27,7 @@
 `observation_ref → span`; absent ⇒ spans are omitted (optional presentation data). `indicator_observations`
 are not consumed. WP6 emits two WP6-owned blocks — `explanation` and `recommended_actions` — that populate
 most of `detection-result.schema.json`; timestamps, provenance-bundle assembly, persistence and the API
-envelope are **WP7/WP8**.
+envelope are **WP8**. WP7 is golden replay/validation infrastructure and does not assemble that envelope.
 
 **`build_explanation` is a TRUST BOUNDARY, and PUBLISHED-only.** A `DecisionResult` is a plain dataclass a
 caller can hand-construct, so being an instance is not proof of trustworthiness. Before rendering anything,
@@ -188,7 +188,7 @@ strength, risk, confidence, governing, or corroboration expectation changed for 
 
 ## 8. Limitations & next
 
-Decision-level explanation + governed actions only; no full result assembly/provenance (WP7/WP8), no LLM,
+Decision-level explanation + governed actions only; no final result-envelope assembly/provenance (WP8), no LLM,
 no accuracy claim (G-09). `PROCEED_WITH_CAUTION`/`DO_NOT_DIAL_CODE`, `SCAM_PATTERN_SUSPECTED`, and
 `GOVERNED_SOURCE`-basis actions are implemented/representable but not exercised by any current live golden
-case. **Next = P3-WP7** (golden decision-case + corpus runner). Not started.
+case. **P3-WP7** now supplies the golden replay/validation runner. **Next = P3-WP8**; not started.
