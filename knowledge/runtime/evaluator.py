@@ -108,8 +108,14 @@ class EvaluatorError(Exception):
 @dataclass(frozen=True)
 class EvaluationProfile:
     """The pinned, governed knobs of one evaluation (DET-001 §16 reproducibility). WP3 consumes only the
-    extraction-confidence gate; the matrix/policy ids are carried for provenance/replay parity."""
+    extraction-confidence gate; the matrix/policy ids are carried for provenance/replay parity.
 
+    ``profile_id`` is an explicit governed field (P3-WP8): it replaces the implicit WP5 ``getattr`` fallback so
+    the emitted ``evaluation_profile.profile_id`` has one authoritative source. ``risk_matrix_id`` /
+    ``confidence_policy_id`` retain their existing literal values (identical to aggregation.RISK_MATRIX_ID /
+    CONFIDENCE_POLICY_ID; not imported here to avoid an evaluator→aggregation import cycle)."""
+
+    profile_id: str = "mvp-default"
     extraction_confidence_gate: str = "MEDIUM"
     risk_matrix_id: str = "risk-matrix-v1"
     confidence_policy_id: str = "confidence-policy-v1"

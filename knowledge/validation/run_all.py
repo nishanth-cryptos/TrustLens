@@ -26,7 +26,8 @@ Order (dependency-aware, see ORDER below):
   Phase-3 suppression executor (P3-WP4: rule suppression + severity caps) →
   Phase-3 decision aggregator (P3-WP5: governing rule + risk/severity/confidence + classification) →
   Phase-3 explanation + governed actions (P3-WP6: deterministic explanation + action-policy artifact) →
-  Phase-3 golden end-to-end replay (P3-WP7: public live + governed design-preview lanes)
+  Phase-3 golden end-to-end replay (P3-WP7: public live + governed design-preview lanes) →
+  Phase-3 engine integration + result assembly (P3-WP8: final DetectionResult contract + provenance pinning + CI closure)
 
 Usage:
   python knowledge/validation/run_all.py             # human-readable; runs all; non-zero on any failure
@@ -80,6 +81,10 @@ ROOT = Path(__file__).resolve().parents[2]
 #     only from the governed action-policy artifact, with a PUBLISHED-only public trust boundary;
 #  17 the Phase-3 golden runner (P3-WP7) composes WP3→WP6 over all 15 cases, including separate public-live and
 #     lifecycle-eligible design-preview lanes, then compares every binding golden axis and action in order.
+#  18 the Phase-3 engine integration gate (P3-WP8) assembles the final promoted DetectionResult through the public
+#     evaluate_detection_from_governed, pins full bundle/engine/profile provenance, enforces the detection-result
+#     JSON Schema + reusable semantic invariants + assembler reconciliation, and proves support-first
+#     orchestration, PUBLISHED-only preview exclusion, privacy, determinism and fail-closed forgery rejection.
 ORDER = [
     ("knowledge/validation/manual_evidence_check.py", "durable-truth: evidence integrity + automated-status preservation"),
     ("knowledge/validation/phase1_consistency_check.py", "Phase-1 counts consistent across manifest / taxonomy / matrix / corpus"),
@@ -98,6 +103,7 @@ ORDER = [
     ("knowledge/validation/validate_wp5_aggregation.py", "Phase-3 P3-WP5 decision aggregation: governing-rule selection, max effective severity, ADR-0006 composite strength + risk matrix, categorical confidence, corroboration over independent evidence classes, classification state machine, determinism + fail-closed, 15 golden decision cases"),
     ("knowledge/validation/validate_wp6_explanation.py", "Phase-3 P3-WP6 explanation + governed actions: deterministic templated explanation (evidence_basis exact stored quotes, no PII/redacted_quote, no numeric), recommended actions from the governed action-policy artifact (no free-form code, no priority), WP5 decision immutable, determinism + fail-closed, 15 golden decision cases"),
     ("knowledge/validation/validate_wp7_golden_runner.py", "Phase-3 P3-WP7 golden end-to-end runner: fixture adaptation + independently-derived support, public PUBLISHED live replay, lifecycle-eligible design preview, exact golden-axis/action comparison, determinism and fail-closed reporting"),
+    ("knowledge/validation/validate_wp8_integration.py", "Phase-3 P3-WP8 engine integration + result assembly: production evaluate_detection_from_governed builds a schema+semantically valid, fully-provenance-pinned, immutable DetectionResult from WP3→WP6; support-first (no rules for non-evaluable), PUBLISHED-only preview exclusion, faithful WP5/WP6 serialization, privacy-minimised, deterministic with identity/time invariance, fail-closed on forgery/corruption"),
 ]
 
 # Network-capable modules a validator must never import — the offline guarantee (WP7 STEP 7).
@@ -187,7 +193,7 @@ def main() -> int:
                 print("  -", p)
         return 2
 
-    log(f"TrustLens knowledge quality gate — {len(ORDER)} checks (8 validators + bundle integrity + Phase-3 design + runtime contracts + runtime loader + runtime evaluator + suppression executor + decision aggregator + explanation/actions + golden end-to-end replay), dependency order, offline")
+    log(f"TrustLens knowledge quality gate — {len(ORDER)} checks (8 validators + bundle integrity + Phase-3 design + runtime contracts + runtime loader + runtime evaluator + suppression executor + decision aggregator + explanation/actions + golden end-to-end replay + engine integration), dependency order, offline")
     log(f"interpreter: {sys.executable}")
     log(f"repo root  : {ROOT}\n")
 

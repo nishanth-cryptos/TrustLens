@@ -53,8 +53,14 @@ from .aggregation import (
     aggregate_decision,
     evaluate_decision_from_governed,
 )
+from .engine import ENGINE_VERSION
 from .explanation import ExplanationError, ExplanationResult, build_explanation
 from .loader import load_bundle
+from .result import (
+    DetectionResult,
+    DetectionResultError,
+    evaluate_detection_from_governed,
+)
 from .suppression import (
     RuleSuppressionExecutor,
     SuppressionExecutionError,
@@ -113,4 +119,9 @@ __all__ = [
     "build_explanation",
     "ExplanationResult",
     "ExplanationError",
+    # P3-WP8 (engine integration + final DetectionResult assembly)
+    "evaluate_detection_from_governed",
+    "DetectionResult",
+    "DetectionResultError",
+    "ENGINE_VERSION",
 ]
