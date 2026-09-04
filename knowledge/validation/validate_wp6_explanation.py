@@ -4,7 +4,7 @@ Proves `knowledge/runtime/explanation.py` (`build_explanation`) against DET-001 
 action-policy artifact, over:
 
   * REAL GOVERNED BUNDLE tests — WP3 → WP4 → WP5 → WP6 replayed over all 15 golden decision cases
-    (golden-decision-cases-v1.json, cases_version 1.3.0). The golden `recommended_actions` are the binding
+    (golden-decision-cases-v1.json, cases_version 1.3.1). The golden `recommended_actions` are the binding
     oracle; the explanation-provenance rules (evidence_basis = exact stored quotes, no redacted_quote, no
     PII, no numeric, no free-form action, no priority) are asserted; and the WP5 decision axes are asserted
     byte-identical before/after WP6.
@@ -172,10 +172,14 @@ def check_golden(c, rk):
         if live:
             er = build_explanation(d, rk=rk, observations=observations)
         else:
-            # on-promotion design case (live_publishable:false): the PUBLIC, PUBLISHED-only surface must REFUSE
-            # it (proving the live gate), and the designed behaviour is rendered via the private design-preview.
-            c.raises(lambda d=d, o=observations: build_explanation(d, rk=rk, observations=o), ExplanationError,
-                     f"{cid}: PUBLISHED-only public build_explanation refuses on-promotion case")
+            # on-promotion design case (live_publishable:false). The PUBLIC PUBLISHED-only surface must REFUSE
+            # the case only when an unpublished rule contributes a LIVE finding — i.e. an unpublished rule in
+            # expected.fired_rules (GDC-07/GDC-10). A design case whose unpublished rule is SUPPRESSED to benign
+            # (GDC-08: TL-MAL-003 held as a SUPPRESSED state, no live contribution) is correctly PERMITTED by
+            # the boundary. Either way the designed behaviour is rendered via the private design-preview.
+            if any(rk.published_rule(rid) is None for rid in exp.get("fired_rules", ())):
+                c.raises(lambda d=d, o=observations: build_explanation(d, rk=rk, observations=o), ExplanationError,
+                         f"{cid}: PUBLISHED-only public build_explanation refuses an unpublished live finding")
             er = _build_explanation(d, rk=rk, observations=observations, live=False)
         # WP5 immutability
         c.eq(d.as_decision_dict(), before, f"{cid}: WP6 did not alter the WP5 DecisionResult")
@@ -837,7 +841,7 @@ def main():
     print("P3-WP6 EXPLANATION/ACTIONS: PASS — deterministic templated explanation (evidence_basis exact quotes, "
           "no PII/redacted_quote, no numeric), governed recommended actions from the action-policy artifact "
           "(no free-form code, no priority, no reporting details, system-state trace), WP5 decision immutable, "
-          "determinism and fail-closed, over all 15 golden cases (v1.3.0).")
+          "determinism and fail-closed, over all 15 golden cases (v1.3.1).")
     return 0
 
 
