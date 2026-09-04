@@ -7,7 +7,7 @@
       "reason": "probability field present (a smuggled fraud probability)",
       "expected_rejection": "schema_or_namescan",
       "result": {
-        "result_contract_version": "1.0.0",
+        "result_contract_version": "1.1.0",
         "evaluation_id": "BAD-01",
         "evaluation_timestamp": "2026-08-29T11:00:00Z",
         "input_id": "IN-BAD-01",
@@ -58,7 +58,7 @@
       "reason": "unknown classification value",
       "expected_rejection": "schema",
       "result": {
-        "result_contract_version": "1.0.0",
+        "result_contract_version": "1.1.0",
         "evaluation_id": "BAD-02",
         "evaluation_timestamp": "2026-08-29T11:01:00Z",
         "input_id": "IN-BAD-02",
@@ -108,7 +108,7 @@
       "reason": "missing bundle_content_digest (provenance incomplete)",
       "expected_rejection": "schema",
       "result": {
-        "result_contract_version": "1.0.0",
+        "result_contract_version": "1.1.0",
         "evaluation_id": "BAD-03",
         "evaluation_timestamp": "2026-08-29T11:02:00Z",
         "input_id": "IN-BAD-03",
@@ -157,7 +157,7 @@
       "reason": "MATCHED rule result missing rule_id",
       "expected_rejection": "schema",
       "result": {
-        "result_contract_version": "1.0.0",
+        "result_contract_version": "1.1.0",
         "evaluation_id": "BAD-04",
         "evaluation_timestamp": "2026-08-29T11:03:00Z",
         "input_id": "IN-BAD-04",
@@ -214,7 +214,7 @@
       "reason": "invalid rule evaluation_state",
       "expected_rejection": "schema",
       "result": {
-        "result_contract_version": "1.0.0",
+        "result_contract_version": "1.1.0",
         "evaluation_id": "BAD-05",
         "evaluation_timestamp": "2026-08-29T11:04:00Z",
         "input_id": "IN-BAD-05",
@@ -275,7 +275,7 @@
       "reason": "UNSUPPORTED input claiming NO_SCAM_PATTERN (unknown must not be safe)",
       "expected_rejection": "semantic",
       "result": {
-        "result_contract_version": "1.0.0",
+        "result_contract_version": "1.1.0",
         "evaluation_id": "BAD-06",
         "evaluation_timestamp": "2026-08-29T11:05:00Z",
         "input_id": "IN-BAD-06",
@@ -325,7 +325,7 @@
       "reason": "ERROR input with a safe classification",
       "expected_rejection": "semantic",
       "result": {
-        "result_contract_version": "1.0.0",
+        "result_contract_version": "1.1.0",
         "evaluation_id": "BAD-07",
         "evaluation_timestamp": "2026-08-29T11:06:00Z",
         "input_id": "IN-BAD-07",
@@ -375,7 +375,7 @@
       "reason": "malformed evidence reference (source_id pattern)",
       "expected_rejection": "schema",
       "result": {
-        "result_contract_version": "1.0.0",
+        "result_contract_version": "1.1.0",
         "evaluation_id": "BAD-08",
         "evaluation_timestamp": "2026-08-29T11:07:00Z",
         "input_id": "IN-BAD-08",
@@ -443,7 +443,7 @@
       "reason": "invalid detection_confidence value",
       "expected_rejection": "schema",
       "result": {
-        "result_contract_version": "1.0.0",
+        "result_contract_version": "1.1.0",
         "evaluation_id": "BAD-09",
         "evaluation_timestamp": "2026-08-29T11:08:00Z",
         "input_id": "IN-BAD-09",
@@ -493,7 +493,7 @@
       "reason": "missing required provenance block",
       "expected_rejection": "schema",
       "result": {
-        "result_contract_version": "1.0.0",
+        "result_contract_version": "1.1.0",
         "evaluation_id": "BAD-10",
         "evaluation_timestamp": "2026-08-29T11:09:00Z",
         "input_id": "IN-BAD-10",
@@ -523,7 +523,7 @@
       "reason": "duplicate applied_suppressors violates deterministic duplicate-free WP4 metadata",
       "expected_rejection": "schema",
       "result": {
-        "result_contract_version": "1.0.0",
+        "result_contract_version": "1.1.0",
         "evaluation_id": "BAD-11",
         "evaluation_timestamp": "2026-08-29T11:10:00Z",
         "input_id": "IN-BAD-11",
@@ -592,7 +592,7 @@
       "reason": "SUPPRESSED rule must preserve TRUE required-combination result",
       "expected_rejection": "schema",
       "result": {
-        "result_contract_version": "1.0.0",
+        "result_contract_version": "1.1.0",
         "evaluation_id": "BAD-12",
         "evaluation_timestamp": "2026-08-29T11:11:00Z",
         "input_id": "IN-BAD-12",
@@ -660,7 +660,7 @@
       "reason": "SUPPRESSED rule missing required applied_suppressors metadata",
       "expected_rejection": "schema",
       "result": {
-        "result_contract_version": "1.0.0",
+        "result_contract_version": "1.1.0",
         "evaluation_id": "BAD-13",
         "evaluation_timestamp": "2026-08-29T11:12:00Z",
         "input_id": "IN-BAD-13",
@@ -725,7 +725,7 @@
       "reason": "SUPPRESSED rule missing required suppressed_by metadata",
       "expected_rejection": "schema",
       "result": {
-        "result_contract_version": "1.0.0",
+        "result_contract_version": "1.1.0",
         "evaluation_id": "BAD-14",
         "evaluation_timestamp": "2026-08-29T11:13:00Z",
         "input_id": "IN-BAD-14",
@@ -792,7 +792,7 @@
       "reason": "MATCHED rule must not contain non-empty applied_suppressors",
       "expected_rejection": "schema",
       "result": {
-        "result_contract_version": "1.0.0",
+        "result_contract_version": "1.1.0",
         "evaluation_id": "BAD-15",
         "evaluation_timestamp": "2026-08-29T11:14:00Z",
         "input_id": "IN-BAD-15",
@@ -862,7 +862,7 @@
       "reason": "live_positive_provenance has an EMPTY occurrence group (minItems)",
       "expected_rejection": "schema",
       "result": {
-        "result_contract_version": "1.0.0",
+        "result_contract_version": "1.1.0",
         "evaluation_id": "BAD-LPP",
         "evaluation_timestamp": "2026-08-29T10:03:00Z",
         "input_id": "IN-FIX-04",
@@ -1012,7 +1012,7 @@
       "reason": "live_positive_provenance group has DUPLICATE refs (uniqueItems)",
       "expected_rejection": "schema",
       "result": {
-        "result_contract_version": "1.0.0",
+        "result_contract_version": "1.1.0",
         "evaluation_id": "BAD-LPP",
         "evaluation_timestamp": "2026-08-29T10:03:00Z",
         "input_id": "IN-FIX-04",
@@ -1165,7 +1165,7 @@
       "reason": "live_positive_provenance has DUPLICATE occurrence groups (uniqueItems)",
       "expected_rejection": "schema",
       "result": {
-        "result_contract_version": "1.0.0",
+        "result_contract_version": "1.1.0",
         "evaluation_id": "BAD-LPP",
         "evaluation_timestamp": "2026-08-29T10:03:00Z",
         "input_id": "IN-FIX-04",
@@ -1320,7 +1320,7 @@
       "reason": "live_positive_provenance key is not a valid indicatorId (propertyNames)",
       "expected_rejection": "schema",
       "result": {
-        "result_contract_version": "1.0.0",
+        "result_contract_version": "1.1.0",
         "evaluation_id": "BAD-LPP",
         "evaluation_timestamp": "2026-08-29T10:03:00Z",
         "input_id": "IN-FIX-04",
@@ -1466,6 +1466,222 @@
             "priority": "ADVISORY"
           }
         ]
+      }
+    },
+    {
+      "reason": "result_contract_version 1.1.0 missing provenance.component_versions.action_policy pin (no actions)",
+      "expected_rejection": "semantic",
+      "result": {
+        "result_contract_version": "1.1.0",
+        "evaluation_id": "BAD-AP-01",
+        "evaluation_timestamp": "2026-09-04T00:00:00Z",
+        "input_id": "IN-BAD-AP-01",
+        "language": [
+          "en"
+        ],
+        "script": [
+          "Latn"
+        ],
+        "input_support_status": "SUPPORTED",
+        "classification": "NO_SCAM_PATTERN",
+        "decision_severity": "NONE",
+        "matched_evidence_strength": "NONE",
+        "risk_level": "NONE",
+        "detection_confidence": "NOT_APPLICABLE",
+        "provenance": {
+          "bundle_version": "1.0.0",
+          "bundle_content_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "engine_version": "0.1.0-wp1",
+          "evaluation_profile": {
+            "profile_id": "mvp-default",
+            "extraction_confidence_gate": "MEDIUM",
+            "risk_matrix_id": "adr-0006-risk-matrix-v1",
+            "confidence_policy_id": "adr-0006-confidence-policy-v1"
+          },
+          "component_versions": {
+            "rule_schema": "1.0.0",
+            "indicator_registry": "0.3.0-interim",
+            "indicator_families": "1.0.0",
+            "negative_library": "1.0.0",
+            "taxonomy": "2.0.0",
+            "dimensions": "1.0.0",
+            "extraction_contracts": "1.0.0"
+          }
+        },
+        "rule_results": [],
+        "explanation": {
+          "summary": "x",
+          "what_was_detected": "x",
+          "why": "x",
+          "detection_confidence_reason": "x"
+        },
+        "recommended_actions": []
+      }
+    },
+    {
+      "reason": "result_contract_version 1.1.0 with a malformed action_policy pin (not semver)",
+      "expected_rejection": "semantic",
+      "result": {
+        "result_contract_version": "1.1.0",
+        "evaluation_id": "BAD-AP-02",
+        "evaluation_timestamp": "2026-09-04T00:00:00Z",
+        "input_id": "IN-BAD-AP-02",
+        "language": [
+          "en"
+        ],
+        "script": [
+          "Latn"
+        ],
+        "input_support_status": "SUPPORTED",
+        "classification": "NO_SCAM_PATTERN",
+        "decision_severity": "NONE",
+        "matched_evidence_strength": "NONE",
+        "risk_level": "NONE",
+        "detection_confidence": "NOT_APPLICABLE",
+        "provenance": {
+          "bundle_version": "1.0.0",
+          "bundle_content_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "engine_version": "0.1.0-wp1",
+          "evaluation_profile": {
+            "profile_id": "mvp-default",
+            "extraction_confidence_gate": "MEDIUM",
+            "risk_matrix_id": "adr-0006-risk-matrix-v1",
+            "confidence_policy_id": "adr-0006-confidence-policy-v1"
+          },
+          "component_versions": {
+            "rule_schema": "1.0.0",
+            "indicator_registry": "0.3.0-interim",
+            "indicator_families": "1.0.0",
+            "negative_library": "1.0.0",
+            "taxonomy": "2.0.0",
+            "dimensions": "1.0.0",
+            "extraction_contracts": "1.0.0",
+            "action_policy": "1.0"
+          }
+        },
+        "rule_results": [],
+        "explanation": {
+          "summary": "x",
+          "what_was_detected": "x",
+          "why": "x",
+          "detection_confidence_reason": "x"
+        },
+        "recommended_actions": []
+      }
+    },
+    {
+      "reason": "result_contract_version 1.1.0 with recommended actions but no action_policy pin",
+      "expected_rejection": "semantic",
+      "result": {
+        "result_contract_version": "1.1.0",
+        "evaluation_id": "BAD-AP-03",
+        "evaluation_timestamp": "2026-09-04T00:00:00Z",
+        "input_id": "IN-BAD-AP-03",
+        "language": [
+          "en"
+        ],
+        "script": [
+          "Latn"
+        ],
+        "input_support_status": "SUPPORTED",
+        "classification": "SCAM_PATTERN_DETECTED",
+        "decision_severity": "HIGH",
+        "matched_evidence_strength": "STRONG",
+        "risk_level": "HIGH",
+        "detection_confidence": "HIGH",
+        "provenance": {
+          "bundle_version": "1.0.0",
+          "bundle_content_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "engine_version": "0.1.0-wp1",
+          "evaluation_profile": {
+            "profile_id": "mvp-default",
+            "extraction_confidence_gate": "MEDIUM",
+            "risk_matrix_id": "adr-0006-risk-matrix-v1",
+            "confidence_policy_id": "adr-0006-confidence-policy-v1"
+          },
+          "component_versions": {
+            "rule_schema": "1.0.0",
+            "indicator_registry": "0.3.0-interim",
+            "indicator_families": "1.0.0",
+            "negative_library": "1.0.0",
+            "taxonomy": "2.0.0",
+            "dimensions": "1.0.0",
+            "extraction_contracts": "1.0.0"
+          }
+        },
+        "rule_results": [
+          {
+            "rule_id": "TL-CRED-001",
+            "rule_version": "1.0.0",
+            "kind": "COMPOSITE",
+            "evaluation_state": "MATCHED",
+            "required_combination_result": "TRUE"
+          }
+        ],
+        "explanation": {
+          "summary": "x",
+          "what_was_detected": "x",
+          "why": "x",
+          "detection_confidence_reason": "x"
+        },
+        "recommended_actions": [
+          {
+            "action_code": "REPORT_CYBERCRIME"
+          }
+        ],
+        "matched_rules": [
+          "TL-CRED-001"
+        ]
+      }
+    },
+    {
+      "reason": "result_contract_version 1.1.0 with no recommended actions but no action_policy pin",
+      "expected_rejection": "semantic",
+      "result": {
+        "result_contract_version": "1.1.0",
+        "evaluation_id": "BAD-AP-04",
+        "evaluation_timestamp": "2026-09-04T00:00:00Z",
+        "input_id": "IN-BAD-AP-04",
+        "language": [
+          "en"
+        ],
+        "script": [
+          "Latn"
+        ],
+        "input_support_status": "INSUFFICIENT_INFORMATION",
+        "classification": "INSUFFICIENT_EVIDENCE",
+        "decision_severity": "NONE",
+        "matched_evidence_strength": "NONE",
+        "risk_level": "NONE",
+        "detection_confidence": "NOT_APPLICABLE",
+        "provenance": {
+          "bundle_version": "1.0.0",
+          "bundle_content_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "engine_version": "0.1.0-wp1",
+          "evaluation_profile": {
+            "profile_id": "mvp-default",
+            "extraction_confidence_gate": "MEDIUM",
+            "risk_matrix_id": "adr-0006-risk-matrix-v1",
+            "confidence_policy_id": "adr-0006-confidence-policy-v1"
+          },
+          "component_versions": {
+            "rule_schema": "1.0.0",
+            "indicator_registry": "0.3.0-interim",
+            "indicator_families": "1.0.0",
+            "negative_library": "1.0.0",
+            "taxonomy": "2.0.0",
+            "dimensions": "1.0.0",
+            "extraction_contracts": "1.0.0"
+          }
+        },
+        "rule_results": [],
+        "explanation": {
+          "summary": "x",
+          "what_was_detected": "x",
+          "why": "x",
+          "detection_confidence_reason": "x"
+        },
+        "recommended_actions": []
       }
     }
   ]

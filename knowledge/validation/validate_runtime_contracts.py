@@ -152,6 +152,17 @@ def semantic_violations(r):
     for a in r.get("recommended_actions", []):
         if a.get("action_code") not in CANON_ACTIONS:
             v.append(f"recommended action {a.get('action_code')} not in the controlled vocabulary")
+
+    # H2 (independent review): a result_contract_version=1.1.0 result is action-policy-dependent even when
+    # recommended_actions == [] (WP6 consults the governed policy to conclude that NO action applies), so the
+    # governed action_policy version MUST be pinned in provenance and be a valid semver. The runtime SEMANTIC
+    # validator enforces this (the schema conditional is defence in depth).
+    if r.get("result_contract_version") == "1.1.0":
+        ap = ((r.get("provenance") or {}).get("component_versions") or {}).get("action_policy")
+        if ap is None:
+            v.append("result_contract_version 1.1.0 without a provenance.component_versions.action_policy pin")
+        elif not re.match(r"^\d+\.\d+\.\d+$", str(ap)):
+            v.append(f"malformed provenance.component_versions.action_policy pin {ap!r}")
     return v
 
 
@@ -165,7 +176,8 @@ def golden_case_result(case):
         "evaluation_profile": {"profile_id": "mvp-default", "extraction_confidence_gate": "MEDIUM",
                                "risk_matrix_id": "adr-0006-risk-matrix-v1", "confidence_policy_id": "adr-0006-confidence-policy-v1"},
         "component_versions": {"rule_schema": "1.0.0", "indicator_registry": "0.3.0-interim", "indicator_families": "1.0.0",
-                               "negative_library": "1.0.0", "taxonomy": "2.0.0", "dimensions": "1.0.0", "extraction_contracts": "1.0.0"},
+                               "negative_library": "1.0.0", "taxonomy": "2.0.0", "dimensions": "1.0.0", "extraction_contracts": "1.0.0",
+                               "action_policy": "1.0.0"},
     }
     rcr = {"MATCHED": "TRUE", "SUPPRESSED": "TRUE", "NOT_MATCHED": "FALSE", "INDETERMINATE": "UNKNOWN", "NOT_APPLICABLE": "UNKNOWN"}
     rule_results = []
@@ -183,7 +195,7 @@ def golden_case_result(case):
                 }
         rule_results.append(rule_result)
     return {
-        "result_contract_version": "1.0.0",
+        "result_contract_version": "1.1.0",
         "evaluation_id": f"GDC-ALIGN-{case['id']}",
         "evaluation_timestamp": "2026-08-29T00:00:00Z",
         "input_id": f"IN-{case['id']}",
@@ -234,8 +246,8 @@ def main() -> int:
     got_actions = set(det["$defs"]["recommendedAction"]["properties"]["action_code"]["enum"])
     if got_actions != CANON_ACTIONS:
         problems.append(f"enum drift: action_code {sorted(got_actions)} != canonical {sorted(CANON_ACTIONS)}")
-    if det["properties"]["result_contract_version"]["const"] != "1.0.0":
-        problems.append("result_contract_version const must be 1.0.0")
+    if det["properties"]["result_contract_version"]["const"] != "1.1.0":
+        problems.append("result_contract_version const must be 1.1.0")
     log("  ok    enums synchronised with DET-001 / ADR-0006" if not any('enum drift' in p or 'contract_version' in p for p in problems) else "  FAIL  enum sync")
 
     # 3. valid fixtures

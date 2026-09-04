@@ -4,7 +4,7 @@
   "provenance": "SYNTHETIC",
   "fixtures": [
     {
-      "result_contract_version": "1.0.0",
+      "result_contract_version": "1.1.0",
       "evaluation_id": "FIXTURE-01-NO-SCAM",
       "evaluation_timestamp": "2026-08-29T10:00:00Z",
       "input_id": "IN-FIX-01",
@@ -38,7 +38,8 @@
           "negative_library": "1.0.0",
           "taxonomy": "2.0.0",
           "dimensions": "1.0.0",
-          "extraction_contracts": "1.0.0"
+          "extraction_contracts": "1.0.0",
+          "action_policy": "1.0.0"
         }
       },
       "matched_rules": [],
@@ -57,7 +58,7 @@
       "recommended_actions": []
     },
     {
-      "result_contract_version": "1.0.0",
+      "result_contract_version": "1.1.0",
       "evaluation_id": "FIXTURE-02-INSUFFICIENT",
       "evaluation_timestamp": "2026-08-29T10:01:00Z",
       "input_id": "IN-FIX-02",
@@ -90,7 +91,8 @@
           "negative_library": "1.0.0",
           "taxonomy": "2.0.0",
           "dimensions": "1.0.0",
-          "extraction_contracts": "1.0.0"
+          "extraction_contracts": "1.0.0",
+          "action_policy": "1.0.0"
         }
       },
       "matched_rules": [],
@@ -120,7 +122,7 @@
       ]
     },
     {
-      "result_contract_version": "1.0.0",
+      "result_contract_version": "1.1.0",
       "evaluation_id": "FIXTURE-03-SUSPECTED",
       "evaluation_timestamp": "2026-08-29T10:02:00Z",
       "input_id": "IN-FIX-03",
@@ -153,7 +155,8 @@
           "negative_library": "1.0.0",
           "taxonomy": "2.0.0",
           "dimensions": "1.0.0",
-          "extraction_contracts": "1.0.0"
+          "extraction_contracts": "1.0.0",
+          "action_policy": "1.0.0"
         }
       },
       "matched_rules": [
@@ -220,7 +223,7 @@
       ]
     },
     {
-      "result_contract_version": "1.0.0",
+      "result_contract_version": "1.1.0",
       "evaluation_id": "FIXTURE-04-DETECTED-HARDRISK",
       "evaluation_timestamp": "2026-08-29T10:03:00Z",
       "input_id": "IN-FIX-04",
@@ -253,7 +256,8 @@
           "negative_library": "1.0.0",
           "taxonomy": "2.0.0",
           "dimensions": "1.0.0",
-          "extraction_contracts": "1.0.0"
+          "extraction_contracts": "1.0.0",
+          "action_policy": "1.0.0"
         }
       },
       "matched_rules": [
@@ -373,7 +377,7 @@
       ]
     },
     {
-      "result_contract_version": "1.0.0",
+      "result_contract_version": "1.1.0",
       "evaluation_id": "FIXTURE-05-UNSUPPORTED",
       "evaluation_timestamp": "2026-08-29T10:04:00Z",
       "input_id": "IN-FIX-05",
@@ -406,7 +410,8 @@
           "negative_library": "1.0.0",
           "taxonomy": "2.0.0",
           "dimensions": "1.0.0",
-          "extraction_contracts": "1.0.0"
+          "extraction_contracts": "1.0.0",
+          "action_policy": "1.0.0"
         }
       },
       "matched_rules": [],
@@ -432,7 +437,7 @@
       ]
     },
     {
-      "result_contract_version": "1.0.0",
+      "result_contract_version": "1.1.0",
       "evaluation_id": "FIXTURE-06-ERROR",
       "evaluation_timestamp": "2026-08-29T10:05:00Z",
       "input_id": "IN-FIX-06",
@@ -465,7 +470,8 @@
           "negative_library": "1.0.0",
           "taxonomy": "2.0.0",
           "dimensions": "1.0.0",
-          "extraction_contracts": "1.0.0"
+          "extraction_contracts": "1.0.0",
+          "action_policy": "1.0.0"
         }
       },
       "matched_rules": [],
@@ -493,7 +499,7 @@
       ]
     },
     {
-      "result_contract_version": "1.0.0",
+      "result_contract_version": "1.1.0",
       "evaluation_id": "FIXTURE-07-SUPPRESSED-BENIGN",
       "evaluation_timestamp": "2026-08-29T10:06:00Z",
       "input_id": "IN-FIX-07",
@@ -526,7 +532,8 @@
           "negative_library": "1.0.0",
           "taxonomy": "2.0.0",
           "dimensions": "1.0.0",
-          "extraction_contracts": "1.0.0"
+          "extraction_contracts": "1.0.0",
+          "action_policy": "1.0.0"
         }
       },
       "matched_rules": [],
@@ -581,7 +588,7 @@
       "recommended_actions": []
     },
     {
-      "result_contract_version": "1.0.0",
+      "result_contract_version": "1.1.0",
       "evaluation_id": "FIXTURE-08-HARDRISK-DECOY",
       "evaluation_timestamp": "2026-08-29T10:07:00Z",
       "input_id": "IN-FIX-08",
@@ -614,7 +621,8 @@
           "negative_library": "1.0.0",
           "taxonomy": "2.0.0",
           "dimensions": "1.0.0",
-          "extraction_contracts": "1.0.0"
+          "extraction_contracts": "1.0.0",
+          "action_policy": "1.0.0"
         }
       },
       "matched_rules": [
@@ -736,7 +744,7 @@
       ]
     },
     {
-      "result_contract_version": "1.0.0",
+      "result_contract_version": "1.1.0",
       "evaluation_id": "FIXTURE-09-CORROBORATED",
       "evaluation_timestamp": "2026-08-29T10:08:00Z",
       "input_id": "IN-FIX-09",
@@ -769,7 +777,8 @@
           "negative_library": "1.0.0",
           "taxonomy": "2.0.0",
           "dimensions": "1.0.0",
-          "extraction_contracts": "1.0.0"
+          "extraction_contracts": "1.0.0",
+          "action_policy": "1.0.0"
         }
       },
       "matched_rules": [
@@ -885,7 +894,7 @@
       ]
     },
     {
-      "result_contract_version": "1.0.0",
+      "result_contract_version": "1.1.0",
       "evaluation_id": "FIXTURE-10-DEGRADED",
       "evaluation_timestamp": "2026-08-29T10:09:00Z",
       "input_id": "IN-FIX-10",
@@ -918,7 +927,8 @@
           "negative_library": "1.0.0",
           "taxonomy": "2.0.0",
           "dimensions": "1.0.0",
-          "extraction_contracts": "1.0.0"
+          "extraction_contracts": "1.0.0",
+          "action_policy": "1.0.0"
         }
       },
       "matched_rules": [

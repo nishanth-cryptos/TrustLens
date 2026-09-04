@@ -53,6 +53,7 @@ from .aggregation import (
     aggregate_decision,
     evaluate_decision_from_governed,
 )
+from .explanation import ExplanationError, ExplanationResult, build_explanation
 from .loader import load_bundle
 from .suppression import (
     RuleSuppressionExecutor,
@@ -108,4 +109,8 @@ __all__ = [
     "DecisionResult",
     "AggregationError",
     "RISK_MATRIX",
+    # P3-WP6 (explanation + governed recommended actions)
+    "build_explanation",
+    "ExplanationResult",
+    "ExplanationError",
 ]

@@ -589,7 +589,7 @@ def check_schema_conformance(c: Check, rk) -> None:
     dd = d.as_decision_dict()
 
     doc = {
-        "result_contract_version": "1.0.0", "evaluation_id": "eval-wp5-test",
+        "result_contract_version": "1.1.0", "evaluation_id": "eval-wp5-test",
         "evaluation_timestamp": "2026-09-02T00:00:00Z", "input_id": "IN-WP5",
         "language": ["en"], "script": ["Latn"],
         "input_support_status": dd["input_support_status"], "classification": dd["classification"],

@@ -33,7 +33,7 @@ import build_bundle  # same directory; sys.path[0] is knowledge/publish when run
 
 ROOT = Path(__file__).resolve().parents[2]
 SCHEMA_PATH = ROOT / "knowledge" / "schemas" / "bundle-manifest.schema.json"
-ALLOWED_PREFIXES = ("rules/", "indicators/", "taxonomy/", "schemas/", "sources/")
+ALLOWED_PREFIXES = ("rules/", "indicators/", "taxonomy/", "schemas/", "sources/", "detection/")
 
 
 def main() -> int:
