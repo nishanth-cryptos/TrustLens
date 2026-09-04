@@ -47,6 +47,7 @@ INDEX_NAMES = (
     "negative_indicators_by_rule",
     "overrides_by_indicator",
     "overrides_by_target",
+    "action_policy_by_id",
 )
 
 _CATEGORY_RE = re.compile(r"^(TAX-\d{2})")
@@ -350,6 +351,7 @@ def build_indexes(components: dict) -> dict:
         "negative_indicators_by_rule": negative_indicators_by_rule,
         "overrides_by_indicator": overrides_by_indicator,
         "overrides_by_target": overrides_by_target,
+        "action_policy_by_id": {e["policy_entry_id"]: e for e in components["action_policy"]["entries"]},
     }
 
 

@@ -1,0 +1,359 @@
+{
+  "$comment": "TrustLens Phase 3 P3-WP6 GOVERNED RECOMMENDED-ACTION POLICY. DET-001 \u00a714. Deterministic mapping from an authoritative decision trigger to a recommended action_code (promoted detection-result vocabulary only). WP6 reads this; it never hardcodes mappings, never infers an action from a rule name, and never parses verification-step prose into an action. Ratified by the P3-WP6 governance gate (2026-09-02): DET_001 = the mappings frozen in DET-001 \u00a714; RULE_VERIFICATION_POLICY = VERIFY_INDEPENDENTLY derives from the presence of governed verification_steps; PROGRAM_POLICY = programme-ratified safety guidance; SYSTEM_STATE = support-status/classification routing. Golden cases are regression oracles, NOT authority (GOLDEN_CASE_EXPECTATION is not a basis). Action codes are instructions only \u2014 no phone number, URL, 1930, portal or procedure is emitted anywhere.",
+  "policy_version": "1.0.0",
+  "generated": "2026-09-02",
+  "provenance": "PROGRAMME_RATIFIED (P3-WP6 governance gate)",
+  "notes": "OVERRIDE/RULE/TAXONOMY entries contribute only for SCAM_PATTERN_DETECTED/SUSPECTED and only from eligible UNSUPPRESSED MATCHED decision rules (a SUPPRESSED or INDETERMINATE rule never leaks a scam action). NEGATIVE_INDICATOR entries contribute whenever the governed negative is authoritatively matched, without changing classification. RULE_VERIFICATION_POLICY contributes VERIFY_INDEPENDENTLY from an eligible MATCHED rule with verification_steps, or from a decision-relevant unresolved INDETERMINATE rule (ambiguities/unknowns) with verification_steps when the classification is INSUFFICIENT_EVIDENCE. SYSTEM_* entries are keyed by authoritative support status / classification.",
+  "entries": [
+    {
+      "policy_entry_id": "AP-OVR-001",
+      "trigger": {
+        "type": "OVERRIDE",
+        "id": "HR_OTP_DISCLOSURE_REQUEST"
+      },
+      "action_code": "DO_NOT_SHARE_CREDENTIALS",
+      "basis": "DET_001",
+      "applies_when": {
+        "classifications": [
+          "SCAM_PATTERN_DETECTED",
+          "SCAM_PATTERN_SUSPECTED"
+        ]
+      }
+    },
+    {
+      "policy_entry_id": "AP-OVR-002",
+      "trigger": {
+        "type": "OVERRIDE",
+        "id": "HR_UPI_PIN_TO_RECEIVE"
+      },
+      "action_code": "DO_NOT_ENTER_PIN",
+      "basis": "DET_001",
+      "applies_when": {
+        "classifications": [
+          "SCAM_PATTERN_DETECTED",
+          "SCAM_PATTERN_SUSPECTED"
+        ]
+      }
+    },
+    {
+      "policy_entry_id": "AP-OVR-003",
+      "trigger": {
+        "type": "OVERRIDE",
+        "id": "HR_BANKING_REMOTE_ACCESS"
+      },
+      "action_code": "DISCONNECT_REMOTE_ACCESS",
+      "basis": "DET_001",
+      "applies_when": {
+        "classifications": [
+          "SCAM_PATTERN_DETECTED",
+          "SCAM_PATTERN_SUSPECTED"
+        ]
+      }
+    },
+    {
+      "policy_entry_id": "AP-OVR-004",
+      "trigger": {
+        "type": "OVERRIDE",
+        "id": "HR_ACCESSIBILITY_REQUEST"
+      },
+      "action_code": "DISCONNECT_REMOTE_ACCESS",
+      "basis": "DET_001",
+      "applies_when": {
+        "classifications": [
+          "SCAM_PATTERN_DETECTED",
+          "SCAM_PATTERN_SUSPECTED"
+        ]
+      }
+    },
+    {
+      "policy_entry_id": "AP-OVR-005",
+      "trigger": {
+        "type": "OVERRIDE",
+        "id": "HR_BANKING_REMOTE_ACCESS"
+      },
+      "action_code": "CONTACT_BANK",
+      "basis": "PROGRAM_POLICY",
+      "applies_when": {
+        "classifications": [
+          "SCAM_PATTERN_DETECTED",
+          "SCAM_PATTERN_SUSPECTED"
+        ]
+      }
+    },
+    {
+      "policy_entry_id": "AP-OVR-006",
+      "trigger": {
+        "type": "OVERRIDE",
+        "id": "HR_WALLET_CONNECT_UNKNOWN"
+      },
+      "action_code": "DO_NOT_CONNECT_WALLET",
+      "basis": "PROGRAM_POLICY",
+      "applies_when": {
+        "classifications": [
+          "SCAM_PATTERN_DETECTED",
+          "SCAM_PATTERN_SUSPECTED"
+        ]
+      }
+    },
+    {
+      "policy_entry_id": "AP-OVR-007",
+      "trigger": {
+        "type": "OVERRIDE",
+        "id": "HR_PAYMENT_UNDER_COERCION"
+      },
+      "action_code": "DO_NOT_TRANSFER_MONEY",
+      "basis": "PROGRAM_POLICY",
+      "applies_when": {
+        "classifications": [
+          "SCAM_PATTERN_DETECTED",
+          "SCAM_PATTERN_SUSPECTED"
+        ]
+      }
+    },
+    {
+      "policy_entry_id": "AP-RUL-001",
+      "trigger": {
+        "type": "RULE",
+        "id": "TL-MAL-003"
+      },
+      "action_code": "DO_NOT_INSTALL_APP",
+      "basis": "PROGRAM_POLICY",
+      "applies_when": {
+        "classifications": [
+          "SCAM_PATTERN_DETECTED",
+          "SCAM_PATTERN_SUSPECTED"
+        ]
+      },
+      "note": "TL-MAL-003 establishes a request to install/run a screen-share / remote-control app."
+    },
+    {
+      "policy_entry_id": "AP-TAX-001",
+      "trigger": {
+        "type": "TAXONOMY",
+        "id": "TAX-01-01"
+      },
+      "action_code": "CONTACT_BANK",
+      "basis": "PROGRAM_POLICY",
+      "applies_when": {
+        "classifications": [
+          "SCAM_PATTERN_DETECTED",
+          "SCAM_PATTERN_SUSPECTED"
+        ]
+      }
+    },
+    {
+      "policy_entry_id": "AP-TAX-002",
+      "trigger": {
+        "type": "TAXONOMY",
+        "id": "TAX-01-02"
+      },
+      "action_code": "CONTACT_BANK",
+      "basis": "PROGRAM_POLICY",
+      "applies_when": {
+        "classifications": [
+          "SCAM_PATTERN_DETECTED",
+          "SCAM_PATTERN_SUSPECTED"
+        ]
+      }
+    },
+    {
+      "policy_entry_id": "AP-TAX-003",
+      "trigger": {
+        "type": "TAXONOMY",
+        "id": "TAX-01-07"
+      },
+      "action_code": "CONTACT_BANK",
+      "basis": "PROGRAM_POLICY",
+      "applies_when": {
+        "classifications": [
+          "SCAM_PATTERN_DETECTED",
+          "SCAM_PATTERN_SUSPECTED"
+        ]
+      }
+    },
+    {
+      "policy_entry_id": "AP-TAX-004",
+      "trigger": {
+        "type": "TAXONOMY",
+        "id": "TAX-01"
+      },
+      "action_code": "REPORT_CYBERCRIME",
+      "basis": "PROGRAM_POLICY",
+      "applies_when": {
+        "classifications": [
+          "SCAM_PATTERN_DETECTED",
+          "SCAM_PATTERN_SUSPECTED"
+        ]
+      }
+    },
+    {
+      "policy_entry_id": "AP-TAX-005",
+      "trigger": {
+        "type": "TAXONOMY",
+        "id": "TAX-02"
+      },
+      "action_code": "REPORT_CYBERCRIME",
+      "basis": "PROGRAM_POLICY",
+      "applies_when": {
+        "classifications": [
+          "SCAM_PATTERN_DETECTED",
+          "SCAM_PATTERN_SUSPECTED"
+        ]
+      }
+    },
+    {
+      "policy_entry_id": "AP-TAX-006",
+      "trigger": {
+        "type": "TAXONOMY",
+        "id": "TAX-03"
+      },
+      "action_code": "REPORT_CYBERCRIME",
+      "basis": "PROGRAM_POLICY",
+      "applies_when": {
+        "classifications": [
+          "SCAM_PATTERN_DETECTED",
+          "SCAM_PATTERN_SUSPECTED"
+        ]
+      }
+    },
+    {
+      "policy_entry_id": "AP-TAX-007",
+      "trigger": {
+        "type": "TAXONOMY",
+        "id": "TAX-03"
+      },
+      "action_code": "CONTACT_OFFICIAL_CHANNEL",
+      "basis": "PROGRAM_POLICY",
+      "applies_when": {
+        "classifications": [
+          "SCAM_PATTERN_DETECTED",
+          "SCAM_PATTERN_SUSPECTED"
+        ]
+      }
+    },
+    {
+      "policy_entry_id": "AP-TAX-008",
+      "trigger": {
+        "type": "TAXONOMY",
+        "id": "TAX-03"
+      },
+      "action_code": "PRESERVE_EVIDENCE",
+      "basis": "PROGRAM_POLICY",
+      "applies_when": {
+        "classifications": [
+          "SCAM_PATTERN_DETECTED",
+          "SCAM_PATTERN_SUSPECTED"
+        ]
+      }
+    },
+    {
+      "policy_entry_id": "AP-TAX-010",
+      "trigger": {
+        "type": "TAXONOMY",
+        "id": "TAX-05"
+      },
+      "action_code": "REPORT_CYBERCRIME",
+      "basis": "PROGRAM_POLICY",
+      "applies_when": {
+        "classifications": [
+          "SCAM_PATTERN_DETECTED",
+          "SCAM_PATTERN_SUSPECTED"
+        ]
+      }
+    },
+    {
+      "policy_entry_id": "AP-TAX-012",
+      "trigger": {
+        "type": "TAXONOMY",
+        "id": "TAX-06"
+      },
+      "action_code": "REPORT_CYBERCRIME",
+      "basis": "PROGRAM_POLICY",
+      "applies_when": {
+        "classifications": [
+          "SCAM_PATTERN_DETECTED",
+          "SCAM_PATTERN_SUSPECTED"
+        ]
+      }
+    },
+    {
+      "policy_entry_id": "AP-TAX-013",
+      "trigger": {
+        "type": "TAXONOMY",
+        "id": "TAX-10"
+      },
+      "action_code": "REPORT_CYBERCRIME",
+      "basis": "PROGRAM_POLICY",
+      "applies_when": {
+        "classifications": [
+          "SCAM_PATTERN_DETECTED",
+          "SCAM_PATTERN_SUSPECTED"
+        ]
+      }
+    },
+    {
+      "policy_entry_id": "AP-NEG-001",
+      "trigger": {
+        "type": "NEGATIVE_INDICATOR",
+        "id": "REPORTED_SCAM_NARRATIVE"
+      },
+      "action_code": "REPORT_CYBERCRIME",
+      "basis": "PROGRAM_POLICY",
+      "note": "A reported (past-tense) scam narrative is informational reporting guidance; it does NOT change classification."
+    },
+    {
+      "policy_entry_id": "AP-NEG-002",
+      "trigger": {
+        "type": "NEGATIVE_INDICATOR",
+        "id": "REPORTED_SCAM_NARRATIVE"
+      },
+      "action_code": "PRESERVE_EVIDENCE",
+      "basis": "PROGRAM_POLICY"
+    },
+    {
+      "policy_entry_id": "AP-VER-001",
+      "trigger": {
+        "type": "RULE_VERIFICATION_POLICY"
+      },
+      "action_code": "VERIFY_INDEPENDENTLY",
+      "basis": "RULE_VERIFICATION_POLICY",
+      "note": "Emitted when a governed rule with non-empty verification_steps is decision-relevant; the exact steps are copied unchanged into explanation.verification_steps."
+    },
+    {
+      "policy_entry_id": "AP-SYS-001",
+      "trigger": {
+        "type": "SYSTEM_SUPPORT_STATUS",
+        "id": "UNSUPPORTED"
+      },
+      "action_code": "RESUBMIT_IN_SUPPORTED_LANGUAGE",
+      "basis": "DET_001"
+    },
+    {
+      "policy_entry_id": "AP-SYS-002",
+      "trigger": {
+        "type": "SYSTEM_SUPPORT_STATUS",
+        "id": "UNSUPPORTED"
+      },
+      "action_code": "SEEK_HUMAN_REVIEW",
+      "basis": "DET_001"
+    },
+    {
+      "policy_entry_id": "AP-SYS-003",
+      "trigger": {
+        "type": "SYSTEM_SUPPORT_STATUS",
+        "id": "ERROR"
+      },
+      "action_code": "SEEK_HUMAN_REVIEW",
+      "basis": "SYSTEM_STATE"
+    },
+    {
+      "policy_entry_id": "AP-SYS-004",
+      "trigger": {
+        "type": "SYSTEM_CLASSIFICATION",
+        "id": "INSUFFICIENT_EVIDENCE"
+      },
+      "action_code": "SEEK_HUMAN_REVIEW",
+      "basis": "SYSTEM_STATE"
+    }
+  ]
+}

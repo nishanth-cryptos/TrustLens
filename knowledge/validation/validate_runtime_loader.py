@@ -194,7 +194,7 @@ def run(quiet: bool) -> int:
             "indicator_families_by_id", "positive_indicators_by_family", "taxonomy_by_id",
             "dimensions_by_id", "sources_by_id", "evidence_by_id", "overrides_by_id",
             "rules_by_indicator", "rules_by_category", "negative_indicators_by_rule",
-            "overrides_by_indicator", "overrides_by_target"}
+            "overrides_by_indicator", "overrides_by_target", "action_policy_by_id"}
         sorted_ok = all(list(v) == sorted(v) for v in rk.index("rules_by_indicator").values()) and \
             all(list(v) == sorted(v) for v in rk.index("negative_indicators_by_rule").values())
         check("approved indexes present + sorted", set(rk.index_names()) == expected_idx and sorted_ok,

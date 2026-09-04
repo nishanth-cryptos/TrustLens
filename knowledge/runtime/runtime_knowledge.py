@@ -115,6 +115,31 @@ class RuntimeKnowledge:
     def override(self, override_id: str) -> Mapping[str, Any] | None:
         return self._indexes["overrides_by_id"].get(override_id)
 
+    def action_policy_entry(self, policy_entry_id: str) -> Mapping[str, Any] | None:
+        return self._indexes["action_policy_by_id"].get(policy_entry_id)
+
+    def action_policy_entries(self) -> tuple[Mapping[str, Any], ...]:
+        """All governed action-policy entries in deterministic policy_entry_id order (P3-WP6). Empty for a
+        historical (manifest 1.0.0) bundle that carries no action policy."""
+        idx = self._indexes["action_policy_by_id"]
+        return tuple(idx[k] for k in sorted(idx))
+
+    def has_action_policy(self) -> bool:
+        """True iff this knowledge carries an ACTUALLY LOADED, version-pinned, non-empty governed action
+        policy (manifest 1.1.0). Independent-review §2: this must NOT be true merely because
+        component_versions holds an action_policy-looking value — it requires the pin AND a populated
+        action-policy index (the loader guarantees they are co-present). A historical 1.0.0 bundle returns
+        False and WP6 fails closed."""
+        pinned = bool(self._meta.get("component_versions", {}).get("action_policy"))
+        return pinned and len(self._indexes.get("action_policy_by_id", {})) > 0
+
+    @property
+    def action_policy_version(self) -> str | None:
+        """The pinned governed action-policy version, or None when no valid action policy is loaded."""
+        if not self.has_action_policy():
+            return None
+        return self._meta.get("component_versions", {}).get("action_policy")
+
     # ---- id collections ----
     def rule_ids(self) -> tuple[str, ...]:
         return tuple(sorted(self._indexes["rules_by_id"]))

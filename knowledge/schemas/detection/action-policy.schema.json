@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://trustlens/schemas/detection/action-policy.schema.json",
+  "title": "TrustLens Governed Recommended-Action Policy (P3-WP6)",
+  "description": "Phase 3 DET-001 §14. The governed, versioned, deterministic mapping from an authoritative decision trigger (override / rule / taxonomy / negative indicator / verification policy / system state) to a recommended action_code drawn ONLY from the promoted detection-result vocabulary. It is knowledge, not code: WP6 reads it, never hardcodes mappings and never infers an action from a rule name or from verification-step prose. A golden case is a regression oracle, NOT authority — GOLDEN_CASE_EXPECTATION is not a permitted basis. Bundled, hashed into the ADR-0004 content_digest, pinned in component_versions.action_policy, and exposed through RuntimeKnowledge.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["policy_version", "entries"],
+  "$defs": {
+    "actionCode": {
+      "enum": [
+        "DO_NOT_SHARE_CREDENTIALS", "DO_NOT_ENTER_PIN", "DO_NOT_TRANSFER_MONEY", "DO_NOT_INSTALL_APP",
+        "DO_NOT_CONNECT_WALLET", "DO_NOT_DIAL_CODE", "DISCONNECT_REMOTE_ACCESS", "VERIFY_INDEPENDENTLY",
+        "CONTACT_BANK", "CONTACT_OFFICIAL_CHANNEL", "REPORT_CYBERCRIME", "PRESERVE_EVIDENCE",
+        "PROCEED_WITH_CAUTION", "SEEK_HUMAN_REVIEW", "RESUBMIT_IN_SUPPORTED_LANGUAGE"
+      ]
+    },
+    "classification": {
+      "enum": ["NO_SCAM_PATTERN", "INSUFFICIENT_EVIDENCE", "SCAM_PATTERN_SUSPECTED", "SCAM_PATTERN_DETECTED", "UNSUPPORTED", "ERROR"]
+    },
+    "supportStatus": {
+      "enum": ["SUPPORTED", "PARTIALLY_SUPPORTED", "UNSUPPORTED", "INSUFFICIENT_INFORMATION", "ERROR"]
+    },
+    "entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["policy_entry_id", "trigger", "action_code", "basis"],
+      "properties": {
+        "policy_entry_id": { "type": "string", "pattern": "^AP-[A-Z]{3}-\\d{3}$" },
+        "trigger": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type"],
+          "properties": {
+            "type": { "enum": ["OVERRIDE", "RULE", "TAXONOMY", "NEGATIVE_INDICATOR", "RULE_VERIFICATION_POLICY", "SYSTEM_CLASSIFICATION", "SYSTEM_SUPPORT_STATUS"] },
+            "id": { "type": "string", "minLength": 1 }
+          },
+          "allOf": [
+            {
+              "if": { "properties": { "type": { "const": "RULE_VERIFICATION_POLICY" } }, "required": ["type"] },
+              "then": { "not": { "required": ["id"] } },
+              "else": { "required": ["id"] }
+            },
+            { "if": { "properties": { "type": { "const": "OVERRIDE" } }, "required": ["type"] }, "then": { "properties": { "id": { "pattern": "^HR_[A-Z_]+$" } } } },
+            { "if": { "properties": { "type": { "const": "RULE" } }, "required": ["type"] }, "then": { "properties": { "id": { "pattern": "^TL-[A-Z]{3,5}-\\d{3}$" } } } },
+            { "if": { "properties": { "type": { "const": "TAXONOMY" } }, "required": ["type"] }, "then": { "properties": { "id": { "pattern": "^TAX-\\d{2}(-\\d{2})?$" } } } },
+            { "if": { "properties": { "type": { "const": "NEGATIVE_INDICATOR" } }, "required": ["type"] }, "then": { "properties": { "id": { "pattern": "^[A-Z][A-Z0-9_]{2,63}$" } } } },
+            { "if": { "properties": { "type": { "const": "SYSTEM_CLASSIFICATION" } }, "required": ["type"] }, "then": { "properties": { "id": { "$ref": "#/$defs/classification" } } } },
+            { "if": { "properties": { "type": { "const": "SYSTEM_SUPPORT_STATUS" } }, "required": ["type"] }, "then": { "properties": { "id": { "$ref": "#/$defs/supportStatus" } } } }
+          ]
+        },
+        "action_code": { "$ref": "#/$defs/actionCode" },
+        "basis": { "enum": ["DET_001", "RULE_VERIFICATION_POLICY", "GOVERNED_SOURCE", "PROGRAM_POLICY", "SYSTEM_STATE"] },
+        "applies_when": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Optional further gate: the entry contributes only when the decision classification is in this set. Absent = the trigger's own applicability governs (e.g. NEGATIVE_INDICATOR fires regardless of classification).",
+          "properties": { "classifications": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/classification" } } }
+        },
+        "evidence_refs": { "type": "array", "uniqueItems": true, "items": { "type": "string", "pattern": "^SRC-\\d{3}$" }, "description": "Only for basis=GOVERNED_SOURCE, where an action claims an official factual basis. Empty/absent otherwise (action codes are instructions, not factual assertions)." },
+        "note": { "type": "string" }
+      },
+      "allOf": [
+        {
+          "$comment": "Independent-review M2: machine-enforce that evidence_refs is GOVERNED_SOURCE-only. Source authority must not be smuggled through evidence_refs on a PROGRAM_POLICY/SYSTEM_STATE/DET_001/RULE_VERIFICATION_POLICY basis; if a future programme policy needs source evidence it must be re-governed as GOVERNED_SOURCE.",
+          "if": { "properties": { "basis": { "const": "GOVERNED_SOURCE" } }, "required": ["basis"] },
+          "then": { "required": ["evidence_refs"], "properties": { "evidence_refs": { "minItems": 1 } } },
+          "else": { "not": { "required": ["evidence_refs"] } }
+        }
+      ]
+    }
+  },
+  "properties": {
+    "$comment": { "type": "string" },
+    "policy_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$", "description": "Semantic version (KB-001 §8). Must equal the bundle manifest component_versions.action_policy." },
+    "generated": { "type": "string" },
+    "provenance": { "type": "string" },
+    "notes": { "type": "string" },
+    "entries": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/entry" } }
+  }
+}

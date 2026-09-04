@@ -1,8 +1,8 @@
 {
   "$comment": "TrustLens Phase 3 DET-001 GOLDEN DECISION CASES. DESIGN-LEVEL specification of the decision DET-001 must produce for canonical inputs. Each case declares an indicator-observation set (the signal an extractor would produce — extraction itself is Phase 9) and the EXPECTED decision across every DET-001 axis. These encode design intent, NOT measured accuracy (G-09): they may never be used to claim precision/recall (RSK-003). All inputs are SYNTHETIC. Rule/indicator/override ids are real and are resolved by validate_det_design.py against the live knowledge base; risk_level is checked against the ADR-0006 risk matrix; classification is checked for consistency with support status and fired rules. Where a governing rule is not yet PUBLISHED, live_publishable=false records that a PUBLISHED-only live engine routes the case to review pending governance promotion — the case still documents the designed on-promotion behaviour. declared_indicators sets are SPARSE (programme decision 1, 2026-08-30): an absent indicator is UNKNOWN at the operand level, not FALSE — a case that needs an affirmative absence declares an explicit matched=NOT_OBSERVED (e.g. GDC-05 RECEIVE_FRAMING). declared_indicators is a TEST/DESIGN compact shorthand. A case whose outcome depends on exact occurrence association may additionally store governed_input with schema-valid indicator_observations plus the normalized_observations they reference; the WP3 corpus replay passes that data unchanged to the normal *_from_governed production API. Occurrence structural attributes are authored ONLY on normalized observations. Structural semantics and governed SUPPRESS_INDICATOR association are both resolved through observation_refs; neither is input-global.",
-  "cases_version": "1.2.0",
+  "cases_version": "1.3.0",
   "generated": "2026-08-29",
-  "last_updated": "2026-09-02",
+  "last_updated": "2026-09-03",
   "change_history": [
     {
       "version": "1.0.0",
@@ -18,6 +18,11 @@
       "version": "1.2.0",
       "date": "2026-09-02",
       "change": "GDC-02/GDC-03 governed input representations were enriched to make their existing benign/non-live evidence explicit under the sparse-observation model: GDC-02 now declares its delivered (not requested) OTP as an explicit CREDENTIAL_REQUEST_OTP=NOT_OBSERVED, and GDC-03 declares its reported credential request as a REPORTED (structurally non-live) occurrence, so a governed COMPOSITE rule affirmatively evaluates to required_combination_result=FALSE (a rule-local, effect-aware benign clear) instead of relying on the mere presence of a negative indicator. Expected outcomes were unchanged (both remain NO_SCAM_PATTERN / NONE / NOT_APPLICABLE). No new source evidence or scam knowledge was introduced; this is a fixture representation correction, not a decision-outcome change."
+    },
+    {
+      "version": "1.3.0",
+      "date": "2026-09-03",
+      "change": "WP6: recommended_actions normalized to the governed action-policy artifact (knowledge/detection/action-policy-v1.json). No detection/classification/severity/risk/confidence/governing/corroboration expectation changed. Golden expectations do not author policy; they test the ratified policy. Net action changes: GDC-04 +REPORT_CYBERCRIME; GDC-07 +REPORT_CYBERCRIME; GDC-11 -PROCEED_WITH_CAUTION (no governed trigger); GDC-13 -> SEEK_HUMAN_REVIEW (sparse INDETERMINATE is not decision-relevant, so VERIFY_INDEPENDENTLY does not apply); GDC-10 -DO_NOT_TRANSFER_MONEY (the broad TAX-06 transfer-money mapping was not ratified; only HR_PAYMENT_UNDER_COERCION governs DO_NOT_TRANSFER_MONEY)."
     }
   ],
   "provenance": "SYNTHETIC",
@@ -47,7 +52,7 @@
         "risk_level": "CRITICAL",
         "detection_confidence": "HIGH",
         "corroboration_band": "HIGH",
-        "recommended_actions": ["DO_NOT_SHARE_CREDENTIALS", "CONTACT_BANK", "VERIFY_INDEPENDENTLY", "REPORT_CYBERCRIME"],
+        "recommended_actions": ["DO_NOT_SHARE_CREDENTIALS", "VERIFY_INDEPENDENTLY", "CONTACT_BANK", "REPORT_CYBERCRIME"],
         "unknowns": [], "ambiguities": [],
         "live_publishable": true
       },
@@ -142,7 +147,7 @@
         "risk_level": "CRITICAL",
         "detection_confidence": "HIGH",
         "corroboration_band": "MEDIUM",
-        "recommended_actions": ["DO_NOT_ENTER_PIN", "VERIFY_INDEPENDENTLY", "CONTACT_BANK"],
+        "recommended_actions": ["DO_NOT_ENTER_PIN", "VERIFY_INDEPENDENTLY", "CONTACT_BANK", "REPORT_CYBERCRIME"],
         "unknowns": [], "ambiguities": [],
         "live_publishable": true
       },
@@ -210,7 +215,7 @@
         "risk_level": "CRITICAL",
         "detection_confidence": "HIGH",
         "corroboration_band": "HIGH",
-        "recommended_actions": ["DO_NOT_SHARE_CREDENTIALS", "CONTACT_BANK", "VERIFY_INDEPENDENTLY", "REPORT_CYBERCRIME"],
+        "recommended_actions": ["DO_NOT_SHARE_CREDENTIALS", "VERIFY_INDEPENDENTLY", "CONTACT_BANK", "REPORT_CYBERCRIME"],
         "unknowns": [], "ambiguities": [],
         "live_publishable": true
       },
@@ -242,7 +247,7 @@
         "risk_level": "HIGH",
         "detection_confidence": "MEDIUM",
         "corroboration_band": "MEDIUM",
-        "recommended_actions": ["DISCONNECT_REMOTE_ACCESS", "DO_NOT_INSTALL_APP", "CONTACT_BANK", "VERIFY_INDEPENDENTLY"],
+        "recommended_actions": ["DO_NOT_INSTALL_APP", "DISCONNECT_REMOTE_ACCESS", "VERIFY_INDEPENDENTLY", "CONTACT_BANK", "REPORT_CYBERCRIME"],
         "unknowns": [], "ambiguities": [],
         "live_publishable": false
       },
@@ -341,7 +346,7 @@
         "risk_level": "HIGH",
         "detection_confidence": "HIGH",
         "corroboration_band": "HIGH",
-        "recommended_actions": ["DO_NOT_TRANSFER_MONEY", "VERIFY_INDEPENDENTLY", "REPORT_CYBERCRIME"],
+        "recommended_actions": ["VERIFY_INDEPENDENTLY", "REPORT_CYBERCRIME"],
         "unknowns": [], "ambiguities": [],
         "live_publishable": false
       },
@@ -373,7 +378,7 @@
         "risk_level": "NONE",
         "detection_confidence": "NOT_APPLICABLE",
         "corroboration_band": "NONE",
-        "recommended_actions": ["SEEK_HUMAN_REVIEW", "VERIFY_INDEPENDENTLY", "PROCEED_WITH_CAUTION"],
+        "recommended_actions": ["VERIFY_INDEPENDENTLY", "SEEK_HUMAN_REVIEW"],
         "unknowns": [],
         "ambiguities": ["payment_direction unresolved: RECEIVE_FRAMING vs PAY_MERCHANT_DIRECTION cannot be established"],
         "live_publishable": true
@@ -402,7 +407,7 @@
         "risk_level": "NONE",
         "detection_confidence": "NOT_APPLICABLE",
         "corroboration_band": "NONE",
-        "recommended_actions": ["RESUBMIT_IN_SUPPORTED_LANGUAGE", "SEEK_HUMAN_REVIEW"],
+        "recommended_actions": ["SEEK_HUMAN_REVIEW", "RESUBMIT_IN_SUPPORTED_LANGUAGE"],
         "unknowns": [], "ambiguities": [],
         "live_publishable": true
       },
@@ -433,7 +438,7 @@
         "risk_level": "NONE",
         "detection_confidence": "NOT_APPLICABLE",
         "corroboration_band": "LOW",
-        "recommended_actions": ["PROCEED_WITH_CAUTION", "VERIFY_INDEPENDENTLY"],
+        "recommended_actions": ["SEEK_HUMAN_REVIEW"],
         "unknowns": ["no credential/payment/device action observed; pretext unspecified"],
         "ambiguities": [],
         "live_publishable": true
@@ -469,7 +474,7 @@
         "risk_level": "CRITICAL",
         "detection_confidence": "HIGH",
         "corroboration_band": "HIGH",
-        "recommended_actions": ["DO_NOT_TRANSFER_MONEY", "CONTACT_OFFICIAL_CHANNEL", "VERIFY_INDEPENDENTLY", "REPORT_CYBERCRIME", "PRESERVE_EVIDENCE"],
+        "recommended_actions": ["DO_NOT_TRANSFER_MONEY", "VERIFY_INDEPENDENTLY", "CONTACT_OFFICIAL_CHANNEL", "REPORT_CYBERCRIME", "PRESERVE_EVIDENCE"],
         "unknowns": [], "ambiguities": [],
         "live_publishable": true
       },
@@ -629,7 +634,7 @@
         "risk_level": "CRITICAL",
         "detection_confidence": "HIGH",
         "corroboration_band": "MEDIUM",
-        "recommended_actions": ["DO_NOT_SHARE_CREDENTIALS", "CONTACT_BANK", "VERIFY_INDEPENDENTLY", "REPORT_CYBERCRIME"],
+        "recommended_actions": ["DO_NOT_SHARE_CREDENTIALS", "VERIFY_INDEPENDENTLY", "CONTACT_BANK", "REPORT_CYBERCRIME"],
         "unknowns": [], "ambiguities": [],
         "live_publishable": true
       },

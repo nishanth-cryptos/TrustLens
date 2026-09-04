@@ -59,7 +59,9 @@ ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_MANIFEST_SCHEMA_PATH = ROOT / "knowledge" / "schemas" / "bundle-manifest.schema.json"
 
 MANIFEST_FILENAME = "bundle-manifest.json"
-ALLOWED_PREFIXES = ("rules/", "indicators/", "taxonomy/", "schemas/", "sources/")
+ALLOWED_PREFIXES = ("rules/", "indicators/", "taxonomy/", "schemas/", "sources/", "detection/")
+# Engine-side contract for the governed action policy (not bundled knowledge; read as a local file, offline).
+DEFAULT_ACTION_POLICY_SCHEMA_PATH = ROOT / "knowledge" / "schemas" / "detection" / "action-policy.schema.json"
 # Closed-projection reconciliation (ADR-0004 §5.2): runtime members are JSON only; raw PDFs and
 # test/dev artefacts must never be manifested.
 DISALLOWED_SUBSTRINGS = ("seed-data", "_fixtures", "coverage", "validation", "seed-corpus")
@@ -81,13 +83,19 @@ COMPONENT_MEMBERS = {
     "dimensions": "taxonomy/dimensions-v1.json",
     "sources": "sources/verification-manifest.json",
     "evidence": "sources/evidence-records.json",
+    "action_policy": "detection/action-policy-v1.json",
 }
+ACTION_POLICY_MEMBER = COMPONENT_MEMBERS["action_policy"]
+# action_policy is required only for a WP6 (manifest 1.1.0) bundle — see load_bundle.
 REQUIRED_MEMBERS = frozenset(
-    list(COMPONENT_MEMBERS.values()) + [RULE_SCHEMA_MEMBER] + list(EXTRACTION_SCHEMA_MEMBERS)
+    [v for k, v in COMPONENT_MEMBERS.items() if k != "action_policy"] + [RULE_SCHEMA_MEMBER] + list(EXTRACTION_SCHEMA_MEMBERS)
 )
 
 # ---- engine-declared EXACT-TOKEN compatibility allowlists (requirement 2 / STEP 5) ----
-SUPPORTED_MANIFEST_SCHEMA_VERSIONS = frozenset({"1.0.0"})
+# 1.0.0 = historical pre-WP6 bundle (no action_policy; loadable for WP1–WP5 replay, but WP6 governed-action
+# generation fails closed). 1.1.0 = requires the governed action_policy component (WP6-capable).
+SUPPORTED_MANIFEST_SCHEMA_VERSIONS = frozenset({"1.0.0", "1.1.0"})
+WP6_MANIFEST_SCHEMA_VERSION = "1.1.0"
 SUPPORTED_BUNDLE_VERSIONS = frozenset({"1.0.0"})
 SUPPORTED_COMPONENT_VERSIONS: dict[str, frozenset[str]] = {
     "rule_schema": frozenset({"1.0.0"}),
@@ -99,6 +107,7 @@ SUPPORTED_COMPONENT_VERSIONS: dict[str, frozenset[str]] = {
     "evidence_manifest": frozenset({"1.2"}),
     "evidence_records": frozenset({"1.0"}),
     "extraction_schemas": frozenset({"1.0.0"}),
+    "action_policy": frozenset({"1.0.0"}),
 }
 
 # component_versions key -> (parsed-object key, accessor). Used to verify the member's OWN declared
@@ -113,6 +122,7 @@ _EMBEDDED_VERSION: dict[str, tuple[str, Callable[[dict], Any]]] = {
     "evidence_manifest": ("sources", lambda d: d.get("manifest_version", d.get("version"))),
     "evidence_records": ("evidence", lambda d: d.get("version")),
     "extraction_schemas": ("envelope", lambda d: d.get("properties", {}).get("envelope_version", {}).get("const")),
+    "action_policy": ("action_policy", lambda d: d.get("policy_version")),
 }
 
 
@@ -145,7 +155,8 @@ def _safe_resolve(root: Path, rel: str) -> Path:
 # The EXACT fixed non-rule member paths a bundle_version 1.0.0 projection may carry. The only variable
 # members are the rule files, matched by RULE_MEMBER_RE below. The bundle contract (ADR-0004 §5.2)
 # defines no forward-compatible / extension members, so any other manifested path is rejected.
-FIXED_MEMBERS = frozenset(REQUIRED_MEMBERS)
+# action_policy is an ALLOWED member (present in a 1.1.0 bundle) even though it is only REQUIRED for 1.1.0.
+FIXED_MEMBERS = frozenset(REQUIRED_MEMBERS) | {ACTION_POLICY_MEMBER}
 RULE_MEMBER_RE = re.compile(r"^rules/TL-[A-Z]{3,5}-\d{3}\.json$")
 
 
@@ -169,6 +180,54 @@ def _parse(data: bytes, what: str) -> Any:
         return json.loads(data.decode("utf-8"))
     except (UnicodeDecodeError, json.JSONDecodeError) as e:
         raise MemberSchemaError(f"{what} is not valid JSON: {e}", code="MEMBER_PARSE_ERROR") from e
+
+
+def _validate_action_policy(components: dict, schema_path: Path | None = None) -> None:
+    """Validate the governed action policy against action-policy.schema.json, reject duplicate
+    policy_entry_ids, and resolve EVERY trigger/evidence reference against the loaded governed knowledge.
+    A malformed policy or a dangling trigger fails closed (P3-WP6). No detection logic here."""
+    policy = components["action_policy"]
+    try:
+        schema = json.loads(Path(schema_path or DEFAULT_ACTION_POLICY_SCHEMA_PATH).read_text(encoding="utf-8"))
+        Draft202012Validator.check_schema(schema)
+    except Exception as e:  # noqa: BLE001 — engine-side contract problem
+        raise MemberSchemaError(f"action-policy schema contract unavailable/invalid: {e}",
+                                code="MEMBER_SCHEMA_INVALID") from e
+    errs = sorted(Draft202012Validator(schema).iter_errors(policy), key=lambda e: list(e.path))
+    if errs:
+        raise MemberSchemaError(
+            f"action-policy-v1.json fails action-policy.schema.json: {errs[0].message} "
+            f"at /{'/'.join(map(str, errs[0].path))}", code="MEMBER_SCHEMA_INVALID")
+
+    override_ids = {o["override_id"] for o in components["negatives"].get("overrides", [])}
+    rule_ids = {r["id"] for r in components["rules"]}
+    negative_ids = {n["negative_indicator_id"] for n in components["negatives"]["negative_indicators"]}
+    tax_ids: set[str] = set()
+    for cat in components["taxonomy"]["categories"]:
+        tax_ids.add(cat["id"])
+        for sub in cat.get("subcategories", []):
+            tax_ids.add(sub["id"])
+    source_ids = {s["id"] for s in components["sources"]["sources"]}
+
+    seen_entry_ids: set[str] = set()
+    for e in policy["entries"]:
+        eid = e["policy_entry_id"]
+        if eid in seen_entry_ids:
+            raise ReferenceIntegrityError(f"duplicate action-policy policy_entry_id {eid!r}", code="DUPLICATE_ID")
+        seen_entry_ids.add(eid)
+        t = e["trigger"]
+        ttype, tid = t["type"], t.get("id")
+        if ttype == "OVERRIDE" and tid not in override_ids:
+            raise ReferenceIntegrityError(f"action-policy {eid}: OVERRIDE trigger {tid!r} does not resolve", code="REFERENCE_INVALID")
+        if ttype == "RULE" and tid not in rule_ids:
+            raise ReferenceIntegrityError(f"action-policy {eid}: RULE trigger {tid!r} does not resolve", code="REFERENCE_INVALID")
+        if ttype == "TAXONOMY" and tid not in tax_ids:
+            raise ReferenceIntegrityError(f"action-policy {eid}: TAXONOMY trigger {tid!r} does not resolve", code="REFERENCE_INVALID")
+        if ttype == "NEGATIVE_INDICATOR" and tid not in negative_ids:
+            raise ReferenceIntegrityError(f"action-policy {eid}: NEGATIVE_INDICATOR trigger {tid!r} does not resolve", code="REFERENCE_INVALID")
+        for sref in e.get("evidence_refs", []):
+            if sref not in source_ids:
+                raise ReferenceIntegrityError(f"action-policy {eid}: evidence_ref {sref!r} does not resolve", code="REFERENCE_INVALID")
 
 
 def load_bundle(bundle_path, *, manifest_schema_path: Path | None = None) -> RuntimeKnowledge:
@@ -214,6 +273,7 @@ def load_bundle(bundle_path, *, manifest_schema_path: Path | None = None) -> Run
             code="MANIFEST_SCHEMA_INVALID", detail={"errors": [e.message for e in errs]})
 
     files = manifest["integrity"]["files"]
+    wp6 = manifest["manifest_schema_version"] == WP6_MANIFEST_SCHEMA_VERSION   # 1.1.0 carries the action policy
 
     # ---- 2. member path-safety (canonical, closed projection) + no duplicates ----
     seen: set[str] = set()
@@ -227,8 +287,26 @@ def load_bundle(bundle_path, *, manifest_schema_path: Path | None = None) -> Run
         seen.add(rel)
         resolved_paths[rel] = resolved
 
-    # ---- 3. required members present in the manifest ----
-    missing_required = sorted(m for m in REQUIRED_MEMBERS if m not in seen)
+    # ---- 2b. H1 defence-in-depth: a historical (1.0.0) manifest MUST carry NO WP6 action-policy state ----
+    # The manifest schema already forbids component_versions.action_policy for 1.0.0, but the action-policy
+    # MEMBER is a FIXED (allowed) path, so a hybrid 1.0.0 bundle could still list it (hash-covered) while
+    # omitting the pin — leaving the member's bytes in the digest yet ignored by the runtime. That is
+    # malformed, not historical: reject the pin AND the member (and, transitively, its integrity entry).
+    if not wp6:
+        if "action_policy" in manifest["component_versions"]:
+            raise CompatibilityError(
+                "hybrid manifest: manifest_schema_version 1.0.0 carries a component_versions.action_policy pin "
+                "(a historical bundle predates WP6 and must carry no action policy)",
+                code="VERSION_INCOMPATIBLE", detail={"manifest_schema_version": "1.0.0"})
+        if ACTION_POLICY_MEMBER in seen:
+            raise IntegrityError(
+                f"hybrid manifest: manifest_schema_version 1.0.0 carries the WP6 action-policy member "
+                f"{ACTION_POLICY_MEMBER!r} (a historical bundle must carry no action policy)",
+                code="UNEXPECTED_MEMBER", detail={"member": ACTION_POLICY_MEMBER})
+
+    # ---- 3. required members present in the manifest (action_policy required only for a 1.1.0 bundle) ----
+    required_members = set(REQUIRED_MEMBERS) | ({ACTION_POLICY_MEMBER} if wp6 else set())
+    missing_required = sorted(m for m in required_members if m not in seen)
     if missing_required:
         raise IntegrityError(f"required bundle members absent: {missing_required}", code="COMPONENT_MISSING",
                              detail={"missing": missing_required})
@@ -273,6 +351,8 @@ def load_bundle(bundle_path, *, manifest_schema_path: Path | None = None) -> Run
             f"unsupported bundle_version {manifest['bundle_version']!r}", code="VERSION_INCOMPATIBLE")
     cv = manifest["component_versions"]
     for comp, allowed in SUPPORTED_COMPONENT_VERSIONS.items():
+        if comp == "action_policy" and not wp6:
+            continue   # historical 1.0.0 bundle has no action policy
         if cv.get(comp) not in allowed:
             raise CompatibilityError(
                 f"unsupported {comp} version {cv.get(comp)!r} (engine accepts {sorted(allowed)})",
@@ -320,16 +400,22 @@ def load_bundle(bundle_path, *, manifest_schema_path: Path | None = None) -> Run
         "dimensions": member(COMPONENT_MEMBERS["dimensions"]),
         "sources": member(COMPONENT_MEMBERS["sources"]),
         "evidence": member(COMPONENT_MEMBERS["evidence"]),
+        # WP6 (1.1.0): the governed action policy. Historical 1.0.0: an empty sentinel (no WP6 actions).
+        "action_policy": member(ACTION_POLICY_MEMBER) if wp6 else {"policy_version": None, "entries": []},
     }
 
     # ---- 8. component shapes + duplicate ids (typed; before any indexing) ----
     check_shapes_and_duplicates(components)
+    if wp6:
+        _validate_action_policy(components)
 
     # ---- 9. embedded member versions must match the manifest's claim (no blind trust) ----
     ver_objs = dict(components)
     ver_objs["rule_schema"] = rule_schema
     ver_objs["envelope"] = member(ENVELOPE_SCHEMA_MEMBER)
     for comp, (okey, acc) in _EMBEDDED_VERSION.items():
+        if comp == "action_policy" and not wp6:
+            continue   # no action policy in a historical 1.0.0 bundle
         embedded = acc(ver_objs[okey])
         if embedded is None:
             raise CompatibilityError(
@@ -367,6 +453,18 @@ def load_bundle(bundle_path, *, manifest_schema_path: Path | None = None) -> Run
 
     # ---- 12. build immutable indexes + RuntimeKnowledge ----
     indexes = build_indexes(components)
+    # Availability invariant (independent-review §2): the action-policy PIN and the action-policy INDEX must
+    # be exactly co-present. RuntimeKnowledge must never represent the impossible "pinned but empty" (or
+    # "unpinned but populated") state — fail closed at load rather than let has_action_policy() disagree with
+    # the loaded payload.
+    pin_present = bool(cv.get("action_policy"))
+    index_nonempty = bool(indexes["action_policy_by_id"])
+    if pin_present != index_nonempty or pin_present != wp6:
+        raise IntegrityError(
+            "action-policy availability inconsistency: "
+            f"pin={pin_present}, index_nonempty={index_nonempty}, wp6_manifest={wp6}",
+            code="COMPONENT_MISSING",
+            detail={"pin": pin_present, "index_nonempty": index_nonempty, "wp6": wp6})
     meta = {
         "bundle_version": manifest["bundle_version"],
         "manifest_schema_version": manifest["manifest_schema_version"],

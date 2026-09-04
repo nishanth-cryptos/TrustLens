@@ -32,7 +32,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 K = ROOT / "knowledge"
 
-MANIFEST_SCHEMA_VERSION = "1.0.0"
+MANIFEST_SCHEMA_VERSION = "1.1.0"   # 1.1.0: additive action_policy component (P3-WP6 governed actions)
 BUNDLE_VERSION = "1.0.0"
 
 # The extraction contract schemas (WP2). They carry no per-file version field; the bundle pins them to
@@ -95,6 +95,8 @@ def _members():
     # evidence METADATA references only (never the PDFs)
     yield "sources/verification-manifest.json", K / "sources" / "verification-manifest.json"
     yield "sources/evidence-records.json", K / "sources" / "manual-retrieval" / "evidence-records.json"
+    # governed recommended-action policy (P3-WP6)
+    yield "detection/action-policy-v1.json", K / "detection" / "action-policy-v1.json"
 
 
 def _component_versions() -> dict:
@@ -121,6 +123,7 @@ def _component_versions() -> dict:
         "evidence_records": v(K / "sources" / "manual-retrieval" / "evidence-records.json", "version"),
         "extraction_schemas": v(K / "schemas" / "input-envelope.schema.json",
                                 const_path=("properties", "envelope_version", "const")),
+        "action_policy": v(K / "detection" / "action-policy-v1.json", "policy_version"),
     }
 
 

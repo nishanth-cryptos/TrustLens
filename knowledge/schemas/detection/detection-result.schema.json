@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://trustlens/schemas/detection/detection-result.schema.json",
   "title": "TrustLens Detection Result (P3-WP1 runtime contract)",
-  "description": "Phase 3 DET-001. The RUNTIME output contract for ONE TrustLens evaluation: what TrustLens concluded, how strongly, why, and under exactly which pinned knowledge, such that the decision is fully reproducible and fully explainable. Promoted and frozen from the Phase-3 design copy at P3-WP1; the design copy is superseded by this file. This contract fixes the SHAPE the deterministic engine (later work packages) must produce; it contains NO detection logic. The five decision quantities are SEPARATE fields (input_support_status, classification, decision_severity, matched_evidence_strength, risk_level, detection_confidence) and are NEVER collapsed into one number or a probability (CONF-001, glossary section 1). input_support_status is decided BEFORE classification; UNSUPPORTED / INSUFFICIENT_EVIDENCE / ERROR are NEVER mapped to a benign outcome (DET-001 section 3; UNKNOWN is not SAFE). additionalProperties:false at every level structurally forbids a smuggled probability/score field; the runtime validator adds a name-scan as defence in depth. API-neutral JSON Schema (STEP 17); privacy-minimised — it carries observation/evidence REFERENCES, not raw credential content (STEP 18).",
+  "description": "Phase 3 DET-001. The RUNTIME output contract for ONE TrustLens evaluation: what TrustLens concluded, how strongly, why, and under exactly which pinned knowledge, such that the decision is fully reproducible and fully explainable. Promoted and frozen from the Phase-3 design copy at P3-WP1; the design copy is superseded by this file. This contract fixes the SHAPE the deterministic engine (later work packages) must produce; it contains NO detection logic. The five decision quantities are SEPARATE fields (input_support_status, classification, decision_severity, matched_evidence_strength, risk_level, detection_confidence) and are NEVER collapsed into one number or a probability (CONF-001, glossary section 1). input_support_status is decided BEFORE classification; UNSUPPORTED / INSUFFICIENT_EVIDENCE / ERROR are NEVER mapped to a benign outcome (DET-001 section 3; UNKNOWN is not SAFE). additionalProperties:false at every level structurally forbids a smuggled probability/score field; the runtime validator adds a name-scan as defence in depth. API-neutral JSON Schema (STEP 17); privacy-minimised \u2014 it carries observation/evidence REFERENCES, not raw credential content (STEP 18).",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -22,74 +22,171 @@
     "explanation",
     "recommended_actions"
   ],
-
   "$defs": {
-    "indicatorId": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]{2,63}$" },
-    "overrideId": { "type": "string", "pattern": "^HR_[A-Z_]+$" },
-    "ruleId": { "type": "string", "pattern": "^TL-[A-Z]{3,5}-\\d{3}$" },
-    "instanceRef": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{1,127}$" },
-    "evidenceClass": {
-      "enum": ["PRETEXT", "PRESSURE", "IDENTITY_CLAIM", "CREDENTIAL_ACTION", "PAYMENT_ACTION", "DEVICE_ACTION", "FINANCIAL_CLAIM", "CHANNEL_ARTIFACT"]
+    "indicatorId": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Z0-9_]{2,63}$"
     },
-
+    "overrideId": {
+      "type": "string",
+      "pattern": "^HR_[A-Z_]+$"
+    },
+    "ruleId": {
+      "type": "string",
+      "pattern": "^TL-[A-Z]{3,5}-\\d{3}$"
+    },
+    "instanceRef": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{1,127}$"
+    },
+    "evidenceClass": {
+      "enum": [
+        "PRETEXT",
+        "PRESSURE",
+        "IDENTITY_CLAIM",
+        "CREDENTIAL_ACTION",
+        "PAYMENT_ACTION",
+        "DEVICE_ACTION",
+        "FINANCIAL_CLAIM",
+        "CHANNEL_ARTIFACT"
+      ]
+    },
     "corroboration": {
       "type": "object",
       "additionalProperties": false,
       "description": "STEP 8 / DET-001 section 13. Corroboration measured over INDEPENDENT evidence classes/families, NOT rule count. Five rules off one URL keyword corroborate weakly; five independent observations corroborate strongly. WP1 defines the shape only; P3-WP5 computes it.",
       "properties": {
-        "independent_evidence_classes": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/evidenceClass" } },
-        "evidence_class_count": { "type": "integer", "minimum": 0 },
-        "supporting_indicator_families": { "type": "array", "uniqueItems": true, "items": { "type": "string", "pattern": "^FAM-[A-Z0-9-]{2,48}$" } },
-        "family_count": { "type": "integer", "minimum": 0 },
+        "independent_evidence_classes": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/evidenceClass"
+          }
+        },
+        "evidence_class_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "supporting_indicator_families": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^FAM-[A-Z0-9-]{2,48}$"
+          }
+        },
+        "family_count": {
+          "type": "integer",
+          "minimum": 0
+        },
         "shared_observation_refs": {
           "type": "array",
-          "items": { "$ref": "#/$defs/instanceRef" },
-          "description": "Observation ids shared across multiple fired rules — so shared evidence is not mistaken for independent corroboration (STEP 8)."
+          "items": {
+            "$ref": "#/$defs/instanceRef"
+          },
+          "description": "Observation ids shared across multiple fired rules \u2014 so shared evidence is not mistaken for independent corroboration (STEP 8)."
         },
-        "band": { "enum": ["NONE", "LOW", "MEDIUM", "HIGH"] }
+        "band": {
+          "enum": [
+            "NONE",
+            "LOW",
+            "MEDIUM",
+            "HIGH"
+          ]
+        }
       }
     },
-
     "explanation": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["summary", "what_was_detected", "why", "detection_confidence_reason"],
+      "required": [
+        "summary",
+        "what_was_detected",
+        "why",
+        "detection_confidence_reason"
+      ],
       "description": "STEP 6 / DET-001 section 13. Structured FIRST; optional human-readable text is DERIVED from these fields. Every field is derived from runtime facts + the fired rules' stored explanation/evidence; no unsupported factual claim may appear (explanation-provenance constraint). Official facts live only in evidence_basis quotes.",
       "properties": {
-        "summary": { "type": "string", "description": "One-line human-readable summary, derived from the structured fields." },
-        "what_was_detected": { "type": "string" },
-        "why": { "type": "string", "description": "The combination that matched." },
+        "summary": {
+          "type": "string",
+          "description": "One-line human-readable summary, derived from the structured fields."
+        },
+        "what_was_detected": {
+          "type": "string"
+        },
+        "why": {
+          "type": "string",
+          "description": "The combination that matched."
+        },
         "supporting_observations": {
           "type": "array",
-          "description": "The exact observations/spans that supported the finding — references + optional REDACTED excerpt, never raw credential content (STEP 18).",
+          "description": "The exact observations/spans that supported the finding \u2014 references + optional REDACTED excerpt, never raw credential content (STEP 18).",
           "items": {
             "type": "object",
             "additionalProperties": false,
-            "required": ["observation_ref"],
+            "required": [
+              "observation_ref"
+            ],
             "properties": {
-              "observation_ref": { "$ref": "#/$defs/instanceRef" },
+              "observation_ref": {
+                "$ref": "#/$defs/instanceRef"
+              },
               "span": {
                 "type": "object",
                 "additionalProperties": false,
-                "required": ["start", "end"],
-                "properties": { "start": { "type": "integer", "minimum": 0 }, "end": { "type": "integer", "minimum": 0 } }
+                "required": [
+                  "start",
+                  "end"
+                ],
+                "properties": {
+                  "start": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "end": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                }
               },
-              "redacted_quote": { "type": "string", "description": "Optional short excerpt with PII masked. MUST be redacted; raw OTP/PAN/UPI/phone must not appear." }
+              "redacted_quote": {
+                "type": "string",
+                "description": "Optional short excerpt with PII masked. MUST be redacted; raw OTP/PAN/UPI/phone must not appear."
+              }
             }
           }
         },
-        "matched_indicators": { "type": "array", "items": { "$ref": "#/$defs/indicatorId" } },
+        "matched_indicators": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/indicatorId"
+          }
+        },
         "suppression_considered": {
           "type": "array",
           "description": "Each suppressor and whether it applied or was blocked by an override, and why.",
           "items": {
             "type": "object",
             "additionalProperties": false,
-            "required": ["suppressor", "outcome"],
+            "required": [
+              "suppressor",
+              "outcome"
+            ],
             "properties": {
-              "suppressor": { "$ref": "#/$defs/indicatorId" },
-              "outcome": { "enum": ["APPLIED", "BLOCKED_BY_OVERRIDE", "RECORDED_CONTEXT_ONLY", "NOT_APPLICABLE"] },
-              "reason": { "type": "string" }
+              "suppressor": {
+                "$ref": "#/$defs/indicatorId"
+              },
+              "outcome": {
+                "enum": [
+                  "APPLIED",
+                  "BLOCKED_BY_OVERRIDE",
+                  "RECORDED_CONTEXT_ONLY",
+                  "NOT_APPLICABLE"
+                ]
+              },
+              "reason": {
+                "type": "string"
+              }
             }
           }
         },
@@ -98,78 +195,189 @@
           "items": {
             "type": "object",
             "additionalProperties": false,
-            "required": ["override_id"],
+            "required": [
+              "override_id"
+            ],
             "properties": {
-              "override_id": { "$ref": "#/$defs/overrideId" },
-              "blocked_categories": { "type": "array", "items": { "type": "string" } }
+              "override_id": {
+                "$ref": "#/$defs/overrideId"
+              },
+              "blocked_categories": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
             }
           }
         },
-        "rules_fired": { "type": "array", "items": { "$ref": "#/$defs/ruleId" } },
+        "rules_fired": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ruleId"
+          }
+        },
         "evidence_basis": {
           "type": "array",
-          "description": "Official citations behind the fired rules — the ONLY facts the narrative may assert.",
+          "description": "Official citations behind the fired rules \u2014 the ONLY facts the narrative may assert.",
           "items": {
             "type": "object",
             "additionalProperties": false,
-            "required": ["source_id", "issuing_body", "verification_status"],
+            "required": [
+              "source_id",
+              "issuing_body",
+              "verification_status"
+            ],
             "properties": {
-              "source_id": { "type": "string", "pattern": "^SRC-\\d{3}$" },
-              "issuing_body": { "type": "string" },
-              "authority": { "type": "string" },
-              "verification_status": { "type": "string" },
-              "evidence_class": { "type": "string" },
-              "quote": { "type": "string" }
+              "source_id": {
+                "type": "string",
+                "pattern": "^SRC-\\d{3}$"
+              },
+              "issuing_body": {
+                "type": "string"
+              },
+              "authority": {
+                "type": "string"
+              },
+              "verification_status": {
+                "type": "string"
+              },
+              "evidence_class": {
+                "type": "string"
+              },
+              "quote": {
+                "type": "string"
+              }
             }
           }
         },
-        "remaining_unknowns": { "type": "array", "items": { "type": "string" } },
-        "limitations": { "type": "array", "items": { "type": "string" } },
-        "detection_confidence_reason": { "type": "string", "description": "Operational meaning of the confidence band for this decision (DET-001 section 9)." },
-        "verification_steps": { "type": "array", "items": { "type": "string" } }
+        "remaining_unknowns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "limitations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "detection_confidence_reason": {
+          "type": "string",
+          "description": "Operational meaning of the confidence band for this decision (DET-001 section 9)."
+        },
+        "verification_steps": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
       }
     },
-
     "recommendedAction": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["action_code"],
+      "required": [
+        "action_code"
+      ],
       "description": "STEP 7. Structured, governed action. Each action MUST trace to a fired rule / active override / matched family (DET-001 section 14); no free-form generated advice may enter the deterministic contract.",
       "properties": {
         "action_code": {
           "enum": [
-            "DO_NOT_SHARE_CREDENTIALS", "DO_NOT_ENTER_PIN", "DO_NOT_TRANSFER_MONEY", "DO_NOT_INSTALL_APP",
-            "DO_NOT_CONNECT_WALLET", "DO_NOT_DIAL_CODE", "DISCONNECT_REMOTE_ACCESS", "VERIFY_INDEPENDENTLY",
-            "CONTACT_BANK", "CONTACT_OFFICIAL_CHANNEL", "REPORT_CYBERCRIME", "PRESERVE_EVIDENCE",
-            "PROCEED_WITH_CAUTION", "SEEK_HUMAN_REVIEW", "RESUBMIT_IN_SUPPORTED_LANGUAGE"
+            "DO_NOT_SHARE_CREDENTIALS",
+            "DO_NOT_ENTER_PIN",
+            "DO_NOT_TRANSFER_MONEY",
+            "DO_NOT_INSTALL_APP",
+            "DO_NOT_CONNECT_WALLET",
+            "DO_NOT_DIAL_CODE",
+            "DISCONNECT_REMOTE_ACCESS",
+            "VERIFY_INDEPENDENTLY",
+            "CONTACT_BANK",
+            "CONTACT_OFFICIAL_CHANNEL",
+            "REPORT_CYBERCRIME",
+            "PRESERVE_EVIDENCE",
+            "PROCEED_WITH_CAUTION",
+            "SEEK_HUMAN_REVIEW",
+            "RESUBMIT_IN_SUPPORTED_LANGUAGE"
           ]
         },
-        "priority": { "enum": ["IMMEDIATE", "HIGH", "ADVISORY"] },
-        "reason_rule_ids": { "type": "array", "items": { "$ref": "#/$defs/ruleId" } },
-        "reason_indicator_ids": { "type": "array", "items": { "$ref": "#/$defs/indicatorId" } },
-        "reason_override_ids": { "type": "array", "items": { "$ref": "#/$defs/overrideId" } },
-        "evidence_refs": { "type": "array", "items": { "type": "string", "pattern": "^SRC-\\d{3}$" } }
+        "priority": {
+          "enum": [
+            "IMMEDIATE",
+            "HIGH",
+            "ADVISORY"
+          ]
+        },
+        "reason_rule_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ruleId"
+          }
+        },
+        "reason_indicator_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/indicatorId"
+          }
+        },
+        "reason_override_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/overrideId"
+          }
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^SRC-\\d{3}$"
+          }
+        }
       }
     },
-
     "evaluationError": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["scope", "code", "message"],
+      "required": [
+        "scope",
+        "code",
+        "message"
+      ],
       "description": "STEP 10. Fail-closed diagnostic. scope=WHOLE_EVALUATION accompanies input_support_status=ERROR (the engine refused to evaluate); scope=SINGLE_RULE accompanies degraded=true (evaluation continued, one rule unavailable). Neither may serialize as NO_SCAM_PATTERN.",
       "properties": {
-        "scope": { "enum": ["WHOLE_EVALUATION", "SINGLE_RULE"] },
-        "stage": { "enum": ["BUNDLE_INTEGRITY", "BUNDLE_VERSION", "SCHEMA_COMPATIBILITY", "PROVENANCE_MISSING", "EXTRACTION_MALFORMED", "RULE_EVALUATION", "OTHER"] },
-        "code": { "type": "string" },
-        "message": { "type": "string" },
-        "rule_id": { "$ref": "#/$defs/ruleId" }
+        "scope": {
+          "enum": [
+            "WHOLE_EVALUATION",
+            "SINGLE_RULE"
+          ]
+        },
+        "stage": {
+          "enum": [
+            "BUNDLE_INTEGRITY",
+            "BUNDLE_VERSION",
+            "SCHEMA_COMPATIBILITY",
+            "PROVENANCE_MISSING",
+            "EXTRACTION_MALFORMED",
+            "RULE_EVALUATION",
+            "OTHER"
+          ]
+        },
+        "code": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "rule_id": {
+          "$ref": "#/$defs/ruleId"
+        }
       }
     }
   },
-
   "properties": {
     "result_contract_version": {
-      "const": "1.0.0",
+      "const": "1.1.0",
       "description": "Version of THIS runtime result contract. Semantic versioning per KB-001 section 8: PATCH = clarification with no interpretation change; MINOR = backwards-compatible additive field; MAJOR = any backwards-incompatible interpretation change (a removed/renamed field, a tightened enum, or a changed meaning). const per contract revision."
     },
     "engine_version": {
@@ -177,107 +385,282 @@
       "pattern": "^\\d+\\.\\d+\\.\\d+(-[0-9A-Za-z.-]+)?$",
       "description": "Optional top-level echo of provenance.engine_version for quick access; the authoritative copy is in provenance."
     },
-    "evaluation_id": { "type": "string", "minLength": 1 },
-    "evaluation_timestamp": { "type": "string", "description": "ISO-8601 instant of evaluation. Provenance only; not an input to any decision quantity." },
-    "input_id": { "type": "string", "minLength": 1 },
-
-    "language": { "type": "array", "items": { "type": "string" } },
-    "script": { "type": "array", "items": { "type": "string" } },
-
+    "evaluation_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evaluation_timestamp": {
+      "type": "string",
+      "description": "ISO-8601 instant of evaluation. Provenance only; not an input to any decision quantity."
+    },
+    "input_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "language": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "script": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
     "input_support_status": {
-      "enum": ["SUPPORTED", "PARTIALLY_SUPPORTED", "UNSUPPORTED", "INSUFFICIENT_INFORMATION", "ERROR"],
+      "enum": [
+        "SUPPORTED",
+        "PARTIALLY_SUPPORTED",
+        "UNSUPPORTED",
+        "INSUFFICIENT_INFORMATION",
+        "ERROR"
+      ],
       "description": "DET-001 section 3, decided FIRST. None of these maps to LOW RISK automatically; UNKNOWN is not SAFE."
     },
     "classification": {
-      "enum": ["NO_SCAM_PATTERN", "INSUFFICIENT_EVIDENCE", "SCAM_PATTERN_SUSPECTED", "SCAM_PATTERN_DETECTED", "UNSUPPORTED", "ERROR"],
-      "description": "DET-001 section 4 — what TrustLens CONCLUDES, distinct from severity. Cross-field consistency (e.g. UNSUPPORTED input -> UNSUPPORTED classification; ERROR never 'safe') is enforced by the runtime validator, not by JSON Schema alone."
+      "enum": [
+        "NO_SCAM_PATTERN",
+        "INSUFFICIENT_EVIDENCE",
+        "SCAM_PATTERN_SUSPECTED",
+        "SCAM_PATTERN_DETECTED",
+        "UNSUPPORTED",
+        "ERROR"
+      ],
+      "description": "DET-001 section 4 \u2014 what TrustLens CONCLUDES, distinct from severity. Cross-field consistency (e.g. UNSUPPORTED input -> UNSUPPORTED classification; ERROR never 'safe') is enforced by the runtime validator, not by JSON Schema alone."
     },
     "decision_severity": {
-      "enum": ["NONE", "LOW", "MEDIUM", "HIGH", "CRITICAL"],
+      "enum": [
+        "NONE",
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "CRITICAL"
+      ],
       "description": "Highest EFFECTIVE severity among fired rules (harm IF the pattern is genuine). Ordinal, never numeric. NONE when no rule fires."
     },
     "matched_evidence_strength": {
-      "enum": ["NONE", "WEAK", "MODERATE", "STRONG"],
+      "enum": [
+        "NONE",
+        "WEAK",
+        "MODERATE",
+        "STRONG"
+      ],
       "description": "Strength of the matched evidence behind the governing rule. Feeds risk_level; distinct from detection_confidence (glossary section 1)."
     },
     "risk_level": {
-      "enum": ["NONE", "LOW", "MEDIUM", "HIGH", "CRITICAL"],
+      "enum": [
+        "NONE",
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "CRITICAL"
+      ],
       "description": "Ordinal lookup of (decision_severity x matched_evidence_strength) per the ADR-0006 risk matrix. Bounded, decomposable, reproducible; user-visible as a band. NOT a probability, NOT a percentage, and independent of detection_confidence (never averaged in)."
     },
     "detection_confidence": {
-      "enum": ["NOT_APPLICABLE", "LOW", "MEDIUM", "HIGH"],
-      "description": "DET-001 section 9 — trust in TrustLens's own analysis of THIS submission. Categorical. NOT a calibrated fraud probability. NOT_APPLICABLE when no rule fires or input is UNSUPPORTED/ERROR."
+      "enum": [
+        "NOT_APPLICABLE",
+        "LOW",
+        "MEDIUM",
+        "HIGH"
+      ],
+      "description": "DET-001 section 9 \u2014 trust in TrustLens's own analysis of THIS submission. Categorical. NOT a calibrated fraud probability. NOT_APPLICABLE when no rule fires or input is UNSUPPORTED/ERROR."
     },
-
     "provenance": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["bundle_version", "bundle_content_digest", "engine_version", "evaluation_profile", "component_versions"],
-      "description": "STEP 9 / DET-001 section 16 — everything that affects the output, pinned. Same (observations + bundle + engine_version + evaluation_profile) MUST yield an identical result. Compatible with the ADR-0004 bundle manifest (component_versions mirror bundle-manifest.schema.json). commit_sha alone is NOT sufficient (STEP 9).",
+      "required": [
+        "bundle_version",
+        "bundle_content_digest",
+        "engine_version",
+        "evaluation_profile",
+        "component_versions"
+      ],
+      "description": "STEP 9 / DET-001 section 16 \u2014 everything that affects the output, pinned. Same (observations + bundle + engine_version + evaluation_profile) MUST yield an identical result. Compatible with the ADR-0004 bundle manifest (component_versions mirror bundle-manifest.schema.json). commit_sha alone is NOT sufficient (STEP 9).",
       "properties": {
-        "bundle_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
-        "bundle_content_digest": { "type": "string", "pattern": "^[0-9a-f]{64}$", "description": "SHA-256 content digest of the published knowledge bundle (ADR-0004). Answers 'which knowledge executed'." },
-        "commit_sha": { "type": "string", "pattern": "^[0-9a-f]{7,40}$|^unknown$" },
-        "engine_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+(-[0-9A-Za-z.-]+)?$" },
+        "bundle_version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$"
+        },
+        "bundle_content_digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$",
+          "description": "SHA-256 content digest of the published knowledge bundle (ADR-0004). Answers 'which knowledge executed'."
+        },
+        "commit_sha": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{7,40}$|^unknown$"
+        },
+        "engine_version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+(-[0-9A-Za-z.-]+)?$"
+        },
         "evaluation_profile": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["profile_id", "extraction_confidence_gate", "risk_matrix_id", "confidence_policy_id"],
+          "required": [
+            "profile_id",
+            "extraction_confidence_gate",
+            "risk_matrix_id",
+            "confidence_policy_id"
+          ],
           "properties": {
-            "profile_id": { "type": "string", "minLength": 1 },
-            "extraction_confidence_gate": { "enum": ["HIGH", "MEDIUM", "LOW"] },
-            "risk_matrix_id": { "type": "string", "minLength": 1 },
-            "confidence_policy_id": { "type": "string", "minLength": 1 }
+            "profile_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "extraction_confidence_gate": {
+              "enum": [
+                "HIGH",
+                "MEDIUM",
+                "LOW"
+              ]
+            },
+            "risk_matrix_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "confidence_policy_id": {
+              "type": "string",
+              "minLength": 1
+            }
           }
         },
         "component_versions": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["rule_schema", "indicator_registry", "indicator_families", "negative_library", "taxonomy", "dimensions", "extraction_contracts"],
+          "required": [
+            "rule_schema",
+            "indicator_registry",
+            "indicator_families",
+            "negative_library",
+            "taxonomy",
+            "dimensions",
+            "extraction_contracts"
+          ],
           "description": "Pinned versions of every knowledge component consulted (STEP 9). Names mirror bundle-manifest.schema.json.",
           "properties": {
-            "rule_schema": { "type": "string", "minLength": 1 },
-            "indicator_registry": { "type": "string", "minLength": 1 },
-            "indicator_families": { "type": "string", "minLength": 1 },
-            "negative_library": { "type": "string", "minLength": 1 },
-            "taxonomy": { "type": "string", "minLength": 1 },
-            "dimensions": { "type": "string", "minLength": 1 },
-            "extraction_contracts": { "type": "string", "minLength": 1 }
+            "rule_schema": {
+              "type": "string",
+              "minLength": 1
+            },
+            "indicator_registry": {
+              "type": "string",
+              "minLength": 1
+            },
+            "indicator_families": {
+              "type": "string",
+              "minLength": 1
+            },
+            "negative_library": {
+              "type": "string",
+              "minLength": 1
+            },
+            "taxonomy": {
+              "type": "string",
+              "minLength": 1
+            },
+            "dimensions": {
+              "type": "string",
+              "minLength": 1
+            },
+            "extraction_contracts": {
+              "type": "string",
+              "minLength": 1
+            },
+            "action_policy": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Governed action-policy version pinned for reproducibility (P3-WP6). Additive MINOR."
+            }
           }
         }
       }
     },
-
     "matched_rules": {
       "type": "array",
       "uniqueItems": true,
-      "items": { "$ref": "#/$defs/ruleId" },
+      "items": {
+        "$ref": "#/$defs/ruleId"
+      },
       "description": "Convenience summary: ids of rules whose evaluation_state=MATCHED. rule_results carries the full per-rule objects."
     },
     "rule_results": {
       "type": "array",
-      "items": { "$ref": "https://trustlens/schemas/detection/rule-evaluation-result.schema.json" },
+      "items": {
+        "$ref": "https://trustlens/schemas/detection/rule-evaluation-result.schema.json"
+      },
       "description": "One entry per rule that MATCHED, was SUPPRESSED, or came out INDETERMINATE (or NOT_APPLICABLE due to a per-rule error). NOT_MATCHED rules may be omitted; INDETERMINATE ones must be kept."
     },
-
-    "matched_positive_indicators": { "type": "array", "items": { "$ref": "#/$defs/indicatorId" } },
-    "matched_negative_indicators": { "type": "array", "items": { "$ref": "#/$defs/indicatorId" } },
-    "suppressed_indicators": { "type": "array", "items": { "$ref": "#/$defs/indicatorId" }, "description": "Positives neutralised by directional SUPPRESS_INDICATOR." },
-    "active_overrides": { "type": "array", "items": { "$ref": "#/$defs/overrideId" } },
-
-    "corroboration_summary": { "$ref": "#/$defs/corroboration" },
-
-    "explanation": { "$ref": "#/$defs/explanation" },
-    "recommended_actions": { "type": "array", "items": { "$ref": "#/$defs/recommendedAction" } },
-
-    "ambiguities": { "type": "array", "items": { "type": "string" }, "description": "Decisive observations that were AMBIGUOUS, e.g. payment direction unresolved (DET-001 sections 12/15)." },
-    "unknowns": { "type": "array", "items": { "type": "string" }, "description": "Decisive observations that were UNKNOWN." },
-    "limitations": { "type": "array", "items": { "type": "string" }, "description": "e.g. synthetic-only validation, no accuracy claim (G-09), capped PARTIAL evidence." },
-
-    "degraded": { "type": "boolean", "description": "True if a per-rule error occurred but evaluation continued; caps confidence and routes to review (DET-001 section 16)." },
+    "matched_positive_indicators": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/indicatorId"
+      }
+    },
+    "matched_negative_indicators": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/indicatorId"
+      }
+    },
+    "suppressed_indicators": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/indicatorId"
+      },
+      "description": "Positives neutralised by directional SUPPRESS_INDICATOR."
+    },
+    "active_overrides": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/overrideId"
+      }
+    },
+    "corroboration_summary": {
+      "$ref": "#/$defs/corroboration"
+    },
+    "explanation": {
+      "$ref": "#/$defs/explanation"
+    },
+    "recommended_actions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/recommendedAction"
+      }
+    },
+    "ambiguities": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Decisive observations that were AMBIGUOUS, e.g. payment direction unresolved (DET-001 sections 12/15)."
+    },
+    "unknowns": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Decisive observations that were UNKNOWN."
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "e.g. synthetic-only validation, no accuracy claim (G-09), capped PARTIAL evidence."
+    },
+    "degraded": {
+      "type": "boolean",
+      "description": "True if a per-rule error occurred but evaluation continued; caps confidence and routes to review (DET-001 section 16)."
+    },
     "errors": {
       "type": "array",
-      "items": { "$ref": "#/$defs/evaluationError" },
+      "items": {
+        "$ref": "#/$defs/evaluationError"
+      },
       "description": "Fail-closed diagnostics. WHOLE_EVALUATION errors accompany input_support_status=ERROR; SINGLE_RULE errors accompany degraded=true. Never serialize a failure as NO_SCAM_PATTERN."
     }
   }
