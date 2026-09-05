@@ -1,8 +1,10 @@
-"""TrustLens knowledge quality gate — Phase 2 WP7.
+"""TrustLens knowledge quality gate — Phase 2 WP7 (extended for Phase-3 runtime and Phase-4 AI in later WPs).
 
-The single canonical entrypoint that runs the COMPLETE knowledge-validation suite in
-dependency order and fails as a whole if any validator fails. It is the command CI runs
-and the command a developer runs before committing — the two execute identical logic.
+The single canonical entrypoint that runs the COMPLETE validation suite in dependency order and fails
+as a whole if any validator fails. It is the command CI runs and the command a developer runs before
+committing — the two execute identical logic. It is the ONE canonical local + CI gate covering
+Phase-1/Phase-2 knowledge validation, the Phase-3 deterministic runtime, and the Phase-4 bounded offline
+AI layer; no separate manual Phase-4 validator sequence is required for canonical closure.
 
 Design guarantees:
   * It does NOT re-implement any validator. Each existing validator stays independently
@@ -27,7 +29,9 @@ Order (dependency-aware, see ORDER below):
   Phase-3 decision aggregator (P3-WP5: governing rule + risk/severity/confidence + classification) →
   Phase-3 explanation + governed actions (P3-WP6: deterministic explanation + action-policy artifact) →
   Phase-3 golden end-to-end replay (P3-WP7: public live + governed design-preview lanes) →
-  Phase-3 engine integration + result assembly (P3-WP8: final DetectionResult contract + provenance pinning + CI closure)
+  Phase-3 engine integration + result assembly (P3-WP8: final DetectionResult contract + provenance pinning + CI closure) →
+  Phase-4 AI provider seam (P4-WP2) → strict response validation (P4-WP3) → containment/provenance/replay (P4-WP4) →
+  Phase-3 integration + default-OFF fallback (P4-WP5) → cross-WP adversarial closure (P4-WP7)
 
 Usage:
   python knowledge/validation/run_all.py             # human-readable; runs all; non-zero on any failure
@@ -85,6 +89,12 @@ ROOT = Path(__file__).resolve().parents[2]
 #     evaluate_detection_from_governed, pins full bundle/engine/profile provenance, enforces the detection-result
 #     JSON Schema + reusable semantic invariants + assembler reconciliation, and proves support-first
 #     orchestration, PUBLISHED-only preview exclusion, privacy, determinism and fail-closed forgery rejection.
+#  19–22 the Phase-4 bounded OFFLINE AI layer runs last because its integration/closure proofs depend on the
+#     completed Phase-3 public engine: the provider seam (P4-WP2) needs no Phase-3 execution, but strict
+#     response validation (P4-WP3), containment/provenance/replay (P4-WP4), the default-OFF Phase-3 integration
+#     with exact deterministic fallback (P4-WP5), and the cross-WP adversarial closure (P4-WP7) all exercise the
+#     unchanged evaluate_detection_from_governed. AI is non-authoritative: it only proposes governed observations
+#     that the deterministic engine consumes; no live provider / API key / network / tools; G-09 remains OPEN.
 ORDER = [
     ("knowledge/validation/manual_evidence_check.py", "durable-truth: evidence integrity + automated-status preservation"),
     ("knowledge/validation/phase1_consistency_check.py", "Phase-1 counts consistent across manifest / taxonomy / matrix / corpus"),
@@ -104,6 +114,11 @@ ORDER = [
     ("knowledge/validation/validate_wp6_explanation.py", "Phase-3 P3-WP6 explanation + governed actions: deterministic templated explanation (evidence_basis exact stored quotes, no PII/redacted_quote, no numeric), recommended actions from the governed action-policy artifact (no free-form code, no priority), WP5 decision immutable, determinism + fail-closed, 15 golden decision cases"),
     ("knowledge/validation/validate_wp7_golden_runner.py", "Phase-3 P3-WP7 golden end-to-end runner: fixture adaptation + independently-derived support, public PUBLISHED live replay, lifecycle-eligible design preview, exact golden-axis/action comparison, determinism and fail-closed reporting"),
     ("knowledge/validation/validate_wp8_integration.py", "Phase-3 P3-WP8 engine integration + result assembly: production evaluate_detection_from_governed builds a schema+semantically valid, fully-provenance-pinned, immutable DetectionResult from WP3→WP6; support-first (no rules for non-evaluable), PUBLISHED-only preview exclusion, faithful WP5/WP6 serialization, privacy-minimised, deterministic with identity/time invariance, fail-closed on forgery/corruption"),
+    ("knowledge/validation/validate_ai_provider.py", "Phase-4 P4-WP2 AI provider seam: vendor-neutral offline AIExtractorProvider + deterministic FakeProvider, transport correlation, immutable failure snapshots, stable codes; UNTRUSTED raw response; no network/vendor SDK/API key/tools"),
+    ("knowledge/validation/validate_ai_extraction.py", "Phase-4 P4-WP3 strict response validation: atomic fail-closed schema/size/nesting, RuntimeKnowledge indicator membership, exact grounding, reference integrity, decision-field rejection, deterministic precedence, sanitized diagnostics"),
+    ("knowledge/validation/validate_ai_governance.py", "Phase-4 P4-WP4 containment/provenance/replay/confidence: content-as-data pins, canonical config_ref hashing, sealed AIExtractionResult audit, capped categorical confidence (LLM-only <= MEDIUM), no-provider replay integrity"),
+    ("knowledge/validation/validate_ai_integration.py", "Phase-4 P4-WP5 Phase-3 integration: default-OFF feature flag, WP2->WP3->WP4->WP5 mapping into the UNCHANGED evaluate_detection_from_governed, exact deterministic fallback, exact consumed-artifact pinning + replay, no AI-authored decision field"),
+    ("knowledge/validation/validate_ai_phase4_closure.py", "Phase-4 P4-WP7 cross-WP closure: committed offline adversarial fixture matrix over the public entry point — flag OFF equivalence, injection-as-data, atomic rejection/fallback, support-first, confidence caps, exact replay + fail-closed tampering; G-09 OPEN"),
 ]
 
 # Network-capable modules a validator must never import — the offline guarantee (WP7 STEP 7).
@@ -193,7 +208,11 @@ def main() -> int:
                 print("  -", p)
         return 2
 
-    log(f"TrustLens knowledge quality gate — {len(ORDER)} checks (8 validators + bundle integrity + Phase-3 design + runtime contracts + runtime loader + runtime evaluator + suppression executor + decision aggregator + explanation/actions + golden end-to-end replay + engine integration), dependency order, offline")
+    log(f"TrustLens quality gate — {len(ORDER)} checks in dependency order, offline: "
+        f"Phase-1/2 knowledge + published bundle, Phase-3 deterministic runtime (design → contracts → loader → "
+        f"evaluator → suppression → aggregation → explanation → golden replay → engine integration), and the "
+        f"Phase-4 bounded offline AI layer (provider seam → response validation → containment/provenance/replay → "
+        f"Phase-3 integration → cross-WP adversarial closure)")
     log(f"interpreter: {sys.executable}")
     log(f"repo root  : {ROOT}\n")
 
