@@ -35,8 +35,24 @@ from .provider import (
     AIProviderUnavailableError,
     RawAIExtractionResponse,
 )
+from .validation import (
+    AI_EXTRACTION_VERSION,
+    MAX_JSON_NESTING_DEPTH,
+    MAX_RAW_RESPONSE_BYTES,
+    AIDecisionFieldRejectedError,
+    AIExtractionValidationError,
+    AIGroundingFailedError,
+    AIReferenceInvalidError,
+    AIResponseMalformedError,
+    AIResponseTooLargeError,
+    AISchemaInvalidError,
+    AIUnknownIndicatorError,
+    ValidatedAIExtraction,
+    validate_ai_extraction,
+)
 
 __all__ = [
+    # P4-WP2 provider seam
     "AIExtractorProvider",
     "AIExtractionRequest",
     "RawAIExtractionResponse",
@@ -46,4 +62,18 @@ __all__ = [
     "AIProviderExecutionError",
     "FakeProvider",
     "MAX_CONTENT_CHARS",
+    # P4-WP3 strict extraction validation
+    "validate_ai_extraction",
+    "ValidatedAIExtraction",
+    "AIExtractionValidationError",
+    "AIResponseTooLargeError",
+    "AIResponseMalformedError",
+    "AISchemaInvalidError",
+    "AIDecisionFieldRejectedError",
+    "AIUnknownIndicatorError",
+    "AIReferenceInvalidError",
+    "AIGroundingFailedError",
+    "AI_EXTRACTION_VERSION",
+    "MAX_RAW_RESPONSE_BYTES",
+    "MAX_JSON_NESTING_DEPTH",
 ]

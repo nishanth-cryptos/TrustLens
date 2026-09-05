@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://trustlens/schemas/ai/ai-extraction.schema.json",
+  "title": "TrustLens AI Extraction Proposal (P4 AI-layer intermediate contract)",
+  "description": "Phase 4 P4-WP3. The INTERMEDIATE, AI-LAYER contract for the UNTRUSTED extraction proposals a model may emit. It is NOT a promoted Phase-3 detection contract and NEVER enters Phase 3 directly: it carries only extraction-owned proposal data (candidate normalized observations + indicator observations), which the deterministic WP3 validator resolves against RuntimeKnowledge and grounds against the submitted input, and which WP4/WP5 later map to governed Observation/IndicatorObservation. additionalProperties:false at every object level STRUCTURALLY forbids any decision/confidence/score field (a recursive name-scan is defence in depth). The model authors NO provenance, NO config_ref, NO governed confidence and NO decision field — the deterministic adapter owns those. Structural vocabularies mirror observation.schema.json / indicator-observation.schema.json exactly; they are not re-invented here.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["ai_extraction_version", "input_id", "observations", "indicators"],
+  "properties": {
+    "ai_extraction_version": {
+      "const": "1.0.0",
+      "description": "Version of THIS AI-layer intermediate contract. const per revision (a bump is a governed change)."
+    },
+    "input_id": {
+      "$ref": "#/$defs/id",
+      "description": "The single submission this extraction is about. Every observation.source_input_id and indicator.input_id MUST equal it (single-submission MVP; cross-request references are rejected)."
+    },
+    "observations": {
+      "type": "array",
+      "maxItems": 128,
+      "items": { "$ref": "#/$defs/observationProposal" },
+      "description": "Candidate normalized-observation proposals. MAY be empty (a valid response may contain zero items)."
+    },
+    "indicators": {
+      "type": "array",
+      "maxItems": 128,
+      "items": { "$ref": "#/$defs/indicatorProposal" },
+      "description": "Candidate indicator-observation proposals. MAY be empty."
+    }
+  },
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{1,127}$" },
+    "indicatorId": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]{2,63}$" },
+    "observationProposal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["proposal_id", "observation_type", "status", "polarity", "attribution", "mood", "source_input_id", "start", "end"],
+      "description": "An AI-proposed normalized observation. Span-anchored (start/end) for deterministic grounding; structural semantics use the governed observation vocabulary exactly. polarity/attribution/mood are REQUIRED so a proposal carries the full structural frame Phase-3 relies on for later mapping. No confidence/decision field exists (additionalProperties:false).",
+      "properties": {
+        "proposal_id": { "$ref": "#/$defs/id", "description": "Locally-unique id within this response; indicator observation_refs point to it." },
+        "observation_type": {
+          "enum": ["ENTITY", "ACTION", "CLAIM", "REQUEST", "THREAT", "PROMISE", "IDENTITY_ASSERTION", "PAYMENT_CONTEXT", "DEVICE_ACTION", "LINK_ACTION", "AUTHENTICATION_ACTION", "TEMPORAL_PRESSURE", "RELATIONSHIP_CONTEXT"]
+        },
+        "status": { "enum": ["OBSERVED", "NOT_OBSERVED", "UNKNOWN", "AMBIGUOUS", "NOT_APPLICABLE"] },
+        "polarity": { "enum": ["AFFIRMED", "NEGATED"] },
+        "attribution": { "enum": ["FIRST_PARTY", "REPORTED", "QUOTED", "HYPOTHETICAL"] },
+        "mood": { "enum": ["DIRECTIVE", "DESCRIPTIVE", "INTERROGATIVE"] },
+        "canonical_value": { "type": "string", "maxLength": 256 },
+        "source_input_id": { "$ref": "#/$defs/id" },
+        "start": { "type": "integer", "minimum": 0 },
+        "end": { "type": "integer", "minimum": 0 },
+        "evidence_excerpt": {
+          "type": "string",
+          "maxLength": 2048,
+          "description": "OPTIONAL transient excerpt for grounding verification only: it must equal normalized_content[start:end] EXACTLY. It is discarded after verification and never persisted into governed output."
+        }
+      }
+    },
+    "indicatorProposal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["indicator_id", "polarity", "matched", "input_id"],
+      "description": "An AI-proposed indicator observation. indicator_id + polarity are resolved against RuntimeKnowledge (positive registry / negative library); observation_refs point to observationProposal.proposal_id values in the SAME response. No confidence/decision field exists.",
+      "properties": {
+        "proposal_id": { "$ref": "#/$defs/id" },
+        "indicator_id": { "$ref": "#/$defs/indicatorId" },
+        "polarity": { "enum": ["POSITIVE", "NEGATIVE"] },
+        "matched": { "enum": ["OBSERVED", "NOT_OBSERVED", "UNKNOWN", "AMBIGUOUS", "NOT_APPLICABLE"] },
+        "observation_refs": {
+          "type": "array",
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/id" }
+        },
+        "input_id": { "$ref": "#/$defs/id" }
+      }
+    }
+  }
+}
