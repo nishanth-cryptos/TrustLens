@@ -150,7 +150,7 @@ WP6 draws a hard line:
 
 | Layer | Definition | Authority |
 |---|---|---|
-| **Authoritative explanation** | The Phase-3 / P4-not-applicable, WP6-deterministic explanation: `ExplanationResult` (`evidence_basis` = exact stored `source_references` quotes; `supporting_observations`; `verification_steps`; `limitations`; `confidence_reason`; `suppression_considered`) plus the governed `recommended_actions` from the RuntimeKnowledge action-policy artifact, all bound into the `DetectionResult`. | **Authoritative** (deterministic; Phase-3 owned) |
+| **Authoritative explanation** | The Phase-3, P3-WP6-deterministic explanation: `ExplanationResult` (`evidence_basis` = exact stored `source_references` quotes; `supporting_observations`; `verification_steps`; `limitations`; `detection_confidence_reason`; `suppression_considered`) plus the governed `recommended_actions` from the RuntimeKnowledge action-policy artifact, all bound into the `DetectionResult`. | **Authoritative** (deterministic; Phase-3 owned) |
 | **Optional AI paraphrase** | A presentation-only rewording derived *from* an already-finished authoritative result. | **Non-authoritative** (derivative) |
 
 A future paraphrasing capability receives **only** an already-authoritative, finished `DetectionResult` /
@@ -164,7 +164,7 @@ official evidence basis, `recommended_actions`, source references, material unce
 Any future paraphrase must remain traceable to the authoritative result and must **not**:
 
 - invent a fact, official advice, or a source;
-- drop or soften material uncertainty (`limitations` / `confidence_reason` must survive where governed);
+- drop or soften material uncertainty (`limitations` / `detection_confidence_reason` must survive where governed);
 - upgrade suspicion to detection (e.g. `SCAM_PATTERN_SUSPECTED` → `SCAM_PATTERN_DETECTED`) or downgrade
   detection to safe;
 - say "safe" or "legitimate" when Phase 3 does not (RSK-009 — uncertainty is `INSUFFICIENT_EVIDENCE`, never

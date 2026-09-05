@@ -18,6 +18,7 @@ on:
       - "docs/01-research/**"  # evidence matrix + source inventory feed the linters
       - "docs/02-knowledge/**" # KB-001 / KB-002 governance + contract specs
       - "docs/03-detection/**" # DET-001 design contracts + golden cases (validate_det_design.py, 10th check)
+      - "docs/04-ai/**"        # AI-001 / ADR-0007 Phase-4 AI layer design + closure docs (P4-WP1…WP7)
       - "adr/**"               # ADR-0003/0015 underpin the rule + evidence model; ADR-0005/0006 the detection design
       - "requirements.txt"
       - ".github/workflows/knowledge-validation.yml"

@@ -101,6 +101,20 @@ def d_bad_engine_version(root: Path):
     return p, orig
 
 
+def d_ai_default_on(root: Path):
+    p = root / "knowledge" / "ai" / "integration.py"
+    orig = p.read_bytes()
+    text = orig.decode("utf-8")
+    # The Phase-4 safety default is that AI extraction is OFF unless a host explicitly opts in (FR-072,
+    # ADR-0007 §9). Flipping the WP5 feature-policy default to ON in the temp copy must trip the P4-WP5
+    # integration validator's explicit "feature flag default OFF" assertion -> validate_ai_integration.py.
+    mutated = text.replace("    extraction_enabled: bool = False", "    extraction_enabled: bool = True")
+    if mutated == text:
+        raise RuntimeError("ci_selftest could not flip the AI feature-policy default (declaration text changed?)")
+    p.write_bytes(mutated.encode("utf-8"))
+    return p, orig
+
+
 DEFECTS = [
     ("unknown indicator reference", d_unknown_indicator, "validate_rules.py"),
     ("invalid taxonomy ID", d_invalid_taxonomy, "validate_rules.py"),
@@ -108,6 +122,7 @@ DEFECTS = [
     ("malformed extraction projection", d_bad_projection, "validate_extraction.py"),
     ("deprecated negative-indicator reference", d_deprecated_negative, "validate_rules.py"),
     ("malformed engine version (P3-WP8)", d_bad_engine_version, "validate_wp8_integration.py"),
+    ("AI feature flag defaults ON (P4-WP5)", d_ai_default_on, "validate_ai_integration.py"),
 ]
 
 
