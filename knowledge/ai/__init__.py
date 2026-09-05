@@ -1,11 +1,11 @@
-"""TrustLens Phase 4 AI intelligence layer (P4-WP2: provider-neutral offline boundary).
+"""TrustLens Phase 4 AI intelligence layer (P4-WP2 through P4-WP4, offline).
 
 This package hosts the AI *extraction* layer authored under AI-001 / ADR-0007. P4-WP2 establishes ONLY the
 vendor-neutral, OFFLINE provider seam and a deterministic ``FakeProvider`` — no live provider, no vendor SDK,
 no network, no API key, no tools, no standing service. Provider output is UNTRUSTED transport data; it is not
-a governed observation and never enters Phase 3 directly. Deterministic validation + governed mapping (WP3),
-provenance/replay/confidence-cap (WP4) and Phase-3 integration + feature flags + deterministic fallback (WP5)
-are later work packages.
+a governed observation and never enters Phase 3 directly. WP3 validates proposals; WP4 pins configuration,
+assigns capped confidence and verifies replay material. Governed mapping, Phase-3 integration, feature flags
+and deterministic fallback remain WP5 work.
 
 Public surface::
 
@@ -50,6 +50,29 @@ from .validation import (
     ValidatedAIExtraction,
     validate_ai_extraction,
 )
+from .governance import (
+    AI_ADAPTER_ID,
+    AI_ADAPTER_VERSION,
+    CONFIDENCE_POLICY_VERSION,
+    PROMPT_TEMPLATE_ID,
+    PROMPT_TEMPLATE_VERSION,
+    RESPONSE_SCHEMA_ID,
+    AIConfiguration,
+    AIExtractionResult,
+    AIGovernanceError,
+    AIPromptPolicyViolationError,
+    AIProvenanceDescriptor,
+    AIProvenanceInvalidError,
+    AIReplayIntegrityError,
+    CappedAIProposal,
+    PreparedAIExtraction,
+    PreparedAIRequest,
+    canonical_digest,
+    canonical_json,
+    prepare_ai_extraction,
+    prepare_ai_request,
+)
+from .replay import AIReplaySnapshot, pin_replay_snapshot, prepare_replay, restore_replay_snapshot
 
 __all__ = [
     # P4-WP2 provider seam
@@ -76,4 +99,29 @@ __all__ = [
     "AI_EXTRACTION_VERSION",
     "MAX_RAW_RESPONSE_BYTES",
     "MAX_JSON_NESTING_DEPTH",
+    # P4-WP4 containment, provenance, confidence and replay pins
+    "AIConfiguration",
+    "PreparedAIRequest",
+    "prepare_ai_request",
+    "PreparedAIExtraction",
+    "CappedAIProposal",
+    "prepare_ai_extraction",
+    "AIProvenanceDescriptor",
+    "AIExtractionResult",
+    "AIReplaySnapshot",
+    "pin_replay_snapshot",
+    "restore_replay_snapshot",
+    "prepare_replay",
+    "AIGovernanceError",
+    "AIPromptPolicyViolationError",
+    "AIProvenanceInvalidError",
+    "AIReplayIntegrityError",
+    "canonical_json",
+    "canonical_digest",
+    "PROMPT_TEMPLATE_ID",
+    "PROMPT_TEMPLATE_VERSION",
+    "RESPONSE_SCHEMA_ID",
+    "AI_ADAPTER_ID",
+    "AI_ADAPTER_VERSION",
+    "CONFIDENCE_POLICY_VERSION",
 ]
