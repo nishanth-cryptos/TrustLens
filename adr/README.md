@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Document ID | ADR-INDEX |
-| Version | 2.0 |
+| Version | 2.2 |
 | Status | Active |
 | Owner role | Chief Architect |
 | Last updated | 2026-09-06 |
@@ -35,6 +35,7 @@ Programme-level scope, process and evidence decisions live in the
 | [ADR-0010](ADR-0010-evidence-storage-tamper-evidence.md) | Evidence storage and tamper-evidence mechanism | Accepted | 2026-09-06 | Medium |
 | [ADR-0014](ADR-0014-language-and-script-strategy.md) | Language and script strategy — MVP English-only, schemas extensible (OI-04 → option A) | Accepted | 2026-08-29 | Low |
 | [ADR-0015](ADR-0015-evidence-hierarchy-and-official-alternate-provenance.md) | Evidence hierarchy and official-alternate provenance | Accepted | 2026-08-28 | Low |
+| [ADR-0016](ADR-0016-deployment-resilience-runtime-topology.md) | Deployment, resilience and runtime topology | Accepted | 2026-09-06 | Medium |
 
 ### Current backend/runtime topology
 
@@ -59,6 +60,7 @@ analysis that belongs to a later phase. Recording them now prevents them being m
 issued and Accepted at the Phase-4 AI design gate** (AI-001 / GATE-010). **ADR-0008 was issued and Accepted at
 P5-WP2 following independent review**; **ADR-0010 was issued and Accepted at P5-WP3 following independent review**;
 **ADR-0009 was issued and Accepted at P5-WP4 following independent review** (identity/authentication/authorisation);
+**ADR-0016 was issued and Accepted at P5-WP5 following independent review** (deployment/resilience/runtime topology);
 ADR-0011…0013 remain **reserved/planned** for the planned topics above. ADR-0015 was issued ahead of them because the
 RESEARCH-006 manual retrieval reconciliation forced an evidence-model decision (the evidence hierarchy)
 that could not wait for those later phases.
