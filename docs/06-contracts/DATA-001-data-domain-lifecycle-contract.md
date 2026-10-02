@@ -12,7 +12,8 @@
 | Governing architecture | [ARCH-001](../05-architecture/ARCH-001-enterprise-architecture.md) … [ARCH-007](../05-architecture/ARCH-007-integrated-phase-5-architecture.md); [ADR-0004](../../adr/ADR-0004-knowledge-storage-architecture.md), [ADR-0005](../../adr/ADR-0005-rule-execution-model.md), [ADR-0006](../../adr/ADR-0006-risk-and-confidence-aggregation.md), [ADR-0007](../../adr/ADR-0007-ai-authority-and-model-strategy.md), [ADR-0008](../../adr/ADR-0008-python-runtime-service-topology.md), [ADR-0009](../../adr/ADR-0009-identity-authentication-authorization.md), [ADR-0010](../../adr/ADR-0010-evidence-storage-tamper-evidence.md), [ADR-0013](../../adr/ADR-0013-rule-set-publication-version-distribution.md), [ADR-0014](../../adr/ADR-0014-language-and-script-strategy.md), [ADR-0015](../../adr/ADR-0015-evidence-hierarchy-and-official-alternate-provenance.md), [ADR-0016](../../adr/ADR-0016-deployment-resilience-runtime-topology.md), [ADR-0017](../../adr/ADR-0017-observability-operational-readiness.md) |
 | Runtime contracts reused | [DET-001](../03-detection/DET-001-deterministic-detection-engine.md), `knowledge/runtime/result.py` (`result_contract_version` 1.1.0), `knowledge/runtime/observations.py`, `knowledge/runtime/runtime_knowledge.py`, `knowledge/schemas/*.schema.json`, [AI-001-WP4](../04-ai/AI-001-WP4-containment-provenance.md), [AI-001-WP5](../04-ai/AI-001-WP5-phase3-integration.md), [KB-002](../02-knowledge/KB-002-extraction-contracts.md) |
 | Checkpoint | [GATE-019](../00-program/GATE-019-phase-6-data-contract-foundation.md) |
-| Later Phase-6 consumers | P6-WP2 persistence/schema + ADR-0011 · P6-WP3 API · P6-WP4 OpenAPI · P6-WP5 integrations (INT-001, ADR-0012) · P6-WP6 operational contracts |
+| Physical supplement | [DATA-001-WP2](DATA-001-WP2-postgresql-persistence-contract.md) PostgreSQL persistence contract + `contracts/postgresql/schema-v1.json` (P6-WP2 persistence contract approved following independent review; ADR-0011 Accepted; remote CI + merge pending) — see §28 |
+| Later Phase-6 consumers | P6-WP2 persistence/schema + ADR-0011 (**persistence contract approved following independent review**; remote CI + merge pending) · P6-WP3 API · P6-WP4 OpenAPI · P6-WP5 integrations (INT-001, ADR-0012) · P6-WP6 operational contracts |
 | Last updated | 2026-10-02 |
 
 ---
@@ -248,9 +249,11 @@ digest and **at** bytes by locator plus digest; accountability flows **into** `A
   future governed decision.
 - **Single-tenant physical-schema assumption: UNCONFIRMED / PROVISIONAL.** DATA-001 relies on ASM-002 (single
   tenant), whose sponsor confirmation is still outstanding; this contract does not claim ASM-002 resolved. Owner:
-  **Sponsor / Programme**. Confirmation is required **before P6-WP2 finalizes physical schema decisions that would be
-  costly to reverse**. If the sponsor instead confirms multi-tenancy, P6-WP2 must **STOP** and reconcile tenancy
-  implications before physical schema acceptance. Multi-tenancy is not designed here.
+  **Sponsor / Programme**. ASM-002 does **not** block acceptance of the versioned P6-WP2 persistence contract, whose
+  tenancy-sensitive structures are explicitly provisional; it **does** block acceptance/execution of the first
+  schema-creating migration and finalisation of tenancy-sensitive implementation until the Sponsor / Programme
+  confirms the tenancy model. If multi-tenancy is confirmed instead, the persistence contract must be revised and
+  independently reviewed before implementation. Multi-tenancy is not designed here.
 - **Retention/deletion:** dependency root; case deletion traverses every child in §17.
 - **Replay relevance:** indirect (scopes evaluations).
 
@@ -263,8 +266,10 @@ digest and **at** bytes by locator plus digest; accountability flows **into** `A
 ### 5.3 `Submission`
 
 - **Purpose:** one user act of sending content for analysis (glossary), containing one or more evidence items.
-- **Authority:** Evidence/normalization (intake). **Classification:** `C2` metadata + `C3` user-supplied context.
-  **Store:** `OPS`.
+- **Authority:** Evidence/normalization (intake). **Classification:** `C2` operational metadata (including the
+  categorical relationship to content) in `OPS`; content-bearing `C3` user-supplied context (for example sender
+  identifiers or free text) is held at the governed input-envelope boundary in `ECS`, not on the submission record
+  (clarified by DATA-001-WP2 §5.5).
 - **Mutability:** identity `M-IMM`; processing state `M-OPS`; corrections are revisions (`M-APP`).
 - **Logical content:** submission identifier; owning case; submitting principal; intake route (the governed
   `received_via` vocabulary: `USER_SUBMISSION` | `API` | `BATCH_IMPORT` | `TEST_FIXTURE`); declared channel/input
@@ -599,8 +604,12 @@ matrix is §16.
 - **Logical content:** action identifier; request; enumerated scope by opaque identifier and object kind; store
   class acted on; verification outcome (absence confirmed / residual found); content-free outcome.
 - **Rules:** proves the action without retaining deleted content; residual tombstone content is limited to what a
-  future OI-05 decision permits. **Classification:** `C6`. **Store:** `OPS` + `AUD` (`CONTENT_DELETED`,
-  `RETENTION_ACTION`). **Mutability:** `M-APP`.
+  future OI-05 decision permits.
+- **Two separate concerns (P6-WP1 INFO-1, clarified by P6-WP2):** the **workflow record** is operational state —
+  classification `C2`, store `OPS`, mutability `M-OPS` (planned → executing → verified absent | residual found |
+  failed). The **accountability** for the action is a separate append-only governed audit event
+  (`CONTENT_DELETED`, `RETENTION_ACTION`) — classification `C6`, store `AUD`, mutability `M-APP`, opaque
+  identifiers and categorical outcomes only. Mutable workflow state is never audit authority.
 
 ### 5.20 `CrossStoreOperation`
 
@@ -626,7 +635,7 @@ matrix is §16.
 | 4 | `BreakGlassGrant` | Emergency content access (defined only) | Security Ops | `C5` | `OPS` + `AUD` | `M-APP` | None |
 | 5 | `Case` | Incident container; access + deletion root | Application | `C2` | `OPS` | `M-IMM` id / `M-OPS` state | Scopes evaluations |
 | 6 | `CaseNote` | Governed note | Application | `C4` | `OPS` | `M-APP` | None |
-| 7 | `Submission` | One user submission act | Evidence (intake) | `C2` + `C3` context | `OPS` | `M-IMM` id / `M-OPS` state | Lineage |
+| 7 | `Submission` | One user submission act | Evidence (intake) | `C2` (content-bearing `C3` context held in the ECS envelope) | `OPS` (context: `ECS`) | `M-IMM` id / `M-OPS` state | Lineage |
 | 8 | `EvidenceItem` | Original artifact + integrity/custody | Evidence | `C3` bytes / `C2` manifest | `ECS` bytes + `OPS` manifest | `M-IMM` (+ `M-OPS` content state) | Identifies evaluated evidence |
 | 9 | `EvidenceDerivative` | Normalized/OCR/redacted/preview form | Producing component | `C4` | `ECS` and/or `OPS` | `M-IMM` | Lineage |
 | 10 | `InputEnvelopeRecord` | Governed envelope instance per `input_id` | Evidence/normalization | `C4` | `OPS` (or `ECS` + ref) | `M-IMM` | Lineage, digest-pinned |
@@ -645,7 +654,7 @@ matrix is §16.
 | 23 | `AuditEventReference` | Accountability event | Audit capability | `C6` | `AUD` | `M-APP` | Custody evidence |
 | 24 | `RetentionClassReference` | Retention class/policy reference | Privacy/lifecycle (policy: OI-05) | `C2` | `OPS` | `M-REF` | Determines artifact availability |
 | 25 | `DeletionRequest` | Authorized deletion request | Privacy/lifecycle | `C2` / `C5` | `OPS` + `AUD` | `M-OPS` / `M-APP` | May remove replay material |
-| 26 | `DeletionAction` | Verified deletion step + proof | Privacy/lifecycle | `C6` | `OPS` + `AUD` | `M-APP` | — |
+| 26 | `DeletionAction` | Verified deletion step (OPS workflow) + separate audit proof | Privacy/lifecycle | `C2` workflow / `C6` audit event | `OPS` workflow + `AUD` event | `M-OPS` workflow / `M-APP` event | — |
 | 27 | `CrossStoreOperation` | Idempotent multi-store operation | Owning module | `C2` | `OPS` | `M-OPS` | — |
 | 28 | `Feedback` | User feedback (Post-MVP) | User; non-authoritative | `C4` | `OPS` | `M-APP` | None |
 
@@ -1074,7 +1083,7 @@ OpenAPI; request/response payloads; UI; product, vendor or provider selections; 
 | 9 | Health/telemetry, reconciliation and activation-record operational contracts | P6-WP6 |
 | 10 | Report format, template and disclaimer contract | Phase 7 / REPORT-001 |
 | 11 | Retention durations, legal basis, residual metadata, any hold concept | **Sponsor + legal/governance (OI-05)** |
-| 12 | Confirm single-tenant scope (ASM-002, currently UNCONFIRMED / PROVISIONAL) before P6-WP2 physical-schema acceptance; if multi-tenant, P6-WP2 stops and reconciles | **Sponsor / Programme** |
+| 12 | Confirm single-tenant scope (ASM-002, currently UNCONFIRMED / PROVISIONAL). Does not block acceptance of the versioned P6-WP2 persistence contract while tenancy-sensitive structures stay explicitly provisional; blocks acceptance/execution of the first schema-creating migration and tenancy-sensitive implementation finalisation. If multi-tenancy is confirmed, the persistence contract is revised and re-reviewed before implementation | **Sponsor / Programme** |
 | 13 | CI path coverage for `docs/06-contracts/**` (today triggered only through co-changed `docs/00-program/**`); the workflow path filter MUST include the relevant Phase-6 contract paths before the first validator/schema/contract test depends on them — an explicit P6-WP2 acceptance criterion | **P6-WP2** / first Phase-6 machine-readable contract-validation work |
 | 14 | Final enumeration of the material set required for replay and evidence re-verification as a physical persistence requirement (LOW-2) | P6-WP2 persistence contract; P6-WP6 operational/replay contract |
 | 15 | `C6` store wording vs `DeletionAction` `OPS` + `AUD` (INFO-1); terminal path for a lost in-memory result in `RESULT_COMPUTED_PERSISTENCE_PENDING` (INFO-2) | P6-WP2 |
@@ -1192,9 +1201,30 @@ claim is made.
 | LOW-1 Evaluation ↔ governed input artifact cardinality shown as n → 1 | LOW | **FIXED** — exact 1 ↔ 1 (§5.7, §5.9, Diagram A, Matrix B, §11.3); re-evaluation creates a new evaluation and a new artifact |
 | LOW-2 Replay/re-verification material set not yet a final physical persistence requirement; surviving governed artifact with deleted evidence | LOW | **NON-BLOCKING; DEFERRED** to the P6-WP2 persistence contract and the P6-WP6 operational/replay contract (§23 item 14). Preserved now: fail closed, no AI recall, no latest/current substitution, no approximate replay success (§11.1) |
 | LOW-3 Report reproducibility vs retention | LOW | **FIXED** — reproduction is conditional on retained source artifacts; explicit regeneration-unavailable state; no approximation, AI recall or substitution; no retention solely for reproducibility (§5.14, §11.1, §17.2) |
-| LOW-4 Single-tenant assumption relies on unconfirmed ASM-002 | LOW | **RECORDED** — UNCONFIRMED / PROVISIONAL; owner Sponsor / Programme; required before P6-WP2 physical-schema acceptance; multi-tenant confirmation stops P6-WP2 for reconciliation (§5.2, §23 item 12) |
+| LOW-4 Single-tenant assumption relies on unconfirmed ASM-002 | LOW | **RECORDED** — UNCONFIRMED / PROVISIONAL; owner Sponsor / Programme; does not block acceptance of the versioned P6-WP2 persistence contract while tenancy-sensitive structures stay explicitly provisional; required before acceptance/execution of the first schema-creating migration and tenancy-sensitive implementation finalisation; a multi-tenant confirmation requires the persistence contract to be revised and re-reviewed before implementation (§5.2, §23 item 12) |
 | LOW-5 `docs/06-contracts/**` not in CI workflow path filter | LOW | **RECORDED; workflow unchanged** — this WP triggers CI via `docs/00-program/**`; path-filter fix is an explicit P6-WP2 acceptance criterion before any contract validator depends on it (§23 item 13) |
 | INFO-1 Matrix C lists `C6` as `AUD`-only while `DeletionAction` is `OPS` + `AUD` | INFO | Carried to P6-WP2 wording/schema reconciliation; stores not redesigned |
 | INFO-2 `RESULT_COMPUTED_PERSISTENCE_PENDING` lacks a terminal path if the in-memory result is lost | INFO | Carried to P6-WP2. Expected direction: `FAILED_INFRASTRUCTURE`, a **new** evaluation if retried, and no claim that the original result was durably completed. Not implemented here |
 | INFO-3 ASM-014 retention placeholder | INFO | Correctly not adopted; OI-05 remains authoritative and OPEN |
 | INFO-4 Stale SRS / ASM wording | INFO | Historical; already flagged in §2; no modification in P6-WP1 |
+
+## 28. P6-WP2 physical supplement and carryover resolution
+
+[DATA-001-WP2](DATA-001-WP2-postgresql-persistence-contract.md) and `contracts/postgresql/schema-v1.json` refine the
+representation of this contract for PostgreSQL. They do not change its meaning. The P6-WP2 physical persistence
+contract has been approved following independent review, and ADR-0011 is **Accepted**; formal P6-WP2 closure remains
+pending remote CI PASS and merge to `main`.
+
+| Item | Status after P6-WP2 (approved) |
+|---|---|
+| §23 items 1–4 (physical schema, identifiers, canonical serialization, vocabularies) | Defined in DATA-001-WP2 (UUIDv4 application-generated; `TRUSTLENS_CANONICAL_JSON_V1`; CHECK-constrained vocabularies synchronised with promoted contracts) |
+| LOW-2 / §23 item 14 replay material set | Enumerated (RM-01…RM-14) with explicit replay-unavailable states; replay stays fail-closed |
+| LOW-5 / §23 item 13 CI path filter | `docs/06-contracts/**` and `contracts/**` added with the first dependent validator |
+| INFO-1 / §23 item 15 `DeletionAction` | Clarified in §5.19.3 and Matrix A: OPS workflow record + separate AUD accountability event |
+| INFO-2 / §23 item 15 lost in-memory result | `RESULT_COMPUTED_PERSISTENCE_PENDING` → `FAILED_INFRASTRUCTURE` (`RESULT_DURABILITY_UNCONFIRMED`); a retry is a new evaluation (origin `RETRY_AFTER_FAILURE`) |
+| LOW-4 / §23 item 12 single tenancy (ASM-002) | **Still UNCONFIRMED / PROVISIONAL**; tenancy-sensitive structures are marked PROVISIONAL / BLOCKED ON ASM-002 and machine-checked. This does not block the versioned persistence contract; ASM-002 must be resolved before the first schema-creating migration is accepted/executed and before tenancy-sensitive implementation |
+
+Representation choices recorded for traceability (no semantic change): Phase-4 attempt/fallback state is carried on
+the evaluation record and the sealed AI result + replay snapshot are persisted only when AI was used (the only case in
+which they exist); free-text/PII user context is kept in the EvidenceContentStore-held input envelope rather than on
+the submission record; input envelopes and content-bearing derivatives are stored only in EvidenceContentStore.
