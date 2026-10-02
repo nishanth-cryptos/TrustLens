@@ -3,10 +3,10 @@
 | Field | Value |
 |---|---|
 | Document ID | ADR-INDEX |
-| Version | 2.6 |
+| Version | 2.7 |
 | Status | Active |
 | Owner role | Chief Architect |
-| Last updated | 2026-09-06 |
+| Last updated | 2026-10-02 |
 
 Per `MP §20`, every major architectural choice is captured as a numbered ADR stating: the
 decision, constraints, viable alternatives, comparison criteria, selected option, justification,
@@ -33,6 +33,7 @@ Programme-level scope, process and evidence decisions live in the
 | [ADR-0008](ADR-0008-python-runtime-service-topology.md) | Python runtime and service topology — modular monolith with in-process reasoning kernel | Accepted | 2026-09-06 | Medium |
 | [ADR-0009](ADR-0009-identity-authentication-authorization.md) | Identity, authentication and authorisation | Accepted | 2026-09-06 | Medium |
 | [ADR-0010](ADR-0010-evidence-storage-tamper-evidence.md) | Evidence storage and tamper-evidence mechanism | Accepted | 2026-09-06 | Medium |
+| [ADR-0011](ADR-0011-database-migration-tooling.md) | Database migration tooling — Alembic-managed, versioned, SQL-first PostgreSQL migrations; no ORM selected | Accepted | 2026-10-02 | Low–Medium |
 | [ADR-0013](ADR-0013-rule-set-publication-version-distribution.md) | Rule-set publication and version distribution mechanism | Accepted | 2026-09-06 | Low–Medium |
 | [ADR-0014](ADR-0014-language-and-script-strategy.md) | Language and script strategy — MVP English-only, schemas extensible (OI-04 → option A) | Accepted | 2026-08-29 | Low |
 | [ADR-0015](ADR-0015-evidence-hierarchy-and-official-alternate-provenance.md) | Evidence hierarchy and official-alternate provenance | Accepted | 2026-08-28 | Low |
@@ -53,7 +54,6 @@ analysis that belongs to a later phase. Recording them now prevents them being m
 
 | ID | Decision needed | Phase | Depends on |
 |---|---|---|---|
-| ADR-0011 | Database migration tooling | 6 | DATA-001 |
 | ADR-0012 | Threat-intelligence adapter architecture and provider selection | 6 | INT-001 |
 
 **Numbering note.** ADR-0004 and ADR-0014 were issued and Accepted at the Phase-2 close (WP8);
@@ -64,7 +64,8 @@ P5-WP2 following independent review**; **ADR-0010 was issued and Accepted at P5-
 **ADR-0016 was issued and Accepted at P5-WP5 following independent review** (deployment/resilience/runtime topology);
 **ADR-0017 was issued and Accepted at P5-WP6 following independent review** (observability/operational readiness);
 **ADR-0013 was issued and Accepted at P5-WP7 following independent Phase-5 closure review** (rule-set publication/version distribution);
-ADR-0011 and ADR-0012 remain **reserved/planned** for the Phase-6 topics above. ADR-0015 was issued ahead of them because the
+**ADR-0011 was issued and Accepted at P6-WP2 following independent review** (database migration tooling);
+ADR-0012 remains **reserved/planned** for the Phase-6 threat-intelligence topic above. ADR-0015 was issued ahead of them because the
 RESEARCH-006 manual retrieval reconciliation forced an evidence-model decision (the evidence hierarchy)
 that could not wait for those later phases.
 

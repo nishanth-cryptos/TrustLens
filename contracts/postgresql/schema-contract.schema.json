@@ -1,0 +1,915 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://trustlens/contracts/postgresql/schema-contract.schema.json",
+  "title": "TrustLens PostgreSQL persistence contract (P6-WP2)",
+  "description": "Structural schema for contracts/postgresql/schema-v*.json. Narrow by design: it fixes the shape and the controlled annotation vocabularies; cross-reference and authority invariants are enforced by knowledge/validation/validate_data_contract.py. The contract it validates is a Phase-6 contract artifact, not runtime database authority and not a migration.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_schema_version",
+    "contract_id",
+    "contract_version",
+    "status",
+    "authority_note",
+    "logical_contract",
+    "physical_contract_document",
+    "database",
+    "conventions",
+    "tenancy",
+    "database_roles",
+    "vocabularies",
+    "logical_object_coverage",
+    "replay_material_set",
+    "tables",
+    "completion_protocol"
+  ],
+  "properties": {
+    "contract_schema_version": {
+      "const": "1.0.0"
+    },
+    "contract_id": {
+      "const": "TRUSTLENS-POSTGRESQL-PERSISTENCE"
+    },
+    "contract_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "status": {
+      "type": "string",
+      "minLength": 1
+    },
+    "authority_note": {
+      "type": "string",
+      "minLength": 1
+    },
+    "logical_contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "document",
+        "version"
+      ],
+      "properties": {
+        "document": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        }
+      }
+    },
+    "physical_contract_document": {
+      "type": "string"
+    },
+    "database": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "engine",
+        "baseline_note"
+      ],
+      "properties": {
+        "engine": {
+          "const": "PostgreSQL"
+        },
+        "baseline_note": {
+          "type": "string"
+        }
+      }
+    },
+    "conventions": {
+      "type": "object"
+    },
+    "tenancy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "asm_002_status",
+        "tenant_columns_permitted",
+        "note"
+      ],
+      "properties": {
+        "asm_002_status": {
+          "enum": [
+            "UNCONFIRMED_PROVISIONAL",
+            "CONFIRMED_SINGLE_TENANT",
+            "CONFIRMED_MULTI_TENANT"
+          ]
+        },
+        "tenant_columns_permitted": {
+          "type": "boolean"
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    },
+    "database_roles": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "role",
+          "purpose",
+          "privileges"
+        ],
+        "properties": {
+          "role": {
+            "type": "string",
+            "pattern": "^tl_[a-z_]+$"
+          },
+          "purpose": {
+            "type": "string"
+          },
+          "privileges": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "vocabularies": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "authority",
+          "source",
+          "values"
+        ],
+        "properties": {
+          "authority": {
+            "enum": [
+              "PROMOTED_CONTRACT",
+              "PHASE4_RUNTIME",
+              "PERSISTENCE_CONTRACT"
+            ]
+          },
+          "source": {
+            "type": "string",
+            "minLength": 1
+          },
+          "values": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_.]+$"
+            }
+          },
+          "note": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "logical_object_coverage": {
+      "type": "object",
+      "additionalProperties": {
+        "oneOf": [
+          {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string"
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "deferred"
+            ],
+            "properties": {
+              "deferred": {
+                "type": "string",
+                "minLength": 10
+              }
+            }
+          }
+        ]
+      }
+    },
+    "replay_material_set": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "kind",
+          "required",
+          "description",
+          "locations"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^RM-\\d{2}$"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "required": {
+            "enum": [
+              "ALWAYS",
+              "WHEN_AI_USED",
+              "WHEN_PRESENT_IN_LINEAGE"
+            ]
+          },
+          "description": {
+            "type": "string"
+          },
+          "locations": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "tables": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/table"
+      }
+    },
+    "completion_protocol": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "purpose",
+        "owner_table",
+        "owner_key",
+        "status_column",
+        "initial_state",
+        "success_state",
+        "result_table",
+        "result_insert_allowed_states",
+        "fence",
+        "result_insert_guard",
+        "commit_invariants",
+        "result_consumers",
+        "completion_transaction",
+        "fence_transaction",
+        "notes"
+      ],
+      "properties": {
+        "purpose": {
+          "type": "string"
+        },
+        "owner_table": {
+          "type": "string"
+        },
+        "owner_key": {
+          "type": "string"
+        },
+        "status_column": {
+          "type": "string"
+        },
+        "initial_state": {
+          "type": "string"
+        },
+        "success_state": {
+          "type": "string"
+        },
+        "result_table": {
+          "type": "string"
+        },
+        "result_insert_allowed_states": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "fence": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "owner_column",
+            "result_column",
+            "binding_foreign_key",
+            "cleared_states",
+            "held_check",
+            "cleared_check"
+          ],
+          "properties": {
+            "owner_column": {
+              "type": "string"
+            },
+            "result_column": {
+              "type": "string"
+            },
+            "binding_foreign_key": {
+              "type": "object"
+            },
+            "cleared_states": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "held_check": {
+              "type": "string"
+            },
+            "cleared_check": {
+              "type": "string"
+            }
+          }
+        },
+        "result_insert_guard": {
+          "type": "string"
+        },
+        "commit_invariants": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "table",
+              "trigger"
+            ],
+            "properties": {
+              "table": {
+                "type": "string"
+              },
+              "trigger": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "result_consumers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "table",
+              "via"
+            ],
+            "properties": {
+              "table": {
+                "type": "string"
+              },
+              "via": {
+                "enum": [
+                  "FOREIGN_KEY",
+                  "TRIGGER"
+                ]
+              },
+              "trigger": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "completion_transaction": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "fence_transaction": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]{0,62}$"
+    },
+    "classification": {
+      "enum": [
+        "C1",
+        "C2",
+        "C3",
+        "C4",
+        "C5",
+        "C6",
+        "C7",
+        "C8"
+      ]
+    },
+    "table": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "logical_object",
+        "purpose",
+        "store_class",
+        "authority",
+        "classification",
+        "mutability",
+        "delete_policy",
+        "retention",
+        "columns",
+        "primary_key",
+        "foreign_keys",
+        "unique",
+        "checks",
+        "indexes",
+        "mutable_columns",
+        "write_once_columns",
+        "soft_references",
+        "transition_guards"
+      ],
+      "properties": {
+        "name": {
+          "$ref": "#/$defs/identifier"
+        },
+        "logical_object": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Za-z]+$"
+        },
+        "purpose": {
+          "type": "string",
+          "minLength": 10
+        },
+        "store_class": {
+          "enum": [
+            "OPS",
+            "AUD"
+          ]
+        },
+        "authority": {
+          "enum": [
+            "OPERATIONAL_RECORD",
+            "NON_AUTHORITATIVE_PROJECTION",
+            "REFERENCE_TO_KNOWLEDGE_AUTHORITY",
+            "ACCOUNTABILITY_HISTORY",
+            "OPERATIONAL_POINTER"
+          ]
+        },
+        "classification": {
+          "$ref": "#/$defs/classification"
+        },
+        "mutability": {
+          "enum": [
+            "M-IMM",
+            "M-APP",
+            "M-OPS",
+            "M-REF"
+          ]
+        },
+        "delete_policy": {
+          "enum": [
+            "NEVER",
+            "GOVERNED_DELETION_ONLY",
+            "GOVERNED_MINIMIZATION_ONLY"
+          ]
+        },
+        "retention": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "column"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "EXPLICIT"
+                },
+                "column": {
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "via"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "INHERITED"
+                },
+                "via": {
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "NOT_APPLICABLE"
+                }
+              }
+            }
+          ]
+        },
+        "tenancy_sensitivity": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "reason"
+          ],
+          "properties": {
+            "status": {
+              "enum": [
+                "PROVISIONAL_BLOCKED_ON_ASM_002",
+                "CONFIRMED"
+              ]
+            },
+            "reason": {
+              "type": "string"
+            }
+          }
+        },
+        "columns": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/column"
+          }
+        },
+        "primary_key": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "foreign_keys": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/foreignKey"
+          }
+        },
+        "unique": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/unique"
+          }
+        },
+        "checks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "rule",
+              "purpose"
+            ],
+            "properties": {
+              "name": {
+                "type": "string",
+                "pattern": "^ck_[a-z0-9_]+$"
+              },
+              "rule": {
+                "type": "string"
+              },
+              "purpose": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "indexes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "columns",
+              "justification"
+            ],
+            "properties": {
+              "name": {
+                "type": "string",
+                "pattern": "^ix_[a-z0-9_]+$"
+              },
+              "columns": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "string"
+                }
+              },
+              "where": {
+                "type": "string"
+              },
+              "justification": {
+                "type": "string",
+                "minLength": 10
+              },
+              "tenancy_status": {
+                "enum": [
+                  "PROVISIONAL_BLOCKED_ON_ASM_002",
+                  "CONFIRMED"
+                ]
+              }
+            }
+          }
+        },
+        "mutable_columns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "write_once_columns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "soft_references": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "column",
+              "refers_to",
+              "reason"
+            ],
+            "properties": {
+              "column": {
+                "type": "string"
+              },
+              "refers_to": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "reason": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "transition_guards": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "constraint_triggers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "timing",
+              "rule",
+              "purpose"
+            ],
+            "properties": {
+              "name": {
+                "type": "string",
+                "pattern": "^tg_[a-z0-9_]+$"
+              },
+              "timing": {
+                "enum": [
+                  "BEFORE_INSERT",
+                  "BEFORE_UPDATE",
+                  "BEFORE_UPDATE_OR_DELETE",
+                  "DEFERRED_AT_COMMIT"
+                ]
+              },
+              "rule": {
+                "type": "string",
+                "minLength": 10
+              },
+              "purpose": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "column": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "type",
+        "nullable",
+        "classification",
+        "description"
+      ],
+      "properties": {
+        "name": {
+          "$ref": "#/$defs/identifier"
+        },
+        "type": {
+          "enum": [
+            "uuid",
+            "text",
+            "text[]",
+            "boolean",
+            "integer",
+            "bigint",
+            "timestamptz",
+            "jsonb",
+            "bytea"
+          ]
+        },
+        "nullable": {
+          "type": "boolean"
+        },
+        "classification": {
+          "$ref": "#/$defs/classification"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 3
+        },
+        "vocabulary": {
+          "type": "string"
+        },
+        "pattern": {
+          "type": "string"
+        },
+        "content_kind": {
+          "enum": [
+            "DIGEST",
+            "OPAQUE_ECS_LOCATOR",
+            "CANONICAL_ARTIFACT_JSON",
+            "DERIVED_SENSITIVE_TEXT",
+            "CRYPTOGRAPHIC_SIGNATURE",
+            "RAW_EVIDENCE_BYTES",
+            "SECRET_OR_KEY_MATERIAL"
+          ]
+        },
+        "jsonb_contract": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "contract",
+            "version_source",
+            "immutability",
+            "validation_owner"
+          ],
+          "properties": {
+            "contract": {
+              "type": "string"
+            },
+            "version_source": {
+              "type": "string"
+            },
+            "immutability": {
+              "enum": [
+                "IMMUTABLE_ONCE_WRITTEN",
+                "APPEND_ONLY"
+              ]
+            },
+            "validation_owner": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "jsonb"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "jsonb_contract"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "bytea"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "content_kind"
+            ]
+          }
+        }
+      ]
+    },
+    "foreignKey": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "columns",
+        "references",
+        "on_delete"
+      ],
+      "properties": {
+        "columns": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "references": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "table",
+            "columns"
+          ],
+          "properties": {
+            "table": {
+              "type": "string"
+            },
+            "columns": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "on_delete": {
+          "enum": [
+            "RESTRICT",
+            "NO_ACTION",
+            "SET_NULL",
+            "CASCADE"
+          ]
+        },
+        "on_update": {
+          "enum": [
+            "RESTRICT",
+            "NO_ACTION",
+            "SET_NULL",
+            "CASCADE"
+          ]
+        }
+      }
+    },
+    "unique": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "columns",
+        "purpose"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^uq_[a-z0-9_]+$"
+        },
+        "columns": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "where": {
+          "type": "string"
+        },
+        "purpose": {
+          "type": "string"
+        },
+        "tenancy_status": {
+          "enum": [
+            "PROVISIONAL_BLOCKED_ON_ASM_002",
+            "CONFIRMED"
+          ]
+        }
+      }
+    }
+  }
+}

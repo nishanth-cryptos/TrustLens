@@ -115,6 +115,39 @@ def d_ai_default_on(root: Path):
     return p, orig
 
 
+def d_shared_governed_artifact(root: Path):
+    p = root / "contracts" / "postgresql" / "schema-v1.json"
+    orig = p.read_bytes()
+    d = load(p)
+    # Dropping the UNIQUE(evaluation_id) constraint on governed_input_artifact would let several evaluations share
+    # one governed input artifact, breaking the P6-WP1 LOW-1 1:1 rule. No Phase-2/3/4 validator reads the Phase-6
+    # persistence contract, so only the P6-WP2 data-contract gate can bite -> validate_data_contract.py.
+    for t in d["tables"]:
+        if t["name"] == "governed_input_artifact":
+            before = len(t["unique"])
+            t["unique"] = [u for u in t["unique"] if u["name"] != "uq_governed_input_artifact_evaluation"]
+            if len(t["unique"]) == before:
+                raise RuntimeError("ci_selftest could not remove the governed-artifact 1:1 constraint (name changed?)")
+    dump(p, d)
+    return p, orig
+
+
+def d_unfenced_result_insert(root: Path):
+    p = root / "contracts" / "postgresql" / "schema-v1.json"
+    orig = p.read_bytes()
+    d = load(p)
+    # Removing the BEFORE INSERT result-state guard would let a stale worker insert a DetectionResult under an
+    # evaluation already fenced to FAILED_INFRASTRUCTURE (P6-WP2 MEDIUM-1). Only the data-contract gate (DC-25) bites.
+    for t in d["tables"]:
+        if t["name"] == "detection_result":
+            before = len(t.get("constraint_triggers", []))
+            t["constraint_triggers"] = [g for g in t.get("constraint_triggers", []) if g["name"] != "tg_detection_result_insert_guard"]
+            if len(t["constraint_triggers"]) == before:
+                raise RuntimeError("ci_selftest could not remove the result insert guard (name changed?)")
+    dump(p, d)
+    return p, orig
+
+
 DEFECTS = [
     ("unknown indicator reference", d_unknown_indicator, "validate_rules.py"),
     ("invalid taxonomy ID", d_invalid_taxonomy, "validate_rules.py"),
@@ -123,6 +156,8 @@ DEFECTS = [
     ("deprecated negative-indicator reference", d_deprecated_negative, "validate_rules.py"),
     ("malformed engine version (P3-WP8)", d_bad_engine_version, "validate_wp8_integration.py"),
     ("AI feature flag defaults ON (P4-WP5)", d_ai_default_on, "validate_ai_integration.py"),
+    ("shared governed input artifact breaks evaluation 1:1 (P6-WP2)", d_shared_governed_artifact, "validate_data_contract.py"),
+    ("result insertable under a fenced/failed evaluation (P6-WP2 MEDIUM-1)", d_unfenced_result_insert, "validate_data_contract.py"),
 ]
 
 
