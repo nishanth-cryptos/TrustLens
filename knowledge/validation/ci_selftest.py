@@ -165,6 +165,21 @@ def d_mutable_detection_result(root: Path):
     return p, orig
 
 
+def d_openapi_mutable_result(root: Path):
+    p = root / "contracts" / "api" / "openapi-v1.json"
+    orig = p.read_bytes()
+    d = load(p)
+    # Adding a PATCH operation on the DetectionResult path ONLY in the OpenAPI document (the API catalog is untouched)
+    # would publish a forbidden mutation through the generated contract surface. Only the P6-WP4 OpenAPI gate reads the
+    # OpenAPI file, so only it can bite (OA-20 immutability + OA-03 parity) -> validate_openapi_contract.py.
+    item = d["paths"].get("/api/v1/evaluations/{evaluation_id}/result")
+    if not item or "get" not in item:
+        raise RuntimeError("ci_selftest could not find the DetectionResult path in openapi-v1.json (renamed?)")
+    item["patch"] = dict(item["get"], operationId="patchDetectionResult")
+    dump(p, d)
+    return p, orig
+
+
 DEFECTS = [
     ("unknown indicator reference", d_unknown_indicator, "validate_rules.py"),
     ("invalid taxonomy ID", d_invalid_taxonomy, "validate_rules.py"),
@@ -176,6 +191,7 @@ DEFECTS = [
     ("shared governed input artifact breaks evaluation 1:1 (P6-WP2)", d_shared_governed_artifact, "validate_data_contract.py"),
     ("result insertable under a fenced/failed evaluation (P6-WP2 MEDIUM-1)", d_unfenced_result_insert, "validate_data_contract.py"),
     ("completed DetectionResult made mutable through the API (P6-WP3)", d_mutable_detection_result, "validate_api_contract.py"),
+    ("DetectionResult PATCH published only in OpenAPI (P6-WP4)", d_openapi_mutable_result, "validate_openapi_contract.py"),
 ]
 
 

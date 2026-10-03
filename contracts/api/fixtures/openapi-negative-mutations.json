@@ -1,0 +1,1690 @@
+{
+ "description": "Negative fixtures for knowledge/validation/validate_openapi_contract.py. Each mutation is applied to an in-memory copy of contracts/api/openapi-v1.json and the named check MUST reject it.",
+ "mutations": [
+  {
+   "id": "NEG-OA-01",
+   "expect": "OA-03",
+   "description": "accepted operation deleted",
+   "op": "remove",
+   "path": [
+    "paths",
+    "/api/v1/me",
+    "get"
+   ]
+  },
+  {
+   "id": "NEG-OA-02",
+   "expect": "OA-03",
+   "description": "extra undocumented operation",
+   "op": "set",
+   "path": [
+    "paths",
+    "/api/v1/cases/{case_id}",
+    "put"
+   ],
+   "value": {
+    "operationId": "replaceCase",
+    "summary": "Read a case",
+    "tags": [
+     "Case"
+    ],
+    "x-trustlens-internal": false,
+    "x-trustlens-roles": [
+     "USER",
+     "ANALYST"
+    ],
+    "x-trustlens-resource-authorization": "CASE_ACCESS",
+    "x-trustlens-sensitive-content-permission": "NONE",
+    "x-trustlens-break-glass-roles": [],
+    "x-trustlens-idempotency": "NOT_APPLICABLE",
+    "x-trustlens-audit": {
+     "required": false,
+     "event": null
+    },
+    "x-trustlens-sensitivity": "C2",
+    "x-trustlens-mode": "SYNC",
+    "x-trustlens-concurrency": "NONE",
+    "x-trustlens-target-resource": "Case",
+    "security": [
+     {
+      "bearerAuth": []
+     }
+    ],
+    "parameters": [
+     {
+      "$ref": "#/components/parameters/case_id"
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "OK.",
+      "headers": {
+       "X-Request-Id": {
+        "$ref": "#/components/headers/X-Request-Id"
+       },
+       "ETag": {
+        "$ref": "#/components/headers/ETag"
+       }
+      },
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/CaseResponse"
+        }
+       }
+      }
+     },
+     "400": {
+      "description": "INVALID_REQUEST: Malformed body, unknown/forbidden field, enum/length/format violation, declared/actual length mismatch.",
+      "headers": {
+       "X-Request-Id": {
+        "$ref": "#/components/headers/X-Request-Id"
+       }
+      },
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ApiError"
+        }
+       }
+      },
+      "x-trustlens-error-codes": [
+       "INVALID_REQUEST"
+      ]
+     },
+     "401": {
+      "description": "UNAUTHENTICATED: Missing/invalid/expired credential.",
+      "headers": {
+       "X-Request-Id": {
+        "$ref": "#/components/headers/X-Request-Id"
+       }
+      },
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ApiError"
+        }
+       }
+      },
+      "x-trustlens-error-codes": [
+       "UNAUTHENTICATED"
+      ]
+     },
+     "403": {
+      "description": "FORBIDDEN: Caller can see the resource but lacks the role or permission for this operation.",
+      "headers": {
+       "X-Request-Id": {
+        "$ref": "#/components/headers/X-Request-Id"
+       }
+      },
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ApiError"
+        }
+       }
+      },
+      "x-trustlens-error-codes": [
+       "FORBIDDEN"
+      ]
+     },
+     "404": {
+      "description": "NOT_FOUND: Resource does not exist OR caller has no access to its case scope (existence masked).",
+      "headers": {
+       "X-Request-Id": {
+        "$ref": "#/components/headers/X-Request-Id"
+       }
+      },
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ApiError"
+        }
+       }
+      },
+      "x-trustlens-error-codes": [
+       "NOT_FOUND"
+      ]
+     },
+     "429": {
+      "description": "RATE_LIMITED: Admission control; Retry-After may be returned (thresholds NOT YET SPECIFIED).",
+      "headers": {
+       "X-Request-Id": {
+        "$ref": "#/components/headers/X-Request-Id"
+       },
+       "Retry-After": {
+        "$ref": "#/components/headers/Retry-After"
+       }
+      },
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ApiError"
+        }
+       }
+      },
+      "x-trustlens-error-codes": [
+       "RATE_LIMITED"
+      ]
+     },
+     "500": {
+      "description": "INTERNAL_ERROR: Unexpected failure; safe message only.",
+      "headers": {
+       "X-Request-Id": {
+        "$ref": "#/components/headers/X-Request-Id"
+       }
+      },
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ApiError"
+        }
+       }
+      },
+      "x-trustlens-error-codes": [
+       "INTERNAL_ERROR"
+      ]
+     },
+     "503": {
+      "description": "DEPENDENCY_UNAVAILABLE: Required dependency (operational store, evidence store, key operation, identity validation) unavailable; nothing claimed complete.",
+      "headers": {
+       "X-Request-Id": {
+        "$ref": "#/components/headers/X-Request-Id"
+       },
+       "Retry-After": {
+        "$ref": "#/components/headers/Retry-After"
+       }
+      },
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ApiError"
+        }
+       }
+      },
+      "x-trustlens-error-codes": [
+       "DEPENDENCY_UNAVAILABLE"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "NEG-OA-03",
+   "expect": "OA-04",
+   "description": "method changed (GET /me becomes POST /me)",
+   "op": "set",
+   "path": [
+    "paths",
+    "/api/v1/me"
+   ],
+   "value": {
+    "post": {
+     "operationId": "getMe",
+     "summary": "Authenticated principal summary",
+     "tags": [
+      "Principal"
+     ],
+     "x-trustlens-internal": false,
+     "x-trustlens-roles": [
+      "USER",
+      "ANALYST",
+      "KNOWLEDGE_EDITOR",
+      "KNOWLEDGE_APPROVER",
+      "ADMINISTRATOR"
+     ],
+     "x-trustlens-resource-authorization": "SELF",
+     "x-trustlens-sensitive-content-permission": "NONE",
+     "x-trustlens-break-glass-roles": [],
+     "x-trustlens-idempotency": "NOT_APPLICABLE",
+     "x-trustlens-audit": {
+      "required": false,
+      "event": null
+     },
+     "x-trustlens-sensitivity": "C5",
+     "x-trustlens-mode": "SYNC",
+     "x-trustlens-concurrency": "NONE",
+     "x-trustlens-target-resource": "Principal",
+     "security": [
+      {
+       "bearerAuth": []
+      }
+     ],
+     "responses": {
+      "200": {
+       "description": "OK.",
+       "headers": {
+        "X-Request-Id": {
+         "$ref": "#/components/headers/X-Request-Id"
+        }
+       },
+       "content": {
+        "application/json": {
+         "schema": {
+          "$ref": "#/components/schemas/MeResponse"
+         }
+        }
+       }
+      },
+      "401": {
+       "description": "UNAUTHENTICATED: Missing/invalid/expired credential.",
+       "headers": {
+        "X-Request-Id": {
+         "$ref": "#/components/headers/X-Request-Id"
+        }
+       },
+       "content": {
+        "application/json": {
+         "schema": {
+          "$ref": "#/components/schemas/ApiError"
+         }
+        }
+       },
+       "x-trustlens-error-codes": [
+        "UNAUTHENTICATED"
+       ]
+      },
+      "429": {
+       "description": "RATE_LIMITED: Admission control; Retry-After may be returned (thresholds NOT YET SPECIFIED).",
+       "headers": {
+        "X-Request-Id": {
+         "$ref": "#/components/headers/X-Request-Id"
+        },
+        "Retry-After": {
+         "$ref": "#/components/headers/Retry-After"
+        }
+       },
+       "content": {
+        "application/json": {
+         "schema": {
+          "$ref": "#/components/schemas/ApiError"
+         }
+        }
+       },
+       "x-trustlens-error-codes": [
+        "RATE_LIMITED"
+       ]
+      },
+      "500": {
+       "description": "INTERNAL_ERROR: Unexpected failure; safe message only.",
+       "headers": {
+        "X-Request-Id": {
+         "$ref": "#/components/headers/X-Request-Id"
+        }
+       },
+       "content": {
+        "application/json": {
+         "schema": {
+          "$ref": "#/components/schemas/ApiError"
+         }
+        }
+       },
+       "x-trustlens-error-codes": [
+        "INTERNAL_ERROR"
+       ]
+      },
+      "503": {
+       "description": "DEPENDENCY_UNAVAILABLE: Required dependency (operational store, evidence store, key operation, identity validation) unavailable; nothing claimed complete.",
+       "headers": {
+        "X-Request-Id": {
+         "$ref": "#/components/headers/X-Request-Id"
+        },
+        "Retry-After": {
+         "$ref": "#/components/headers/Retry-After"
+        }
+       },
+       "content": {
+        "application/json": {
+         "schema": {
+          "$ref": "#/components/schemas/ApiError"
+         }
+        }
+       },
+       "x-trustlens-error-codes": [
+        "DEPENDENCY_UNAVAILABLE"
+       ]
+      }
+     }
+    }
+   }
+  },
+  {
+   "id": "NEG-OA-04",
+   "expect": "OA-03",
+   "description": "duplicate operationId",
+   "op": "set",
+   "path": [
+    "paths",
+    "/api/v1/cases",
+    "get",
+    "operationId"
+   ],
+   "value": "getCase"
+  },
+  {
+   "id": "NEG-OA-05",
+   "expect": "OA-08",
+   "description": "authentication removed from a protected operation",
+   "op": "set",
+   "path": [
+    "paths",
+    "/api/v1/cases/{case_id}",
+    "get",
+    "security"
+   ],
+   "value": []
+  },
+  {
+   "id": "NEG-OA-06",
+   "expect": "OA-09",
+   "description": "evidence download without content-level resource authorization",
+   "op": "set",
+   "path": [
+    "paths",
+    "/api/v1/evidence/{evidence_id}/content",
+    "get",
+    "x-trustlens-resource-authorization"
+   ],
+   "value": "CASE_ACCESS"
+  },
+  {
+   "id": "NEG-OA-07",
+   "expect": "OA-08",
+   "description": "ADMINISTRATOR allowed raw evidence by role",
+   "op": "append",
+   "path": [
+    "paths",
+    "/api/v1/evidence/{evidence_id}/content",
+    "get",
+    "x-trustlens-roles"
+   ],
+   "value": "ADMINISTRATOR"
+  },
+  {
+   "id": "NEG-OA-08",
+   "expect": "OA-20",
+   "description": "PATCH on the immutable DetectionResult",
+   "op": "set",
+   "path": [
+    "paths",
+    "/api/v1/evaluations/{evaluation_id}/result",
+    "patch"
+   ],
+   "value": {
+    "operationId": "patchDetectionResult",
+    "summary": "Read the immutable DetectionResult (?view=STANDARD or DETAILED)",
+    "tags": [
+     "DetectionResult"
+    ],
+    "x-trustlens-internal": false,
+    "x-trustlens-roles": [
+     "USER",
+     "ANALYST"
+    ],
+    "x-trustlens-resource-authorization": "CASE_DERIVED_CONTENT",
+    "x-trustlens-sensitive-content-permission": "DERIVED_CONTENT",
+    "x-trustlens-break-glass-roles": [],
+    "x-trustlens-idempotency": "NOT_APPLICABLE",
+    "x-trustlens-audit": {
+     "required": true,
+     "event": "EVIDENCE_ACCESSED"
+    },
+    "x-trustlens-sensitivity": "C4",
+    "x-trustlens-mode": "SYNC",
+    "x-trustlens-concurrency": "NONE",
+    "x-trustlens-target-resource": "DetectionResult",
+    "description": "DETAILED view: assigned analyst with permits_evidence_content only. Never PUT/PATCH/DELETE.",
+    "security": [
+     {
+      "bearerAuth": []
+     }
+    ],
+    "parameters": [
+     {
+      "$ref": "#/components/parameters/evaluation_id"
+     },
+     {
+      "$ref": "#/components/parameters/view"
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "OK.",
+      "headers": {
+       "X-Request-Id": {
+        "$ref": "#/components/headers/X-Request-Id"
+       }
+      },
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/DetectionResultResponse"
+        }
+       }
+      }
+     },
+     "400": {
+      "description": "INVALID_REQUEST: Malformed body, unknown/forbidden field, enum/length/format violation, declared/actual length mismatch.",
+      "headers": {
+       "X-Request-Id": {
+        "$ref": "#/components/headers/X-Request-Id"
+       }
+      },
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ApiError"
+        }
+       }
+      },
+      "x-trustlens-error-codes": [
+       "INVALID_REQUEST"
+      ]
+     },
+     "401": {
+      "description": "UNAUTHENTICATED: Missing/invalid/expired credential.",
+      "headers": {
+       "X-Request-Id": {
+        "$ref": "#/components/headers/X-Request-Id"
+       }
+      },
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ApiError"
+        }
+       }
+      },
+      "x-trustlens-error-codes": [
+       "UNAUTHENTICATED"
+      ]
+     },
+     "403": {
+      "description": "FORBIDDEN: Caller can see the resource but lacks the role or permission for this operation.",
+      "headers": {
+       "X-Request-Id": {
+        "$ref": "#/components/headers/X-Request-Id"
+       }
+      },
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ApiError"
+        }
+       }
+      },
+      "x-trustlens-error-codes": [
+       "FORBIDDEN"
+      ]
+     },
+     "404": {
+      "description": "NOT_FOUND: Resource does not exist OR caller has no access to its case scope (existence masked).",
+      "headers": {
+       "X-Request-Id": {
+        "$ref": "#/components/headers/X-Request-Id"
+       }
+      },
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ApiError"
+        }
+       }
+      },
+      "x-trustlens-error-codes": [
+       "NOT_FOUND"
+      ]
+     },
+     "409": {
+      "description": "EVALUATION_NOT_COMPLETED: Result/replay requested for an evaluation that is not COMPLETED (queued/running) or failed.",
+      "headers": {
+       "X-Request-Id": {
+        "$ref": "#/components/headers/X-Request-Id"
+       }
+      },
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ApiError"
+        }
+       }
+      },
+      "x-trustlens-error-codes": [
+       "EVALUATION_NOT_COMPLETED"
+      ]
+     },
+     "410": {
+      "description": "REMOVED_UNDER_GOVERNANCE: Content or result was deleted under governed retention/deletion; historical record only.",
+      "headers": {
+       "X-Request-Id": {
+        "$ref": "#/components/headers/X-Request-Id"
+       }
+      },
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ApiError"
+        }
+       }
+      },
+      "x-trustlens-error-codes": [
+       "REMOVED_UNDER_GOVERNANCE"
+      ]
+     },
+     "429": {
+      "description": "RATE_LIMITED: Admission control; Retry-After may be returned (thresholds NOT YET SPECIFIED).",
+      "headers": {
+       "X-Request-Id": {
+        "$ref": "#/components/headers/X-Request-Id"
+       },
+       "Retry-After": {
+        "$ref": "#/components/headers/Retry-After"
+       }
+      },
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ApiError"
+        }
+       }
+      },
+      "x-trustlens-error-codes": [
+       "RATE_LIMITED"
+      ]
+     },
+     "500": {
+      "description": "INTEGRITY_FAILURE: Stored material failed integrity verification; content withheld; investigated.; INTERNAL_ERROR: Unexpected failure; safe message only.",
+      "headers": {
+       "X-Request-Id": {
+        "$ref": "#/components/headers/X-Request-Id"
+       }
+      },
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ApiError"
+        }
+       }
+      },
+      "x-trustlens-error-codes": [
+       "INTEGRITY_FAILURE",
+       "INTERNAL_ERROR"
+      ]
+     },
+     "503": {
+      "description": "DEPENDENCY_UNAVAILABLE: Required dependency (operational store, evidence store, key operation, identity validation) unavailable; nothing claimed complete.",
+      "headers": {
+       "X-Request-Id": {
+        "$ref": "#/components/headers/X-Request-Id"
+       },
+       "Retry-After": {
+        "$ref": "#/components/headers/Retry-After"
+       }
+      },
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ApiError"
+        }
+       }
+      },
+      "x-trustlens-error-codes": [
+       "DEPENDENCY_UNAVAILABLE"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "NEG-OA-09",
+   "expect": "OA-19",
+   "description": "recommended-action priority",
+   "op": "set",
+   "path": [
+    "components",
+    "schemas",
+    "RecommendedActionView",
+    "properties",
+    "priority"
+   ],
+   "value": {
+    "type": "string"
+   }
+  },
+  {
+   "id": "NEG-OA-10",
+   "expect": "OA-19",
+   "description": "scam_probability in the result",
+   "op": "set",
+   "path": [
+    "components",
+    "schemas",
+    "DetectionResultResponse",
+    "properties",
+    "scam_probability"
+   ],
+   "value": {
+    "type": "number"
+   }
+  },
+  {
+   "id": "NEG-OA-11",
+   "expect": "OA-18",
+   "description": "tenant_id introduced",
+   "op": "set",
+   "path": [
+    "components",
+    "schemas",
+    "CaseCreateRequest",
+    "properties",
+    "tenant_id"
+   ],
+   "value": {
+    "type": "string",
+    "format": "uuid"
+   }
+  },
+  {
+   "id": "NEG-OA-12",
+   "expect": "OA-24",
+   "description": "arbitrary URL-fetch operation",
+   "op": "set",
+   "path": [
+    "paths",
+    "/api/v1/url-fetch"
+   ],
+   "value": {
+    "post": {
+     "operationId": "fetchUrl",
+     "summary": "Create an empty case owned by the caller",
+     "tags": [
+      "Case"
+     ],
+     "x-trustlens-internal": false,
+     "x-trustlens-roles": [
+      "USER"
+     ],
+     "x-trustlens-resource-authorization": "SELF",
+     "x-trustlens-sensitive-content-permission": "NONE",
+     "x-trustlens-break-glass-roles": [],
+     "x-trustlens-idempotency": "REQUIRED",
+     "x-trustlens-audit": {
+      "required": true,
+      "event": "CASE_CREATED"
+     },
+     "x-trustlens-sensitivity": "C2",
+     "x-trustlens-mode": "SYNC",
+     "x-trustlens-concurrency": "NONE",
+     "x-trustlens-target-resource": "Case",
+     "security": [
+      {
+       "bearerAuth": []
+      }
+     ],
+     "parameters": [
+      {
+       "$ref": "#/components/parameters/Idempotency-Key"
+      }
+     ],
+     "requestBody": {
+      "required": true,
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/CaseCreateRequest"
+        }
+       }
+      }
+     },
+     "responses": {
+      "201": {
+       "description": "Created.",
+       "headers": {
+        "X-Request-Id": {
+         "$ref": "#/components/headers/X-Request-Id"
+        },
+        "ETag": {
+         "$ref": "#/components/headers/ETag"
+        }
+       },
+       "content": {
+        "application/json": {
+         "schema": {
+          "$ref": "#/components/schemas/CaseResponse"
+         }
+        }
+       }
+      },
+      "400": {
+       "description": "INVALID_REQUEST: Malformed body, unknown/forbidden field, enum/length/format violation, declared/actual length mismatch.",
+       "headers": {
+        "X-Request-Id": {
+         "$ref": "#/components/headers/X-Request-Id"
+        }
+       },
+       "content": {
+        "application/json": {
+         "schema": {
+          "$ref": "#/components/schemas/ApiError"
+         }
+        }
+       },
+       "x-trustlens-error-codes": [
+        "INVALID_REQUEST"
+       ]
+      },
+      "401": {
+       "description": "UNAUTHENTICATED: Missing/invalid/expired credential.",
+       "headers": {
+        "X-Request-Id": {
+         "$ref": "#/components/headers/X-Request-Id"
+        }
+       },
+       "content": {
+        "application/json": {
+         "schema": {
+          "$ref": "#/components/schemas/ApiError"
+         }
+        }
+       },
+       "x-trustlens-error-codes": [
+        "UNAUTHENTICATED"
+       ]
+      },
+      "409": {
+       "description": "IDEMPOTENCY_IN_PROGRESS: Original request with this key is still executing.; IDEMPOTENCY_KEY_REUSED: Same Idempotency-Key reused with a different request.",
+       "headers": {
+        "X-Request-Id": {
+         "$ref": "#/components/headers/X-Request-Id"
+        }
+       },
+       "content": {
+        "application/json": {
+         "schema": {
+          "$ref": "#/components/schemas/ApiError"
+         }
+        }
+       },
+       "x-trustlens-error-codes": [
+        "IDEMPOTENCY_IN_PROGRESS",
+        "IDEMPOTENCY_KEY_REUSED"
+       ]
+      },
+      "429": {
+       "description": "RATE_LIMITED: Admission control; Retry-After may be returned (thresholds NOT YET SPECIFIED).",
+       "headers": {
+        "X-Request-Id": {
+         "$ref": "#/components/headers/X-Request-Id"
+        },
+        "Retry-After": {
+         "$ref": "#/components/headers/Retry-After"
+        }
+       },
+       "content": {
+        "application/json": {
+         "schema": {
+          "$ref": "#/components/schemas/ApiError"
+         }
+        }
+       },
+       "x-trustlens-error-codes": [
+        "RATE_LIMITED"
+       ]
+      },
+      "500": {
+       "description": "INTERNAL_ERROR: Unexpected failure; safe message only.",
+       "headers": {
+        "X-Request-Id": {
+         "$ref": "#/components/headers/X-Request-Id"
+        }
+       },
+       "content": {
+        "application/json": {
+         "schema": {
+          "$ref": "#/components/schemas/ApiError"
+         }
+        }
+       },
+       "x-trustlens-error-codes": [
+        "INTERNAL_ERROR"
+       ]
+      },
+      "503": {
+       "description": "DEPENDENCY_UNAVAILABLE: Required dependency (operational store, evidence store, key operation, identity validation) unavailable; nothing claimed complete.",
+       "headers": {
+        "X-Request-Id": {
+         "$ref": "#/components/headers/X-Request-Id"
+        },
+        "Retry-After": {
+         "$ref": "#/components/headers/Retry-After"
+        }
+       },
+       "content": {
+        "application/json": {
+         "schema": {
+          "$ref": "#/components/schemas/ApiError"
+         }
+        }
+       },
+       "x-trustlens-error-codes": [
+        "DEPENDENCY_UNAVAILABLE"
+       ]
+      }
+     }
+    }
+   }
+  },
+  {
+   "id": "NEG-OA-13",
+   "expect": "OA-22",
+   "description": "knowledge activation without required content_digest",
+   "op": "set",
+   "path": [
+    "components",
+    "schemas",
+    "KnowledgeActivationRequest",
+    "required"
+   ],
+   "value": [
+    "governance_change_ref"
+   ]
+  },
+  {
+   "id": "NEG-OA-14",
+   "expect": "OA-23",
+   "description": "activate-latest operation",
+   "op": "set",
+   "path": [
+    "paths",
+    "/api/v1/knowledge/deployment/activate-latest"
+   ],
+   "value": {
+    "post": {
+     "operationId": "activateLatest",
+     "summary": "Activate an exact published, validated bundle",
+     "tags": [
+      "KnowledgeActivationRecord"
+     ],
+     "x-trustlens-internal": false,
+     "x-trustlens-roles": [
+      "ADMINISTRATOR"
+     ],
+     "x-trustlens-resource-authorization": "KNOWLEDGE_OPERATION",
+     "x-trustlens-sensitive-content-permission": "NONE",
+     "x-trustlens-break-glass-roles": [],
+     "x-trustlens-idempotency": "REQUIRED",
+     "x-trustlens-audit": {
+      "required": true,
+      "event": "KNOWLEDGE_ACTIVATED"
+     },
+     "x-trustlens-sensitivity": "C2",
+     "x-trustlens-mode": "ASYNC",
+     "x-trustlens-concurrency": "NONE",
+     "x-trustlens-target-resource": "KnowledgeActivationRecord",
+     "x-trustlens-knowledge-control": true,
+     "security": [
+      {
+       "bearerAuth": []
+      }
+     ],
+     "parameters": [
+      {
+       "$ref": "#/components/parameters/Idempotency-Key"
+      }
+     ],
+     "requestBody": {
+      "required": true,
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/KnowledgeActivationRequest"
+        }
+       }
+      }
+     },
+     "responses": {
+      "202": {
+       "description": "Accepted: asynchronous work recorded; poll the returned resource (no SLA or polling interval defined).",
+       "headers": {
+        "X-Request-Id": {
+         "$ref": "#/components/headers/X-Request-Id"
+        }
+       },
+       "content": {
+        "application/json": {
+         "schema": {
+          "$ref": "#/components/schemas/KnowledgeActivationResponse"
+         }
+        }
+       }
+      },
+      "400": {
+       "description": "INVALID_REQUEST: Malformed body, unknown/forbidden field, enum/length/format violation, declared/actual length mismatch.",
+       "headers": {
+        "X-Request-Id": {
+         "$ref": "#/components/headers/X-Request-Id"
+        }
+       },
+       "content": {
+        "application/json": {
+         "schema": {
+          "$ref": "#/components/schemas/ApiError"
+         }
+        }
+       },
+       "x-trustlens-error-codes": [
+        "INVALID_REQUEST"
+       ]
+      },
+      "401": {
+       "description": "UNAUTHENTICATED: Missing/invalid/expired credential.",
+       "headers": {
+        "X-Request-Id": {
+         "$ref": "#/components/headers/X-Request-Id"
+        }
+       },
+       "content": {
+        "application/json": {
+         "schema": {
+          "$ref": "#/components/schemas/ApiError"
+         }
+        }
+       },
+       "x-trustlens-error-codes": [
+        "UNAUTHENTICATED"
+       ]
+      },
+      "403": {
+       "description": "FORBIDDEN: Caller can see the resource but lacks the role or permission for this operation.",
+       "headers": {
+        "X-Request-Id": {
+         "$ref": "#/components/headers/X-Request-Id"
+        }
+       },
+       "content": {
+        "application/json": {
+         "schema": {
+          "$ref": "#/components/schemas/ApiError"
+         }
+        }
+       },
+       "x-trustlens-error-codes": [
+        "FORBIDDEN"
+       ]
+      },
+      "409": {
+       "description": "IDEMPOTENCY_IN_PROGRESS: Original request with this key is still executing.; IDEMPOTENCY_KEY_REUSED: Same Idempotency-Key reused with a different request.; KNOWLEDGE_NOT_ELIGIBLE: Exact bundle not published/validated or withdrawn; activation refused.",
+       "headers": {
+        "X-Request-Id": {
+         "$ref": "#/components/headers/X-Request-Id"
+        }
+       },
+       "content": {
+        "application/json": {
+         "schema": {
+          "$ref": "#/components/schemas/ApiError"
+         }
+        }
+       },
+       "x-trustlens-error-codes": [
+        "IDEMPOTENCY_IN_PROGRESS",
+        "IDEMPOTENCY_KEY_REUSED",
+        "KNOWLEDGE_NOT_ELIGIBLE"
+       ]
+      },
+      "412": {
+       "description": "PRECONDITION_FAILED: If-Match / expected-state guard did not match.",
+       "headers": {
+        "X-Request-Id": {
+         "$ref": "#/components/headers/X-Request-Id"
+        }
+       },
+       "content": {
+        "application/json": {
+         "schema": {
+          "$ref": "#/components/schemas/ApiError"
+         }
+        }
+       },
+       "x-trustlens-error-codes": [
+        "PRECONDITION_FAILED"
+       ]
+      },
+      "429": {
+       "description": "RATE_LIMITED: Admission control; Retry-After may be returned (thresholds NOT YET SPECIFIED).",
+       "headers": {
+        "X-Request-Id": {
+         "$ref": "#/components/headers/X-Request-Id"
+        },
+        "Retry-After": {
+         "$ref": "#/components/headers/Retry-After"
+        }
+       },
+       "content": {
+        "application/json": {
+         "schema": {
+          "$ref": "#/components/schemas/ApiError"
+         }
+        }
+       },
+       "x-trustlens-error-codes": [
+        "RATE_LIMITED"
+       ]
+      },
+      "500": {
+       "description": "INTERNAL_ERROR: Unexpected failure; safe message only.",
+       "headers": {
+        "X-Request-Id": {
+         "$ref": "#/components/headers/X-Request-Id"
+        }
+       },
+       "content": {
+        "application/json": {
+         "schema": {
+          "$ref": "#/components/schemas/ApiError"
+         }
+        }
+       },
+       "x-trustlens-error-codes": [
+        "INTERNAL_ERROR"
+       ]
+      },
+      "503": {
+       "description": "DEPENDENCY_UNAVAILABLE: Required dependency (operational store, evidence store, key operation, identity validation) unavailable; nothing claimed complete.",
+       "headers": {
+        "X-Request-Id": {
+         "$ref": "#/components/headers/X-Request-Id"
+        },
+        "Retry-After": {
+         "$ref": "#/components/headers/Retry-After"
+        }
+       },
+       "content": {
+        "application/json": {
+         "schema": {
+          "$ref": "#/components/schemas/ApiError"
+         }
+        }
+       },
+       "x-trustlens-error-codes": [
+        "DEPENDENCY_UNAVAILABLE"
+       ]
+      }
+     }
+    }
+   }
+  },
+  {
+   "id": "NEG-OA-15",
+   "expect": "OA-25",
+   "description": "ANALYST may create break-glass",
+   "op": "append",
+   "path": [
+    "paths",
+    "/api/v1/break-glass-grants",
+    "post",
+    "x-trustlens-roles"
+   ],
+   "value": "ANALYST"
+  },
+  {
+   "id": "NEG-OA-16",
+   "expect": "OA-26",
+   "description": "ASSIGNEE_NOT_CALLER removed",
+   "op": "set",
+   "path": [
+    "paths",
+    "/api/v1/review-queue/{review_item_id}/assignment",
+    "post",
+    "x-trustlens-caller-constraints"
+   ],
+   "value": []
+  },
+  {
+   "id": "NEG-OA-17",
+   "expect": "OA-27",
+   "description": "adjudication rationale without content permission",
+   "op": "set",
+   "path": [
+    "components",
+    "schemas",
+    "AdjudicationResponse",
+    "properties",
+    "rationale",
+    "x-trustlens-visibility"
+   ],
+   "value": "ANALYST_ONLY"
+  },
+  {
+   "id": "NEG-OA-18",
+   "expect": "OA-28",
+   "description": "replay accepts use_latest",
+   "op": "set",
+   "path": [
+    "components",
+    "schemas",
+    "ReplayCreateRequest",
+    "properties",
+    "use_latest"
+   ],
+   "value": {
+    "type": "boolean"
+   }
+  },
+  {
+   "id": "NEG-OA-19",
+   "expect": "OA-28",
+   "description": "replay accepts ai_reextract",
+   "op": "set",
+   "path": [
+    "components",
+    "schemas",
+    "ReplayCreateRequest",
+    "properties",
+    "ai_reextract"
+   ],
+   "value": {
+    "type": "boolean"
+   }
+  },
+  {
+   "id": "NEG-OA-20",
+   "expect": "OA-29",
+   "description": "evaluation request accepts classification",
+   "op": "set",
+   "path": [
+    "components",
+    "schemas",
+    "EvaluationCreateRequest",
+    "properties",
+    "classification"
+   ],
+   "value": {
+    "type": "string"
+   }
+  },
+  {
+   "id": "NEG-OA-21",
+   "expect": "OA-29",
+   "description": "adjudication request accepts actor_id",
+   "op": "set",
+   "path": [
+    "components",
+    "schemas",
+    "AdjudicationCreateRequest",
+    "properties",
+    "actor_id"
+   ],
+   "value": {
+    "type": "string",
+    "format": "uuid"
+   }
+  },
+  {
+   "id": "NEG-OA-22",
+   "expect": "OA-10",
+   "description": "Idempotency-Key removed from a required operation",
+   "op": "remove",
+   "path": [
+    "paths",
+    "/api/v1/cases",
+    "post",
+    "parameters",
+    {
+     "$ref": "#/components/parameters/Idempotency-Key"
+    }
+   ]
+  },
+  {
+   "id": "NEG-OA-23",
+   "expect": "OA-05",
+   "description": "success status changed",
+   "op": "set",
+   "path": [
+    "paths",
+    "/api/v1/cases",
+    "post",
+    "responses"
+   ],
+   "value": {
+    "400": {
+     "description": "INVALID_REQUEST: Malformed body, unknown/forbidden field, enum/length/format violation, declared/actual length mismatch.",
+     "headers": {
+      "X-Request-Id": {
+       "$ref": "#/components/headers/X-Request-Id"
+      }
+     },
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ApiError"
+       }
+      }
+     },
+     "x-trustlens-error-codes": [
+      "INVALID_REQUEST"
+     ]
+    },
+    "401": {
+     "description": "UNAUTHENTICATED: Missing/invalid/expired credential.",
+     "headers": {
+      "X-Request-Id": {
+       "$ref": "#/components/headers/X-Request-Id"
+      }
+     },
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ApiError"
+       }
+      }
+     },
+     "x-trustlens-error-codes": [
+      "UNAUTHENTICATED"
+     ]
+    },
+    "409": {
+     "description": "IDEMPOTENCY_IN_PROGRESS: Original request with this key is still executing.; IDEMPOTENCY_KEY_REUSED: Same Idempotency-Key reused with a different request.",
+     "headers": {
+      "X-Request-Id": {
+       "$ref": "#/components/headers/X-Request-Id"
+      }
+     },
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ApiError"
+       }
+      }
+     },
+     "x-trustlens-error-codes": [
+      "IDEMPOTENCY_IN_PROGRESS",
+      "IDEMPOTENCY_KEY_REUSED"
+     ]
+    },
+    "429": {
+     "description": "RATE_LIMITED: Admission control; Retry-After may be returned (thresholds NOT YET SPECIFIED).",
+     "headers": {
+      "X-Request-Id": {
+       "$ref": "#/components/headers/X-Request-Id"
+      },
+      "Retry-After": {
+       "$ref": "#/components/headers/Retry-After"
+      }
+     },
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ApiError"
+       }
+      }
+     },
+     "x-trustlens-error-codes": [
+      "RATE_LIMITED"
+     ]
+    },
+    "500": {
+     "description": "INTERNAL_ERROR: Unexpected failure; safe message only.",
+     "headers": {
+      "X-Request-Id": {
+       "$ref": "#/components/headers/X-Request-Id"
+      }
+     },
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ApiError"
+       }
+      }
+     },
+     "x-trustlens-error-codes": [
+      "INTERNAL_ERROR"
+     ]
+    },
+    "503": {
+     "description": "DEPENDENCY_UNAVAILABLE: Required dependency (operational store, evidence store, key operation, identity validation) unavailable; nothing claimed complete.",
+     "headers": {
+      "X-Request-Id": {
+       "$ref": "#/components/headers/X-Request-Id"
+      },
+      "Retry-After": {
+       "$ref": "#/components/headers/Retry-After"
+      }
+     },
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ApiError"
+       }
+      }
+     },
+     "x-trustlens-error-codes": [
+      "DEPENDENCY_UNAVAILABLE"
+     ]
+    },
+    "200": {
+     "description": "Created.",
+     "headers": {
+      "X-Request-Id": {
+       "$ref": "#/components/headers/X-Request-Id"
+      },
+      "ETag": {
+       "$ref": "#/components/headers/ETag"
+      }
+     },
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/CaseResponse"
+       }
+      }
+     }
+    }
+   }
+  },
+  {
+   "id": "NEG-OA-24",
+   "expect": "OA-17",
+   "description": "dangling local $ref",
+   "op": "set",
+   "path": [
+    "paths",
+    "/api/v1/cases/{case_id}",
+    "get",
+    "responses",
+    "200",
+    "content",
+    "application/json",
+    "schema",
+    "$ref"
+   ],
+   "value": "#/components/schemas/NoSuchSchema"
+  },
+  {
+   "id": "NEG-OA-25",
+   "expect": "OA-17",
+   "description": "external HTTP $ref",
+   "op": "set",
+   "path": [
+    "paths",
+    "/api/v1/cases/{case_id}",
+    "get",
+    "responses",
+    "200",
+    "content",
+    "application/json",
+    "schema",
+    "$ref"
+   ],
+   "value": "https://example.com/schemas/case.json"
+  },
+  {
+   "id": "NEG-OA-26",
+   "expect": "OA-01",
+   "description": "OpenAPI 3.0 version",
+   "op": "set",
+   "path": [
+    "openapi"
+   ],
+   "value": "3.0.3"
+  },
+  {
+   "id": "NEG-OA-27",
+   "expect": "OA-01",
+   "description": "OpenAPI-3.0-only nullable keyword",
+   "op": "set",
+   "path": [
+    "components",
+    "schemas",
+    "CaseResponse",
+    "properties",
+    "closed_at",
+    "nullable"
+   ],
+   "value": true
+  },
+  {
+   "id": "NEG-OA-28",
+   "expect": "OA-14",
+   "description": "If-Match removed from a guarded command",
+   "op": "remove",
+   "path": [
+    "paths",
+    "/api/v1/cases/{case_id}/close",
+    "post",
+    "parameters",
+    {
+     "$ref": "#/components/parameters/If-Match"
+    }
+   ]
+  },
+  {
+   "id": "NEG-OA-29",
+   "expect": "OA-30",
+   "description": "invented page-size maximum",
+   "op": "set",
+   "path": [
+    "components",
+    "parameters",
+    "limit",
+    "schema",
+    "maximum"
+   ],
+   "value": 100
+  },
+  {
+   "id": "NEG-OA-30",
+   "expect": "OA-30",
+   "description": "generic filter parameter",
+   "op": "append",
+   "path": [
+    "paths",
+    "/api/v1/cases",
+    "get",
+    "parameters"
+   ],
+   "value": {
+    "name": "filter",
+    "in": "query",
+    "schema": {
+     "type": "string"
+    }
+   }
+  },
+  {
+   "id": "NEG-OA-31",
+   "expect": "OA-02",
+   "description": "hard-coded production hostname",
+   "op": "set",
+   "path": [
+    "servers",
+    0,
+    "url"
+   ],
+   "value": "https://api.trustlens.example.com"
+  },
+  {
+   "id": "NEG-OA-32",
+   "expect": "OA-33",
+   "description": "evidence bytes base64-encoded",
+   "op": "set",
+   "path": [
+    "paths",
+    "/api/v1/evidence/{evidence_id}/content",
+    "get",
+    "responses",
+    "200",
+    "content",
+    "*/*",
+    "schema",
+    "contentEncoding"
+   ],
+   "value": "base64"
+  },
+  {
+   "id": "NEG-OA-33",
+   "expect": "OA-34",
+   "description": "ETag strategy weakened to representation digest",
+   "op": "set",
+   "path": [
+    "x-trustlens-etag-strategy",
+    "decision"
+   ],
+   "value": "A_REPRESENTATION_DIGEST"
+  },
+  {
+   "id": "NEG-OA-34",
+   "expect": "OA-22",
+   "description": "bundle_version accepted as activation identity",
+   "op": "set",
+   "path": [
+    "components",
+    "schemas",
+    "KnowledgeActivationRequest",
+    "properties",
+    "bundle_version"
+   ],
+   "value": {
+    "type": "string"
+   }
+  },
+  {
+   "id": "NEG-OA-35",
+   "expect": "OA-32",
+   "description": "health probe leaks a hostname",
+   "op": "set",
+   "path": [
+    "components",
+    "schemas",
+    "HealthProbeResponse",
+    "properties",
+    "hostname"
+   ],
+   "value": {
+    "type": "string"
+   }
+  },
+  {
+   "id": "NEG-OA-36",
+   "expect": "OA-35",
+   "description": "info.version equals ENGINE_VERSION",
+   "op": "set",
+   "path": [
+    "info",
+    "version"
+   ],
+   "value": "1.0.0"
+  },
+  {
+   "id": "NEG-OA-37",
+   "expect": "OA-12",
+   "description": "sensitivity drift on adjudication read",
+   "op": "set",
+   "path": [
+    "paths",
+    "/api/v1/adjudications/{adjudication_id}",
+    "get",
+    "x-trustlens-sensitivity"
+   ],
+   "value": "C2"
+  },
+  {
+   "id": "NEG-OA-38",
+   "expect": "OA-11",
+   "description": "evidence content access not audited",
+   "op": "set",
+   "path": [
+    "paths",
+    "/api/v1/evidence/{evidence_id}/content",
+    "get",
+    "x-trustlens-audit",
+    "required"
+   ],
+   "value": false
+  },
+  {
+   "id": "NEG-OA-39",
+   "expect": "OA-13",
+   "description": "async evaluation declared synchronous",
+   "op": "set",
+   "path": [
+    "paths",
+    "/api/v1/submissions/{submission_id}/evaluations",
+    "post",
+    "x-trustlens-mode"
+   ],
+   "value": "SYNC"
+  },
+  {
+   "id": "NEG-OA-40",
+   "expect": "OA-15",
+   "description": "documented error response removed",
+   "op": "remove",
+   "path": [
+    "paths",
+    "/api/v1/cases/{case_id}",
+    "get",
+    "responses",
+    "404"
+   ]
+  },
+  {
+   "id": "NEG-OA-41",
+   "expect": "OA-06",
+   "description": "request schema mismatch",
+   "op": "set",
+   "path": [
+    "paths",
+    "/api/v1/cases",
+    "post",
+    "requestBody",
+    "content",
+    "application/json",
+    "schema",
+    "$ref"
+   ],
+   "value": "#/components/schemas/SubmissionCreateRequest"
+  },
+  {
+   "id": "NEG-OA-42",
+   "expect": "OA-36",
+   "description": "component schema is not valid JSON Schema",
+   "op": "set",
+   "path": [
+    "components",
+    "schemas",
+    "CaseResponse",
+    "type"
+   ],
+   "value": "objekt"
+  },
+  {
+   "id": "NEG-OA-43",
+   "expect": "OA-21",
+   "description": "governed result field loses its Phase-3 trace",
+   "op": "remove",
+   "path": [
+    "components",
+    "schemas",
+    "DetectionResultResponse",
+    "properties",
+    "classification",
+    "x-trustlens-trace"
+   ]
+  },
+  {
+   "id": "NEG-OA-44",
+   "expect": "OA-28",
+   "description": "replay semantics allow AI recall",
+   "op": "set",
+   "path": [
+    "paths",
+    "/api/v1/evaluations/{evaluation_id}/replays",
+    "post",
+    "x-trustlens-replay-semantics",
+    "ai_recall"
+   ],
+   "value": true
+  }
+ ]
+}
