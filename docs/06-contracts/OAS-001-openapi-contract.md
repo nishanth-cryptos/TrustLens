@@ -13,6 +13,8 @@
 | Encodes | [API-001](API-001-api-resource-protocol-contract.md) + [`contracts/api/api-v1.json`](../../contracts/api/api-v1.json) (authoritative API semantics) |
 | Validator | `knowledge/validation/validate_openapi_contract.py` (36 checks, 44 negative mutations) |
 | Checkpoint | [GATE-022](../00-program/GATE-022-phase-6-openapi-contract.md) |
+| P6-WP6 delta | **P6-WP6 ADDITIVE ACTIVATION** (§20): `x-trustlens-availability` removed from `listEvaluationEnrichments`; `listAuditEvents` audit event `AUDIT_LOG_ACCESSED`; audit enums refreshed; ETag dependency satisfied — reviewed by [GATE-024](../00-program/GATE-024-phase-6-operational-contract.md), not GATE-022 |
+| Current revision state | Original P6-WP4 work package merged (PR #29); the status above is historical. This document also contains a P6-WP6 additive delta (§20): APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING (GATE-024) |
 | Last updated | 2026-10-03 |
 
 ---
@@ -75,7 +77,7 @@ one catalog field, and the validator checks it for parity.
 | `x-trustlens-replay-semantics` | operation | `{ai_recall: false, knowledge_selection: PINNED_ONLY, material_substitution: FORBIDDEN, creates_new_evaluation: false}` |
 | `x-trustlens-knowledge-control` | operation | Governed knowledge activation/rollback/withdrawal |
 | `x-trustlens-creates-new-evaluation` | operation | Creates a new evaluation (never replay) |
-| `x-trustlens-availability` | operation | `FUTURE_INT_001` (enrichment, inactive until INT-001/ADR-0012) |
+| `x-trustlens-availability` | operation | `FUTURE_INT_001` (enrichment, inactive until INT-001/ADR-0012) — removed by the P6-WP6 ADDITIVE ACTIVATION; no operation currently carries it |
 | `x-trustlens-tenancy-status` | operation | `PROVISIONAL_BLOCKED_ON_ASM_002` |
 | `x-trustlens-sort` | operation | Fixed stable sort order of a list |
 | `x-trustlens-binary-body` | request/response | Catalog name of a raw-byte body (evidence/report content) |
@@ -500,7 +502,7 @@ owned by the additive DATA-001-WP2 revision + P6-WP6. No retention period is inv
 | `getBreakGlassGrant` | C5 | no | `None` |
 | `endBreakGlassGrant` | C5 | yes | `BREAK_GLASS_EXPIRED` |
 | `reviewBreakGlassGrant` | C5 | yes | `BREAK_GLASS_REVIEWED` |
-| `listAuditEvents` | C6 | yes | `PENDING_TAXONOMY_P6_WP6` |
+| `listAuditEvents` | C6 | yes | `AUDIT_LOG_ACCESSED` (P6-WP6 additive) |
 
 ## 13. Matrix H — API-001 invariant → validator check
 
@@ -674,3 +676,16 @@ Reviewer canonical validation: `run_all` PASS 26/26; `run_all --json` `gate=PASS
 
 Preserved: ADR-0012 Planned / not issued; WP4 LOW-3 OPEN / DEFERRED → P6-WP5 / ADR-0012; ASM-002 UNCONFIRMED /
 PROVISIONAL; G-09 OPEN; OI-05 OPEN; `ENGINE_VERSION = 1.0.0`.
+
+## 20. P6-WP6 ADDITIVE ACTIVATION (reviewed by GATE-024)
+
+GATE-022 did not review this delta; [GATE-024](../00-program/GATE-024-phase-6-operational-contract.md) owns it.
+`openapi-v1.json` remains in exact parity with `api-v1.json` (53 operations; OA-01…OA-36 PASS unmodified):
+
+- `listEvaluationEnrichments`: `x-trustlens-availability: FUTURE_INT_001` removed; summary/description updated to the
+  advisory, provider-assertion wording; method, path, operationId, security, roles and responses unchanged.
+- `listAuditEvents`: `x-trustlens-audit.event` = `AUDIT_LOG_ACCESSED`.
+- `Enum_audit_event_type` / `Enum_audit_target_kind` regenerated from the revised persistence vocabularies.
+- `x-trustlens-etag-strategy`: Decision B unchanged; `implementation_dependency` now records that the P6-WP6 additive
+  DATA-001-WP2 revision supplies the monotonic `mutation_revision` (runtime pending Phase 9). This satisfies the §8
+  dependency at contract level; the WP3/WP4 ETag and idempotency persistence LOWs are CONTRACT-LEVEL CLOSED (OPS-001).

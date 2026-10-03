@@ -387,6 +387,48 @@
           "type": "string"
         }
       }
+    },
+    "additive_revisions": {
+      "type": "array",
+      "description": "Additive revisions applied after the original P6-WP2 review (each reviewed by its own gate).",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "work_package",
+          "contract_version",
+          "status",
+          "changes"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^P6-WP[0-9]+-ADD-[0-9]{3}$"
+          },
+          "work_package": {
+            "type": "string"
+          },
+          "contract_version": {
+            "type": "string",
+            "pattern": "^\\d+\\.\\d+\\.\\d+$"
+          },
+          "status": {
+            "type": "string",
+            "minLength": 1
+          },
+          "operational_contract": {
+            "type": "string"
+          },
+          "changes": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
     }
   },
   "$defs": {

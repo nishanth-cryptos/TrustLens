@@ -1,0 +1,1411 @@
+{
+  "description": "Negative fixtures for knowledge/validation/validate_operational_contract.py. Each mutation is applied to an in-memory copy of the named target contract (operations = contracts/operations/operational-v1.json; persistence / api / openapi / integration = the corresponding Phase-6 contract) and the named check MUST reject it. Offline; no network.",
+  "mutations": [
+    {
+      "id": "NEG-OC-01",
+      "expect": "OC-05",
+      "description": "no idempotency record",
+      "target": "persistence",
+      "op": "remove",
+      "path": [
+        "tables",
+        {
+          "name": "api_idempotency_record"
+        }
+      ]
+    },
+    {
+      "id": "NEG-OC-02",
+      "expect": "OC-09",
+      "description": "raw Idempotency-Key used as authorization",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "idempotency",
+        "key",
+        "authorization_credential"
+      ],
+      "value": true
+    },
+    {
+      "id": "NEG-OC-03",
+      "expect": "OC-06",
+      "description": "principal omitted from idempotency scope",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "idempotency",
+        "scope"
+      ],
+      "value": [
+        "operation_id",
+        "target_resource_scope",
+        "idempotency_key_digest"
+      ]
+    },
+    {
+      "id": "NEG-OC-04",
+      "expect": "OC-06",
+      "description": "operation_id omitted from idempotency scope",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "idempotency",
+        "scope"
+      ],
+      "value": [
+        "principal_reference_id",
+        "target_resource_scope",
+        "idempotency_key_digest"
+      ]
+    },
+    {
+      "id": "NEG-OC-05",
+      "expect": "OC-06",
+      "description": "target resource omitted from idempotency scope",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "idempotency",
+        "scope"
+      ],
+      "value": [
+        "principal_reference_id",
+        "operation_id",
+        "idempotency_key_digest"
+      ]
+    },
+    {
+      "id": "NEG-OC-06",
+      "expect": "OC-07",
+      "description": "semantic request digest column omitted",
+      "target": "persistence",
+      "op": "remove",
+      "path": [
+        "tables",
+        {
+          "name": "api_idempotency_record"
+        },
+        "columns",
+        {
+          "name": "request_semantic_digest"
+        }
+      ]
+    },
+    {
+      "id": "NEG-OC-07",
+      "expect": "OC-08",
+      "description": "check-then-insert with no uniqueness guard",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "idempotency",
+        "claim",
+        "check_then_insert"
+      ],
+      "value": true
+    },
+    {
+      "id": "NEG-OC-08",
+      "expect": "OC-13",
+      "description": "unlimited idempotency active window",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "idempotency",
+        "active_window",
+        "bound"
+      ],
+      "value": "UNBOUNDED"
+    },
+    {
+      "id": "NEG-OC-09",
+      "expect": "OC-12",
+      "description": "unrestricted C4 response body persisted in idempotency records",
+      "target": "persistence",
+      "op": "append",
+      "path": [
+        "tables",
+        {
+          "name": "api_idempotency_record"
+        },
+        "columns"
+      ],
+      "value": {
+        "name": "response_body",
+        "type": "jsonb",
+        "nullable": true,
+        "classification": "C4",
+        "description": "mutation",
+        "jsonb_contract": {
+          "contract": "x",
+          "version_source": "x",
+          "immutability": "IMMUTABLE_ONCE_WRITTEN",
+          "validation_owner": "x"
+        }
+      }
+    },
+    {
+      "id": "NEG-OC-10",
+      "expect": "OC-16",
+      "description": "case_record mutation_revision removed",
+      "target": "persistence",
+      "op": "remove",
+      "path": [
+        "tables",
+        {
+          "name": "case_record"
+        },
+        "columns",
+        {
+          "name": "mutation_revision"
+        }
+      ]
+    },
+    {
+      "id": "NEG-OC-11",
+      "expect": "OC-16",
+      "description": "review_routing_state mutation_revision removed",
+      "target": "persistence",
+      "op": "remove",
+      "path": [
+        "tables",
+        {
+          "name": "review_routing_state"
+        },
+        "columns",
+        {
+          "name": "mutation_revision"
+        }
+      ]
+    },
+    {
+      "id": "NEG-OC-12",
+      "expect": "OC-16",
+      "description": "deletion_request mutation_revision removed",
+      "target": "persistence",
+      "op": "remove",
+      "path": [
+        "tables",
+        {
+          "name": "deletion_request"
+        },
+        "columns",
+        {
+          "name": "mutation_revision"
+        }
+      ]
+    },
+    {
+      "id": "NEG-OC-13",
+      "expect": "OC-18",
+      "description": "revision decrement permitted",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "concurrency",
+        "revision",
+        "decrement_permitted"
+      ],
+      "value": true
+    },
+    {
+      "id": "NEG-OC-14",
+      "expect": "OC-19",
+      "description": "ETag derived solely from lifecycle_state",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "concurrency",
+        "etag",
+        "derivation"
+      ],
+      "value": "LIFECYCLE_STATE"
+    },
+    {
+      "id": "NEG-OC-15",
+      "expect": "OC-19",
+      "description": "ETag derived solely from a timestamp",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "concurrency",
+        "revision",
+        "timestamp_only"
+      ],
+      "value": true
+    },
+    {
+      "id": "NEG-OC-16",
+      "expect": "OC-17",
+      "description": "client may write the revision",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "concurrency",
+        "revision",
+        "client_writable"
+      ],
+      "value": true
+    },
+    {
+      "id": "NEG-OC-17",
+      "expect": "OC-21",
+      "description": "enrichment provider_policy_version omitted",
+      "target": "persistence",
+      "op": "remove",
+      "path": [
+        "tables",
+        {
+          "name": "external_enrichment_result"
+        },
+        "columns",
+        {
+          "name": "provider_policy_version"
+        }
+      ]
+    },
+    {
+      "id": "NEG-OC-18",
+      "expect": "OC-21",
+      "description": "enrichment parser_schema_version omitted",
+      "target": "persistence",
+      "op": "remove",
+      "path": [
+        "tables",
+        {
+          "name": "external_enrichment_result"
+        },
+        "columns",
+        {
+          "name": "parser_schema_version"
+        }
+      ]
+    },
+    {
+      "id": "NEG-OC-19",
+      "expect": "OC-21",
+      "description": "enrichment lookup_outcome omitted",
+      "target": "persistence",
+      "op": "remove",
+      "path": [
+        "tables",
+        {
+          "name": "external_enrichment_result"
+        },
+        "columns",
+        {
+          "name": "lookup_outcome"
+        }
+      ]
+    },
+    {
+      "id": "NEG-OC-20",
+      "expect": "OC-21",
+      "description": "enrichment response_artifact_digest omitted",
+      "target": "persistence",
+      "op": "remove",
+      "path": [
+        "tables",
+        {
+          "name": "external_enrichment_result"
+        },
+        "columns",
+        {
+          "name": "response_artifact_digest"
+        }
+      ]
+    },
+    {
+      "id": "NEG-OC-21",
+      "expect": "OC-21",
+      "description": "enrichment freshness_state omitted",
+      "target": "persistence",
+      "op": "remove",
+      "path": [
+        "tables",
+        {
+          "name": "external_enrichment_result"
+        },
+        "columns",
+        {
+          "name": "freshness_state"
+        }
+      ]
+    },
+    {
+      "id": "NEG-OC-22",
+      "expect": "OC-21",
+      "description": "enrichment cache_used omitted",
+      "target": "persistence",
+      "op": "remove",
+      "path": [
+        "tables",
+        {
+          "name": "external_enrichment_result"
+        },
+        "columns",
+        {
+          "name": "cache_used"
+        }
+      ]
+    },
+    {
+      "id": "NEG-OC-23",
+      "expect": "OC-23",
+      "description": "safe_error_category allowed outside the governed vocabulary",
+      "target": "persistence",
+      "op": "append",
+      "path": [
+        "vocabularies",
+        "enrichment_safe_error_category",
+        "values"
+      ],
+      "value": "OTHER_PROVIDER_ISSUE"
+    },
+    {
+      "id": "NEG-OC-24",
+      "expect": "OC-24",
+      "description": "provider CLEAN mapped to TrustLens safe",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "enrichment_persistence",
+        "provider_clean"
+      ],
+      "value": "TRUSTLENS_SAFE"
+    },
+    {
+      "id": "NEG-OC-25",
+      "expect": "OC-25",
+      "description": "consumed_in_governed_artifact = true",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "enrichment_persistence",
+        "consumed_in_governed_artifact"
+      ],
+      "value": true
+    },
+    {
+      "id": "NEG-OC-26",
+      "expect": "OC-28",
+      "description": "ENRICHMENT_REQUESTED audit event omitted",
+      "target": "persistence",
+      "op": "set",
+      "path": [
+        "vocabularies",
+        "audit_event_type",
+        "values"
+      ],
+      "value": [
+        "AUTHENTICATION_SUCCEEDED",
+        "AUTHENTICATION_FAILED",
+        "AUTHORIZATION_DENIED",
+        "ROLE_ASSIGNED",
+        "ROLE_REVOKED",
+        "CASE_ACCESS_GRANTED",
+        "CASE_ACCESS_REVOKED",
+        "BREAK_GLASS_ACTIVATED",
+        "BREAK_GLASS_EXPIRED",
+        "BREAK_GLASS_REVIEWED",
+        "SECRET_OR_KEY_ADMINISTERED",
+        "EGRESS_DENIED",
+        "CASE_CREATED",
+        "CASE_STATE_CHANGED",
+        "EVIDENCE_ACCESSED",
+        "EVIDENCE_RECEIVED",
+        "EVIDENCE_STORED",
+        "EVIDENCE_DERIVED",
+        "EVALUATION_STARTED",
+        "EVALUATION_COMPLETED",
+        "EVALUATION_FAILED",
+        "AI_ATTEMPTED",
+        "AI_REJECTED_OR_FAILED",
+        "RESULT_PERSISTED",
+        "USER_CORRECTION",
+        "ANALYST_ADJUDICATION",
+        "REPORT_GENERATED",
+        "REPORT_EXPORTED",
+        "REPLAY_EXECUTED",
+        "DELETION_REQUESTED",
+        "CONTENT_DELETED",
+        "RETENTION_ACTION",
+        "INTEGRITY_FAILURE",
+        "KNOWLEDGE_PUBLISHED",
+        "KNOWLEDGE_DISTRIBUTED",
+        "KNOWLEDGE_ACTIVATED",
+        "KNOWLEDGE_ROLLED_BACK",
+        "KNOWLEDGE_WITHDRAWN",
+        "KNOWLEDGE_ACTIVATION_REJECTED",
+        "ACTIVE_BUNDLE_WITHDRAWN_REMEDIATED",
+        "RESTORE_REQUESTED",
+        "RESTORE_AUTHORIZED",
+        "RESTORE_STARTED",
+        "RESTORE_VERIFIED",
+        "RESTORE_PROMOTED_OR_REJECTED",
+        "CHECKPOINT_SIGNING_TERMINAL_FAILURE",
+        "PROVIDER_POLICY_SELECTED",
+        "ENRICHMENT_ACCEPTED",
+        "CREDENTIAL_REFERENCE_FAILURE",
+        "PROVIDER_POLICY_PUBLISHED",
+        "PROVIDER_POLICY_ACTIVATED",
+        "PROVIDER_POLICY_WITHDRAWN",
+        "AUDIT_LOG_ACCESSED"
+      ]
+    },
+    {
+      "id": "NEG-OC-27",
+      "expect": "OC-29",
+      "description": "audit-read event omitted from listAuditEvents",
+      "target": "api",
+      "op": "set",
+      "path": [
+        "operations",
+        {
+          "operation_id": "listAuditEvents"
+        },
+        "audit_event"
+      ],
+      "value": "PENDING_TAXONOMY_P6_WP6"
+    },
+    {
+      "id": "NEG-OC-28",
+      "expect": "OC-30",
+      "description": "audit-read event copies raw audit rows",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "audit",
+        "audit_read",
+        "copies_returned_event_bodies"
+      ],
+      "value": true
+    },
+    {
+      "id": "NEG-OC-29",
+      "expect": "OC-32",
+      "description": "immutable DetectionResult deleted by mutating its status",
+      "target": "persistence",
+      "op": "append",
+      "path": [
+        "tables",
+        {
+          "name": "detection_result"
+        },
+        "columns"
+      ],
+      "value": {
+        "name": "deleted_at",
+        "type": "timestamptz",
+        "nullable": true,
+        "classification": "C2",
+        "description": "mutation"
+      }
+    },
+    {
+      "id": "NEG-OC-30",
+      "expect": "OC-33",
+      "description": "tombstone stores the DetectionResult body",
+      "target": "persistence",
+      "op": "append",
+      "path": [
+        "tables",
+        {
+          "name": "governed_removal_tombstone"
+        },
+        "columns"
+      ],
+      "value": {
+        "name": "result_canonical_json",
+        "type": "jsonb",
+        "nullable": true,
+        "classification": "C4",
+        "description": "mutation",
+        "jsonb_contract": {
+          "contract": "x",
+          "version_source": "x",
+          "immutability": "IMMUTABLE_ONCE_WRITTEN",
+          "validation_owner": "x"
+        }
+      }
+    },
+    {
+      "id": "NEG-OC-31",
+      "expect": "OC-34",
+      "description": "deletion COMPLETE before ECS absence verification",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "deletion",
+        "completion_on_call_return"
+      ],
+      "value": true
+    },
+    {
+      "id": "NEG-OC-32",
+      "expect": "OC-35",
+      "description": "partial failure ignored",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "deletion",
+        "partial_failure_states"
+      ],
+      "value": []
+    },
+    {
+      "id": "NEG-OC-33",
+      "expect": "OC-37",
+      "description": "restore may resurrect governed-deleted content",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "restore",
+        "anti_resurrection_required"
+      ],
+      "value": false
+    },
+    {
+      "id": "NEG-OC-34",
+      "expect": "OC-38",
+      "description": "report regeneration uses latest material",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "report",
+        "reconstruct_from_latest"
+      ],
+      "value": true
+    },
+    {
+      "id": "NEG-OC-35",
+      "expect": "OC-40",
+      "description": "replay calls AI",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "replay",
+        "forbidden"
+      ],
+      "value": [
+        "ENRICHMENT_PROVIDER_CALL",
+        "LATEST_OR_CURRENT_KNOWLEDGE",
+        "CURRENT_EVIDENCE",
+        "APPROXIMATION_OF_DELETED_MATERIAL",
+        "NEW_EVALUATION"
+      ]
+    },
+    {
+      "id": "NEG-OC-36",
+      "expect": "OC-41",
+      "description": "replay calls the enrichment provider",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "replay",
+        "forbidden"
+      ],
+      "value": [
+        "AI_CALL",
+        "LATEST_OR_CURRENT_KNOWLEDGE",
+        "CURRENT_EVIDENCE",
+        "APPROXIMATION_OF_DELETED_MATERIAL",
+        "NEW_EVALUATION"
+      ]
+    },
+    {
+      "id": "NEG-OC-37",
+      "expect": "OC-42",
+      "description": "replay uses latest knowledge",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "replay",
+        "forbidden"
+      ],
+      "value": [
+        "AI_CALL",
+        "ENRICHMENT_PROVIDER_CALL",
+        "CURRENT_EVIDENCE",
+        "APPROXIMATION_OF_DELETED_MATERIAL",
+        "NEW_EVALUATION"
+      ]
+    },
+    {
+      "id": "NEG-OC-38",
+      "expect": "OC-39",
+      "description": "replay substitutes missing material",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "replay",
+        "missing_material"
+      ],
+      "value": "APPROXIMATE_FROM_CURRENT_MATERIAL"
+    },
+    {
+      "id": "NEG-OC-39",
+      "expect": "OC-43",
+      "description": "enrichment made required DetectionResult replay material while not consumed",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "replay",
+        "enrichment_required_for_detection_result_replay"
+      ],
+      "value": true
+    },
+    {
+      "id": "NEG-OC-40",
+      "expect": "OC-45",
+      "description": "mutable provider policy version",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "provider_policy",
+        "immutable_after_publication"
+      ],
+      "value": false
+    },
+    {
+      "id": "NEG-OC-41",
+      "expect": "OC-47",
+      "description": "latest provider policy activated by name",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "provider_policy",
+        "latest_by_name_authority"
+      ],
+      "value": true
+    },
+    {
+      "id": "NEG-OC-42",
+      "expect": "OC-48",
+      "description": "AI can publish provider policy",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "provider_policy",
+        "may_not_change"
+      ],
+      "value": [
+        "END_USER",
+        "ANALYST",
+        "REVIEWER",
+        "PROVIDER_RESPONSE",
+        "ADAPTER_RUNTIME"
+      ]
+    },
+    {
+      "id": "NEG-OC-43",
+      "expect": "OC-49",
+      "description": "listEvaluationEnrichments remains FUTURE",
+      "target": "api",
+      "op": "set",
+      "path": [
+        "operations",
+        {
+          "operation_id": "listEvaluationEnrichments"
+        },
+        "availability"
+      ],
+      "value": "FUTURE_INT_001"
+    },
+    {
+      "id": "NEG-OC-44",
+      "expect": "OC-50",
+      "description": "listEvaluationEnrichments method changed",
+      "target": "api",
+      "op": "set",
+      "path": [
+        "operations",
+        {
+          "operation_id": "listEvaluationEnrichments"
+        },
+        "method"
+      ],
+      "value": "POST"
+    },
+    {
+      "id": "NEG-OC-45",
+      "expect": "OC-50",
+      "description": "listEvaluationEnrichments path changed",
+      "target": "api",
+      "op": "set",
+      "path": [
+        "operations",
+        {
+          "operation_id": "listEvaluationEnrichments"
+        },
+        "path"
+      ],
+      "value": "/api/v1/enrichments"
+    },
+    {
+      "id": "NEG-OC-46",
+      "expect": "OC-51",
+      "description": "raw provider response exposed in EnrichmentView",
+      "target": "api",
+      "op": "append",
+      "path": [
+        "schemas",
+        "EnrichmentView",
+        "fields"
+      ],
+      "value": {
+        "name": "raw_provider_body",
+        "type": "string",
+        "required": false
+      }
+    },
+    {
+      "id": "NEG-OC-47",
+      "expect": "OC-24",
+      "description": "CLEAN described as TrustLens safe",
+      "target": "api",
+      "op": "set",
+      "path": [
+        "schemas",
+        "EnrichmentView",
+        "description"
+      ],
+      "value": "Normalized reputation; CLEAN means the indicator is safe."
+    },
+    {
+      "id": "NEG-OC-48",
+      "expect": "OC-53",
+      "description": "required runtime parameter removed",
+      "target": "operations",
+      "op": "remove",
+      "path": [
+        "runtime_parameters",
+        {
+          "id": "PROVIDER_CONNECT_TIMEOUT"
+        }
+      ]
+    },
+    {
+      "id": "NEG-OC-49",
+      "expect": "OC-54",
+      "description": "bounded parameter replaced with unlimited",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "runtime_parameters",
+        {
+          "id": "PAGINATION_MAX_LIMIT"
+        },
+        "bound"
+      ],
+      "value": "UNBOUNDED"
+    },
+    {
+      "id": "NEG-OC-50",
+      "expect": "OC-55",
+      "description": "numeric policy value invented",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "runtime_parameters",
+        {
+          "id": "IDEMPOTENCY_ACTIVE_WINDOW"
+        },
+        "value"
+      ],
+      "value": 86400
+    },
+    {
+      "id": "NEG-OC-51",
+      "expect": "OC-56",
+      "description": "tenant_id introduced",
+      "target": "persistence",
+      "op": "append",
+      "path": [
+        "tables",
+        {
+          "name": "api_idempotency_record"
+        },
+        "columns"
+      ],
+      "value": {
+        "name": "tenant_id",
+        "type": "uuid",
+        "nullable": true,
+        "classification": "C2",
+        "description": "mutation"
+      }
+    },
+    {
+      "id": "NEG-OC-52",
+      "expect": "OC-58",
+      "description": "OI-05 closed",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "open_items",
+        "OI-05"
+      ],
+      "value": "CLOSED"
+    },
+    {
+      "id": "NEG-OC-53",
+      "expect": "OC-57",
+      "description": "G-09 closed",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "open_items",
+        "G-09"
+      ],
+      "value": "CLOSED"
+    },
+    {
+      "id": "NEG-OC-54",
+      "expect": "OC-59",
+      "description": "ENGINE_VERSION changed",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "decision_semantics",
+        "engine_version"
+      ],
+      "value": "1.1.0"
+    },
+    {
+      "id": "NEG-OC-55",
+      "expect": "OC-01",
+      "description": "contract status claims P6-WP6 closure before remote CI + merge",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "status"
+      ],
+      "value": "P6-WP6 OPERATIONAL CONTRACT CLOSED"
+    },
+    {
+      "id": "NEG-OC-56",
+      "expect": "OC-52",
+      "description": "new endpoint added by activation",
+      "target": "operations",
+      "op": "append",
+      "path": [
+        "api_activation",
+        "new_endpoints"
+      ],
+      "value": "POST /api/v1/enrichments/lookup"
+    },
+    {
+      "id": "NEG-OC-57",
+      "expect": "OC-49",
+      "description": "OpenAPI keeps the FUTURE availability guard",
+      "target": "openapi",
+      "op": "set",
+      "path": [
+        "paths",
+        "/api/v1/evaluations/{evaluation_id}/enrichments",
+        "get",
+        "x-trustlens-availability"
+      ],
+      "value": "FUTURE_INT_001"
+    },
+    {
+      "id": "NEG-OC-58",
+      "expect": "OC-20",
+      "description": "immutable detection_result gains a mutation revision",
+      "target": "persistence",
+      "op": "append",
+      "path": [
+        "tables",
+        {
+          "name": "detection_result"
+        },
+        "columns"
+      ],
+      "value": {
+        "name": "mutation_revision",
+        "type": "bigint",
+        "nullable": true,
+        "classification": "C2",
+        "description": "mutation"
+      }
+    },
+    {
+      "id": "NEG-OC-59",
+      "expect": "OC-06",
+      "description": "idempotency scope unique constraint removed",
+      "target": "persistence",
+      "op": "remove",
+      "path": [
+        "tables",
+        {
+          "name": "api_idempotency_record"
+        },
+        "unique",
+        {
+          "name": "uq_api_idempotency_scope"
+        }
+      ]
+    },
+    {
+      "id": "NEG-OC-60",
+      "expect": "OC-09",
+      "description": "raw idempotency key stored",
+      "target": "persistence",
+      "op": "append",
+      "path": [
+        "tables",
+        {
+          "name": "api_idempotency_record"
+        },
+        "columns"
+      ],
+      "value": {
+        "name": "idempotency_key",
+        "type": "text",
+        "nullable": true,
+        "classification": "C2",
+        "description": "mutation"
+      }
+    },
+    {
+      "id": "NEG-OC-61",
+      "expect": "OC-08",
+      "description": "completion not atomic with the governed effect",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "idempotency",
+        "claim",
+        "completion_atomic_with_effect"
+      ],
+      "value": false
+    },
+    {
+      "id": "NEG-OC-62",
+      "expect": "OC-09",
+      "description": "idempotency claim before authorization",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "idempotency",
+        "authorization_order"
+      ],
+      "value": [
+        "AUTHENTICATE",
+        "CLAIM",
+        "AUTHORIZE"
+      ]
+    },
+    {
+      "id": "NEG-OC-63",
+      "expect": "OC-33",
+      "description": "tombstone retains a digest of deleted content",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "deletion",
+        "tombstone_digest_retained"
+      ],
+      "value": true
+    },
+    {
+      "id": "NEG-OC-64",
+      "expect": "OC-36",
+      "description": "ECS failure hidden by OPS metadata deletion",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "deletion",
+        "ecs_failure_hidden_by_ops_deletion"
+      ],
+      "value": true
+    },
+    {
+      "id": "NEG-OC-65",
+      "expect": "OC-37",
+      "description": "restore promotes without a post-backup deletion record",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "restore",
+        "missing_deletion_record"
+      ],
+      "value": "PROMOTE"
+    },
+    {
+      "id": "NEG-OC-66",
+      "expect": "OC-43",
+      "description": "enrichment added as a replay material kind",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "replay",
+        "material_kinds_added"
+      ],
+      "value": [
+        "EXTERNAL_ENRICHMENT"
+      ]
+    },
+    {
+      "id": "NEG-OC-67",
+      "expect": "OC-44",
+      "description": "re-analysis overwrites historical evaluation",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "reanalysis",
+        "overwrites_history"
+      ],
+      "value": true
+    },
+    {
+      "id": "NEG-OC-68",
+      "expect": "OC-46",
+      "description": "provider policy identity drops the digest",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "provider_policy",
+        "identity"
+      ],
+      "value": [
+        "provider_policy_ref",
+        "provider_policy_version"
+      ]
+    },
+    {
+      "id": "NEG-OC-69",
+      "expect": "OC-48",
+      "description": "provider policy exposed through a public API",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "provider_policy",
+        "public_api"
+      ],
+      "value": true
+    },
+    {
+      "id": "NEG-OC-70",
+      "expect": "OC-30",
+      "description": "audit-read emits one event per returned row",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "audit",
+        "audit_read",
+        "per_row_events"
+      ],
+      "value": true
+    },
+    {
+      "id": "NEG-OC-71",
+      "expect": "OC-28",
+      "description": "EGRESS_DENIED no longer reused for policy/SSRF rejection",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "audit",
+        "egress_denied_reused_for"
+      ],
+      "value": []
+    },
+    {
+      "id": "NEG-OC-72",
+      "expect": "OC-60",
+      "description": "runtime web framework implementation introduced",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "implementation",
+        "fastapi_added"
+      ],
+      "value": true
+    },
+    {
+      "id": "NEG-OC-73",
+      "expect": "OC-63",
+      "description": "OpenAPI ETag dependency left pending",
+      "target": "openapi",
+      "op": "set",
+      "path": [
+        "x-trustlens-etag-strategy",
+        "implementation_dependency"
+      ],
+      "value": "Additive DATA-001-WP2 revision (monotonic revision for case_record and review_routing_state; deletion_request may reuse it) before implementation."
+    },
+    {
+      "id": "NEG-OC-74",
+      "expect": "OC-61",
+      "description": "additive persistence revision record removed",
+      "target": "persistence",
+      "op": "remove",
+      "path": [
+        "additive_revisions"
+      ]
+    },
+    {
+      "id": "NEG-OC-75",
+      "expect": "OC-64",
+      "description": "generic worker table introduced",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "async_work",
+        "new_generic_worker_table"
+      ],
+      "value": true
+    },
+    {
+      "id": "NEG-OC-76",
+      "expect": "OC-65",
+      "description": "priority field added to enrichment persistence",
+      "target": "persistence",
+      "op": "append",
+      "path": [
+        "tables",
+        {
+          "name": "external_enrichment_result"
+        },
+        "columns"
+      ],
+      "value": {
+        "name": "enrichment_priority",
+        "type": "text",
+        "nullable": true,
+        "classification": "C2",
+        "description": "mutation"
+      }
+    },
+    {
+      "id": "NEG-OC-77",
+      "expect": "OC-66",
+      "description": "different-principal scenario weakened to a cross-principal replay",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "scenarios",
+        "idempotency",
+        {
+          "id": "SI-04"
+        },
+        "expected"
+      ],
+      "value": "RETURN_ORIGINAL_OUTCOME_WITHOUT_EXECUTION"
+    },
+    {
+      "id": "NEG-OC-78",
+      "expect": "OC-66",
+      "description": "restore-without-deletion-record scenario weakened to promotion",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "scenarios",
+        "restore",
+        {
+          "id": "SX-02"
+        },
+        "expected"
+      ],
+      "value": "PROMOTION_PERMITTED_AFTER_VERIFICATION"
+    },
+    {
+      "id": "NEG-OC-79",
+      "expect": "OC-49",
+      "description": "INT-001 api_surface reverted to FUTURE_INT_001",
+      "target": "integration",
+      "op": "set",
+      "path": [
+        "api_surface",
+        "availability"
+      ],
+      "value": "FUTURE_INT_001"
+    },
+    {
+      "id": "NEG-OC-80",
+      "expect": "OC-23",
+      "description": "safe_error_category vocabulary binding removed",
+      "target": "persistence",
+      "op": "remove",
+      "path": [
+        "tables",
+        {
+          "name": "external_enrichment_result"
+        },
+        "columns",
+        {
+          "name": "safe_error_category"
+        },
+        "vocabulary"
+      ]
+    },
+    {
+      "id": "NEG-OC-81",
+      "expect": "OC-22",
+      "description": "lookup outcome vocabulary drifts from INT-001",
+      "target": "operations",
+      "op": "append",
+      "path": [
+        "enrichment_persistence",
+        "lookup_outcome_vocabulary"
+      ],
+      "value": "SAFE"
+    },
+    {
+      "id": "NEG-OC-82",
+      "expect": "OC-15",
+      "description": "If-Match aggregate set drifts from the API catalog",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "concurrency",
+        "aggregates"
+      ],
+      "value": [
+        {
+          "resource": "Case",
+          "table": "case_record",
+          "operations": [
+            "closeCase",
+            "reopenCase"
+          ]
+        },
+        {
+          "resource": "ReviewItem",
+          "table": "review_routing_state",
+          "operations": [
+            "assignReview"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "NEG-OC-83",
+      "expect": "OC-30",
+      "description": "audit-read records returned event payloads",
+      "target": "operations",
+      "op": "append",
+      "path": [
+        "audit",
+        "audit_read",
+        "records"
+      ],
+      "value": "returned_events"
+    },
+    {
+      "id": "NEG-OC-84",
+      "expect": "OC-04",
+      "description": "canonical CI requires a database",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "ci",
+        "database_required"
+      ],
+      "value": true
+    },
+    {
+      "id": "NEG-OC-85",
+      "expect": "OC-67",
+      "description": "api_idempotency_record mapped back to CrossStoreOperation",
+      "target": "persistence",
+      "op": "set",
+      "path": [
+        "tables",
+        {
+          "name": "api_idempotency_record"
+        },
+        "logical_object"
+      ],
+      "value": "CrossStoreOperation"
+    },
+    {
+      "id": "NEG-OC-86",
+      "expect": "OC-67",
+      "description": "governed_removal_tombstone mapped back to DeletionAction",
+      "target": "persistence",
+      "op": "set",
+      "path": [
+        "tables",
+        {
+          "name": "governed_removal_tombstone"
+        },
+        "logical_object"
+      ],
+      "value": "DeletionAction"
+    },
+    {
+      "id": "NEG-OC-87",
+      "expect": "OC-67",
+      "description": "api_idempotency_record listed again under CrossStoreOperation coverage",
+      "target": "persistence",
+      "op": "set",
+      "path": [
+        "logical_object_coverage",
+        "CrossStoreOperation"
+      ],
+      "value": [
+        "cross_store_operation",
+        "api_idempotency_record"
+      ]
+    },
+    {
+      "id": "NEG-OC-88",
+      "expect": "OC-58",
+      "description": "retention durations treated as always-required finite expiry",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "runtime_parameters",
+        {
+          "id": "RETENTION_DURATIONS"
+        },
+        "applies_when"
+      ],
+      "value": "ALWAYS"
+    },
+    {
+      "id": "NEG-OC-89",
+      "expect": "OC-54",
+      "description": "ordinary pagination tuning marked a security/correctness startup blocker",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "runtime_parameters",
+        {
+          "id": "PAGINATION_DEFAULT_LIMIT"
+        },
+        "deployment_requirement"
+      ],
+      "value": "REQUIRED_BEFORE_DEPLOYMENT_SECURITY_OR_CORRECTNESS"
+    },
+    {
+      "id": "NEG-OC-90",
+      "expect": "OC-30",
+      "description": "audit-read access event included in the same response",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "audit",
+        "audit_read",
+        "access_event_in_same_response"
+      ],
+      "value": true
+    },
+    {
+      "id": "NEG-OC-91",
+      "expect": "OC-30",
+      "description": "audit-read result returned although the accountability event failed to append",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "audit",
+        "audit_read",
+        "append_failure"
+      ],
+      "value": "RETURN_RESULT_ANYWAY"
+    }
+  ]
+}

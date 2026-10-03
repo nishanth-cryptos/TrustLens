@@ -10,9 +10,11 @@
 | Owner role | Data Architect / Backend Architect |
 | Baseline | P6-WP1 merge `0ac84cd89be1f15895e7f8c3a8cd39126cfaa874` (PR #26) |
 | Supplements | [DATA-001](DATA-001-data-domain-lifecycle-contract.md) v0.1 (logical contract — remains authoritative for meaning) |
-| Machine-readable contract | [`contracts/postgresql/schema-v1.json`](../../contracts/postgresql/schema-v1.json) (contract 0.1.0), validated by [`schema-contract.schema.json`](../../contracts/postgresql/schema-contract.schema.json) and `knowledge/validation/validate_data_contract.py` |
+| Machine-readable contract | [`contracts/postgresql/schema-v1.json`](../../contracts/postgresql/schema-v1.json) (contract 0.1.0 approved at P6-WP2; **0.2.0 = P6-WP6 ADDITIVE REVISION candidate**, §27), validated by [`schema-contract.schema.json`](../../contracts/postgresql/schema-contract.schema.json) and `knowledge/validation/validate_data_contract.py` |
 | Decision | [ADR-0011](../../adr/ADR-0011-database-migration-tooling.md) — database migration tooling (**Accepted** following independent P6-WP2 review) |
 | Checkpoint | [GATE-020](../00-program/GATE-020-phase-6-postgresql-persistence.md) |
+| P6-WP6 additive revision | **P6-WP6-ADD-001 — P6-WP6 ADDITIVE REVISION APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING** (§27); reviewed by [GATE-024](../00-program/GATE-024-phase-6-operational-contract.md), not GATE-020 |
+| Current revision state | Original P6-WP2 work package merged (PR #27); the status above is historical. This document also contains a P6-WP6 additive delta: APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING (GATE-024) |
 | Governing authority | ADR-0004, ADR-0008, ADR-0009, ADR-0010, ADR-0013, ADR-0016, ADR-0017; ARCH-003…007; DET-001; AI-001-WP4/WP5 |
 | Last updated | 2026-10-02 |
 
@@ -820,3 +822,32 @@ Targeted independent re-review: **BLOCKER 0 / HIGH 0 / MEDIUM 0 / LOW 2 / INFO 3
   SPECIFIED.
 - **P6-WP1 carryovers remain CLOSED:** LOW-2 (replay material), INFO-1 (deletion workflow OPS vs AUD), INFO-2 (lost
   in-memory result, through the MEDIUM-1 correction), LOW-5 (`docs/06-contracts/**` CI coverage).
+
+## 27. P6-WP6 ADDITIVE REVISION (P6-WP6-ADD-001, contract 0.2.0)
+
+This section records the additive persistence revision that P6-WP2…P6-WP5 assigned to P6-WP6. The P6-WP2 review
+history above (§26) is preserved unchanged; GATE-020 did **not** review this delta —
+[GATE-024](../00-program/GATE-024-phase-6-operational-contract.md) owns its acceptance. Operational semantics are
+normative in [OPS-001](OPS-001-operational-replay-persistence-contract.md). No SQL, migration or Alembic revision is
+created; nothing here redesigns accepted semantics.
+
+| Change | Tables / vocabularies | OPS-001 |
+|---|---|---|
+| Server-only monotonic `mutation_revision bigint NOT NULL` (+ `ck_<table>_mutation_revision_positive`; BEFORE UPDATE +1 guard; compare-and-swap If-Match writes) | `case_record`, `review_routing_state`, `deletion_request` — the only If-Match aggregates in `api-v1.json` | §6 |
+| INT-001 provenance / outcome / freshness / cache / policy-identity / artifact columns; `safe_error_category` bound to the exact INT-001 failure vocabulary; five consistency checks | `external_enrichment_result` | §7 |
+| Durable API idempotency record (key digest only; unique principal + operation + target + key scope; claim fence; finite server-set active window) | `api_idempotency_record` (DATA-001 `ApiIdempotencyRecord`, §5.22) | §§4–5 |
+| Content-free governed removal marker (410 lookup; restore reconciliation) | `governed_removal_tombstone` (DATA-001 `GovernedRemovalTombstone`, §5.23) | §§9, 11 |
+| New vocabularies | `api_idempotency_state`, `enrichment_indicator_type`, `enrichment_lookup_outcome`, `enrichment_freshness_state`, `enrichment_provider_response_category`, `enrichment_safe_error_category`, `governed_removal_resource_kind`, `governed_removal_reason` | §§3–9 |
+| Audit vocabulary | `audit_event_type` + `ENRICHMENT_REQUESTED`, `PROVIDER_POLICY_SELECTED`, `ENRICHMENT_ACCEPTED`, `CREDENTIAL_REFERENCE_FAILURE`, `PROVIDER_POLICY_PUBLISHED`, `PROVIDER_POLICY_ACTIVATED`, `PROVIDER_POLICY_WITHDRAWN`, `AUDIT_LOG_ACCESSED`; `audit_target_kind` + `EXTERNAL_ENRICHMENT`, `PROVIDER_POLICY`, `AUDIT_LOG` | §8 |
+| Machine record | top-level `additive_revisions` (schema extended narrowly in `schema-contract.schema.json`) | §2 |
+
+**Unchanged:** the replay material set (RM-01…RM-14, including RM-09 "no enrichment consumed"), the completion protocol
+and execution fence, `detection_result` immutability (deletion never adds a status; removal is recorded in the
+tombstone), `consumed_in_governed_artifact = false`, the tenancy position (no tenant column; ASM-002 UNCONFIRMED /
+PROVISIONAL), and every retention position (no duration; OI-05 OPEN). `validate_data_contract.py` passes unmodified
+(39 tables, 77 vocabularies, 28 negative mutations).
+
+**Carryovers resolved at contract level:** API idempotency persistence (P6-WP3/WP4 LOW), ETag revision persistence
+(P6-WP4 LOW), enrichment persistence follow-ups (P6-WP5 LOW-2), tombstone semantics (§26 INFO-B), INFO-4 operational
+values catalogued as `REQUIRED_BEFORE_DEPLOYMENT` parameters (values still NOT YET SPECIFIED; OPS-001 §16). Runtime
+implementation remains pending Phase 9.

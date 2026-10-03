@@ -194,6 +194,24 @@ def d_user_controlled_destination(root: Path):
     return p, orig
 
 
+def d_case_revision_removed(root: Path):
+    p = root / "contracts" / "postgresql" / "schema-v1.json"
+    orig = p.read_bytes()
+    d = load(p)
+    # Removing the monotonic mutation_revision from case_record (column, mutable entry, check and +1 guard) re-opens
+    # the ETag ABA hole (OPEN -> CLOSED -> OPEN reusing a validator). The persistence contract stays internally
+    # consistent, so only the P6-WP6 operational gate (OC-16/OC-18/OC-20) bites -> validate_operational_contract.py.
+    t = next((x for x in d.get("tables", []) if x.get("name") == "case_record"), None)
+    if not t or not any(c["name"] == "mutation_revision" for c in t["columns"]):
+        raise RuntimeError("ci_selftest could not find case_record.mutation_revision in schema-v1.json (renamed?)")
+    t["columns"] = [c for c in t["columns"] if c["name"] != "mutation_revision"]
+    t["mutable_columns"] = [c for c in t["mutable_columns"] if c != "mutation_revision"]
+    t["checks"] = [c for c in t["checks"] if "mutation_revision" not in c["rule"]]
+    t["transition_guards"] = [g for g in t["transition_guards"] if "mutation_revision" not in g]
+    dump(p, d)
+    return p, orig
+
+
 DEFECTS = [
     ("unknown indicator reference", d_unknown_indicator, "validate_rules.py"),
     ("invalid taxonomy ID", d_invalid_taxonomy, "validate_rules.py"),
@@ -207,6 +225,7 @@ DEFECTS = [
     ("completed DetectionResult made mutable through the API (P6-WP3)", d_mutable_detection_result, "validate_api_contract.py"),
     ("DetectionResult PATCH published only in OpenAPI (P6-WP4)", d_openapi_mutable_result, "validate_openapi_contract.py"),
     ("user input controls the enrichment destination URL (P6-WP5)", d_user_controlled_destination, "validate_integration_contract.py"),
+    ("case_record monotonic mutation revision removed (P6-WP6)", d_case_revision_removed, "validate_operational_contract.py"),
 ]
 
 

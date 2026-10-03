@@ -1,0 +1,1245 @@
+{
+  "contract_schema_version": "1.0.0",
+  "contract_id": "OPS-001",
+  "contract_version": "0.1.0",
+  "status": "P6-WP6 OPERATIONAL CONTRACT APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING",
+  "authority_note": "Machine-readable operational, replay and persistence-follow-up contract for P6-WP6. Contract artifact only: no database, migration, API server, worker, connector or network code exists. Validated offline by knowledge/validation/validate_operational_contract.py.",
+  "human_contract": "docs/06-contracts/OPS-001-operational-replay-persistence-contract.md",
+  "gate": "docs/00-program/GATE-024-phase-6-operational-contract.md",
+  "related_contracts": {
+    "persistence": "contracts/postgresql/schema-v1.json",
+    "persistence_document": "docs/06-contracts/DATA-001-WP2-postgresql-persistence-contract.md",
+    "api_catalog": "contracts/api/api-v1.json",
+    "api_document": "docs/06-contracts/API-001-api-resource-protocol-contract.md",
+    "openapi": "contracts/api/openapi-v1.json",
+    "openapi_document": "docs/06-contracts/OAS-001-openapi-contract.md",
+    "integration": "contracts/integrations/external-enrichment-v1.json",
+    "logical_data_contract": "docs/06-contracts/DATA-001-data-domain-lifecycle-contract.md"
+  },
+  "additive_revision": {
+    "id": "P6-WP6-ADD-001",
+    "persistence_contract_version": "0.2.0",
+    "reviewed_by": "GATE-024",
+    "earlier_gates_cover_delta": false,
+    "redesigns_accepted_semantics": false
+  },
+  "idempotency": {
+    "persistence_table": "api_idempotency_record",
+    "scope": [
+      "principal_reference_id",
+      "operation_id",
+      "target_resource_scope",
+      "idempotency_key_digest"
+    ],
+    "scope_unique_constraint": "uq_api_idempotency_scope",
+    "applies_to": "EVERY_POST_OPERATION_REQUIRING_IDEMPOTENCY_KEY",
+    "key": {
+      "client_generated": true,
+      "high_entropy": true,
+      "opaque": true,
+      "stored_form": "SHA256_DIGEST",
+      "raw_key_stored": false,
+      "authorization_credential": false,
+      "logged_as_authentication_material": false
+    },
+    "request_fingerprint": {
+      "version": "TRUSTLENS_IDEMPOTENCY_REQUEST_FINGERPRINT_V1",
+      "digest_column": "request_semantic_digest",
+      "algorithm": "SHA-256",
+      "canonicalization": "TRUSTLENS_CANONICAL_JSON_V1",
+      "includes": [
+        "operation_id",
+        "target_resource_scope",
+        "canonical_json_body_or_uploaded_content_digest",
+        "semantically_relevant_headers"
+      ],
+      "excludes": [
+        "X-Request-Id",
+        "traceparent",
+        "tracestate",
+        "Idempotency-Key",
+        "Connection",
+        "Keep-Alive",
+        "Transfer-Encoding",
+        "Content-Length",
+        "Date",
+        "User-Agent"
+      ],
+      "reuses_result_digest": false
+    },
+    "claim": {
+      "mechanism": "INSERT_ON_CONFLICT_DO_NOTHING_ON_SCOPE_UNIQUE",
+      "check_then_insert": false,
+      "fence_column": "claim_token",
+      "completion_atomic_with_effect": true,
+      "stale_executor_completion": "ZERO_ROWS_AND_ROLLBACK"
+    },
+    "authorization_order": [
+      "AUTHENTICATE",
+      "AUTHORIZE",
+      "CLAIM"
+    ],
+    "outcomes": {
+      "same_request_terminal": "RETURN_ORIGINAL_OUTCOME_WITHOUT_EXECUTION",
+      "same_request_in_progress": "IDEMPOTENCY_IN_PROGRESS",
+      "different_request": "IDEMPOTENCY_KEY_REUSED",
+      "different_principal": "INDEPENDENT_SCOPE",
+      "released_after_transient_failure": "RECLAIM_AND_EXECUTE"
+    },
+    "outcome_storage": {
+      "stored": [
+        "HTTP_STATUS",
+        "SAFE_ERROR_CODE",
+        "RESOURCE_KIND",
+        "RESOURCE_ID",
+        "TERMINAL_INSTANT"
+      ],
+      "response_body_stored": false,
+      "c4_content_stored": false,
+      "deletion_graph": "NOT_CONTENT_BEARING — opaque references only; purged after the active window by governed retention action"
+    },
+    "active_window": {
+      "bound": "FINITE",
+      "value": "NOT YET SPECIFIED",
+      "server_set": true,
+      "column": "active_until",
+      "parameter": "IDEMPOTENCY_ACTIVE_WINDOW",
+      "owner": "Sponsor / P6-WP6 operational configuration / implementation profile"
+    },
+    "claim_lease": {
+      "bound": "FINITE",
+      "value": "NOT YET SPECIFIED",
+      "column": "in_progress_lease_until",
+      "parameter": "IDEMPOTENCY_CLAIM_LEASE",
+      "owner": "Sponsor / P6-WP6 operational configuration / implementation profile"
+    },
+    "expiry_policy": "After active_until the record no longer governs the key; a later request reusing the key is treated as a new request (new claim). Clients must not rely on idempotency beyond the documented window.",
+    "carryover": "P6-WP3/P6-WP4 idempotency persistence LOW: CONTRACT-LEVEL CLOSED — runtime implementation pending Phase 9",
+    "logical_object": "ApiIdempotencyRecord"
+  },
+  "concurrency": {
+    "guarded_operations_source": "contracts/api/api-v1.json operations where concurrency != NONE",
+    "aggregates": [
+      {
+        "resource": "Case",
+        "table": "case_record",
+        "operations": [
+          "closeCase",
+          "reopenCase"
+        ]
+      },
+      {
+        "resource": "ReviewItem",
+        "table": "review_routing_state",
+        "operations": [
+          "assignReview"
+        ]
+      },
+      {
+        "resource": "DeletionRequest",
+        "table": "deletion_request",
+        "operations": [
+          "authorizeDeletionRequest",
+          "rejectDeletionRequest"
+        ]
+      }
+    ],
+    "revision_column": "mutation_revision",
+    "revision": {
+      "server_authoritative": true,
+      "monotonic": true,
+      "increments_every_committed_mutation": true,
+      "increment": "DATABASE_TRIGGER_PLUS_ONE",
+      "decrement_permitted": false,
+      "reuse_permitted": false,
+      "client_writable": false,
+      "api_field": false,
+      "derived_from": "MUTATION_COUNTER",
+      "timestamp_only": false,
+      "representation_only": false
+    },
+    "etag": {
+      "opaque": true,
+      "strength": "STRONG",
+      "derivation": "MUTATION_REVISION"
+    },
+    "write": {
+      "mechanism": "COMPARE_AND_SWAP",
+      "predicate": "<primary key> = $id AND mutation_revision = $expected_revision",
+      "revision_mismatch": "PRECONDITION_FAILED",
+      "missing_if_match": "PRECONDITION_REQUIRED",
+      "mismatch_mutates": false
+    },
+    "immutable_resources_gain_revision": false,
+    "carryover": "P6-WP4 ETag revision persistence LOW: CONTRACT-LEVEL CLOSED — runtime implementation pending Phase 9"
+  },
+  "enrichment_persistence": {
+    "table": "external_enrichment_result",
+    "required_columns": [
+      {
+        "column": "indicator_type",
+        "int001_field": "indicator_type"
+      },
+      {
+        "column": "normalized_indicator_ref",
+        "int001_field": "normalized_indicator_ref"
+      },
+      {
+        "column": "lookup_outcome",
+        "int001_field": "lookup_outcome"
+      },
+      {
+        "column": "provider_response_category",
+        "int001_field": "provider_response_category"
+      },
+      {
+        "column": "freshness_state",
+        "int001_field": "freshness_state"
+      },
+      {
+        "column": "freshness_policy_ref",
+        "int001_field": "freshness_policy_ref"
+      },
+      {
+        "column": "cache_used",
+        "int001_field": "cache_used"
+      },
+      {
+        "column": "provider_policy_ref",
+        "int001_field": "provider_policy_ref"
+      },
+      {
+        "column": "provider_policy_version",
+        "int001_field": "provider_policy_version"
+      },
+      {
+        "column": "provider_policy_digest",
+        "int001_field": "provider_policy_digest (exact identity, OPS-001 §10)"
+      },
+      {
+        "column": "parser_schema_version",
+        "int001_field": "parser_schema_version"
+      },
+      {
+        "column": "response_artifact_digest",
+        "int001_field": "response_artifact_digest"
+      },
+      {
+        "column": "retained_provider_artifact_ecs_locator",
+        "int001_field": "raw_content_store (ECS only by governed policy)"
+      },
+      {
+        "column": "safe_error_category",
+        "int001_field": "safe_error_category"
+      }
+    ],
+    "lookup_outcome_vocabulary": [
+      "FOUND",
+      "NOT_FOUND",
+      "UNAVAILABLE",
+      "POLICY_REJECTED",
+      "INVALID_RESPONSE"
+    ],
+    "safe_error_category_vocabulary": "enrichment_safe_error_category",
+    "safe_error_category_source": "contracts/integrations/external-enrichment-v1.json failure_semantics",
+    "provider_clean": "PROVIDER_ASSERTION_ONLY",
+    "not_found_meaning": "ABSENCE_OF_INFORMATION",
+    "consumed_in_governed_artifact": false,
+    "phase3_mapping_introduced": false,
+    "immutable": true,
+    "new_record_on": [
+      "PROVIDER_REPUTATION_CHANGE",
+      "CACHE_REFRESH",
+      "PROVIDER_POLICY_CHANGE",
+      "RE_ANALYSIS"
+    ],
+    "raw_provider_body_inline": false,
+    "retained_material_store": "ECS_ONLY_BY_GOVERNED_RAW_CONTENT_POLICY",
+    "digest_proves": "RECORDING_INTEGRITY_NOT_PROVIDER_TRUTH",
+    "historical_read": "FROM_IMMUTABLE_RECORD",
+    "provider_call_on_historical_read": false,
+    "carryover": "P6-WP5 LOW-2 enrichment persistence follow-ups: CONTRACT-LEVEL CLOSED — runtime implementation pending Phase 9"
+  },
+  "audit": {
+    "additions": [
+      {
+        "event": "ENRICHMENT_REQUESTED",
+        "source": "INT-001 audit.events"
+      },
+      {
+        "event": "PROVIDER_POLICY_SELECTED",
+        "source": "INT-001 audit.events"
+      },
+      {
+        "event": "ENRICHMENT_ACCEPTED",
+        "source": "INT-001 audit.events"
+      },
+      {
+        "event": "CREDENTIAL_REFERENCE_FAILURE",
+        "source": "INT-001 audit.events"
+      },
+      {
+        "event": "PROVIDER_POLICY_PUBLISHED",
+        "source": "OPS-001 §10 provider-policy lifecycle"
+      },
+      {
+        "event": "PROVIDER_POLICY_ACTIVATED",
+        "source": "OPS-001 §10 provider-policy lifecycle"
+      },
+      {
+        "event": "PROVIDER_POLICY_WITHDRAWN",
+        "source": "OPS-001 §10 provider-policy lifecycle"
+      },
+      {
+        "event": "AUDIT_LOG_ACCESSED",
+        "source": "OPS-001 §8 audit-read accountability (P6-WP3 INFO-2)"
+      }
+    ],
+    "target_kind_additions": [
+      "EXTERNAL_ENRICHMENT",
+      "PROVIDER_POLICY",
+      "AUDIT_LOG"
+    ],
+    "egress_denied_reused_for": [
+      "POLICY_REJECTION",
+      "SSRF_DESTINATION_REJECTION"
+    ],
+    "forbidden_content": [
+      "RAW_PROVIDER_BODY",
+      "RAW_EVIDENCE",
+      "CREDENTIAL_VALUE",
+      "AUTHORIZATION_HEADER",
+      "C4_CONTENT"
+    ],
+    "audit_read": {
+      "event": "AUDIT_LOG_ACCESSED",
+      "api_operation": "listAuditEvents",
+      "granularity": "ONE_EVENT_PER_AUTHORIZED_AUDIT_READ_OPERATION",
+      "per_row_events": false,
+      "copies_returned_event_bodies": false,
+      "records": [
+        "actor_principal_id",
+        "occurred_at",
+        "correlation_id",
+        "scope_category"
+      ],
+      "recursion_control": "Reading audit events (including AUDIT_LOG_ACCESSED events) emits exactly one AUDIT_LOG_ACCESSED event for the read operation itself; no event is emitted per returned row, so reads never fan out recursively.",
+      "ordering": [
+        "AUTHORIZE_QUERY",
+        "ESTABLISH_RESULT_SNAPSHOT",
+        "APPEND_AUDIT_LOG_ACCESSED",
+        "RETURN_ESTABLISHED_RESULT"
+      ],
+      "access_event_in_same_response": false,
+      "append_failure": "READ_NOT_RETURNED"
+    }
+  },
+  "deletion": {
+    "tombstone_table": "governed_removal_tombstone",
+    "tombstone_allowed_fields": [
+      "resource_kind",
+      "prior_resource_id",
+      "deletion_request_id",
+      "deletion_action_id",
+      "removal_reason_category",
+      "removed_at",
+      "retention_policy_reference_id",
+      "created_at"
+    ],
+    "tombstone_forbidden_content": [
+      "DETECTION_RESULT_BODY",
+      "RAW_EVIDENCE",
+      "REPORT_CONTENT",
+      "PROVIDER_RAW_BODY",
+      "C4_RATIONALE",
+      "SECRET_MATERIAL",
+      "DELETED_CONTENT_DIGEST"
+    ],
+    "tombstone_digest_retained": false,
+    "tombstone_digest_justification": "No digest of deleted content is retained while OI-05 (permitted post-deletion metadata) is open.",
+    "detection_result_status_mutation": false,
+    "detection_result_deletion": "ROW_AND_ECS_REMOVAL_IN_DEPENDENCY_ORDER_PLUS_SEPARATE_TOMBSTONE",
+    "workflow": [
+      "AUTHORIZED_REQUEST",
+      "ENUMERATE_REQUIRED_ACTIONS",
+      "EXECUTE_STORE_SPECIFIC_ACTION",
+      "VERIFY_ABSENCE_OR_MINIMIZATION",
+      "RECORD_ACTION_OUTCOME",
+      "CREATE_TOMBSTONE",
+      "FINALIZE_REQUEST"
+    ],
+    "distributed_transaction": false,
+    "completion_requires": "ALL_REQUIRED_ACTIONS_VERIFIED_ABSENT",
+    "completion_on_call_return": false,
+    "request_states": [
+      "REQUESTED",
+      "AUTHORIZED",
+      "IN_PROGRESS",
+      "COMPLETE",
+      "PARTIALLY_FAILED",
+      "FAILED",
+      "REJECTED"
+    ],
+    "action_states": [
+      "PLANNED",
+      "EXECUTING",
+      "VERIFIED_ABSENT",
+      "RESIDUAL_FOUND",
+      "FAILED"
+    ],
+    "partial_failure_states": [
+      "PARTIALLY_FAILED",
+      "FAILED"
+    ],
+    "ecs_failure_hidden_by_ops_deletion": false,
+    "ops_failure_hidden_by_ecs_deletion": false,
+    "retry": "GOVERNED_IDEMPOTENT",
+    "api_after_removal": "REMOVED_UNDER_GOVERNANCE",
+    "tombstone_logical_object": "GovernedRemovalTombstone",
+    "tombstone_vs_deletion_action": "DeletionAction records execution of one deletion step in one store; GovernedRemovalTombstone records the durable residual fact that the governed resource was removed (created only after every required action is verified absent)."
+  },
+  "restore": {
+    "anti_resurrection_required": true,
+    "check_before_promotion": true,
+    "reconciliation_source": "AUTHORITATIVE_POST_BACKUP_GOVERNED_DELETION_RECORD",
+    "reconciliation_source_note": "Governed deletion facts recorded after the backup point (CONTENT_DELETED / RETENTION_ACTION audit events and governed_removal_tombstone records) obtained from a source that is not rolled back by the restore itself; the retention mechanism for that record is an implementation decision required before deployment.",
+    "governed_deleted_content": "REMAIN_DELETED_OR_REDELETE_AND_VERIFY_BEFORE_PROMOTION",
+    "missing_deletion_record": "PROMOTION_BLOCKED",
+    "backup_media_physical_purge_claimed": false,
+    "live_deletion_vs_backup_expiry": "Live-system deletion is distinct from physical expiry of historical backups; backup expiry/purge timing is governed by OI-05 and is not claimed.",
+    "extends": "ARCH-005 §11.3 restored-state verification before promotion"
+  },
+  "replay": {
+    "material_set_source": "contracts/postgresql/schema-v1.json replay_material_set",
+    "material_ids": [
+      "RM-01",
+      "RM-02",
+      "RM-03",
+      "RM-04",
+      "RM-05",
+      "RM-06",
+      "RM-07",
+      "RM-08",
+      "RM-09",
+      "RM-10",
+      "RM-11",
+      "RM-12",
+      "RM-13",
+      "RM-14"
+    ],
+    "material_kinds_added": [],
+    "enrichment_required_for_detection_result_replay": false,
+    "rm09": "No external enrichment is consumed by the governed DetectionResult (consumed_in_governed_artifact = false); replay neither refetches nor requires enrichment.",
+    "forbidden": [
+      "AI_CALL",
+      "ENRICHMENT_PROVIDER_CALL",
+      "LATEST_OR_CURRENT_KNOWLEDGE",
+      "CURRENT_EVIDENCE",
+      "APPROXIMATION_OF_DELETED_MATERIAL",
+      "NEW_EVALUATION"
+    ],
+    "missing_material": "REPLAY_UNAVAILABLE",
+    "verification_outcomes": [
+      "MATCH",
+      "MISMATCH",
+      "FAILED_MISSING_MATERIAL",
+      "FAILED_INTEGRITY",
+      "FAILED_ENGINE_UNAVAILABLE",
+      "FAILED_BUNDLE_UNAVAILABLE"
+    ],
+    "replaces_authoritative_result": false,
+    "historical_enrichment_display": "Immutable enrichment records are shown from their retained provenance/artifacts; this is metadata retrieval, not DetectionResult replay."
+  },
+  "report": {
+    "regeneration_requires": "RETAINED_PINNED_SOURCE_MATERIAL",
+    "missing_source": "REPORT_REGENERATION_UNAVAILABLE",
+    "hidden_retained_copy": false,
+    "reconstruct_from_latest": false
+  },
+  "reanalysis": {
+    "creates": "NEW_EVALUATION",
+    "overwrites_history": false,
+    "may_use": [
+      "CURRENT_GOVERNED_KNOWLEDGE",
+      "CURRENT_ENABLED_AI_POLICY",
+      "CURRENT_EXTERNAL_ENRICHMENT_POLICY"
+    ]
+  },
+  "provider_policy": {
+    "identity": [
+      "provider_policy_ref",
+      "provider_policy_version",
+      "provider_policy_digest"
+    ],
+    "digest": "SHA-256 over the canonical published policy document (TRUSTLENS_CANONICAL_JSON_V1)",
+    "immutable_after_publication": true,
+    "lifecycle": [
+      "VALIDATED",
+      "PUBLISHED",
+      "ACTIVE",
+      "WITHDRAWN"
+    ],
+    "activation_by": "EXACT_IDENTITY",
+    "latest_by_name_authority": false,
+    "applies_to": "NEW_ENRICHMENT_ONLY",
+    "retroactive_change": false,
+    "history_retained": true,
+    "authority": "GOVERNED_OPERATOR_CONFIGURATION",
+    "may_not_change": [
+      "END_USER",
+      "ANALYST",
+      "REVIEWER",
+      "AI",
+      "PROVIDER_RESPONSE",
+      "ADAPTER_RUNTIME"
+    ],
+    "public_api": false,
+    "storage": "NOT FIXED — storage selection is a Phase-9 implementation decision; Git not mandated (INT-001)",
+    "audit_events": [
+      "PROVIDER_POLICY_PUBLISHED",
+      "PROVIDER_POLICY_ACTIVATED",
+      "PROVIDER_POLICY_WITHDRAWN"
+    ],
+    "secrets": "SEC_REFERENCES_ONLY",
+    "replay_authority": "PINNED_EXACT_IDENTITY"
+  },
+  "api_activation": {
+    "operation_id": "listEvaluationEnrichments",
+    "method": "GET",
+    "path": "/api/v1/evaluations/{evaluation_id}/enrichments",
+    "availability_before": "FUTURE_INT_001",
+    "availability_after": "ACTIVE_CONTRACT",
+    "operation_count_before": 53,
+    "operation_count_after": 53,
+    "new_endpoints": [],
+    "api_base": "/api/v1",
+    "response_schema": "EnrichmentListResponse",
+    "item_schema": "EnrichmentView",
+    "forbidden_response_fields": [
+      "raw_provider_body",
+      "retained_provider_artifact_ecs_locator",
+      "ecs_locator",
+      "provider_policy_ref",
+      "credential",
+      "authorization",
+      "secret",
+      "network_target",
+      "raw_evidence"
+    ],
+    "clean_presentation": "PROVIDER_ASSERTION",
+    "delta_label": "P6-WP6 ADDITIVE ACTIVATION",
+    "runtime_serving": "Phase 9 implementation"
+  },
+  "async_work": {
+    "retry_permitted": true,
+    "terminal_effects": "IDEMPOTENT_AND_FENCED",
+    "stale_worker_protection": "FENCE_TOKEN",
+    "evaluation_fencing": "evaluation.execution_fence_token (DATA-001-WP2 completion_protocol) remains authoritative and unchanged",
+    "new_generic_worker_table": false
+  },
+  "runtime_parameters_rule": {
+    "missing_security_or_correctness_parameter": "STARTUP_FAILS_CLOSED",
+    "missing_profile_parameter": "IMPLEMENTATION_PROFILE_INCOMPLETE_NOT_A_SECURITY_GATE",
+    "feature_scoped_parameters": "REQUIRED_ONLY_WHEN_THE_NAMED_FEATURE_OR_POLICY_IS_ENABLED",
+    "infinite_permitted": false,
+    "unbounded_permitted": false,
+    "library_default_permitted": false,
+    "security_control_disabled_permitted": false
+  },
+  "runtime_parameters": [
+    {
+      "id": "IDEMPOTENCY_ACTIVE_WINDOW",
+      "description": "Server-set idempotency active window (active_until).",
+      "unit_kind": "DURATION",
+      "bound": "FINITE",
+      "value": "NOT YET SPECIFIED",
+      "deployment_requirement": "REQUIRED_BEFORE_DEPLOYMENT_SECURITY_OR_CORRECTNESS",
+      "applies_when": "ALWAYS",
+      "safety_relevant": true,
+      "owner": "Sponsor / P6-WP6 operational configuration / implementation profile"
+    },
+    {
+      "id": "IDEMPOTENCY_CLAIM_LEASE",
+      "description": "In-progress idempotency claim lease.",
+      "unit_kind": "DURATION",
+      "bound": "FINITE",
+      "value": "NOT YET SPECIFIED",
+      "deployment_requirement": "REQUIRED_BEFORE_DEPLOYMENT_SECURITY_OR_CORRECTNESS",
+      "applies_when": "ALWAYS",
+      "safety_relevant": true,
+      "owner": "Sponsor / P6-WP6 operational configuration / implementation profile"
+    },
+    {
+      "id": "EVALUATION_EXECUTION_LEASE",
+      "description": "Evaluation worker execution lease (DATA-001-WP2 fencing).",
+      "unit_kind": "DURATION",
+      "bound": "FINITE",
+      "value": "NOT YET SPECIFIED",
+      "deployment_requirement": "REQUIRED_BEFORE_DEPLOYMENT_SECURITY_OR_CORRECTNESS",
+      "applies_when": "ALWAYS",
+      "safety_relevant": true,
+      "owner": "Sponsor / P6-WP6 operational configuration / implementation profile"
+    },
+    {
+      "id": "OPERATIONAL_WORKER_RETRY_MAX_ATTEMPTS",
+      "description": "Maximum attempts for retryable operational work (cross-store, deletion, reconciliation).",
+      "unit_kind": "COUNT",
+      "bound": "FINITE",
+      "value": "NOT YET SPECIFIED",
+      "deployment_requirement": "REQUIRED_BEFORE_DEPLOYMENT_SECURITY_OR_CORRECTNESS",
+      "applies_when": "ALWAYS",
+      "safety_relevant": true,
+      "owner": "Sponsor / P6-WP6 operational configuration / implementation profile"
+    },
+    {
+      "id": "OPERATIONAL_WORKER_BACKOFF_BOUNDS",
+      "description": "Minimum/maximum backoff (jitter-capable) for operational workers.",
+      "unit_kind": "DURATION_RANGE",
+      "bound": "FINITE",
+      "value": "NOT YET SPECIFIED",
+      "deployment_requirement": "REQUIRED_BEFORE_DEPLOYMENT_SECURITY_OR_CORRECTNESS",
+      "applies_when": "ALWAYS",
+      "safety_relevant": true,
+      "owner": "Sponsor / P6-WP6 operational configuration / implementation profile"
+    },
+    {
+      "id": "INLINE_VS_ECS_THRESHOLD",
+      "description": "Size threshold above which canonical artifacts are externalized to ECS (storage_mode).",
+      "unit_kind": "BYTES",
+      "bound": "FINITE",
+      "value": "NOT YET SPECIFIED",
+      "deployment_requirement": "CONFIGURATION_REQUIRED_FOR_IMPLEMENTATION_PROFILE",
+      "applies_when": "ALWAYS",
+      "safety_relevant": false,
+      "owner": "Sponsor / P6-WP6 operational configuration / implementation profile"
+    },
+    {
+      "id": "PAGINATION_DEFAULT_LIMIT",
+      "description": "Default page size for cursor pagination.",
+      "unit_kind": "COUNT",
+      "bound": "FINITE",
+      "value": "NOT YET SPECIFIED",
+      "deployment_requirement": "CONFIGURATION_REQUIRED_FOR_IMPLEMENTATION_PROFILE",
+      "applies_when": "ALWAYS",
+      "safety_relevant": false,
+      "owner": "Sponsor / P6-WP6 operational configuration / implementation profile"
+    },
+    {
+      "id": "PAGINATION_MAX_LIMIT",
+      "description": "Maximum page size for cursor pagination.",
+      "unit_kind": "COUNT",
+      "bound": "FINITE",
+      "value": "NOT YET SPECIFIED",
+      "deployment_requirement": "REQUIRED_BEFORE_DEPLOYMENT_SECURITY_OR_CORRECTNESS",
+      "applies_when": "ALWAYS",
+      "safety_relevant": true,
+      "owner": "Sponsor / P6-WP6 operational configuration / implementation profile"
+    },
+    {
+      "id": "REQUEST_AND_UPLOAD_MAX_SIZE",
+      "description": "Maximum request body / evidence upload size (PAYLOAD_TOO_LARGE).",
+      "unit_kind": "BYTES",
+      "bound": "FINITE",
+      "value": "NOT YET SPECIFIED",
+      "deployment_requirement": "REQUIRED_BEFORE_DEPLOYMENT_SECURITY_OR_CORRECTNESS",
+      "applies_when": "ALWAYS",
+      "safety_relevant": true,
+      "owner": "Sponsor / implementation security profile"
+    },
+    {
+      "id": "RATE_LIMIT_THRESHOLDS",
+      "description": "Admission-control thresholds (RATE_LIMITED).",
+      "unit_kind": "RATE",
+      "bound": "FINITE",
+      "value": "NOT YET SPECIFIED",
+      "deployment_requirement": "REQUIRED_BEFORE_DEPLOYMENT_SECURITY_OR_CORRECTNESS",
+      "applies_when": "ALWAYS",
+      "safety_relevant": true,
+      "owner": "Sponsor / implementation security profile"
+    },
+    {
+      "id": "BREAK_GLASS_MAX_DURATION",
+      "description": "Maximum break-glass grant duration.",
+      "unit_kind": "DURATION",
+      "bound": "FINITE",
+      "value": "NOT YET SPECIFIED",
+      "deployment_requirement": "REQUIRED_BEFORE_DEPLOYMENT_SECURITY_OR_CORRECTNESS",
+      "applies_when": "ALWAYS",
+      "safety_relevant": true,
+      "owner": "Security Operations / Sponsor"
+    },
+    {
+      "id": "RETENTION_DURATIONS",
+      "description": "Retention durations per retention class — applies only when the eventual OI-05 retention policy enables governed automatic expiry; until then no automatic expiry runs (persistence retention_policy_status UNRESOLVED_OI05). OI-05 may decide on no automatic expiry; no duration is assumed.",
+      "unit_kind": "DURATION",
+      "bound": "FINITE",
+      "value": "NOT YET SPECIFIED",
+      "deployment_requirement": "REQUIRED_BEFORE_DEPLOYMENT_SECURITY_OR_CORRECTNESS",
+      "applies_when": "GOVERNED_AUTOMATIC_EXPIRY_ENABLED",
+      "safety_relevant": true,
+      "owner": "Sponsor + legal/governance (OI-05)",
+      "open_item": "OI-05"
+    },
+    {
+      "id": "PROVIDER_CONNECT_TIMEOUT",
+      "description": "Provider connect timeout.",
+      "unit_kind": "DURATION",
+      "bound": "FINITE",
+      "value": "NOT YET SPECIFIED",
+      "deployment_requirement": "REQUIRED_BEFORE_DEPLOYMENT_SECURITY_OR_CORRECTNESS",
+      "applies_when": "EXTERNAL_ENRICHMENT_ENABLED",
+      "safety_relevant": true,
+      "owner": "P6-WP6 operational configuration / implementation security profile (INT-001)",
+      "linked_contract_field": "timeouts.connect"
+    },
+    {
+      "id": "PROVIDER_READ_TIMEOUT",
+      "description": "Provider read timeout.",
+      "unit_kind": "DURATION",
+      "bound": "FINITE",
+      "value": "NOT YET SPECIFIED",
+      "deployment_requirement": "REQUIRED_BEFORE_DEPLOYMENT_SECURITY_OR_CORRECTNESS",
+      "applies_when": "EXTERNAL_ENRICHMENT_ENABLED",
+      "safety_relevant": true,
+      "owner": "P6-WP6 operational configuration / implementation security profile (INT-001)",
+      "linked_contract_field": "timeouts.read"
+    },
+    {
+      "id": "PROVIDER_OVERALL_DEADLINE",
+      "description": "Provider overall deadline.",
+      "unit_kind": "DURATION",
+      "bound": "FINITE",
+      "value": "NOT YET SPECIFIED",
+      "deployment_requirement": "REQUIRED_BEFORE_DEPLOYMENT_SECURITY_OR_CORRECTNESS",
+      "applies_when": "EXTERNAL_ENRICHMENT_ENABLED",
+      "safety_relevant": true,
+      "owner": "P6-WP6 operational configuration / implementation security profile (INT-001)",
+      "linked_contract_field": "timeouts.overall_deadline"
+    },
+    {
+      "id": "PROVIDER_RETRY_MAX_ATTEMPTS",
+      "description": "Provider retry maximum attempts.",
+      "unit_kind": "COUNT",
+      "bound": "FINITE",
+      "value": "NOT YET SPECIFIED",
+      "deployment_requirement": "REQUIRED_BEFORE_DEPLOYMENT_SECURITY_OR_CORRECTNESS",
+      "applies_when": "EXTERNAL_ENRICHMENT_ENABLED",
+      "safety_relevant": true,
+      "owner": "P6-WP6 operational configuration / implementation security profile (INT-001)",
+      "linked_contract_field": "retries.max_attempts"
+    },
+    {
+      "id": "PROVIDER_BACKOFF_BOUNDS",
+      "description": "Provider backoff bounds.",
+      "unit_kind": "DURATION_RANGE",
+      "bound": "FINITE",
+      "value": "NOT YET SPECIFIED",
+      "deployment_requirement": "REQUIRED_BEFORE_DEPLOYMENT_SECURITY_OR_CORRECTNESS",
+      "applies_when": "EXTERNAL_ENRICHMENT_ENABLED",
+      "safety_relevant": true,
+      "owner": "P6-WP6 operational configuration / implementation security profile (INT-001)",
+      "linked_contract_field": "backoff.values"
+    },
+    {
+      "id": "PROVIDER_REDIRECT_MAX_HOPS",
+      "description": "Provider redirect maximum (finite implementation-configured maximum).",
+      "unit_kind": "COUNT",
+      "bound": "FINITE",
+      "value": "NOT YET SPECIFIED",
+      "deployment_requirement": "REQUIRED_BEFORE_DEPLOYMENT_SECURITY_OR_CORRECTNESS",
+      "applies_when": "EXTERNAL_ENRICHMENT_ENABLED",
+      "safety_relevant": true,
+      "owner": "P6-WP6 operational configuration / implementation security profile (INT-001)",
+      "linked_contract_field": "redirects.max_hops"
+    },
+    {
+      "id": "PROVIDER_WIRE_RESPONSE_MAX_BYTES",
+      "description": "Provider response maximum wire bytes.",
+      "unit_kind": "BYTES",
+      "bound": "FINITE",
+      "value": "NOT YET SPECIFIED",
+      "deployment_requirement": "REQUIRED_BEFORE_DEPLOYMENT_SECURITY_OR_CORRECTNESS",
+      "applies_when": "EXTERNAL_ENRICHMENT_ENABLED",
+      "safety_relevant": true,
+      "owner": "P6-WP6 operational configuration / implementation security profile (INT-001)",
+      "linked_contract_field": "response_validation.limits.wire_bytes"
+    },
+    {
+      "id": "PROVIDER_DECODED_RESPONSE_MAX_BYTES",
+      "description": "Provider response maximum decoded bytes.",
+      "unit_kind": "BYTES",
+      "bound": "FINITE",
+      "value": "NOT YET SPECIFIED",
+      "deployment_requirement": "REQUIRED_BEFORE_DEPLOYMENT_SECURITY_OR_CORRECTNESS",
+      "applies_when": "EXTERNAL_ENRICHMENT_ENABLED",
+      "safety_relevant": true,
+      "owner": "P6-WP6 operational configuration / implementation security profile (INT-001)",
+      "linked_contract_field": "response_validation.limits.decoded_bytes"
+    },
+    {
+      "id": "PROVIDER_CACHE_TTL_AND_FRESHNESS_PERIODS",
+      "description": "Cache TTL and freshness periods per provider policy.",
+      "unit_kind": "DURATION",
+      "bound": "FINITE",
+      "value": "NOT YET SPECIFIED",
+      "deployment_requirement": "REQUIRED_BEFORE_DEPLOYMENT_SECURITY_OR_CORRECTNESS",
+      "applies_when": "ENRICHMENT_CACHE_ENABLED",
+      "safety_relevant": true,
+      "owner": "Governed provider policy / P6-WP6 operational configuration",
+      "linked_contract_field": "cache.ttl"
+    },
+    {
+      "id": "PROVIDER_CIRCUIT_BREAKER_THRESHOLDS",
+      "description": "Provider circuit-breaker thresholds and windows.",
+      "unit_kind": "THRESHOLD_SET",
+      "bound": "FINITE",
+      "value": "NOT YET SPECIFIED",
+      "deployment_requirement": "REQUIRED_BEFORE_DEPLOYMENT_SECURITY_OR_CORRECTNESS",
+      "applies_when": "EXTERNAL_ENRICHMENT_ENABLED",
+      "safety_relevant": true,
+      "owner": "P6-WP6 operational configuration / implementation security profile (INT-001)",
+      "linked_contract_field": "circuit_breaker.thresholds"
+    },
+    {
+      "id": "PROVIDER_RATE_QUOTA",
+      "description": "Provider-side rate quota respected by the adapter.",
+      "unit_kind": "RATE",
+      "bound": "FINITE",
+      "value": "NOT YET SPECIFIED",
+      "deployment_requirement": "REQUIRED_BEFORE_DEPLOYMENT_SECURITY_OR_CORRECTNESS",
+      "applies_when": "EXTERNAL_ENRICHMENT_ENABLED",
+      "safety_relevant": true,
+      "owner": "P6-WP6 operational configuration / implementation security profile (INT-001)",
+      "linked_contract_field": "rate_limit.quota"
+    },
+    {
+      "id": "PROVIDER_CREDENTIAL_ROTATION_PERIOD",
+      "description": "Provider credential rotation period (SEC).",
+      "unit_kind": "DURATION",
+      "bound": "FINITE",
+      "value": "NOT YET SPECIFIED",
+      "deployment_requirement": "REQUIRED_BEFORE_DEPLOYMENT_SECURITY_OR_CORRECTNESS",
+      "applies_when": "EXTERNAL_ENRICHMENT_ENABLED",
+      "safety_relevant": true,
+      "owner": "Sponsor / implementation security profile",
+      "linked_contract_field": "credentials.rotation_period"
+    }
+  ],
+  "scenarios": {
+    "idempotency": [
+      {
+        "id": "SI-01",
+        "name": "same key + same request while the original is running",
+        "existing": {
+          "principal": "P1",
+          "operation": "createCase",
+          "target": "/api/v1/cases",
+          "key": "K1",
+          "digest": "D1",
+          "state": "IN_PROGRESS",
+          "lease_live": true
+        },
+        "request": {
+          "principal": "P1",
+          "operation": "createCase",
+          "target": "/api/v1/cases",
+          "key": "K1",
+          "digest": "D1"
+        },
+        "expected": "IDEMPOTENCY_IN_PROGRESS"
+      },
+      {
+        "id": "SI-02",
+        "name": "same key + same request after completion",
+        "existing": {
+          "principal": "P1",
+          "operation": "createCase",
+          "target": "/api/v1/cases",
+          "key": "K1",
+          "digest": "D1",
+          "state": "COMPLETED",
+          "lease_live": false
+        },
+        "request": {
+          "principal": "P1",
+          "operation": "createCase",
+          "target": "/api/v1/cases",
+          "key": "K1",
+          "digest": "D1"
+        },
+        "expected": "RETURN_ORIGINAL_OUTCOME_WITHOUT_EXECUTION"
+      },
+      {
+        "id": "SI-03",
+        "name": "same key + different request",
+        "existing": {
+          "principal": "P1",
+          "operation": "createCase",
+          "target": "/api/v1/cases",
+          "key": "K1",
+          "digest": "D1",
+          "state": "COMPLETED",
+          "lease_live": false
+        },
+        "request": {
+          "principal": "P1",
+          "operation": "createCase",
+          "target": "/api/v1/cases",
+          "key": "K1",
+          "digest": "D2"
+        },
+        "expected": "IDEMPOTENCY_KEY_REUSED"
+      },
+      {
+        "id": "SI-04",
+        "name": "same key + same request by a different principal",
+        "existing": {
+          "principal": "P1",
+          "operation": "createCase",
+          "target": "/api/v1/cases",
+          "key": "K1",
+          "digest": "D1",
+          "state": "COMPLETED",
+          "lease_live": false
+        },
+        "request": {
+          "principal": "P2",
+          "operation": "createCase",
+          "target": "/api/v1/cases",
+          "key": "K1",
+          "digest": "D1"
+        },
+        "expected": "EXECUTE"
+      },
+      {
+        "id": "SI-05",
+        "name": "same key + same principal, different operation",
+        "existing": {
+          "principal": "P1",
+          "operation": "createCase",
+          "target": "/api/v1/cases",
+          "key": "K1",
+          "digest": "D1",
+          "state": "COMPLETED",
+          "lease_live": false
+        },
+        "request": {
+          "principal": "P1",
+          "operation": "closeCase",
+          "target": "/api/v1/cases",
+          "key": "K1",
+          "digest": "D1"
+        },
+        "expected": "EXECUTE"
+      },
+      {
+        "id": "SI-06",
+        "name": "same key + same principal and operation, different target resource",
+        "existing": {
+          "principal": "P1",
+          "operation": "closeCase",
+          "target": "/api/v1/cases/C1/close",
+          "key": "K1",
+          "digest": "D1",
+          "state": "COMPLETED",
+          "lease_live": false
+        },
+        "request": {
+          "principal": "P1",
+          "operation": "closeCase",
+          "target": "/api/v1/cases/C2/close",
+          "key": "K1",
+          "digest": "D1"
+        },
+        "expected": "EXECUTE"
+      },
+      {
+        "id": "SI-07",
+        "name": "same request after a released transient failure",
+        "existing": {
+          "principal": "P1",
+          "operation": "createCase",
+          "target": "/api/v1/cases",
+          "key": "K1",
+          "digest": "D1",
+          "state": "RELEASED",
+          "lease_live": false
+        },
+        "request": {
+          "principal": "P1",
+          "operation": "createCase",
+          "target": "/api/v1/cases",
+          "key": "K1",
+          "digest": "D1"
+        },
+        "expected": "RECLAIM_AND_EXECUTE"
+      }
+    ],
+    "etag": [
+      {
+        "id": "SE-01",
+        "name": "case OPEN -> CLOSED -> OPEN gives three distinct ETags",
+        "kind": "SEQUENCE",
+        "states": [
+          "OPEN",
+          "CLOSED",
+          "OPEN"
+        ],
+        "expected": "DISTINCT"
+      },
+      {
+        "id": "SE-02",
+        "name": "stale If-Match rejected",
+        "kind": "WRITE",
+        "current_revision": 3,
+        "if_match_revision": 2,
+        "expected": "PRECONDITION_FAILED"
+      },
+      {
+        "id": "SE-03",
+        "name": "missing If-Match rejected",
+        "kind": "WRITE",
+        "current_revision": 3,
+        "if_match_revision": null,
+        "expected": "PRECONDITION_REQUIRED"
+      },
+      {
+        "id": "SE-04",
+        "name": "matching If-Match commits and advances the revision",
+        "kind": "WRITE",
+        "current_revision": 3,
+        "if_match_revision": 3,
+        "expected": "COMMITTED_REVISION_ADVANCED"
+      }
+    ],
+    "deletion": [
+      {
+        "id": "SD-01",
+        "name": "OPS success + ECS failure",
+        "actions": [
+          {
+            "store": "OPS",
+            "call_returned": true,
+            "verification": "VERIFIED_ABSENT"
+          },
+          {
+            "store": "ECS",
+            "call_returned": true,
+            "verification": "RESIDUAL_FOUND"
+          }
+        ],
+        "expected_state": "PARTIALLY_FAILED",
+        "expected_tombstone": false
+      },
+      {
+        "id": "SD-02",
+        "name": "ECS success + OPS failure",
+        "actions": [
+          {
+            "store": "OPS",
+            "call_returned": false,
+            "verification": "FAILED"
+          },
+          {
+            "store": "ECS",
+            "call_returned": true,
+            "verification": "VERIFIED_ABSENT"
+          }
+        ],
+        "expected_state": "PARTIALLY_FAILED",
+        "expected_tombstone": false
+      },
+      {
+        "id": "SD-03",
+        "name": "complete deletion with verified absence",
+        "actions": [
+          {
+            "store": "OPS",
+            "call_returned": true,
+            "verification": "VERIFIED_ABSENT"
+          },
+          {
+            "store": "ECS",
+            "call_returned": true,
+            "verification": "VERIFIED_ABSENT"
+          }
+        ],
+        "expected_state": "COMPLETE",
+        "expected_tombstone": true
+      },
+      {
+        "id": "SD-04",
+        "name": "delete calls returned but nothing verified",
+        "actions": [
+          {
+            "store": "OPS",
+            "call_returned": true,
+            "verification": "FAILED"
+          },
+          {
+            "store": "ECS",
+            "call_returned": true,
+            "verification": "FAILED"
+          }
+        ],
+        "expected_state": "FAILED",
+        "expected_tombstone": false
+      }
+    ],
+    "restore": [
+      {
+        "id": "SX-01",
+        "name": "restore snapshot contains previously deleted material; post-backup deletion record available",
+        "snapshot_contains_deleted": true,
+        "deletion_record_available": true,
+        "expected": "REDELETE_AND_VERIFY_BEFORE_PROMOTION"
+      },
+      {
+        "id": "SX-02",
+        "name": "restore snapshot contains deleted material; post-backup deletion record unavailable",
+        "snapshot_contains_deleted": true,
+        "deletion_record_available": false,
+        "expected": "PROMOTION_BLOCKED"
+      },
+      {
+        "id": "SX-03",
+        "name": "restore snapshot without deleted material",
+        "snapshot_contains_deleted": false,
+        "deletion_record_available": true,
+        "expected": "PROMOTION_PERMITTED_AFTER_VERIFICATION"
+      }
+    ],
+    "replay": [
+      {
+        "id": "SR-01",
+        "name": "all required material present",
+        "missing": [],
+        "ai_used": false,
+        "lineage_derivatives": false,
+        "enrichment_provider_available": true,
+        "expected": "REPLAY_CAPABLE"
+      },
+      {
+        "id": "SR-02",
+        "name": "original evidence bytes governed-deleted",
+        "missing": [
+          "RM-12"
+        ],
+        "ai_used": false,
+        "lineage_derivatives": false,
+        "enrichment_provider_available": true,
+        "expected": "REPLAY_UNAVAILABLE_REQUIRED_ARTIFACT_MISSING"
+      },
+      {
+        "id": "SR-03",
+        "name": "knowledge bundle unavailable",
+        "missing": [
+          "RM-05"
+        ],
+        "ai_used": false,
+        "lineage_derivatives": false,
+        "enrichment_provider_available": true,
+        "expected": "REPLAY_UNAVAILABLE_BUNDLE_MISSING"
+      },
+      {
+        "id": "SR-04",
+        "name": "AI snapshot missing when AI was used",
+        "missing": [
+          "RM-08"
+        ],
+        "ai_used": true,
+        "lineage_derivatives": false,
+        "enrichment_provider_available": true,
+        "expected": "REPLAY_UNAVAILABLE_REQUIRED_ARTIFACT_MISSING"
+      },
+      {
+        "id": "SR-05",
+        "name": "no AI snapshot needed when AI was not used",
+        "missing": [
+          "RM-08"
+        ],
+        "ai_used": false,
+        "lineage_derivatives": false,
+        "enrichment_provider_available": true,
+        "expected": "REPLAY_CAPABLE"
+      },
+      {
+        "id": "SR-06",
+        "name": "enrichment provider unavailable does not affect Phase-3 replay",
+        "missing": [],
+        "ai_used": false,
+        "lineage_derivatives": false,
+        "enrichment_provider_available": false,
+        "expected": "REPLAY_CAPABLE"
+      },
+      {
+        "id": "SR-07",
+        "name": "derivative in lineage deleted",
+        "missing": [
+          "RM-13"
+        ],
+        "ai_used": false,
+        "lineage_derivatives": true,
+        "enrichment_provider_available": true,
+        "expected": "REPLAY_UNAVAILABLE_REQUIRED_ARTIFACT_MISSING"
+      }
+    ],
+    "report": [
+      {
+        "id": "SP-01",
+        "name": "report regeneration after pinned source evidence was governed-deleted",
+        "pinned_source_retained": false,
+        "expected": "REPORT_REGENERATION_UNAVAILABLE"
+      },
+      {
+        "id": "SP-02",
+        "name": "report regeneration with all pinned sources retained",
+        "pinned_source_retained": true,
+        "expected": "REGENERATION_PERMITTED"
+      }
+    ],
+    "enrichment": [
+      {
+        "id": "SN-01",
+        "name": "historical enrichment record returned without a provider call",
+        "provider_available": false,
+        "expected": "RETURNED_FROM_IMMUTABLE_RECORD_WITHOUT_PROVIDER_CALL"
+      }
+    ]
+  },
+  "tenancy": {
+    "assumption": "ASM-002",
+    "status": "UNCONFIRMED / PROVISIONAL",
+    "tenant_fields_permitted": false,
+    "tenant_specific_provider_routing": false
+  },
+  "open_items": {
+    "G-09": "OPEN",
+    "OI-05": "OPEN",
+    "ASM-002": "UNCONFIRMED / PROVISIONAL",
+    "WP4_INFO_collection_etag": "INFORMATIONAL",
+    "WP4_INFO_action_code_enum": "INFORMATIONAL"
+  },
+  "decision_semantics": {
+    "engine_version": "1.0.0",
+    "phase3_changed": false,
+    "phase4_changed": false,
+    "new_decision_fields": [],
+    "provider_verdict_as_trustlens_verdict": false
+  },
+  "implementation": {
+    "runtime_code_added": false,
+    "fastapi_added": false,
+    "migrations_added": false,
+    "repositories_added": false,
+    "workers_added": false,
+    "connector_added": false,
+    "live_network": false,
+    "api_keys": false
+  },
+  "ci": {
+    "live_network": false,
+    "database_required": false,
+    "api_keys_required": false
+  }
+}

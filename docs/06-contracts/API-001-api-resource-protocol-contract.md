@@ -14,7 +14,9 @@
 | Governing authority | ADR-0008, ADR-0009, ADR-0010, ADR-0011, ADR-0013, ADR-0014, ADR-0016, ADR-0017; ARCH-002…007; DET-001; AI-001 WP4/WP5 |
 | Checkpoint | [GATE-021](../00-program/GATE-021-phase-6-api-contract.md) |
 | Next consumer | P6-WP4 OpenAPI encoding (generated from / compared against `api-v1.json`) |
-| Last updated | 2026-10-02 |
+| P6-WP6 delta | **P6-WP6 ADDITIVE ACTIVATION** (§45): `listEvaluationEnrichments` activated at contract level; `listAuditEvents` audit event `AUDIT_LOG_ACCESSED`; idempotency/ETag persistence resolved by DATA-001-WP2 P6-WP6-ADD-001 — reviewed by [GATE-024](../00-program/GATE-024-phase-6-operational-contract.md), not GATE-021 |
+| Current revision state | Original P6-WP3 work package merged (PR #28); the status above is historical. This document also contains a P6-WP6 additive delta (§45): APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING (GATE-024) |
+| Last updated | 2026-10-03 |
 
 ---
 
@@ -186,7 +188,7 @@ No resource is `PATCHABLE_FIELDS` in v1: DATA-001-WP2 gives the case record no c
 | `getEvaluation` | GET | `/api/v1/evaluations/{evaluation_id}` | Read evaluation status | U, A | `CASE_ACCESS` | — | 200 | `EvaluationResponse` | NOT_APPLICABLE | NOT_REQUIRED | C2 | SYNC |
 | `getDetectionResult` | GET | `/api/v1/evaluations/{evaluation_id}/result` | Read the immutable DetectionResult (?view=STANDARD or DETAILED) | U, A | `CASE_DERIVED_CONTENT` | — | 200 | `DetectionResultResponse` | NOT_APPLICABLE | REQUIRED | C4 | SYNC |
 | `createCorrection` | POST | `/api/v1/evaluations/{evaluation_id}/corrections` | User extraction correction -> NEW evaluation | U | `CASE_OWNER` | `UserCorrectionCreateRequest` | 202 | `CorrectionAcceptedResponse` | REQUIRED | REQUIRED | C4 | ASYNC |
-| `listEvaluationEnrichments` | GET | `/api/v1/evaluations/{evaluation_id}/enrichments` | Advisory enrichment metadata (FUTURE: enabled only after INT-001/ADR-0012) | A | `CASE_ACCESS` | — | 200 | `EnrichmentListResponse` | NOT_APPLICABLE | NOT_REQUIRED | C2 | SYNC |
+| `listEvaluationEnrichments` | GET | `/api/v1/evaluations/{evaluation_id}/enrichments` | Advisory enrichment metadata (provider assertions only; never a TrustLens verdict) | A | `CASE_ACCESS` | — | 200 | `EnrichmentListResponse` | NOT_APPLICABLE | NOT_REQUIRED | C2 | SYNC |
 | `createAdjudication` | POST | `/api/v1/evaluations/{evaluation_id}/adjudications` | Record a new adjudication of the exact result | A | `CASE_ASSIGNED_ANALYST` | `AdjudicationCreateRequest` | 201 | `AdjudicationResponse` | REQUIRED | REQUIRED | C4 | SYNC |
 | `listAdjudications` | GET | `/api/v1/evaluations/{evaluation_id}/adjudications` | List adjudications of an evaluation | U, A | `CASE_ACCESS` | — | 200 | `AdjudicationListResponse` | NOT_APPLICABLE | REQUIRED | C4 | SYNC |
 | `getAdjudication` | GET | `/api/v1/adjudications/{adjudication_id}` | Read one adjudication | U, A | `CASE_ACCESS` | — | 200 | `AdjudicationResponse` | NOT_APPLICABLE | REQUIRED | C4 | SYNC |
@@ -246,7 +248,7 @@ All 53 operations carry, in `api-v1.json`, their request/response schema, error 
 | `/api/v1/evaluations/{evaluation_id}` | GET | U, A | `CASE_ACCESS` | NONE | NOT_REQUIRED | no |  |
 | `/api/v1/evaluations/{evaluation_id}/result` | GET | U, A | `CASE_DERIVED_CONTENT` | DERIVED_CONTENT | REQUIRED | no | DETAILED view: assigned analyst with permits_evidence_content only. Never PUT/PATCH/DELETE. |
 | `/api/v1/evaluations/{evaluation_id}/corrections` | POST | U | `CASE_OWNER` | DERIVED_CONTENT | REQUIRED | no |  |
-| `/api/v1/evaluations/{evaluation_id}/enrichments` | GET | A | `CASE_ACCESS` | NONE | NOT_REQUIRED | no | inactive until INT-001/ADR-0012 |
+| `/api/v1/evaluations/{evaluation_id}/enrichments` | GET | A | `CASE_ACCESS` | NONE | NOT_REQUIRED | no | P6-WP6 ADDITIVE ACTIVATION — contract-level active (was `FUTURE_INT_001`); advisory metadata only |
 | `/api/v1/evaluations/{evaluation_id}/adjudications` | POST | A | `CASE_ASSIGNED_ANALYST` | DERIVED_CONTENT | REQUIRED | no |  |
 | `/api/v1/evaluations/{evaluation_id}/adjudications` | GET | U, A | `CASE_ACCESS` | NONE | REQUIRED | no | Outcome visible with case access; rationale (C4) included only for an assigned analyst with permits_evidence_content, and that access is audited. |
 | `/api/v1/adjudications/{adjudication_id}` | GET | U, A | `CASE_ACCESS` | NONE | REQUIRED | no | Outcome visible with case access; rationale (C4) included only for an assigned analyst with permits_evidence_content, and that access is audited. |
@@ -275,7 +277,7 @@ All 53 operations carry, in `api-v1.json`, their request/response schema, error 
 | `/api/v1/break-glass-grants/{break_glass_grant_id}` | GET | AD | `BREAK_GLASS_GRANTEE_OR_PLATFORM_ADMIN` | NONE | NOT_REQUIRED | no |  |
 | `/api/v1/break-glass-grants/{break_glass_grant_id}/end` | POST | AD | `BREAK_GLASS_GRANTEE` | NONE | REQUIRED | no |  |
 | `/api/v1/break-glass-grants/{break_glass_grant_id}/review` | POST | AD | `BREAK_GLASS_REVIEWER` | NONE | REQUIRED | no | constraint: REVIEWER_NOT_GRANTEE |
-| `/api/v1/audit-events` | GET | AD | `AUDIT_READ` | NONE | REQUIRED | no | Audit read access is itself audited; the persistence audit taxonomy has no audit-read event type yet — additive extension owned by P6-WP6. |
+| `/api/v1/audit-events` | GET | AD | `AUDIT_READ` | NONE | REQUIRED | no | Audit read access is itself audited: one `AUDIT_LOG_ACCESSED` event per authorized read (P6-WP6 additive; OPS-001 §8). |
 
 No endpoint relies on a role alone for evidence or derived content (validator AC-05).
 
@@ -614,6 +616,10 @@ time. No credentials, no raw provider bodies by default, and never an input to a
 arbitrary server-side URL fetch** (AC-11); WP4 LOW-3 (DNS-rebinding / resolve-time SSRF TOCTOU) stays **OPEN /
 DEFERRED → P6-WP5 / ADR-0012**.
 
+**P6-WP6 ADDITIVE ACTIVATION (historical text above preserved).** INT-001 / ADR-0012 are accepted (P6-WP5), and
+P6-WP6 removed the `FUTURE_INT_001` guard at contract level (§45). The response stays advisory metadata; provider
+`CLEAN` is a provider assertion, never TrustLens safe. Runtime serving requires the Phase-9 implementation.
+
 ## 23. Break-glass API
 
 `POST /break-glass-grants` is **ADMINISTRATOR-only in v1**: an ANALYST cannot create or self-activate break-glass
@@ -638,6 +644,10 @@ hostnames, infrastructure versions or topology.
 `GET /audit-events` (ADMINISTRATOR) returns content-free audit metadata with allow-listed filters. Reading audit is
 itself audited; the persistence audit taxonomy has no audit-read event type yet, so that additive type is owned by
 P6-WP6. Telemetry never substitutes for audit.
+
+**P6-WP6 additive:** the event type is now `AUDIT_LOG_ACCESSED` — exactly one event per authorized audit-read
+operation (actor, time, correlation, scope/filter category), never a copy of the returned events and never one event per
+returned row, so reads do not recurse (OPS-001 §8).
 
 ## 26. Matrix H — state-transition commands
 
@@ -697,6 +707,9 @@ No lifecycle is changed by a generic `PATCH status=...`.
   `409 IDEMPOTENCY_IN_PROGRESS` (retryable).
 - The retention period for idempotency records is **NOT YET SPECIFIED** (P6-WP6). DATA-001-WP2 has no general
   API-idempotency table yet; that persistence addition is recorded in §41.
+- **P6-WP6 additive:** durable persistence is now `api_idempotency_record` (DATA-001-WP2 P6-WP6-ADD-001; OPS-001 §§4–5):
+  key digest only, atomic claim on the principal + operation + target + key scope, finite governed active window (value
+  still NOT YET SPECIFIED). Contract-level closed; runtime pending Phase 9.
 
 ## 28. Concurrency
 
@@ -913,7 +926,7 @@ non-sensitive key/version references where governance needs them.
 | `createBreakGlassGrant` | POST | `/api/v1/break-glass-grants` | `BREAK_GLASS_ACTIVATED` |
 | `endBreakGlassGrant` | POST | `/api/v1/break-glass-grants/{break_glass_grant_id}/end` | `BREAK_GLASS_EXPIRED` |
 | `reviewBreakGlassGrant` | POST | `/api/v1/break-glass-grants/{break_glass_grant_id}/review` | `BREAK_GLASS_REVIEWED` |
-| `listAuditEvents` | GET | `/api/v1/audit-events` | `PENDING_TAXONOMY_P6_WP6` |
+| `listAuditEvents` | GET | `/api/v1/audit-events` | `AUDIT_LOG_ACCESSED` (P6-WP6 additive) |
 
 Denied sensitive operations are additionally audited as `AUTHORIZATION_DENIED`. Operational telemetry never
 substitutes for these governed events (ADR-0017).
@@ -1114,3 +1127,19 @@ validation: `run_all` PASS 25/25; `run_all --json` `gate=PASS`, `validators_run=
 - **INFO-5:** AC-24 explicitly knows the one Phase-3 field that is reserved in the schema but not emitted by the
   runtime (`recommendedAction.priority`). If Phase 3 later reserves another non-emitted result field, the API
   traceability guard must be updated in the same governed change.
+
+## 45. P6-WP6 ADDITIVE ACTIVATION (reviewed by GATE-024)
+
+This section records the P6-WP6 delta. GATE-021 did not review it; [GATE-024](../00-program/GATE-024-phase-6-operational-contract.md)
+owns its acceptance. Historical sections above are preserved.
+
+| Item | Before (P6-WP3) | After (P6-WP6) |
+|---|---|---|
+| `listEvaluationEnrichments` availability | `FUTURE_INT_001` | guard removed (contract-level active); method `GET`, path, operationId, role `ANALYST`, `CASE_ACCESS`, `200`, cursor pagination unchanged |
+| Operation count | 53 | 53 (no new endpoint; base `/api/v1`) |
+| `EnrichmentView` | advisory fields | same six fields; description states provider `CLEAN` is a provider assertion, never TrustLens safe |
+| `listAuditEvents` audit event | `PENDING_TAXONOMY_P6_WP6` | `AUDIT_LOG_ACCESSED` |
+| Idempotency persistence (§30 / §41 item) | open | `api_idempotency_record` — CONTRACT-LEVEL CLOSED (runtime pending Phase 9) |
+| ETag persistence | open (OAS-001 Decision B dependency) | `mutation_revision` on case_record / review_routing_state / deletion_request — CONTRACT-LEVEL CLOSED |
+
+No decision semantics, Phase-3 vocabulary, `ENGINE_VERSION` or API version changed. Details: OPS-001 §§4–8, 14.

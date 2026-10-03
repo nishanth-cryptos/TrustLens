@@ -1867,7 +1867,7 @@
       "kind": "RESPONSE",
       "body": "JSON",
       "unknown_fields": "CLIENT_MUST_TOLERATE",
-      "description": "Normalized, non-authoritative; no provider credentials or raw provider bodies.",
+      "description": "Normalized, non-authoritative advisory metadata; no provider credentials, raw provider bodies, ECS locators or network targets. reputation_result CLEAN is a provider assertion only, never TrustLens safe (advisory = true).",
       "fields": [
         {
           "name": "enrichment_id",
@@ -3936,7 +3936,7 @@
       "operation_id": "listEvaluationEnrichments",
       "method": "GET",
       "path": "/api/v1/evaluations/{evaluation_id}/enrichments",
-      "purpose": "Advisory enrichment metadata (FUTURE: enabled only after INT-001/ADR-0012)",
+      "purpose": "Advisory enrichment metadata (provider assertions only; never a TrustLens verdict)",
       "internal": false,
       "authentication": "REQUIRED",
       "roles": [
@@ -3964,15 +3964,14 @@
         "RATE_LIMITED",
         "UNAUTHENTICATED"
       ],
-      "notes": "",
+      "notes": "P6-WP6 ADDITIVE ACTIVATION: the reserved FUTURE_INT_001 guard is removed now that INT-001/ADR-0012 are accepted; method, path, operationId, roles, resource authorization, success status and pagination are unchanged. Advisory metadata only: no raw provider body, ECS locator, credential reference, network target or raw evidence; provider CLEAN is a provider assertion (no adverse reputation asserted by the provider), never TrustLens safe. Contract-level activation only — runtime serving requires the Phase-9 implementation.",
       "list": {
         "pagination": "CURSOR",
         "filters": [
           "status"
         ],
         "sort": "created_at desc, id desc"
-      },
-      "availability": "FUTURE_INT_001"
+      }
     },
     {
       "operation_id": "createAdjudication",
@@ -5080,7 +5079,7 @@
       "mode": "SYNC",
       "idempotency": "NOT_APPLICABLE",
       "audit": "REQUIRED",
-      "audit_event": "PENDING_TAXONOMY_P6_WP6",
+      "audit_event": "AUDIT_LOG_ACCESSED",
       "sensitivity": "C6",
       "concurrency": "NONE",
       "target_resource": "AuditEvent",
@@ -5092,7 +5091,7 @@
         "RATE_LIMITED",
         "UNAUTHENTICATED"
       ],
-      "notes": "Audit read access is itself audited; the persistence audit taxonomy has no audit-read event type yet — additive extension owned by P6-WP6.",
+      "notes": "P6-WP6 additive: one AUDIT_LOG_ACCESSED accountability event per authorized audit-read operation (actor, time, correlation, scope/filter category); returned audit-event bodies are never copied into it and reading AUDIT_LOG_ACCESSED events does not recursively audit each row (OPS-001 §8).",
       "list": {
         "pagination": "CURSOR",
         "filters": [

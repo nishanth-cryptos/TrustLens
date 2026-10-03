@@ -62,7 +62,9 @@ CONTRACT is coherent, not that any connector implementation is correct (none exi
         cannot change it
   IC-44 indicator types map exactly to existing url-observation authority; unsupported indicator kinds not permitted
   IC-45 outcome vocabulary and mappings use only accepted WP2 vocabularies and columns
-  IC-46 no public API endpoint added; reserved listEvaluationEnrichments surface unchanged and mapped
+  IC-46 no public API endpoint added; the listEvaluationEnrichments surface keeps its reserved method/path/operationId/
+        roles/authorization/pagination, its availability matches api_surface (FUTURE_INT_001 until the P6-WP6
+        contract-level activation, ACTIVE_CONTRACT after) in both API catalog and OpenAPI, and it is mapped
   IC-47 provider-neutral: no vendor named, no provider selected
   IC-48 no numeric limit invented anywhere in the contract
   IC-49 audit and telemetry separated; no secrets/raw evidence in audit, telemetry or logs; data classified
@@ -964,9 +966,19 @@ def check(c: dict, ctx: dict) -> list[tuple[str, str]]:
     if api.get("new_endpoints") or g("scope", "public_api_endpoints_added"):
         e("IC-46", "no public API endpoint may be added by P6-WP5")
     op = ctx["catalog_op"]
-    if not op or op.get("availability") != "FUTURE_INT_001" or api.get("existing_operation") != op.get("operation_id") \
-            or api.get("path") != op.get("path") or not ctx["openapi_has_op"]:
-        e("IC-46", "the reserved listEvaluationEnrichments operation must exist unchanged (FUTURE_INT_001) in API/OpenAPI")
+    expected_av = {"FUTURE_INT_001": "FUTURE_INT_001", "ACTIVE_CONTRACT": None}
+    if api.get("availability") not in expected_av:
+        e("IC-46", f"api_surface.availability {api.get('availability')!r} must be FUTURE_INT_001 or ACTIVE_CONTRACT")
+    want = expected_av.get(api.get("availability"), "INVALID")
+    if not op or api.get("existing_operation") != op.get("operation_id") or api.get("path") != op.get("path") \
+            or op.get("method") != "GET" or op.get("roles") != ["ANALYST"] \
+            or op.get("resource_authorization") != "CASE_ACCESS" or op.get("success_status") != 200 \
+            or (op.get("list") or {}).get("pagination") != "CURSOR" or not ctx["openapi_has_op"]:
+        e("IC-46", "the reserved listEvaluationEnrichments operation must keep its method/path/operationId/roles/"
+                   "authorization/status/pagination in API and OpenAPI")
+    elif op.get("availability") != want or ctx["openapi_availability"] != want:
+        e("IC-46", f"listEvaluationEnrichments availability (catalog {op.get('availability')!r}, OpenAPI "
+                   f"{ctx['openapi_availability']!r}) must match api_surface {api.get('availability')!r}")
     if set((api.get("enrichment_view_mapping") or {})) != ctx["enrichment_view_fields"]:
         e("IC-46", "enrichment_view_mapping must cover exactly the accepted EnrichmentView fields")
 
@@ -1102,6 +1114,7 @@ def context() -> dict:
         "wp2_vocab": {k: v["values"] for k, v in persistence["vocabularies"].items()},
         "catalog_op": op,
         "openapi_has_op": oas_op.get("operationId") == "listEvaluationEnrichments",
+        "openapi_availability": oas_op.get("x-trustlens-availability"),
         "enrichment_view_fields": {f["name"] for f in view["fields"]},
         "url_obs": load(URL_OBS_PATH),
         "adr_index": read(ADR_INDEX_PATH),

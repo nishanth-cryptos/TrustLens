@@ -1266,9 +1266,9 @@
   "api_surface": {
     "existing_operation": "listEvaluationEnrichments",
     "path": "/api/v1/evaluations/{evaluation_id}/enrichments",
-    "availability": "FUTURE_INT_001",
+    "availability": "ACTIVE_CONTRACT",
     "new_endpoints": [],
-    "activation": "DEFERRED — the existing reserved operation is activated only when an implementation exists (P6-WP6), through governed API-001/OAS-001 bookkeeping",
+    "activation": "P6-WP6 ADDITIVE ACTIVATION (contract level): the FUTURE_INT_001 guard was removed from the existing reserved operation in API-001/OAS-001 with method, path, operationId, roles, authorization and pagination unchanged; runtime serving still requires the Phase-9 implementation. P6-WP5 recorded this activation as deferred to P6-WP6.",
     "enrichment_view_mapping": {
       "enrichment_id": "external_enrichment_result.external_enrichment_result_id",
       "provider_category": "ExternalProviderIdentity.provider_category",
