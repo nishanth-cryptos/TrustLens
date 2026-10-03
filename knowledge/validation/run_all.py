@@ -33,7 +33,8 @@ Order (dependency-aware, see ORDER below):
   Phase-4 AI provider seam (P4-WP2) → strict response validation (P4-WP3) → containment/provenance/replay (P4-WP4) →
   Phase-3 integration + default-OFF fallback (P4-WP5) → cross-WP adversarial closure (P4-WP7) →
   Phase-6 PostgreSQL persistence contract (P6-WP2: static data-contract validation) →
-  Phase-6 API v1 resource/authorization/protocol catalog (P6-WP3: static API-contract validation)
+  Phase-6 API v1 resource/authorization/protocol catalog (P6-WP3: static API-contract validation) →
+  Phase-6 OpenAPI 3.1 encoding parity (P6-WP4: static OpenAPI-contract validation)
 
 Usage:
   python knowledge/validation/run_all.py             # human-readable; runs all; non-zero on any failure
@@ -103,6 +104,9 @@ ROOT = Path(__file__).resolve().parents[2]
 #  25 the Phase-6 P6-WP3 API-contract gate runs after it because it maps API state vocabularies onto the persistence
 #     contract's states: a STATIC check of contracts/api/api-v1.json (authorization, immutability, idempotency, replay,
 #     knowledge-control and protocol invariants). No server, framework or network is used.
+#  26 the Phase-6 P6-WP4 OpenAPI gate runs last because it proves contracts/api/openapi-v1.json is in exact parity with the
+#     API catalog that check 25 has just validated (operations, schemas, auth, idempotency, audit, sensitivity, errors) and
+#     re-asserts the security/authority invariants on the OpenAPI surface. Deterministic structural validation only.
 ORDER = [
     ("knowledge/validation/manual_evidence_check.py", "durable-truth: evidence integrity + automated-status preservation"),
     ("knowledge/validation/phase1_consistency_check.py", "Phase-1 counts consistent across manifest / taxonomy / matrix / corpus"),
@@ -129,6 +133,7 @@ ORDER = [
     ("knowledge/validation/validate_ai_phase4_closure.py", "Phase-4 P4-WP7 cross-WP closure: committed offline adversarial fixture matrix over the public entry point — flag OFF equivalence, injection-as-data, atomic rejection/fallback, support-first, confidence caps, exact replay + fail-closed tampering; G-09 OPEN"),
     ("knowledge/validation/validate_data_contract.py", "Phase-6 P6-WP2 PostgreSQL persistence contract: schema-valid physical contract mapping every DATA-001 object; Git/bundle knowledge authority, ECS-only raw evidence, immutable fully-pinned DetectionResult, evaluation<->governed-artifact 1:1, append-only audit, no cascade/score/secret/tenant/retention-duration columns, promoted-vocabulary sync, complete replay material set; negative mutations must bite"),
     ("knowledge/validation/validate_api_contract.py", "Phase-6 P6-WP3 API v1 catalog: schema-valid operations under /api/v1; RBAC + resource-level authorization, no administrator content access by role, immutable DetectionResult, no governed DELETE, idempotent commands, exact content_digest knowledge control (no latest), no URL fetch, no tenant or score fields, replay distinct from re-evaluation, mass-assignment guards, persistence-state mapping; negative mutations must bite"),
+    ("knowledge/validation/validate_openapi_contract.py", "Phase-6 P6-WP4 OpenAPI 3.1 encoding: exact parity with the API catalog (53 operations: method/path/operationId, request/response schemas, success and error statuses, auth/roles, resource authorization, idempotency, audit, sensitivity, async, If-Match), local refs only, immutable DetectionResult, no invented decision fields, exact content_digest activation, administrator-only break-glass, no self-assignment, C4 visibility, pinned replay, no tenant/URL fetch, ETag server-revision decision; negative mutations must bite"),
 ]
 
 # Network-capable modules a validator must never import — the offline guarantee (WP7 STEP 7).
@@ -222,7 +227,7 @@ def main() -> int:
         f"Phase-1/2 knowledge + published bundle, Phase-3 deterministic runtime (design → contracts → loader → "
         f"evaluator → suppression → aggregation → explanation → golden replay → engine integration), and the "
         f"Phase-4 bounded offline AI layer (provider seam → response validation → containment/provenance/replay → "
-        f"Phase-3 integration → cross-WP adversarial closure) plus the Phase-6 static persistence- and API-contract checks")
+        f"Phase-3 integration → cross-WP adversarial closure) plus the Phase-6 static persistence-, API- and OpenAPI-contract checks")
     log(f"interpreter: {sys.executable}")
     log(f"repo root  : {ROOT}\n")
 
