@@ -1,0 +1,1569 @@
+{
+  "contract_schema_version": "1.0.0",
+  "contract_id": "INT-001",
+  "contract_version": "0.1.0",
+  "status": "P6-WP5 INTEGRATION CONTRACT APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING",
+  "authority_note": "Provider-neutral, machine-readable integration policy for governed external enrichment (indicator lookup only). Not an implementation, not a connector, not a provider selection, not runtime configuration. Validated offline by knowledge/validation/validate_integration_contract.py; no live network, DNS lookup, HTTP request or API key is used.",
+  "human_contract": "docs/06-contracts/INT-001-external-enrichment-integration-contract.md",
+  "gate": "docs/00-program/GATE-023-phase-6-integration-contract.md",
+  "adr": {
+    "id": "ADR-0012",
+    "path": "adr/ADR-0012-threat-intelligence-adapter-architecture-provider-selection.md",
+    "reserved_title": "Threat-intelligence adapter architecture and provider selection",
+    "status": "Accepted",
+    "decision_area": [
+      "CONTROLLED_OUTBOUND_ENRICHMENT",
+      "SSRF",
+      "REDIRECT_HANDLING",
+      "DNS_REBINDING_TOCTOU",
+      "EGRESS_TRUST_BOUNDARY",
+      "PROVIDER_SELECTION_DEFERRED"
+    ]
+  },
+  "related_contracts": {
+    "logical_data_contract": "docs/06-contracts/DATA-001-data-domain-lifecycle-contract.md#5.16",
+    "persistence_contract": "contracts/postgresql/schema-v1.json",
+    "persistence_table": "external_enrichment_result",
+    "api_catalog": "contracts/api/api-v1.json",
+    "openapi": "contracts/api/openapi-v1.json",
+    "url_observation_schema": "knowledge/schemas/url-observation.schema.json",
+    "security_architecture": "docs/05-architecture/ARCH-004-security-trust-threat-model.md#8"
+  },
+  "provider_selection": {
+    "provider_selected": false,
+    "providers": [],
+    "selection_authority": "GOVERNED_OPERATOR_CONFIGURATION",
+    "constraint": "ASM-005 (no paid threat-intelligence budget confirmed) — provider selection is deferred; INT-001 is provider-neutral and every provider must satisfy this contract before enablement."
+  },
+  "tenancy": {
+    "model": "SINGLE_DEPLOYMENT_PROVISIONAL",
+    "assumption": "ASM-002",
+    "assumption_status": "UNCONFIRMED / PROVISIONAL",
+    "tenant_specific_provider_config": false
+  },
+  "scope": {
+    "permitted_capabilities": [
+      "INDICATOR_LOOKUP"
+    ],
+    "forbidden_capabilities": [
+      "CONTENT_RETRIEVAL",
+      "GENERIC_FETCH",
+      "SUBMITTED_URL_CONNECTION",
+      "SUBMITTED_URL_RESOLUTION",
+      "SUBMITTED_URL_DOWNLOAD",
+      "SUBMITTED_URL_REDIRECT_FOLLOWING",
+      "SUBMITTED_CONTENT_EXECUTION"
+    ],
+    "submitted_url_semantics": {
+      "treated_as": "LOOKUP_DATA_ONLY",
+      "may_normalize": true,
+      "may_digest_or_reference": true,
+      "may_send_as_lookup_value_to_approved_provider": true,
+      "connect_to_submitted_destination": false,
+      "resolve_submitted_destination": false,
+      "download_submitted_content": false,
+      "follow_submitted_redirects": false,
+      "execute_submitted_content": false,
+      "future_safe_retrieval": "REQUIRES_SEPARATE_GOVERNED_CAPABILITY_AND_REVIEW"
+    },
+    "inbound_webhook": "OUT_OF_SCOPE",
+    "public_api_endpoints_added": []
+  },
+  "indicator_types": {
+    "permitted": [
+      {
+        "type": "URL",
+        "source": "knowledge/schemas/url-observation.schema.json#/properties/normalized_url",
+        "classification": "C4",
+        "outbound_form": "normalized_url with userinfo and fragment removed; query component only where the provider policy sets url_query_transmission to PERMITTED"
+      },
+      {
+        "type": "HOSTNAME",
+        "source": "knowledge/schemas/url-observation.schema.json#/properties/structural/properties/hostname",
+        "classification": "C4",
+        "outbound_form": "canonical hostname string (lookup data, never a destination)"
+      },
+      {
+        "type": "REGISTERED_DOMAIN",
+        "source": "knowledge/schemas/url-observation.schema.json#/properties/structural/properties/registered_domain",
+        "classification": "C4",
+        "outbound_form": "canonical eTLD+1 string (lookup data, never a destination)"
+      }
+    ],
+    "not_permitted": [
+      "PHONE",
+      "UPI",
+      "BANK_ACCOUNT",
+      "EMAIL",
+      "DEVICE_FINGERPRINT",
+      "FILE_HASH",
+      "IP_REPUTATION"
+    ],
+    "not_permitted_reason": "No accepted TrustLens authority (url-observation schema, DATA-001 §5.16, WP2 external_enrichment_result) defines these indicator kinds; adding one requires a governed contract change."
+  },
+  "provider_categories": [
+    {
+      "category": "REPUTATION_LOOKUP",
+      "normalizes_into": "reputation_result"
+    },
+    {
+      "category": "ALLOWLIST_LOOKUP",
+      "normalizes_into": "allowlist_result"
+    },
+    {
+      "category": "BRAND_DOMAIN_LOOKUP",
+      "normalizes_into": "domain_matches_claimed_brand"
+    }
+  ],
+  "integration_objects": [
+    {
+      "name": "ExternalEnrichmentRequest",
+      "store": "MEM",
+      "fields": [
+        "request_ref",
+        "external_correlation_value",
+        "provider_ref",
+        "provider_operation",
+        "provider_policy_ref",
+        "provider_policy_version",
+        "indicator_type",
+        "normalized_indicator_value",
+        "normalized_indicator_ref",
+        "evaluation_ref",
+        "purpose",
+        "requested_at"
+      ],
+      "forbidden_fields": [
+        "destination_url",
+        "destination_host",
+        "scheme",
+        "port",
+        "http_method",
+        "headers",
+        "proxy",
+        "tls_verification",
+        "credential",
+        "raw_request_template",
+        "redirect_policy"
+      ],
+      "notes": "Destination is resolved by the adapter from the pinned provider policy only. evaluation_ref is internal and never sent outbound."
+    },
+    {
+      "name": "ExternalEnrichmentResult",
+      "store": "OPS",
+      "persistence_table": "external_enrichment_result",
+      "fields": [
+        "external_enrichment_result_id",
+        "evaluation_id",
+        "provider_ref",
+        "adapter_version",
+        "integration_contract_version",
+        "request_ref",
+        "requested_at",
+        "responded_at",
+        "status",
+        "safe_error_category",
+        "reputation_result",
+        "allowlist_result",
+        "domain_matches_claimed_brand",
+        "raw_provider_content_policy_ref",
+        "consumed_in_governed_artifact"
+      ],
+      "notes": "Logical result maps onto the accepted WP2 row; INT-001 does not duplicate the persistence schema. Additional provenance columns are additive WP2 requirements (persistence_additive_requirements)."
+    },
+    {
+      "name": "ExternalProviderIdentity",
+      "store": "OPS",
+      "fields": [
+        "provider_ref",
+        "provider_category",
+        "authentication_method_ref"
+      ],
+      "notes": "Opaque identity; no vendor is named by INT-001."
+    },
+    {
+      "name": "ExternalProviderPolicy",
+      "store": "GOVERNED_CONFIGURATION",
+      "fields": [
+        "provider_policy_ref",
+        "provider_policy_version",
+        "provider_ref",
+        "provider_operation",
+        "scheme",
+        "host",
+        "host_match",
+        "port",
+        "path_prefix",
+        "method",
+        "expected_media_type",
+        "authentication_method_ref",
+        "credential_ref",
+        "parser_schema_version",
+        "redirect_policy",
+        "url_query_transmission",
+        "cache_permitted",
+        "freshness_policy_ref",
+        "retry_safe",
+        "enabled"
+      ],
+      "notes": "Immutable per version; replay pins the version used. No credential value."
+    },
+    {
+      "name": "ExternalProviderResponseArtifact",
+      "store": "OPS",
+      "fields": [
+        "response_artifact_ref",
+        "response_artifact_digest",
+        "provider_ref",
+        "provider_policy_version",
+        "parser_schema_version",
+        "observed_at",
+        "normalized_payload",
+        "raw_provider_content_policy_ref"
+      ],
+      "notes": "Immutable record of what TrustLens accepted; digest proves recording integrity, not provider truth or authenticity. Raw provider content is retained in ECS only if a governed raw-content policy permits it."
+    },
+    {
+      "name": "FreshnessMetadata",
+      "store": "OPS",
+      "fields": [
+        "observed_at",
+        "freshness_state",
+        "freshness_policy_ref",
+        "cache_used"
+      ],
+      "notes": "Technical recency only; never confidence or risk."
+    },
+    {
+      "name": "FailureOutcome",
+      "store": "OPS",
+      "fields": [
+        "lookup_outcome",
+        "status",
+        "safe_error_category"
+      ],
+      "notes": "Integration outcome only; never a scam classification."
+    },
+    {
+      "name": "ReplayReference",
+      "store": "OPS",
+      "fields": [
+        "external_enrichment_result_id",
+        "response_artifact_digest",
+        "provider_policy_version",
+        "adapter_version",
+        "parser_schema_version"
+      ],
+      "notes": "Pins the exact retained enrichment material; replay never re-queries."
+    }
+  ],
+  "egress": {
+    "default": "DENY",
+    "destination_authority": "GOVERNED_PROVIDER_POLICY",
+    "destination_sources_forbidden": [
+      "END_USER_REQUEST",
+      "EVIDENCE_CONTENT",
+      "AI_OUTPUT",
+      "MODEL_TOOL_CALL",
+      "PROVIDER_RESPONSE",
+      "UNREVALIDATED_REDIRECT"
+    ],
+    "generic_fetch_primitive": false,
+    "operations_closed_and_predeclared": true,
+    "denial_audited": true
+  },
+  "request_construction": {
+    "owner": "ADAPTER",
+    "user_input_may_populate": [
+      "indicator_value"
+    ],
+    "never_user_controlled": [
+      "destination_url",
+      "destination_host",
+      "scheme",
+      "port",
+      "path",
+      "http_method",
+      "proxy",
+      "host_header",
+      "authorization_header",
+      "cookie_header",
+      "arbitrary_headers",
+      "redirect_behavior",
+      "tls_verification",
+      "provider_credential",
+      "raw_request_template"
+    ],
+    "indicator_value_encoding": "ADAPTER_ENCODED_AS_DATA",
+    "header_policy": {
+      "user_supplied_headers": "REJECT",
+      "restricted_headers": [
+        "Host",
+        "Authorization",
+        "Proxy-Authorization",
+        "Cookie",
+        "Connection",
+        "Transfer-Encoding",
+        "Forwarded",
+        "X-Forwarded-*"
+      ],
+      "restricted_header_source": "ADAPTER_GENERATED_GOVERNED_VALUE_ONLY",
+      "crlf_injection": "REJECT"
+    }
+  },
+  "ai_boundary": {
+    "ai_controllable_fields": [],
+    "destination_control": false,
+    "url_or_host_targets": false,
+    "credential_injection": false,
+    "ssrf_policy_bypass": false,
+    "provider_policy_mutation": false,
+    "future_tool_scope": "PREDECLARED_OPERATION_AND_STRUCTURED_INDICATOR_ONLY",
+    "phase4_ai_default": "OFF",
+    "phase4_authority": "NON_AUTHORITATIVE"
+  },
+  "transport": {
+    "permitted_schemes": [
+      "https"
+    ],
+    "rejected_schemes": [
+      "http",
+      "file",
+      "ftp",
+      "gopher",
+      "data",
+      "javascript",
+      "unix",
+      "CUSTOM_URI_SCHEMES"
+    ],
+    "unix_socket_transport": false,
+    "generic_uri_dispatcher": false,
+    "tls": {
+      "certificate_verification": "REQUIRED",
+      "hostname_verification": "REQUIRED",
+      "insecure_bypass_permitted": false,
+      "plaintext_fallback": false,
+      "self_signed_bypass": false,
+      "enterprise_trust_store": "SEPARATELY_GOVERNED_ONLY",
+      "protocol_version_authority": "NFR-006 / ARCH-004 §7 / ADR-0016 (TLS 1.3 where boundaries apply); INT-001 adds no new minimum"
+    }
+  },
+  "destination_validation": {
+    "hostname_canonicalization": {
+      "case": "LOWERCASE",
+      "trailing_dot": "STRIP_SINGLE_THEN_COMPARE",
+      "idna": "CANONICAL_A_LABEL",
+      "userinfo": "REJECT",
+      "port": "EXPLICIT_EXACT_MATCH",
+      "bracketed_ipv6": "PARSE_AS_IP_LITERAL",
+      "encoded_delimiters": "REJECT",
+      "ambiguous_or_unparseable": "REJECT"
+    },
+    "allowlist_matching": "EXACT_HOST_OR_GOVERNED_SUBDOMAIN_RULE",
+    "substring_matching": false,
+    "ip_literal_destinations": "REJECT_UNLESS_GOVERNED_POLICY_REQUIRES",
+    "user_selectable_ip": false,
+    "ip_semantics": "PARSED_IP_SEMANTICS",
+    "alternate_ip_encodings": "REJECT",
+    "string_blacklist_only": false
+  },
+  "dns": {
+    "resolver": "GOVERNED_RESOLVER",
+    "validate_every_answer": true,
+    "address_validation": "PARSED_IP_SEMANTICS",
+    "alias_chains": "VALIDATE_FINAL_ADDRESSES",
+    "mixed_answers": "REJECT_LOOKUP",
+    "ambiguous_answers": "REJECT_LOOKUP",
+    "rely_on_answer_ordering": false,
+    "connect_binding": "CONNECT_ONLY_TO_VALIDATED_ADDRESS_FROM_SAME_RESOLUTION_DECISION",
+    "uncontrolled_re_resolution": false,
+    "tls_sni_and_verification_name": "ORIGINAL_APPROVED_HOSTNAME",
+    "peer_verification": "VERIFY_CONNECTED_PEER_ADDRESS_PERMITTED",
+    "per_connection_revalidation": true,
+    "per_redirect_revalidation": true,
+    "steps": [
+      "PARSE_AND_CANONICALIZE_GOVERNED_DESTINATION",
+      "RESOLVE_THROUGH_GOVERNED_RESOLVER",
+      "VALIDATE_EVERY_RESOLVED_ADDRESS",
+      "REJECT_DENIED_ADDRESS_SPACE",
+      "CONNECT_ONLY_TO_VALIDATED_ADDRESS",
+      "PRESERVE_SNI_AND_HOSTNAME_VERIFICATION",
+      "VERIFY_CONNECTED_PEER",
+      "REVALIDATE_EACH_NEW_CONNECTION",
+      "REVALIDATE_EACH_REDIRECT_TARGET"
+    ],
+    "client_library_mandated": false
+  },
+  "forbidden_destination_classes": [
+    {
+      "class": "LOOPBACK",
+      "ipv4": [
+        "127.0.0.0/8"
+      ],
+      "ipv6": [
+        "::1/128"
+      ]
+    },
+    {
+      "class": "PRIVATE_RFC1918",
+      "ipv4": [
+        "10.0.0.0/8",
+        "172.16.0.0/12",
+        "192.168.0.0/16"
+      ],
+      "ipv6": []
+    },
+    {
+      "class": "LINK_LOCAL",
+      "ipv4": [
+        "169.254.0.0/16"
+      ],
+      "ipv6": [
+        "fe80::/10"
+      ]
+    },
+    {
+      "class": "MULTICAST",
+      "ipv4": [
+        "224.0.0.0/4"
+      ],
+      "ipv6": [
+        "ff00::/8"
+      ]
+    },
+    {
+      "class": "UNSPECIFIED",
+      "ipv4": [
+        "0.0.0.0/8"
+      ],
+      "ipv6": [
+        "::/128"
+      ]
+    },
+    {
+      "class": "RESERVED_NON_ROUTABLE",
+      "ipv4": [
+        "100.64.0.0/10",
+        "192.0.0.0/24",
+        "192.0.2.0/24",
+        "198.18.0.0/15",
+        "198.51.100.0/24",
+        "203.0.113.0/24",
+        "240.0.0.0/4",
+        "255.255.255.255/32"
+      ],
+      "ipv6": [
+        "100::/64",
+        "2001:db8::/32"
+      ],
+      "rule": "Any address that the IANA special-purpose registries do not mark globally reachable is denied, including entries not enumerated here."
+    },
+    {
+      "class": "IPV6_UNIQUE_LOCAL",
+      "ipv4": [],
+      "ipv6": [
+        "fc00::/7"
+      ]
+    },
+    {
+      "class": "IPV6_LINK_LOCAL",
+      "ipv4": [],
+      "ipv6": [
+        "fe80::/10"
+      ]
+    },
+    {
+      "class": "IPV4_EMBEDDED_IPV6",
+      "ipv4": [],
+      "ipv6": [
+        "::ffff:0:0/96",
+        "::/96",
+        "64:ff9b::/96",
+        "2002::/16",
+        "2001::/32"
+      ],
+      "rule": "IPv4-mapped (and other IPv4-embedding) IPv6 forms are denied unless the embedded IPv4 address is itself permitted and a governed policy explicitly allows the form; the embedded IPv4 is always evaluated against every IPv4 class."
+    },
+    {
+      "class": "INSTANCE_METADATA",
+      "ipv4": [
+        "169.254.169.254/32"
+      ],
+      "ipv6": [],
+      "rule": "Plus any deployment-declared instance-metadata address; denied regardless of hostname."
+    },
+    {
+      "class": "LOCAL_HOST_ALIAS",
+      "ipv4": [],
+      "ipv6": [],
+      "rule": "Names such as localhost are denied by the address they resolve to, not by string comparison; a name-based check is additive only."
+    }
+  ],
+  "unclassifiable_address": "REJECT",
+  "redirects": {
+    "default_provider_redirect_policy": "DO_NOT_FOLLOW",
+    "permitted_provider_redirect_policies": [
+      "DO_NOT_FOLLOW",
+      "REVALIDATE_WITHIN_PROVIDER_ALLOWLIST"
+    ],
+    "inherit_trust": false,
+    "each_hop_is_new_destination_decision": true,
+    "revalidate": [
+      "scheme",
+      "host",
+      "port",
+      "path_scope",
+      "dns_resolution",
+      "resolved_addresses",
+      "connected_peer"
+    ],
+    "https_to_http": "REJECT",
+    "outside_provider_allowlist": "REJECT",
+    "private_or_internal_target": "REJECT",
+    "credential_forwarding": "ONLY_TO_SAME_GOVERNED_DESTINATION_BINDING",
+    "max_hops": {
+      "bound": "FINITE",
+      "value": "NOT YET SPECIFIED",
+      "text": "finite implementation-configured maximum — NOT YET SPECIFIED",
+      "owner": "P6-WP6 / implementation security profile"
+    },
+    "rejection_outcome": "POLICY_REJECTED"
+  },
+  "proxy": {
+    "environment_proxy_inheritance": false,
+    "ignored_environment_variables": [
+      "HTTP_PROXY",
+      "HTTPS_PROXY",
+      "ALL_PROXY",
+      "NO_PROXY",
+      "http_proxy",
+      "https_proxy",
+      "all_proxy",
+      "no_proxy"
+    ],
+    "governed_proxy": "OPTIONAL_GOVERNED_ONLY",
+    "governed_proxy_conditions": [
+      "proxy endpoint is itself declared in governed configuration, never in user, evidence, AI or provider input",
+      "adapter validates the final provider destination (scheme, host, port, path, method) before requesting a tunnel",
+      "TLS is end-to-end to the provider with certificate and hostname verification for the approved provider hostname",
+      "governed, verifiable evidence shows the proxy enforces the TrustLens denied-destination policy on the final hop, equivalent to the direct connector (enforcement_scope); configuring a proxy does not make it trusted",
+      "without that verified evidence proxy egress is DEPLOYMENT_BLOCKED and every proxy-based lookup is POLICY_REJECTED; there is no fallback to trusting the proxy or to skipping destination validation",
+      "proxy credentials are references into SEC only"
+    ],
+    "final_hop_enforcement": "REQUIRED_AND_VERIFIED",
+    "enforcement_evidence": "GOVERNED_VERIFIABLE_EVIDENCE_REQUIRED",
+    "enforcement_scope_equivalent_to": "DIRECT_CONNECTOR_DENIED_ADDRESS_AND_CONNECTION_BINDING_POLICY",
+    "enforcement_scope": [
+      "LOOPBACK",
+      "PRIVATE_RFC1918",
+      "LINK_LOCAL",
+      "MULTICAST",
+      "UNSPECIFIED",
+      "RESERVED_NON_ROUTABLE",
+      "IPV6_UNIQUE_LOCAL",
+      "IPV6_LINK_LOCAL",
+      "IPV4_EMBEDDED_IPV6",
+      "INSTANCE_METADATA",
+      "LOCAL_HOST_ALIAS",
+      "MIXED_ANSWER_REJECTION",
+      "ALIAS_CHAIN_VALIDATION",
+      "CONNECTED_PEER_ENFORCEMENT"
+    ],
+    "unverified_enforcement": "DEPLOYMENT_BLOCKED",
+    "unverified_enforcement_outcome": "POLICY_REJECTED",
+    "unverified_fallback": "NONE",
+    "adapter_destination_validation_before_tunnel": "REQUIRED",
+    "end_to_end_tls_to_provider": true,
+    "may_weaken_dns_or_redirect_authorization": false,
+    "proxy_credentials": "SEC_REFERENCE_ONLY",
+    "proxy_as_policy_escape": false
+  },
+  "credentials": {
+    "model": "REFERENCE_ONLY",
+    "store": "SEC",
+    "classification": "C7",
+    "literal_values_in_contract": false,
+    "in_url": false,
+    "persisted_in_enrichment": false,
+    "in_audit": false,
+    "in_logs": false,
+    "in_telemetry": false,
+    "in_api": false,
+    "in_ai_prompt": false,
+    "rotation_period": "NOT YET SPECIFIED",
+    "unavailable_outcome": "UNAVAILABLE"
+  },
+  "data_minimization": {
+    "outbound_permitted": [
+      "NORMALIZED_INDICATOR_VALUE",
+      "ADAPTER_GENERATED_EXTERNAL_CORRELATION_VALUE",
+      "GOVERNED_AUTHENTICATION_FROM_CREDENTIAL_REFERENCE"
+    ],
+    "outbound_prohibited": [
+      "RAW_MESSAGE_BODY",
+      "SURROUNDING_MESSAGE_TEXT",
+      "SCREENSHOT",
+      "DOCUMENT",
+      "EVIDENCE_BYTES",
+      "FULL_CASE_FILE",
+      "USER_IDENTITY",
+      "CASE_NOTES",
+      "ADJUDICATION_RATIONALE",
+      "INTERNAL_DATABASE_IDENTIFIERS",
+      "DETECTION_RESULT"
+    ],
+    "url_components": {
+      "userinfo": "NEVER_SENT",
+      "fragment": "NEVER_SENT",
+      "query": "PROVIDER_POLICY_FLAG_DEFAULT_NOT_SENT"
+    },
+    "raw_evidence_outbound": false,
+    "raw_evidence_change_requires": "EXPLICIT_GOVERNED_CONTRACT_CHANGE_AND_PRIVACY_SECURITY_REVIEW"
+  },
+  "correlation": {
+    "outbound_value": "GENERATED_EXTERNAL_CORRELATION_VALUE",
+    "internal_identifiers_outbound": false,
+    "topology_disclosure": false
+  },
+  "response_validation": {
+    "provider_response_trust": "UNTRUSTED_EXTERNAL_INPUT",
+    "allowlisted_provider_content_trusted": false,
+    "validate": [
+      "http_status",
+      "media_type",
+      "decoded_size",
+      "schema_shape",
+      "required_fields",
+      "enum_values",
+      "timestamp_format",
+      "provider_identity",
+      "parser_schema_version"
+    ],
+    "arbitrary_object_deserialization": false,
+    "execute_provider_content": false,
+    "unknown_enum_value": "INVALID_RESPONSE",
+    "limits": {
+      "wire_bytes": {
+        "bound": "FINITE",
+        "value": "NOT YET SPECIFIED",
+        "owner": "P6-WP6 / Sponsor / implementation security profile"
+      },
+      "decoded_bytes": {
+        "bound": "FINITE",
+        "value": "NOT YET SPECIFIED",
+        "owner": "P6-WP6 / Sponsor / implementation security profile"
+      },
+      "decompression": "STREAMING_BOUNDED_ABORT_ON_LIMIT"
+    }
+  },
+  "timeouts": {
+    "connect": {
+      "bound": "FINITE",
+      "value": "NOT YET SPECIFIED",
+      "owner": "P6-WP6 / implementation security profile"
+    },
+    "read": {
+      "bound": "FINITE",
+      "value": "NOT YET SPECIFIED",
+      "owner": "P6-WP6 / implementation security profile"
+    },
+    "overall_deadline": {
+      "bound": "FINITE",
+      "value": "NOT YET SPECIFIED",
+      "owner": "P6-WP6 / implementation security profile"
+    },
+    "infinite_wait_permitted": false
+  },
+  "retries": {
+    "bounded": true,
+    "max_attempts": {
+      "bound": "FINITE",
+      "value": "NOT YET SPECIFIED",
+      "owner": "P6-WP6 / implementation security profile"
+    },
+    "retry_only_if": "PROVIDER_POLICY_DECLARES_RETRY_SAFE_IDEMPOTENT_LOOKUP",
+    "non_idempotent_blind_retry": false,
+    "retry_after": "HONOURED_ONLY_WITHIN_BOUNDED_POLICY",
+    "each_attempt_revalidates_destination": true
+  },
+  "backoff": {
+    "bounded": true,
+    "jitter_capable": true,
+    "values": "NOT YET SPECIFIED",
+    "owner": "P6-WP6"
+  },
+  "rate_limit": {
+    "http_429_outcome": "UNAVAILABLE",
+    "indicator_safe_on_rate_limit": false,
+    "quota": "NOT YET SPECIFIED"
+  },
+  "circuit_breaker": {
+    "states": [
+      "CLOSED",
+      "OPEN",
+      "HALF_OPEN"
+    ],
+    "open_outcome": "UNAVAILABLE",
+    "thresholds": "NOT YET SPECIFIED",
+    "owner": "P6-WP6"
+  },
+  "outcomes": {
+    "vocabulary": [
+      "FOUND",
+      "NOT_FOUND",
+      "UNAVAILABLE",
+      "POLICY_REJECTED",
+      "INVALID_RESPONSE"
+    ],
+    "meaning": "INTEGRATION_TECHNICAL_OUTCOME_NOT_SCAM_CLASSIFICATION",
+    "mapping": [
+      {
+        "outcome": "FOUND",
+        "enrichment_status": [
+          "SUCCEEDED"
+        ],
+        "reputation_result": [
+          "MALICIOUS",
+          "SUSPICIOUS",
+          "CLEAN",
+          "UNKNOWN"
+        ],
+        "allowlist_result": [
+          "ALLOWLISTED",
+          "NOT_ALLOWLISTED",
+          "NOT_EVALUATED"
+        ],
+        "domain_matches_claimed_brand": [
+          "MATCH",
+          "MISMATCH",
+          "UNKNOWN"
+        ],
+        "note": "Normalized provider assertion via a governed per-parser normalization map; CLEAN means only that the provider asserted no adverse reputation at observed_at — advisory, never TrustLens 'safe'."
+      },
+      {
+        "outcome": "NOT_FOUND",
+        "enrichment_status": [
+          "SUCCEEDED"
+        ],
+        "reputation_result": [
+          "UNKNOWN"
+        ],
+        "allowlist_result": [
+          "NOT_ALLOWLISTED",
+          "NOT_EVALUATED"
+        ],
+        "domain_matches_claimed_brand": [
+          "UNKNOWN"
+        ],
+        "note": "No provider entry is absence of information — never safe, legitimate, verified or no-scam."
+      },
+      {
+        "outcome": "UNAVAILABLE",
+        "enrichment_status": [
+          "FAILED",
+          "TIMED_OUT"
+        ],
+        "reputation_result": [
+          "NOT_EVALUATED"
+        ],
+        "allowlist_result": [
+          "NOT_EVALUATED"
+        ],
+        "domain_matches_claimed_brand": [
+          "UNKNOWN"
+        ],
+        "note": "Provider, network, credential or rate-limit failure."
+      },
+      {
+        "outcome": "POLICY_REJECTED",
+        "enrichment_status": [
+          "REJECTED"
+        ],
+        "reputation_result": [
+          "NOT_EVALUATED"
+        ],
+        "allowlist_result": [
+          "NOT_EVALUATED"
+        ],
+        "domain_matches_claimed_brand": [
+          "UNKNOWN"
+        ],
+        "note": "TrustLens egress, destination, redirect or minimization policy refused the call."
+      },
+      {
+        "outcome": "INVALID_RESPONSE",
+        "enrichment_status": [
+          "FAILED"
+        ],
+        "reputation_result": [
+          "NOT_EVALUATED"
+        ],
+        "allowlist_result": [
+          "NOT_EVALUATED"
+        ],
+        "domain_matches_claimed_brand": [
+          "UNKNOWN"
+        ],
+        "note": "Response failed status, media-type, size, schema, enum, timestamp, identity or parser-version validation."
+      }
+    ],
+    "not_attempted_status": "NOT_EVALUATED"
+  },
+  "failure_semantics": [
+    {
+      "condition": "DNS_FAILURE",
+      "outcome": "UNAVAILABLE",
+      "enrichment_status": "FAILED",
+      "safe_error_category": "DNS_FAILURE",
+      "retry": "GOVERNED_BOUNDED"
+    },
+    {
+      "condition": "CONNECTION_FAILURE",
+      "outcome": "UNAVAILABLE",
+      "enrichment_status": "FAILED",
+      "safe_error_category": "CONNECTION_FAILURE",
+      "retry": "GOVERNED_BOUNDED"
+    },
+    {
+      "condition": "TLS_FAILURE",
+      "outcome": "UNAVAILABLE",
+      "enrichment_status": "FAILED",
+      "safe_error_category": "TLS_FAILURE",
+      "retry": "NONE"
+    },
+    {
+      "condition": "TIMEOUT",
+      "outcome": "UNAVAILABLE",
+      "enrichment_status": "TIMED_OUT",
+      "safe_error_category": "TIMEOUT",
+      "retry": "GOVERNED_BOUNDED"
+    },
+    {
+      "condition": "PROVIDER_4XX",
+      "outcome": "UNAVAILABLE",
+      "enrichment_status": "FAILED",
+      "safe_error_category": "PROVIDER_CLIENT_ERROR",
+      "retry": "NONE",
+      "note": "Only a response the governed parser documents as 'no entry' maps to NOT_FOUND; any other 4xx is UNAVAILABLE."
+    },
+    {
+      "condition": "PROVIDER_5XX",
+      "outcome": "UNAVAILABLE",
+      "enrichment_status": "FAILED",
+      "safe_error_category": "PROVIDER_SERVER_ERROR",
+      "retry": "GOVERNED_BOUNDED"
+    },
+    {
+      "condition": "RATE_LIMITED",
+      "outcome": "UNAVAILABLE",
+      "enrichment_status": "FAILED",
+      "safe_error_category": "RATE_LIMITED",
+      "retry": "GOVERNED_BOUNDED"
+    },
+    {
+      "condition": "INVALID_CONTENT_TYPE",
+      "outcome": "INVALID_RESPONSE",
+      "enrichment_status": "FAILED",
+      "safe_error_category": "INVALID_CONTENT_TYPE",
+      "retry": "NONE"
+    },
+    {
+      "condition": "OVERSIZED_RESPONSE",
+      "outcome": "INVALID_RESPONSE",
+      "enrichment_status": "FAILED",
+      "safe_error_category": "OVERSIZED_RESPONSE",
+      "retry": "NONE"
+    },
+    {
+      "condition": "DECOMPRESSION_LIMIT_EXCEEDED",
+      "outcome": "INVALID_RESPONSE",
+      "enrichment_status": "FAILED",
+      "safe_error_category": "DECOMPRESSION_LIMIT_EXCEEDED",
+      "retry": "NONE"
+    },
+    {
+      "condition": "SCHEMA_INVALID_RESPONSE",
+      "outcome": "INVALID_RESPONSE",
+      "enrichment_status": "FAILED",
+      "safe_error_category": "SCHEMA_INVALID_RESPONSE",
+      "retry": "NONE"
+    },
+    {
+      "condition": "POLICY_REJECTION",
+      "outcome": "POLICY_REJECTED",
+      "enrichment_status": "REJECTED",
+      "safe_error_category": "POLICY_REJECTION",
+      "retry": "NONE"
+    },
+    {
+      "condition": "REDIRECT_POLICY_REJECTION",
+      "outcome": "POLICY_REJECTED",
+      "enrichment_status": "REJECTED",
+      "safe_error_category": "REDIRECT_POLICY_REJECTION",
+      "retry": "NONE"
+    },
+    {
+      "condition": "DESTINATION_ADDRESS_REJECTION",
+      "outcome": "POLICY_REJECTED",
+      "enrichment_status": "REJECTED",
+      "safe_error_category": "DESTINATION_ADDRESS_REJECTION",
+      "retry": "NONE"
+    },
+    {
+      "condition": "PROXY_ENFORCEMENT_UNVERIFIED",
+      "outcome": "POLICY_REJECTED",
+      "enrichment_status": "REJECTED",
+      "safe_error_category": "PROXY_ENFORCEMENT_UNVERIFIED",
+      "retry": "NONE",
+      "note": "Proxy egress is DEPLOYMENT_BLOCKED until governed, verifiable final-hop enforcement evidence exists."
+    },
+    {
+      "condition": "CREDENTIAL_UNAVAILABLE",
+      "outcome": "UNAVAILABLE",
+      "enrichment_status": "FAILED",
+      "safe_error_category": "CREDENTIAL_UNAVAILABLE",
+      "retry": "NONE"
+    },
+    {
+      "condition": "PROVIDER_UNAVAILABLE",
+      "outcome": "UNAVAILABLE",
+      "enrichment_status": "FAILED",
+      "safe_error_category": "PROVIDER_UNAVAILABLE",
+      "retry": "NONE"
+    }
+  ],
+  "decision_boundary": {
+    "provider_result_is": "EXTERNAL_ASSERTION_ENRICHMENT_ARTIFACT",
+    "provider_may_set": [],
+    "provider_may_never_set": [
+      "DetectionResult",
+      "classification",
+      "severity",
+      "risk",
+      "confidence",
+      "governing_rule",
+      "rule_override",
+      "rule_suppression",
+      "recommended_action"
+    ],
+    "forbidden_result_meanings": [
+      "SCAM_PATTERN_DETECTED",
+      "SCAM_PATTERN_SUSPECTED",
+      "NO_SCAM_PATTERN",
+      "SAFE",
+      "LEGITIMATE",
+      "VERIFIED"
+    ],
+    "forbidden_invented_fields": [
+      "scam_probability",
+      "fraud_probability",
+      "trustlens_confidence",
+      "trustlens_severity",
+      "trustlens_risk",
+      "risk_score"
+    ],
+    "consumed_in_governed_artifact": false,
+    "new_phase3_rule_or_observation": false,
+    "future_decision_use_requires": [
+      "VALIDATED_NORMALIZATION",
+      "GOVERNED_MAPPING",
+      "ACCEPTED_RULE_OBSERVATION_SEMANTICS",
+      "PINNED_IN_NEW_GOVERNED_INPUT_ARTIFACT"
+    ],
+    "phase3_sole_decision_authority": true,
+    "engine_version": "1.0.0"
+  },
+  "provenance": {
+    "required_fields": [
+      {
+        "field": "provider_policy_ref",
+        "purpose": "which provider policy governed the call",
+        "persistence": "ADDITIVE_WP2_REVISION_REQUIRED"
+      },
+      {
+        "field": "provider_policy_version",
+        "purpose": "which policy version governed the call (pinned for replay)",
+        "persistence": "ADDITIVE_WP2_REVISION_REQUIRED"
+      },
+      {
+        "field": "provider_ref",
+        "purpose": "which provider identity",
+        "persistence": "external_enrichment_result.provider_ref"
+      },
+      {
+        "field": "adapter_version",
+        "purpose": "which adapter version",
+        "persistence": "external_enrichment_result.adapter_version"
+      },
+      {
+        "field": "parser_schema_version",
+        "purpose": "which response parser/schema version",
+        "persistence": "ADDITIVE_WP2_REVISION_REQUIRED"
+      },
+      {
+        "field": "integration_contract_version",
+        "purpose": "which INT-001 version",
+        "persistence": "external_enrichment_result.integration_contract_version"
+      },
+      {
+        "field": "indicator_type",
+        "purpose": "what indicator type",
+        "persistence": "ADDITIVE_WP2_REVISION_REQUIRED"
+      },
+      {
+        "field": "normalized_indicator_ref",
+        "purpose": "normalized indicator identity as a digest/reference (raw value not required in telemetry)",
+        "persistence": "ADDITIVE_WP2_REVISION_REQUIRED"
+      },
+      {
+        "field": "request_ref",
+        "purpose": "request identity",
+        "persistence": "external_enrichment_result.request_ref"
+      },
+      {
+        "field": "requested_at",
+        "purpose": "when the request began",
+        "persistence": "external_enrichment_result.requested_at"
+      },
+      {
+        "field": "observed_at",
+        "purpose": "when the response was observed",
+        "persistence": "external_enrichment_result.responded_at"
+      },
+      {
+        "field": "lookup_outcome",
+        "purpose": "technical outcome",
+        "persistence": "ADDITIVE_WP2_REVISION_REQUIRED"
+      },
+      {
+        "field": "status",
+        "purpose": "persisted enrichment status (WP2 vocabulary)",
+        "persistence": "external_enrichment_result.status"
+      },
+      {
+        "field": "provider_response_category",
+        "purpose": "provider response status/category",
+        "persistence": "ADDITIVE_WP2_REVISION_REQUIRED"
+      },
+      {
+        "field": "safe_error_category",
+        "purpose": "safe failure category",
+        "persistence": "external_enrichment_result.safe_error_category"
+      },
+      {
+        "field": "freshness_state",
+        "purpose": "freshness state at recording",
+        "persistence": "ADDITIVE_WP2_REVISION_REQUIRED"
+      },
+      {
+        "field": "response_artifact_digest",
+        "purpose": "response artifact identity/digest (recording integrity, not provider authenticity)",
+        "persistence": "ADDITIVE_WP2_REVISION_REQUIRED"
+      },
+      {
+        "field": "cache_used",
+        "purpose": "whether a cached artifact was used",
+        "persistence": "ADDITIVE_WP2_REVISION_REQUIRED"
+      }
+    ],
+    "raw_indicator_in_telemetry": false
+  },
+  "response_artifact": {
+    "immutable": true,
+    "store": "OPS",
+    "raw_content_store": "ECS_ONLY_IF_GOVERNED_RAW_CONTENT_POLICY_PERMITS",
+    "digest_convention": "existing TrustLens SHA-256 64-hex digest over TRUSTLENS_CANONICAL_JSON_V1",
+    "digest_proves": "WHAT_TRUSTLENS_RECORDED",
+    "digest_does_not_prove": [
+      "PROVIDER_TRUTH",
+      "PROVIDER_AUTHENTICITY"
+    ],
+    "provider_authenticity": {
+      "transport": "TLS_WEB_PKI_ENDPOINT_AUTHENTICATION",
+      "signed_assertion": "NOT_ASSUMED",
+      "signed_assertion_condition": "Claimed only if a provider supplies a signature and TrustLens verifies it; no such mechanism is specified in v1."
+    }
+  },
+  "cache": {
+    "permitted": "GOVERNED_ONLY",
+    "key_components": [
+      "provider_ref",
+      "provider_operation",
+      "indicator_type",
+      "normalized_indicator_ref",
+      "provider_policy_version",
+      "parser_schema_version"
+    ],
+    "ttl": "NOT YET SPECIFIED",
+    "entry_requires": [
+      "observed_at",
+      "freshness_state",
+      "freshness_policy_ref",
+      "source_provenance"
+    ],
+    "stale_presented_as_fresh": false,
+    "cache_use_recorded": true,
+    "case_isolation": {
+      "case_identity_in_cache": false,
+      "evidence_in_cache": false,
+      "shared_artifact_deduplication": "ONLY_IF_DOMAIN_AND_PERSISTENCE_RULES_PERMIT",
+      "case_linkage": "SEPARATE_PER_EVALUATION_RECORD"
+    }
+  },
+  "freshness": {
+    "states": [
+      "FRESH",
+      "STALE",
+      "UNKNOWN"
+    ],
+    "is_confidence": false,
+    "is_risk": false,
+    "period": "NOT YET SPECIFIED",
+    "period_authority": "GOVERNED_PROVIDER_POLICY",
+    "unknown_when": "expiry semantics absent, unverifiable or not declared by the pinned policy"
+  },
+  "replay": {
+    "historical": {
+      "provider_call": false,
+      "refetch": false,
+      "refresh": false,
+      "replace_stale": false,
+      "use_newest_provider_response": false,
+      "use_latest_provider_policy": false,
+      "ai_substitute": false,
+      "uses": "EXACT_RETAINED_ARTIFACT_AND_PINNED_POLICY_ADAPTER_PARSER_IDENTITY",
+      "missing_material": "REPLAY_UNAVAILABLE",
+      "approximation": false,
+      "current_rm09": "No enrichment is consumed under current contracts (RM-09 asserts none); replay of current results never needs enrichment material."
+    },
+    "reanalysis": {
+      "new_provider_call_permitted": true,
+      "governed_by": "CURRENT_POLICY",
+      "creates": "NEW_ENRICHMENT_RECORD",
+      "overwrite_historical": false
+    }
+  },
+  "policy_authority": {
+    "authority": "GOVERNED_OPERATOR_CONFIGURATION",
+    "may_not_change": [
+      "ANALYST",
+      "REVIEWER",
+      "END_USER",
+      "AI",
+      "PROVIDER_RESPONSE",
+      "ADAPTER_RUNTIME"
+    ],
+    "versioned": true,
+    "immutable_per_version": true,
+    "unpinned_latest_in_replay": false,
+    "storage": "NOT FIXED — reproducible governed configuration; Git not mandated",
+    "publication_workflow_owner": "P6-WP6 / Phase-9"
+  },
+  "audit": {
+    "separate_from_telemetry": true,
+    "events": [
+      {
+        "concept": "ENRICHMENT_REQUESTED",
+        "audit_event_type": null,
+        "persistence": "ADDITIVE_WP2_REVISION_REQUIRED"
+      },
+      {
+        "concept": "PROVIDER_POLICY_SELECTED",
+        "audit_event_type": null,
+        "persistence": "ADDITIVE_WP2_REVISION_REQUIRED"
+      },
+      {
+        "concept": "POLICY_REJECTION",
+        "audit_event_type": "EGRESS_DENIED",
+        "persistence": "EXISTING_VOCABULARY"
+      },
+      {
+        "concept": "SSRF_DESTINATION_REJECTION",
+        "audit_event_type": "EGRESS_DENIED",
+        "persistence": "EXISTING_VOCABULARY"
+      },
+      {
+        "concept": "ENRICHMENT_ACCEPTED",
+        "audit_event_type": null,
+        "persistence": "ADDITIVE_WP2_REVISION_REQUIRED"
+      },
+      {
+        "concept": "CREDENTIAL_REFERENCE_FAILURE",
+        "audit_event_type": null,
+        "persistence": "ADDITIVE_WP2_REVISION_REQUIRED"
+      }
+    ],
+    "forbidden_content": [
+      "CREDENTIAL_VALUE",
+      "AUTHORIZATION_HEADER",
+      "RAW_EVIDENCE",
+      "RAW_PROVIDER_BODY"
+    ]
+  },
+  "telemetry": {
+    "permitted": [
+      "LATENCY",
+      "OUTCOME_CATEGORY",
+      "ADAPTER_HEALTH",
+      "CIRCUIT_STATE"
+    ],
+    "forbidden": [
+      "CREDENTIAL_VALUE",
+      "AUTHORIZATION_HEADER",
+      "RAW_C4_EVIDENCE",
+      "RAW_INDICATOR_VALUE",
+      "FULL_SUBMITTED_URL"
+    ],
+    "classification": "C8"
+  },
+  "logging": {
+    "forbidden": [
+      "API_KEY",
+      "AUTHORIZATION_HEADER",
+      "RAW_PROVIDER_CREDENTIAL",
+      "RAW_EVIDENCE",
+      "FULL_SENSITIVE_SUBMITTED_CONTENT"
+    ],
+    "identifiers": "BOUNDED_SAFE_OPAQUE_IDENTIFIERS"
+  },
+  "classification": [
+    {
+      "datum": "OUTBOUND_INDICATOR",
+      "class": "C4"
+    },
+    {
+      "datum": "PROVIDER_RESPONSE_CONTENT",
+      "class": "C4"
+    },
+    {
+      "datum": "PROVENANCE_METADATA",
+      "class": "C2"
+    },
+    {
+      "datum": "PROVIDER_POLICY",
+      "class": "C2"
+    },
+    {
+      "datum": "CREDENTIALS",
+      "class": "C7"
+    },
+    {
+      "datum": "AUDIT_RECORDS",
+      "class": "C6"
+    },
+    {
+      "datum": "TELEMETRY",
+      "class": "C8"
+    }
+  ],
+  "retention": {
+    "duration": "NOT YET SPECIFIED",
+    "open_item": "OI-05",
+    "deletion_graph_participation": true,
+    "deletion_makes_replay_unavailable": true,
+    "owner": "P6-WP6 / additive WP2 revision"
+  },
+  "api_surface": {
+    "existing_operation": "listEvaluationEnrichments",
+    "path": "/api/v1/evaluations/{evaluation_id}/enrichments",
+    "availability": "FUTURE_INT_001",
+    "new_endpoints": [],
+    "activation": "DEFERRED — the existing reserved operation is activated only when an implementation exists (P6-WP6), through governed API-001/OAS-001 bookkeeping",
+    "enrichment_view_mapping": {
+      "enrichment_id": "external_enrichment_result.external_enrichment_result_id",
+      "provider_category": "ExternalProviderIdentity.provider_category",
+      "status": "external_enrichment_result.status",
+      "reputation_result": "external_enrichment_result.reputation_result",
+      "observed_at": "external_enrichment_result.responded_at",
+      "advisory": "constant true"
+    }
+  },
+  "persistence_additive_requirements": [
+    "indicator_type",
+    "normalized_indicator_ref",
+    "lookup_outcome",
+    "provider_response_category",
+    "freshness_state",
+    "cache_used",
+    "provider_policy_ref",
+    "provider_policy_version",
+    "parser_schema_version",
+    "response_artifact_digest",
+    "safe_error_category CHECK vocabulary (failure_semantics)",
+    "enrichment audit_event_type values (audit.events with null audit_event_type)"
+  ],
+  "ci": {
+    "live_network": false,
+    "dns_lookups": false,
+    "http_requests": false,
+    "real_provider_calls": false,
+    "api_keys_required": false,
+    "validation_inputs": [
+      "STATIC_CONTRACTS",
+      "FIXTURES",
+      "FICTIONAL_PROVIDER_ARTIFACTS"
+    ]
+  },
+  "conformance_scenarios": {
+    "fixture_provider": {
+      "provider_ref": "FICTIONAL_FIXTURE_PROVIDER",
+      "host": "lookup.provider-fixture.example",
+      "scheme": "https",
+      "port": 443,
+      "fictional": true
+    },
+    "global_address_placeholder": "GLOBAL_UNICAST_PLACEHOLDER",
+    "scenarios": [
+      {
+        "id": "SC-01",
+        "name": "approved provider 302 to loopback",
+        "kind": "REDIRECT",
+        "target": "https://127.0.0.1/",
+        "resolved": [
+          "127.0.0.1"
+        ],
+        "expected": "POLICY_REJECTED"
+      },
+      {
+        "id": "SC-02",
+        "name": "approved provider 302 to instance metadata",
+        "kind": "REDIRECT",
+        "target": "https://169.254.169.254/",
+        "resolved": [
+          "169.254.169.254"
+        ],
+        "expected": "POLICY_REJECTED"
+      },
+      {
+        "id": "SC-03",
+        "name": "approved provider 302 to RFC1918 host",
+        "kind": "REDIRECT",
+        "target": "https://lookup.provider-fixture.example/next",
+        "resolved": [
+          "10.0.0.5"
+        ],
+        "expected": "POLICY_REJECTED"
+      },
+      {
+        "id": "SC-04",
+        "name": "approved provider 302 to unapproved internet host",
+        "kind": "REDIRECT",
+        "target": "https://unapproved.example/",
+        "resolved": [
+          "GLOBAL_UNICAST_PLACEHOLDER"
+        ],
+        "expected": "POLICY_REJECTED"
+      },
+      {
+        "id": "SC-05",
+        "name": "approved provider 302 HTTPS to HTTP downgrade",
+        "kind": "REDIRECT",
+        "target": "http://lookup.provider-fixture.example/",
+        "resolved": [
+          "GLOBAL_UNICAST_PLACEHOLDER"
+        ],
+        "expected": "POLICY_REJECTED"
+      },
+      {
+        "id": "SC-06",
+        "name": "DNS rebinding: validated answer public, later uncontrolled resolution private",
+        "kind": "REBINDING",
+        "target": "https://lookup.provider-fixture.example/",
+        "resolved": [
+          "GLOBAL_UNICAST_PLACEHOLDER"
+        ],
+        "connect_time_resolved": [
+          "192.168.1.10"
+        ],
+        "expected": "CONNECTS_ONLY_TO_VALIDATED_ADDRESS"
+      },
+      {
+        "id": "SC-07",
+        "name": "mixed public and private DNS answers",
+        "kind": "DESTINATION",
+        "target": "https://lookup.provider-fixture.example/",
+        "resolved": [
+          "GLOBAL_UNICAST_PLACEHOLDER",
+          "10.1.2.3"
+        ],
+        "expected": "POLICY_REJECTED"
+      },
+      {
+        "id": "SC-08",
+        "name": "IPv4-mapped IPv6 loopback",
+        "kind": "DESTINATION",
+        "target": "https://lookup.provider-fixture.example/",
+        "resolved": [
+          "::ffff:127.0.0.1"
+        ],
+        "expected": "POLICY_REJECTED"
+      },
+      {
+        "id": "SC-09",
+        "name": "IPv6 unique-local answer",
+        "kind": "DESTINATION",
+        "target": "https://lookup.provider-fixture.example/",
+        "resolved": [
+          "fd12:3456::1"
+        ],
+        "expected": "POLICY_REJECTED"
+      },
+      {
+        "id": "SC-10",
+        "name": "alternate textual IPv4 encoding (integer form of loopback)",
+        "kind": "DESTINATION",
+        "target": "https://2130706433/",
+        "resolved": [],
+        "expected": "POLICY_REJECTED"
+      },
+      {
+        "id": "SC-11",
+        "name": "userinfo host confusion",
+        "kind": "DESTINATION",
+        "target": "https://lookup.provider-fixture.example@unapproved.example/",
+        "resolved": [
+          "GLOBAL_UNICAST_PLACEHOLDER"
+        ],
+        "expected": "POLICY_REJECTED"
+      },
+      {
+        "id": "SC-12",
+        "name": "suffix/substring allowlist confusion",
+        "kind": "DESTINATION",
+        "target": "https://lookup.provider-fixture.example.unapproved.example/",
+        "resolved": [
+          "GLOBAL_UNICAST_PLACEHOLDER"
+        ],
+        "expected": "POLICY_REJECTED"
+      },
+      {
+        "id": "SC-13",
+        "name": "alias (CNAME) resolving to loopback",
+        "kind": "DESTINATION",
+        "target": "https://lookup.provider-fixture.example/",
+        "resolved": [
+          "127.0.0.2"
+        ],
+        "expected": "POLICY_REJECTED"
+      },
+      {
+        "id": "SC-14",
+        "name": "IPv6 link-local answer",
+        "kind": "DESTINATION",
+        "target": "https://lookup.provider-fixture.example/",
+        "resolved": [
+          "fe80::1"
+        ],
+        "expected": "POLICY_REJECTED"
+      },
+      {
+        "id": "SC-15",
+        "name": "approved provider, global answer, exact host — permitted",
+        "kind": "DESTINATION",
+        "target": "https://lookup.provider-fixture.example/",
+        "resolved": [
+          "GLOBAL_UNICAST_PLACEHOLDER"
+        ],
+        "expected": "PERMITTED"
+      },
+      {
+        "id": "SC-16",
+        "name": "governed proxy without verified final-hop enforcement",
+        "kind": "PROXY",
+        "target": "https://lookup.provider-fixture.example/",
+        "resolved": [
+          "GLOBAL_UNICAST_PLACEHOLDER"
+        ],
+        "proxy_enforcement_verified": false,
+        "expected": "POLICY_REJECTED"
+      },
+      {
+        "id": "SC-17",
+        "name": "verified governed proxy, final hop resolves to instance metadata",
+        "kind": "PROXY",
+        "target": "https://lookup.provider-fixture.example/",
+        "resolved": [
+          "169.254.169.254"
+        ],
+        "proxy_enforcement_verified": true,
+        "expected": "POLICY_REJECTED"
+      },
+      {
+        "id": "SC-18",
+        "name": "verified governed proxy, mixed public and private final-hop answers",
+        "kind": "PROXY",
+        "target": "https://lookup.provider-fixture.example/",
+        "resolved": [
+          "GLOBAL_UNICAST_PLACEHOLDER",
+          "172.16.5.4"
+        ],
+        "proxy_enforcement_verified": true,
+        "expected": "POLICY_REJECTED"
+      },
+      {
+        "id": "SC-19",
+        "name": "verified governed proxy, global final-hop answer — permitted",
+        "kind": "PROXY",
+        "target": "https://lookup.provider-fixture.example/",
+        "resolved": [
+          "GLOBAL_UNICAST_PLACEHOLDER"
+        ],
+        "proxy_enforcement_verified": true,
+        "expected": "PERMITTED"
+      }
+    ]
+  },
+  "open_items": {
+    "G-09": "OPEN",
+    "OI-05": "OPEN",
+    "ASM-002": "UNCONFIRMED / PROVISIONAL",
+    "ASM-005": "OPEN — no provider budget confirmed",
+    "WP4_LOW_3": "ADDRESSED AT CONTRACT LEVEL — implementation verification OPEN (P6-WP6 / security testing)",
+    "idempotency_persistence": "OPEN / NON-BLOCKING — additive DATA-001-WP2 revision + P6-WP6",
+    "etag_revision_persistence": "OPEN / NON-BLOCKING — additive DATA-001-WP2 revision + P6-WP6",
+    "wp4_info_collection_etag": "INFORMATIONAL",
+    "wp4_info_action_code_enum": "INFORMATIONAL"
+  },
+  "deferred": [
+    {
+      "issue": "Connector / adapter implementation, resolver/peer-binding mechanism and the governed-proxy final-hop enforcement evidence process",
+      "owner": "P6-WP6"
+    },
+    {
+      "issue": "Numeric limits: timeouts, retries, backoff, redirect hops, wire/decoded bytes, circuit thresholds",
+      "owner": "P6-WP6 / Sponsor / implementation security profile"
+    },
+    {
+      "issue": "Cache TTL and freshness periods per provider policy",
+      "owner": "Governed provider policy / P6-WP6"
+    },
+    {
+      "issue": "Additive WP2 columns and vocabularies for enrichment provenance and audit events",
+      "owner": "Additive DATA-001-WP2 revision / P6-WP6"
+    },
+    {
+      "issue": "Provider policy publication workflow and operator authority implementation",
+      "owner": "P6-WP6 / Phase-9"
+    },
+    {
+      "issue": "Provider selection",
+      "owner": "Sponsor (ASM-005) / governed operator"
+    },
+    {
+      "issue": "Activation of listEvaluationEnrichments",
+      "owner": "P6-WP6 with governed API-001/OAS-001 bookkeeping"
+    },
+    {
+      "issue": "Governed mapping of enrichment into deterministic observations (if ever)",
+      "owner": "Future governed Phase-3 change (not P6)"
+    },
+    {
+      "issue": "Implementation security testing of SSRF / rebinding controls",
+      "owner": "P6-WP6 / Phase-9 implementation security testing"
+    },
+    {
+      "issue": "Retention duration",
+      "owner": "OI-05"
+    }
+  ]
+}

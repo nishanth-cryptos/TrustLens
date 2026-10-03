@@ -1,0 +1,1164 @@
+{
+  "description": "Negative fixtures for knowledge/validation/validate_integration_contract.py. Each mutation is applied to an in-memory copy of contracts/integrations/external-enrichment-v1.json and the named check MUST reject it. Offline; no network.",
+  "mutations": [
+    {
+      "id": "NEG-IC-01",
+      "expect": "IC-05",
+      "description": "egress default ALLOW",
+      "op": "set",
+      "path": [
+        "egress",
+        "default"
+      ],
+      "value": "ALLOW"
+    },
+    {
+      "id": "NEG-IC-02",
+      "expect": "IC-08",
+      "description": "user input controls the destination URL",
+      "op": "append",
+      "path": [
+        "request_construction",
+        "user_input_may_populate"
+      ],
+      "value": "destination_url"
+    },
+    {
+      "id": "NEG-IC-03",
+      "expect": "IC-09",
+      "description": "AI controls the destination URL",
+      "op": "append",
+      "path": [
+        "ai_boundary",
+        "ai_controllable_fields"
+      ],
+      "value": "destination_url"
+    },
+    {
+      "id": "NEG-IC-04",
+      "expect": "IC-10",
+      "description": "generic fetch(url) primitive added",
+      "op": "set",
+      "path": [
+        "egress",
+        "generic_fetch_primitive"
+      ],
+      "value": true
+    },
+    {
+      "id": "NEG-IC-05",
+      "expect": "IC-07",
+      "description": "plain HTTP permitted as a provider scheme",
+      "op": "append",
+      "path": [
+        "transport",
+        "permitted_schemes"
+      ],
+      "value": "http"
+    },
+    {
+      "id": "NEG-IC-06",
+      "expect": "IC-07",
+      "description": "TLS certificate verification disabled (verify=false)",
+      "op": "set",
+      "path": [
+        "transport",
+        "tls",
+        "certificate_verification"
+      ],
+      "value": "DISABLED"
+    },
+    {
+      "id": "NEG-IC-07",
+      "expect": "IC-12",
+      "description": "naive preflight DNS check, then the HTTP client re-resolves independently",
+      "op": "set",
+      "path": [
+        "dns",
+        "uncontrolled_re_resolution"
+      ],
+      "value": true
+    },
+    {
+      "id": "NEG-IC-08",
+      "expect": "IC-13",
+      "description": "loopback range no longer forbidden",
+      "op": "set",
+      "path": [
+        "forbidden_destination_classes",
+        {
+          "class": "LOOPBACK"
+        },
+        "ipv4"
+      ],
+      "value": []
+    },
+    {
+      "id": "NEG-IC-09",
+      "expect": "IC-13",
+      "description": "RFC1918 private ranges no longer forbidden",
+      "op": "remove",
+      "path": [
+        "forbidden_destination_classes",
+        {
+          "class": "PRIVATE_RFC1918"
+        }
+      ]
+    },
+    {
+      "id": "NEG-IC-10",
+      "expect": "IC-13",
+      "description": "IPv4 link-local no longer forbidden",
+      "op": "set",
+      "path": [
+        "forbidden_destination_classes",
+        {
+          "class": "LINK_LOCAL"
+        },
+        "ipv4"
+      ],
+      "value": []
+    },
+    {
+      "id": "NEG-IC-11",
+      "expect": "IC-13",
+      "description": "IPv6 unique-local no longer forbidden",
+      "op": "set",
+      "path": [
+        "forbidden_destination_classes",
+        {
+          "class": "IPV6_UNIQUE_LOCAL"
+        },
+        "ipv6"
+      ],
+      "value": []
+    },
+    {
+      "id": "NEG-IC-12",
+      "expect": "IC-14",
+      "description": "IPv4-mapped IPv6 handling omitted",
+      "op": "set",
+      "path": [
+        "forbidden_destination_classes",
+        {
+          "class": "IPV4_EMBEDDED_IPV6"
+        },
+        "ipv6"
+      ],
+      "value": [
+        "64:ff9b::/96"
+      ]
+    },
+    {
+      "id": "NEG-IC-13",
+      "expect": "IC-15",
+      "description": "mixed public/private DNS answers permitted (use any allowed answer)",
+      "op": "set",
+      "path": [
+        "dns",
+        "mixed_answers"
+      ],
+      "value": "USE_PERMITTED_SUBSET"
+    },
+    {
+      "id": "NEG-IC-14",
+      "expect": "IC-16",
+      "description": "redirects followed without revalidation (trust inherited)",
+      "op": "set",
+      "path": [
+        "redirects",
+        "inherit_trust"
+      ],
+      "value": true
+    },
+    {
+      "id": "NEG-IC-15",
+      "expect": "IC-17",
+      "description": "redirect HTTPS -> HTTP downgrade allowed",
+      "op": "set",
+      "path": [
+        "redirects",
+        "https_to_http"
+      ],
+      "value": "ALLOW"
+    },
+    {
+      "id": "NEG-IC-16",
+      "expect": "IC-18",
+      "description": "redirect to a host outside the provider allowlist allowed",
+      "op": "set",
+      "path": [
+        "redirects",
+        "outside_provider_allowlist"
+      ],
+      "value": "ALLOW"
+    },
+    {
+      "id": "NEG-IC-17",
+      "expect": "IC-51",
+      "description": "redirect-to-127.0.0.1 scenario weakened to permitted",
+      "op": "set",
+      "path": [
+        "conformance_scenarios",
+        "scenarios",
+        {
+          "id": "SC-01"
+        },
+        "expected"
+      ],
+      "value": "PERMITTED"
+    },
+    {
+      "id": "NEG-IC-18",
+      "expect": "IC-18",
+      "description": "redirect to private/internal space such as 169.254.169.254 allowed",
+      "op": "set",
+      "path": [
+        "redirects",
+        "private_or_internal_target"
+      ],
+      "value": "ALLOW"
+    },
+    {
+      "id": "NEG-IC-19",
+      "expect": "IC-19",
+      "description": "environment proxy (HTTP_PROXY etc.) trusted automatically",
+      "op": "set",
+      "path": [
+        "proxy",
+        "environment_proxy_inheritance"
+      ],
+      "value": true
+    },
+    {
+      "id": "NEG-IC-20",
+      "expect": "IC-21",
+      "description": "user input controls the Host header",
+      "op": "append",
+      "path": [
+        "request_construction",
+        "user_input_may_populate"
+      ],
+      "value": "host_header"
+    },
+    {
+      "id": "NEG-IC-21",
+      "expect": "IC-21",
+      "description": "user input controls the Authorization header",
+      "op": "append",
+      "path": [
+        "request_construction",
+        "user_input_may_populate"
+      ],
+      "value": "authorization_header"
+    },
+    {
+      "id": "NEG-IC-22",
+      "expect": "IC-20",
+      "description": "credential literal stored in the provider policy",
+      "op": "append",
+      "path": [
+        "provider_selection",
+        "providers"
+      ],
+      "value": {
+        "provider_ref": "P1",
+        "api_key": "LITERAL-VALUE"
+      }
+    },
+    {
+      "id": "NEG-IC-23",
+      "expect": "IC-20",
+      "description": "credential placed in a provider URL",
+      "op": "set",
+      "path": [
+        "conformance_scenarios",
+        "fixture_provider",
+        "host"
+      ],
+      "value": "lookup.provider-fixture.example/v1?api_key=abc123"
+    },
+    {
+      "id": "NEG-IC-24",
+      "expect": "IC-22",
+      "description": "raw evidence outbound allowed",
+      "op": "set",
+      "path": [
+        "data_minimization",
+        "raw_evidence_outbound"
+      ],
+      "value": true
+    },
+    {
+      "id": "NEG-IC-25",
+      "expect": "IC-24",
+      "description": "unlimited response size",
+      "op": "set",
+      "path": [
+        "response_validation",
+        "limits",
+        "wire_bytes"
+      ],
+      "value": {
+        "bound": "UNBOUNDED",
+        "value": "UNLIMITED",
+        "owner": "none"
+      }
+    },
+    {
+      "id": "NEG-IC-26",
+      "expect": "IC-25",
+      "description": "infinite timeout",
+      "op": "set",
+      "path": [
+        "timeouts",
+        "infinite_wait_permitted"
+      ],
+      "value": true
+    },
+    {
+      "id": "NEG-IC-27",
+      "expect": "IC-26",
+      "description": "unbounded retries",
+      "op": "set",
+      "path": [
+        "retries",
+        "bounded"
+      ],
+      "value": false
+    },
+    {
+      "id": "NEG-IC-28",
+      "expect": "IC-27",
+      "description": "NOT_FOUND mapped to NO_SCAM_PATTERN",
+      "op": "set",
+      "path": [
+        "outcomes",
+        "mapping",
+        {
+          "outcome": "NOT_FOUND"
+        },
+        "reputation_result"
+      ],
+      "value": [
+        "NO_SCAM_PATTERN"
+      ]
+    },
+    {
+      "id": "NEG-IC-29",
+      "expect": "IC-28",
+      "description": "provider error (UNAVAILABLE) mapped to CLEAN",
+      "op": "set",
+      "path": [
+        "outcomes",
+        "mapping",
+        {
+          "outcome": "UNAVAILABLE"
+        },
+        "reputation_result"
+      ],
+      "value": [
+        "CLEAN"
+      ]
+    },
+    {
+      "id": "NEG-IC-30",
+      "expect": "IC-29",
+      "description": "provider may set classification",
+      "op": "append",
+      "path": [
+        "decision_boundary",
+        "provider_may_set"
+      ],
+      "value": "classification"
+    },
+    {
+      "id": "NEG-IC-31",
+      "expect": "IC-29",
+      "description": "provider may set confidence",
+      "op": "append",
+      "path": [
+        "decision_boundary",
+        "provider_may_set"
+      ],
+      "value": "confidence"
+    },
+    {
+      "id": "NEG-IC-32",
+      "expect": "IC-30",
+      "description": "scam_probability field added to the enrichment result",
+      "op": "append",
+      "path": [
+        "integration_objects",
+        {
+          "name": "ExternalEnrichmentResult"
+        },
+        "fields"
+      ],
+      "value": "scam_probability"
+    },
+    {
+      "id": "NEG-IC-33",
+      "expect": "IC-31",
+      "description": "provenance response-artifact digest omitted",
+      "op": "remove",
+      "path": [
+        "provenance",
+        "required_fields",
+        {
+          "field": "response_artifact_digest"
+        }
+      ]
+    },
+    {
+      "id": "NEG-IC-34",
+      "expect": "IC-31",
+      "description": "provenance provider identity omitted",
+      "op": "remove",
+      "path": [
+        "provenance",
+        "required_fields",
+        {
+          "field": "provider_ref"
+        }
+      ]
+    },
+    {
+      "id": "NEG-IC-35",
+      "expect": "IC-33",
+      "description": "stale cache presented as fresh",
+      "op": "set",
+      "path": [
+        "cache",
+        "stale_presented_as_fresh"
+      ],
+      "value": true
+    },
+    {
+      "id": "NEG-IC-36",
+      "expect": "IC-34",
+      "description": "historical replay refetches from the provider",
+      "op": "set",
+      "path": [
+        "replay",
+        "historical",
+        "refetch"
+      ],
+      "value": true
+    },
+    {
+      "id": "NEG-IC-37",
+      "expect": "IC-35",
+      "description": "historical replay uses the latest provider result",
+      "op": "set",
+      "path": [
+        "replay",
+        "historical",
+        "use_newest_provider_response"
+      ],
+      "value": true
+    },
+    {
+      "id": "NEG-IC-38",
+      "expect": "IC-36",
+      "description": "historical replay substitutes missing enrichment material",
+      "op": "set",
+      "path": [
+        "replay",
+        "historical",
+        "missing_material"
+      ],
+      "value": "APPROXIMATE_WITH_CURRENT_LOOKUP"
+    },
+    {
+      "id": "NEG-IC-39",
+      "expect": "IC-38",
+      "description": "canonical CI calls a real provider",
+      "op": "set",
+      "path": [
+        "ci",
+        "real_provider_calls"
+      ],
+      "value": true
+    },
+    {
+      "id": "NEG-IC-40",
+      "expect": "IC-38",
+      "description": "API key required in CI",
+      "op": "set",
+      "path": [
+        "ci",
+        "api_keys_required"
+      ],
+      "value": true
+    },
+    {
+      "id": "NEG-IC-41",
+      "expect": "IC-39",
+      "description": "tenant_id introduced on the enrichment request",
+      "op": "append",
+      "path": [
+        "integration_objects",
+        {
+          "name": "ExternalEnrichmentRequest"
+        },
+        "fields"
+      ],
+      "value": "tenant_id"
+    },
+    {
+      "id": "NEG-IC-42",
+      "expect": "IC-51",
+      "description": "redirect to 169.254.169.254 scenario weakened to permitted",
+      "op": "set",
+      "path": [
+        "conformance_scenarios",
+        "scenarios",
+        {
+          "id": "SC-02"
+        },
+        "expected"
+      ],
+      "value": "PERMITTED"
+    },
+    {
+      "id": "NEG-IC-43",
+      "expect": "IC-51",
+      "description": "redirect to RFC1918 scenario weakened to permitted",
+      "op": "set",
+      "path": [
+        "conformance_scenarios",
+        "scenarios",
+        {
+          "id": "SC-03"
+        },
+        "expected"
+      ],
+      "value": "PERMITTED"
+    },
+    {
+      "id": "NEG-IC-44",
+      "expect": "IC-12",
+      "description": "connect binding weakened to resolve-again-at-connect",
+      "op": "set",
+      "path": [
+        "dns",
+        "connect_binding"
+      ],
+      "value": "RESOLVE_AGAIN_AT_CONNECT"
+    },
+    {
+      "id": "NEG-IC-45",
+      "expect": "IC-51",
+      "description": "rebinding scenario evaluated under a weakened binding connects to private space",
+      "op": "set",
+      "path": [
+        "dns",
+        "peer_verification"
+      ],
+      "value": "NONE"
+    },
+    {
+      "id": "NEG-IC-46",
+      "expect": "IC-18",
+      "description": "substring allowlist matching enabled",
+      "op": "set",
+      "path": [
+        "destination_validation",
+        "substring_matching"
+      ],
+      "value": true
+    },
+    {
+      "id": "NEG-IC-47",
+      "expect": "IC-07",
+      "description": "file scheme no longer rejected",
+      "op": "set",
+      "path": [
+        "transport",
+        "rejected_schemes"
+      ],
+      "value": [
+        "http",
+        "ftp",
+        "gopher",
+        "data",
+        "javascript",
+        "unix",
+        "CUSTOM_URI_SCHEMES"
+      ]
+    },
+    {
+      "id": "NEG-IC-48",
+      "expect": "IC-08",
+      "description": "destination host field added to the enrichment request",
+      "op": "append",
+      "path": [
+        "integration_objects",
+        {
+          "name": "ExternalEnrichmentRequest"
+        },
+        "fields"
+      ],
+      "value": "destination_host"
+    },
+    {
+      "id": "NEG-IC-49",
+      "expect": "IC-10",
+      "description": "content retrieval permitted alongside indicator lookup",
+      "op": "append",
+      "path": [
+        "scope",
+        "permitted_capabilities"
+      ],
+      "value": "CONTENT_RETRIEVAL"
+    },
+    {
+      "id": "NEG-IC-50",
+      "expect": "IC-10",
+      "description": "suspicious submitted URL is connected to",
+      "op": "set",
+      "path": [
+        "scope",
+        "submitted_url_semantics",
+        "connect_to_submitted_destination"
+      ],
+      "value": true
+    },
+    {
+      "id": "NEG-IC-51",
+      "expect": "IC-11",
+      "description": "DNS validation by string blacklist only",
+      "op": "set",
+      "path": [
+        "destination_validation",
+        "string_blacklist_only"
+      ],
+      "value": true
+    },
+    {
+      "id": "NEG-IC-52",
+      "expect": "IC-11",
+      "description": "DNS answer ordering relied on",
+      "op": "set",
+      "path": [
+        "dns",
+        "rely_on_answer_ordering"
+      ],
+      "value": true
+    },
+    {
+      "id": "NEG-IC-53",
+      "expect": "IC-16",
+      "description": "invented numeric redirect hop limit",
+      "op": "set",
+      "path": [
+        "redirects",
+        "max_hops",
+        "value"
+      ],
+      "value": 5
+    },
+    {
+      "id": "NEG-IC-54",
+      "expect": "IC-25",
+      "description": "invented numeric connect timeout",
+      "op": "set",
+      "path": [
+        "timeouts",
+        "connect",
+        "value"
+      ],
+      "value": 10
+    },
+    {
+      "id": "NEG-IC-55",
+      "expect": "IC-26",
+      "description": "invented numeric retry count",
+      "op": "set",
+      "path": [
+        "retries",
+        "max_attempts",
+        "value"
+      ],
+      "value": 3
+    },
+    {
+      "id": "NEG-IC-56",
+      "expect": "IC-32",
+      "description": "cache TTL invented",
+      "op": "set",
+      "path": [
+        "cache",
+        "ttl"
+      ],
+      "value": "24h"
+    },
+    {
+      "id": "NEG-IC-57",
+      "expect": "IC-32",
+      "description": "cache key omits indicator type (semantic collision)",
+      "op": "set",
+      "path": [
+        "cache",
+        "key_components"
+      ],
+      "value": [
+        "provider_ref",
+        "normalized_indicator_ref",
+        "provider_policy_version",
+        "parser_schema_version"
+      ]
+    },
+    {
+      "id": "NEG-IC-58",
+      "expect": "IC-33",
+      "description": "freshness treated as confidence",
+      "op": "set",
+      "path": [
+        "freshness",
+        "is_confidence"
+      ],
+      "value": true
+    },
+    {
+      "id": "NEG-IC-59",
+      "expect": "IC-37",
+      "description": "re-analysis overwrites historical enrichment",
+      "op": "set",
+      "path": [
+        "replay",
+        "reanalysis",
+        "overwrite_historical"
+      ],
+      "value": true
+    },
+    {
+      "id": "NEG-IC-60",
+      "expect": "IC-43",
+      "description": "ANALYST allowed to change provider policy",
+      "op": "set",
+      "path": [
+        "policy_authority",
+        "may_not_change"
+      ],
+      "value": [
+        "END_USER",
+        "AI",
+        "PROVIDER_RESPONSE"
+      ]
+    },
+    {
+      "id": "NEG-IC-61",
+      "expect": "IC-44",
+      "description": "phone reputation indicator added",
+      "op": "append",
+      "path": [
+        "indicator_types",
+        "permitted"
+      ],
+      "value": {
+        "type": "PHONE",
+        "source": "knowledge/schemas/url-observation.schema.json#/properties/phone",
+        "classification": "C4",
+        "outbound_form": "E.164"
+      }
+    },
+    {
+      "id": "NEG-IC-62",
+      "expect": "IC-45",
+      "description": "NOT_FOUND mapped to an invented enrichment status",
+      "op": "set",
+      "path": [
+        "outcomes",
+        "mapping",
+        {
+          "outcome": "NOT_FOUND"
+        },
+        "enrichment_status"
+      ],
+      "value": [
+        "NOT_FOUND"
+      ]
+    },
+    {
+      "id": "NEG-IC-63",
+      "expect": "IC-46",
+      "description": "new public fetch endpoint added",
+      "op": "append",
+      "path": [
+        "api_surface",
+        "new_endpoints"
+      ],
+      "value": "POST /api/v1/enrichments/lookup"
+    },
+    {
+      "id": "NEG-IC-64",
+      "expect": "IC-47",
+      "description": "real vendor selected",
+      "op": "set",
+      "path": [
+        "provider_selection",
+        "provider_selected"
+      ],
+      "value": true
+    },
+    {
+      "id": "NEG-IC-65",
+      "expect": "IC-49",
+      "description": "raw indicator value allowed in telemetry",
+      "op": "append",
+      "path": [
+        "telemetry",
+        "permitted"
+      ],
+      "value": "RAW_INDICATOR_VALUE"
+    },
+    {
+      "id": "NEG-IC-66",
+      "expect": "IC-50",
+      "description": "response digest claimed as provider authenticity",
+      "op": "set",
+      "path": [
+        "response_artifact",
+        "digest_does_not_prove"
+      ],
+      "value": [
+        "PROVIDER_TRUTH"
+      ]
+    },
+    {
+      "id": "NEG-IC-67",
+      "expect": "IC-28",
+      "description": "TIMEOUT mapped to a FOUND outcome",
+      "op": "set",
+      "path": [
+        "failure_semantics",
+        {
+          "condition": "TIMEOUT"
+        },
+        "outcome"
+      ],
+      "value": "FOUND"
+    },
+    {
+      "id": "NEG-IC-68",
+      "expect": "IC-28",
+      "description": "rate-limit failure condition removed",
+      "op": "remove",
+      "path": [
+        "failure_semantics",
+        {
+          "condition": "RATE_LIMITED"
+        }
+      ]
+    },
+    {
+      "id": "NEG-IC-69",
+      "expect": "IC-22",
+      "description": "case notes no longer prohibited outbound",
+      "op": "set",
+      "path": [
+        "data_minimization",
+        "outbound_prohibited"
+      ],
+      "value": [
+        "RAW_MESSAGE_BODY",
+        "SCREENSHOT",
+        "DOCUMENT",
+        "EVIDENCE_BYTES",
+        "FULL_CASE_FILE",
+        "USER_IDENTITY",
+        "ADJUDICATION_RATIONALE",
+        "INTERNAL_DATABASE_IDENTIFIERS"
+      ]
+    },
+    {
+      "id": "NEG-IC-70",
+      "expect": "IC-23",
+      "description": "provider response trusted because provider is allowlisted",
+      "op": "set",
+      "path": [
+        "response_validation",
+        "allowlisted_provider_content_trusted"
+      ],
+      "value": true
+    },
+    {
+      "id": "NEG-IC-71",
+      "expect": "IC-42",
+      "description": "OI-05 marked closed with a retention duration",
+      "op": "set",
+      "path": [
+        "retention",
+        "duration"
+      ],
+      "value": "P1Y"
+    },
+    {
+      "id": "NEG-IC-72",
+      "expect": "IC-41",
+      "description": "G-09 marked closed",
+      "op": "set",
+      "path": [
+        "open_items",
+        "G-09"
+      ],
+      "value": "CLOSED"
+    },
+    {
+      "id": "NEG-IC-73",
+      "expect": "IC-03",
+      "description": "contract status claims P6-WP5 closure before remote CI + merge",
+      "op": "set",
+      "path": [
+        "status"
+      ],
+      "value": "P6-WP5 INTEGRATION CONTRACT CLOSED"
+    },
+    {
+      "id": "NEG-IC-74",
+      "expect": "IC-40",
+      "description": "ADR-0012 repurposed to an unrelated topic",
+      "op": "set",
+      "path": [
+        "adr",
+        "reserved_title"
+      ],
+      "value": "Caching strategy"
+    },
+    {
+      "id": "NEG-IC-75",
+      "expect": "IC-09",
+      "description": "AI allowed to mutate provider policy",
+      "op": "set",
+      "path": [
+        "ai_boundary",
+        "provider_policy_mutation"
+      ],
+      "value": true
+    },
+    {
+      "id": "NEG-IC-76",
+      "expect": "IC-20",
+      "description": "credentials persisted in enrichment records",
+      "op": "set",
+      "path": [
+        "credentials",
+        "persisted_in_enrichment"
+      ],
+      "value": true
+    },
+    {
+      "id": "NEG-IC-77",
+      "expect": "IC-29",
+      "description": "ENGINE_VERSION pin changed",
+      "op": "set",
+      "path": [
+        "decision_boundary",
+        "engine_version"
+      ],
+      "value": "1.1.0"
+    },
+    {
+      "id": "NEG-IC-78",
+      "expect": "IC-19",
+      "description": "proxy final-hop enforcement requirement removed",
+      "op": "remove",
+      "path": [
+        "proxy",
+        "final_hop_enforcement"
+      ]
+    },
+    {
+      "id": "NEG-IC-79",
+      "expect": "IC-19",
+      "description": "proxy final-hop enforcement downgraded from REQUIRED_AND_VERIFIED to OPTIONAL",
+      "op": "set",
+      "path": [
+        "proxy",
+        "final_hop_enforcement"
+      ],
+      "value": "OPTIONAL"
+    },
+    {
+      "id": "NEG-IC-80",
+      "expect": "IC-19",
+      "description": "unverified proxy use permitted (fallback to trusting the proxy)",
+      "op": "set",
+      "path": [
+        "proxy",
+        "unverified_fallback"
+      ],
+      "value": "TRUST_PROXY"
+    },
+    {
+      "id": "NEG-IC-81",
+      "expect": "IC-19",
+      "description": "unverified proxy enforcement changed from DEPLOYMENT_BLOCKED to ALLOW",
+      "op": "set",
+      "path": [
+        "proxy",
+        "unverified_enforcement"
+      ],
+      "value": "ALLOW"
+    },
+    {
+      "id": "NEG-IC-82",
+      "expect": "IC-19",
+      "description": "proxy denied-address scope weakened (RFC1918 not enforced on the final hop)",
+      "op": "set",
+      "path": [
+        "proxy",
+        "enforcement_scope"
+      ],
+      "value": [
+        "LOOPBACK",
+        "LINK_LOCAL",
+        "MULTICAST",
+        "UNSPECIFIED",
+        "RESERVED_NON_ROUTABLE",
+        "IPV6_UNIQUE_LOCAL",
+        "IPV6_LINK_LOCAL",
+        "IPV4_EMBEDDED_IPV6",
+        "INSTANCE_METADATA",
+        "LOCAL_HOST_ALIAS",
+        "MIXED_ANSWER_REJECTION",
+        "ALIAS_CHAIN_VALIDATION",
+        "CONNECTED_PEER_ENFORCEMENT"
+      ]
+    },
+    {
+      "id": "NEG-IC-83",
+      "expect": "IC-19",
+      "description": "proxy allowed to bypass mixed-answer rejection",
+      "op": "set",
+      "path": [
+        "proxy",
+        "enforcement_scope"
+      ],
+      "value": [
+        "LOOPBACK",
+        "PRIVATE_RFC1918",
+        "LINK_LOCAL",
+        "MULTICAST",
+        "UNSPECIFIED",
+        "RESERVED_NON_ROUTABLE",
+        "IPV6_UNIQUE_LOCAL",
+        "IPV6_LINK_LOCAL",
+        "IPV4_EMBEDDED_IPV6",
+        "INSTANCE_METADATA",
+        "LOCAL_HOST_ALIAS",
+        "ALIAS_CHAIN_VALIDATION",
+        "CONNECTED_PEER_ENFORCEMENT"
+      ]
+    },
+    {
+      "id": "NEG-IC-84",
+      "expect": "IC-19",
+      "description": "proxy allowed to bypass metadata-address rejection",
+      "op": "set",
+      "path": [
+        "proxy",
+        "enforcement_scope"
+      ],
+      "value": [
+        "LOOPBACK",
+        "PRIVATE_RFC1918",
+        "LINK_LOCAL",
+        "MULTICAST",
+        "UNSPECIFIED",
+        "RESERVED_NON_ROUTABLE",
+        "IPV6_UNIQUE_LOCAL",
+        "IPV6_LINK_LOCAL",
+        "IPV4_EMBEDDED_IPV6",
+        "LOCAL_HOST_ALIAS",
+        "MIXED_ANSWER_REJECTION",
+        "ALIAS_CHAIN_VALIDATION",
+        "CONNECTED_PEER_ENFORCEMENT"
+      ]
+    },
+    {
+      "id": "NEG-IC-85",
+      "expect": "IC-19",
+      "description": "proxy final-hop enforcement accepted without governed verifiable evidence",
+      "op": "set",
+      "path": [
+        "proxy",
+        "enforcement_evidence"
+      ],
+      "value": "CONFIGURATION_ONLY"
+    },
+    {
+      "id": "NEG-IC-86",
+      "expect": "IC-19",
+      "description": "unverified proxy lookup outcome changed to FOUND",
+      "op": "set",
+      "path": [
+        "proxy",
+        "unverified_enforcement_outcome"
+      ],
+      "value": "FOUND"
+    },
+    {
+      "id": "NEG-IC-87",
+      "expect": "IC-19",
+      "description": "proxy permitted to weaken DNS/redirect authorization",
+      "op": "set",
+      "path": [
+        "proxy",
+        "may_weaken_dns_or_redirect_authorization"
+      ],
+      "value": true
+    },
+    {
+      "id": "NEG-IC-88",
+      "expect": "IC-19",
+      "description": "proxy credentials stored inline instead of SEC references",
+      "op": "set",
+      "path": [
+        "proxy",
+        "proxy_credentials"
+      ],
+      "value": "INLINE"
+    },
+    {
+      "id": "NEG-IC-89",
+      "expect": "IC-19",
+      "description": "proxy enforcement scope no longer equivalent to the direct connector policy",
+      "op": "set",
+      "path": [
+        "proxy",
+        "enforcement_scope_equivalent_to"
+      ],
+      "value": "PROXY_VENDOR_DEFAULTS"
+    },
+    {
+      "id": "NEG-IC-90",
+      "expect": "IC-51",
+      "description": "unverified-proxy scenario weakened to permitted",
+      "op": "set",
+      "path": [
+        "conformance_scenarios",
+        "scenarios",
+        {
+          "id": "SC-16"
+        },
+        "expected"
+      ],
+      "value": "PERMITTED"
+    },
+    {
+      "id": "NEG-IC-91",
+      "expect": "IC-28",
+      "description": "PROXY_ENFORCEMENT_UNVERIFIED failure condition removed",
+      "op": "remove",
+      "path": [
+        "failure_semantics",
+        {
+          "condition": "PROXY_ENFORCEMENT_UNVERIFIED"
+        }
+      ]
+    }
+  ]
+}
