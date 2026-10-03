@@ -180,6 +180,20 @@ def d_openapi_mutable_result(root: Path):
     return p, orig
 
 
+def d_user_controlled_destination(root: Path):
+    p = root / "contracts" / "integrations" / "external-enrichment-v1.json"
+    orig = p.read_bytes()
+    d = load(p)
+    # Letting user input populate the destination URL turns indicator lookup into an SSRF primitive. Only the P6-WP5
+    # integration gate reads the integration contract, so only it can bite (IC-08) -> validate_integration_contract.py.
+    rc = d.get("request_construction", {})
+    if "user_input_may_populate" not in rc:
+        raise RuntimeError("ci_selftest could not find request_construction.user_input_may_populate (renamed?)")
+    rc["user_input_may_populate"].append("destination_url")
+    dump(p, d)
+    return p, orig
+
+
 DEFECTS = [
     ("unknown indicator reference", d_unknown_indicator, "validate_rules.py"),
     ("invalid taxonomy ID", d_invalid_taxonomy, "validate_rules.py"),
@@ -192,6 +206,7 @@ DEFECTS = [
     ("result insertable under a fenced/failed evaluation (P6-WP2 MEDIUM-1)", d_unfenced_result_insert, "validate_data_contract.py"),
     ("completed DetectionResult made mutable through the API (P6-WP3)", d_mutable_detection_result, "validate_api_contract.py"),
     ("DetectionResult PATCH published only in OpenAPI (P6-WP4)", d_openapi_mutable_result, "validate_openapi_contract.py"),
+    ("user input controls the enrichment destination URL (P6-WP5)", d_user_controlled_destination, "validate_integration_contract.py"),
 ]
 
 
