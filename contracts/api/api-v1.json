@@ -1,0 +1,5110 @@
+{
+  "catalog_schema_version": "1.0.0",
+  "api_version": "v1",
+  "base_path": "/api/v1",
+  "status": "P6-WP3 API CONTRACT APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING",
+  "authority_note": "Machine-readable source for P6-WP4 OpenAPI. Not OpenAPI, not an implementation, not runtime authority. API-001 is the normative human-readable contract. Hand edits must pass the JSON Schema, validate_api_contract.py (including negative mutations), the CI self-test and the canonical gate.",
+  "human_contract": "docs/06-contracts/API-001-api-resource-protocol-contract.md",
+  "persistence_contract": "contracts/postgresql/schema-v1.json",
+  "tenancy": {
+    "asm_002_status": "UNCONFIRMED_PROVISIONAL",
+    "tenant_fields_permitted": false,
+    "note": "Single provisional deployment scope; no tenant field anywhere. Re-review required before implementation if multi-tenancy is confirmed."
+  },
+  "conventions": {
+    "identifiers": "opaque UUIDv4 (canonical lowercase text); knowledge identifiers (rule_id, content_digest) are governed and separate",
+    "timestamps": "RFC 3339 UTC; server-authoritative",
+    "json_content_type": "application/json",
+    "idempotency_header": "Idempotency-Key",
+    "concurrency": "ETag + If-Match (strong, opaque)",
+    "correlation_header": "X-Request-Id (server-generated)",
+    "pagination": "opaque cursor; limit bounded by implementation configuration (NOT YET SPECIFIED)"
+  },
+  "roles": [
+    "USER",
+    "ANALYST",
+    "KNOWLEDGE_EDITOR",
+    "KNOWLEDGE_APPROVER",
+    "ADMINISTRATOR"
+  ],
+  "error_codes": [
+    {
+      "code": "INVALID_REQUEST",
+      "http_status": 400,
+      "retryability": "RETRY_WITH_CHANGES",
+      "meaning": "Malformed body, unknown/forbidden field, enum/length/format violation, declared/actual length mismatch."
+    },
+    {
+      "code": "UNAUTHENTICATED",
+      "http_status": 401,
+      "retryability": "RETRY_WITH_CHANGES",
+      "meaning": "Missing/invalid/expired credential."
+    },
+    {
+      "code": "FORBIDDEN",
+      "http_status": 403,
+      "retryability": "NOT_RETRYABLE",
+      "meaning": "Caller can see the resource but lacks the role or permission for this operation."
+    },
+    {
+      "code": "NOT_FOUND",
+      "http_status": 404,
+      "retryability": "NOT_RETRYABLE",
+      "meaning": "Resource does not exist OR caller has no access to its case scope (existence masked)."
+    },
+    {
+      "code": "CONFLICT",
+      "http_status": 409,
+      "retryability": "NOT_RETRYABLE",
+      "meaning": "Uniqueness or relationship conflict."
+    },
+    {
+      "code": "IDEMPOTENCY_KEY_REUSED",
+      "http_status": 409,
+      "retryability": "RETRY_WITH_CHANGES",
+      "meaning": "Same Idempotency-Key reused with a different request."
+    },
+    {
+      "code": "IDEMPOTENCY_IN_PROGRESS",
+      "http_status": 409,
+      "retryability": "RETRYABLE",
+      "meaning": "Original request with this key is still executing."
+    },
+    {
+      "code": "STATE_CONFLICT",
+      "http_status": 409,
+      "retryability": "NOT_RETRYABLE",
+      "meaning": "Command not allowed in the resource's current state."
+    },
+    {
+      "code": "EVALUATION_NOT_COMPLETED",
+      "http_status": 409,
+      "retryability": "RETRYABLE",
+      "meaning": "Result/replay requested for an evaluation that is not COMPLETED (queued/running) or failed."
+    },
+    {
+      "code": "PRECONDITION_FAILED",
+      "http_status": 412,
+      "retryability": "RETRY_WITH_CHANGES",
+      "meaning": "If-Match / expected-state guard did not match."
+    },
+    {
+      "code": "PRECONDITION_REQUIRED",
+      "http_status": 428,
+      "retryability": "RETRY_WITH_CHANGES",
+      "meaning": "If-Match required but absent."
+    },
+    {
+      "code": "REMOVED_UNDER_GOVERNANCE",
+      "http_status": 410,
+      "retryability": "NOT_RETRYABLE",
+      "meaning": "Content or result was deleted under governed retention/deletion; historical record only."
+    },
+    {
+      "code": "PAYLOAD_TOO_LARGE",
+      "http_status": 413,
+      "retryability": "RETRY_WITH_CHANGES",
+      "meaning": "Exceeds the configured size bound (value NOT YET SPECIFIED)."
+    },
+    {
+      "code": "UNSUPPORTED_MEDIA_TYPE",
+      "http_status": 415,
+      "retryability": "RETRY_WITH_CHANGES",
+      "meaning": "Media type not accepted or content fails media validation beyond extension."
+    },
+    {
+      "code": "RATE_LIMITED",
+      "http_status": 429,
+      "retryability": "RETRYABLE",
+      "meaning": "Admission control; Retry-After may be returned (thresholds NOT YET SPECIFIED)."
+    },
+    {
+      "code": "DEPENDENCY_UNAVAILABLE",
+      "http_status": 503,
+      "retryability": "RETRYABLE",
+      "meaning": "Required dependency (operational store, evidence store, key operation, identity validation) unavailable; nothing claimed complete."
+    },
+    {
+      "code": "INTEGRITY_FAILURE",
+      "http_status": 500,
+      "retryability": "NOT_RETRYABLE",
+      "meaning": "Stored material failed integrity verification; content withheld; investigated."
+    },
+    {
+      "code": "REPLAY_UNAVAILABLE",
+      "http_status": 409,
+      "retryability": "NOT_RETRYABLE",
+      "meaning": "Replay cannot be accepted because required pinned material is already known to be removed."
+    },
+    {
+      "code": "REPORT_REGENERATION_UNAVAILABLE",
+      "http_status": 409,
+      "retryability": "NOT_RETRYABLE",
+      "meaning": "Report content cannot be produced because required pinned sources were removed under governance."
+    },
+    {
+      "code": "KNOWLEDGE_NOT_ELIGIBLE",
+      "http_status": 409,
+      "retryability": "NOT_RETRYABLE",
+      "meaning": "Exact bundle not published/validated or withdrawn; activation refused."
+    },
+    {
+      "code": "INTERNAL_ERROR",
+      "http_status": 500,
+      "retryability": "RETRYABLE",
+      "meaning": "Unexpected failure; safe message only."
+    }
+  ],
+  "vocabularies": {
+    "principal_kind": {
+      "source": "PERSISTENCE",
+      "persistence_vocabulary": "principal_kind"
+    },
+    "trustlens_role": {
+      "source": "PERSISTENCE",
+      "persistence_vocabulary": "trustlens_role"
+    },
+    "relationship_to_content": {
+      "source": "PERSISTENCE",
+      "persistence_vocabulary": "relationship_to_content"
+    },
+    "input_type": {
+      "source": "PERSISTENCE",
+      "persistence_vocabulary": "input_type"
+    },
+    "artifact_kind": {
+      "source": "PERSISTENCE",
+      "persistence_vocabulary": "artifact_kind"
+    },
+    "evaluation_origin": {
+      "source": "PERSISTENCE",
+      "persistence_vocabulary": "evaluation_origin"
+    },
+    "ai_fallback_reason": {
+      "source": "PERSISTENCE",
+      "persistence_vocabulary": "ai_fallback_reason"
+    },
+    "input_support_status": {
+      "source": "PERSISTENCE",
+      "persistence_vocabulary": "input_support_status"
+    },
+    "classification": {
+      "source": "PERSISTENCE",
+      "persistence_vocabulary": "classification"
+    },
+    "decision_severity": {
+      "source": "PERSISTENCE",
+      "persistence_vocabulary": "decision_severity"
+    },
+    "matched_evidence_strength": {
+      "source": "PERSISTENCE",
+      "persistence_vocabulary": "matched_evidence_strength"
+    },
+    "risk_level": {
+      "source": "PERSISTENCE",
+      "persistence_vocabulary": "risk_level"
+    },
+    "detection_confidence": {
+      "source": "PERSISTENCE",
+      "persistence_vocabulary": "detection_confidence"
+    },
+    "rule_kind": {
+      "source": "PERSISTENCE",
+      "persistence_vocabulary": "rule_kind"
+    },
+    "rule_evaluation_state": {
+      "source": "PERSISTENCE",
+      "persistence_vocabulary": "rule_evaluation_state"
+    },
+    "rule_effective_severity": {
+      "source": "PERSISTENCE",
+      "persistence_vocabulary": "rule_effective_severity"
+    },
+    "rule_evidence_strength": {
+      "source": "PERSISTENCE",
+      "persistence_vocabulary": "rule_evidence_strength"
+    },
+    "rule_detection_confidence": {
+      "source": "PERSISTENCE",
+      "persistence_vocabulary": "rule_detection_confidence"
+    },
+    "enrichment_status": {
+      "source": "PERSISTENCE",
+      "persistence_vocabulary": "enrichment_status"
+    },
+    "reputation_result": {
+      "source": "PERSISTENCE",
+      "persistence_vocabulary": "reputation_result"
+    },
+    "adjudication_outcome": {
+      "source": "PERSISTENCE",
+      "persistence_vocabulary": "adjudication_outcome"
+    },
+    "review_routing_basis": {
+      "source": "PERSISTENCE",
+      "persistence_vocabulary": "review_routing_basis"
+    },
+    "case_grant_kind": {
+      "source": "PERSISTENCE",
+      "persistence_vocabulary": "case_grant_kind"
+    },
+    "replay_capability_state": {
+      "source": "PERSISTENCE",
+      "persistence_vocabulary": "replay_capability_state"
+    },
+    "replay_outcome": {
+      "source": "PERSISTENCE",
+      "persistence_vocabulary": "replay_outcome"
+    },
+    "replay_material_kind": {
+      "source": "PERSISTENCE",
+      "persistence_vocabulary": "replay_material_kind"
+    },
+    "knowledge_governance_eligibility": {
+      "source": "PERSISTENCE",
+      "persistence_vocabulary": "knowledge_governance_eligibility"
+    },
+    "activation_action_kind": {
+      "source": "PERSISTENCE",
+      "persistence_vocabulary": "activation_action_kind"
+    },
+    "activation_lifecycle_state": {
+      "source": "PERSISTENCE",
+      "persistence_vocabulary": "activation_lifecycle_state"
+    },
+    "operation_outcome": {
+      "source": "PERSISTENCE",
+      "persistence_vocabulary": "operation_outcome"
+    },
+    "deletion_scope_kind": {
+      "source": "PERSISTENCE",
+      "persistence_vocabulary": "deletion_scope_kind"
+    },
+    "break_glass_scope": {
+      "source": "PERSISTENCE",
+      "persistence_vocabulary": "break_glass_scope"
+    },
+    "break_glass_review_state": {
+      "source": "PERSISTENCE",
+      "persistence_vocabulary": "break_glass_review_state"
+    },
+    "audit_event_type": {
+      "source": "PERSISTENCE",
+      "persistence_vocabulary": "audit_event_type"
+    },
+    "actor_kind": {
+      "source": "PERSISTENCE",
+      "persistence_vocabulary": "actor_kind"
+    },
+    "audit_outcome": {
+      "source": "PERSISTENCE",
+      "persistence_vocabulary": "audit_outcome"
+    },
+    "audit_target_kind": {
+      "source": "PERSISTENCE",
+      "persistence_vocabulary": "audit_target_kind"
+    },
+    "api_case_state": {
+      "source": "API",
+      "values": [
+        "OPEN",
+        "UNDER_REVIEW",
+        "CLOSED",
+        "DELETION_PENDING",
+        "DELETED"
+      ],
+      "note": "",
+      "maps_from": {
+        "persistence_vocabulary": "case_lifecycle_state",
+        "mapping": {
+          "OPEN": "OPEN",
+          "UNDER_REVIEW": "UNDER_REVIEW",
+          "CLOSED": "CLOSED",
+          "DELETION_PENDING": "DELETION_PENDING",
+          "DELETED": "DELETED"
+        }
+      }
+    },
+    "api_submission_state": {
+      "source": "API",
+      "values": [
+        "RECEIVING",
+        "RECEIVED",
+        "PROCESSING",
+        "PROCESSED",
+        "PARTIALLY_FAILED",
+        "FAILED"
+      ],
+      "note": "",
+      "maps_from": {
+        "persistence_vocabulary": "submission_processing_state",
+        "mapping": {
+          "RECEIVING": "RECEIVING",
+          "RECEIVED": "RECEIVED",
+          "PROCESSING": "PROCESSING",
+          "PROCESSED": "PROCESSED",
+          "PARTIALLY_FAILED": "PARTIALLY_FAILED",
+          "FAILED": "FAILED"
+        }
+      }
+    },
+    "api_upload_state": {
+      "source": "API",
+      "values": [
+        "AWAITING_CONTENT",
+        "PROCESSING",
+        "FINALIZED",
+        "REJECTED",
+        "DELETION_PENDING",
+        "DELETED"
+      ],
+      "note": "Collapses internal cross-store states; FINALIZED is reported only when bytes are durably stored and digest-verified.",
+      "maps_from": {
+        "persistence_vocabulary": "cross_store_state",
+        "mapping": {
+          "RECEIVED": "AWAITING_CONTENT",
+          "CONTENT_PENDING": "PROCESSING",
+          "CONTENT_STORED": "PROCESSING",
+          "INTEGRITY_VERIFIED": "PROCESSING",
+          "FINALIZED": "FINALIZED",
+          "FAILED_RETRYABLE": "PROCESSING",
+          "FAILED_TERMINAL": "REJECTED",
+          "ORPHAN_DETECTED": "REJECTED",
+          "INTEGRITY_FAILED": "REJECTED",
+          "QUARANTINED": "REJECTED",
+          "DELETION_PENDING": "DELETION_PENDING",
+          "DELETED": "DELETED"
+        }
+      }
+    },
+    "api_evaluation_state": {
+      "source": "API",
+      "values": [
+        "QUEUED",
+        "RUNNING",
+        "COMPLETED",
+        "FAILED"
+      ],
+      "note": "RESULT_COMPUTED_PERSISTENCE_PENDING is reported as RUNNING: completion is never shown before durable persistence.",
+      "maps_from": {
+        "persistence_vocabulary": "evaluation_status",
+        "mapping": {
+          "REQUESTED": "QUEUED",
+          "RUNNING": "RUNNING",
+          "RESULT_COMPUTED_PERSISTENCE_PENDING": "RUNNING",
+          "COMPLETED": "COMPLETED",
+          "FAILED_PRECONDITION": "FAILED",
+          "FAILED_INTEGRITY": "FAILED",
+          "FAILED_INFRASTRUCTURE": "FAILED"
+        }
+      }
+    },
+    "api_evaluation_failure_class": {
+      "source": "API",
+      "values": [
+        "PRECONDITION",
+        "INTEGRITY",
+        "INFRASTRUCTURE"
+      ],
+      "note": "",
+      "maps_from": {
+        "persistence_vocabulary": "evaluation_status",
+        "mapping": {
+          "REQUESTED": null,
+          "RUNNING": null,
+          "RESULT_COMPUTED_PERSISTENCE_PENDING": null,
+          "COMPLETED": null,
+          "FAILED_PRECONDITION": "PRECONDITION",
+          "FAILED_INTEGRITY": "INTEGRITY",
+          "FAILED_INFRASTRUCTURE": "INFRASTRUCTURE"
+        }
+      }
+    },
+    "api_evaluation_failure_reason": {
+      "source": "API",
+      "values": [
+        "KNOWLEDGE_UNAVAILABLE",
+        "INPUT_NOT_EVALUABLE",
+        "INTEGRITY_FAILURE",
+        "INFRASTRUCTURE_FAILURE"
+      ],
+      "note": "",
+      "maps_from": {
+        "persistence_vocabulary": "evaluation_failure_category",
+        "mapping": {
+          "NO_VALID_ACTIVE_BUNDLE": "KNOWLEDGE_UNAVAILABLE",
+          "ACTIVE_BUNDLE_WITHDRAWN": "KNOWLEDGE_UNAVAILABLE",
+          "INVALID_TRUSTED_CONTEXT": "INPUT_NOT_EVALUABLE",
+          "BUNDLE_INTEGRITY": "INTEGRITY_FAILURE",
+          "ARTIFACT_INTEGRITY": "INTEGRITY_FAILURE",
+          "RESULT_ASSEMBLY_REJECTED": "INTEGRITY_FAILURE",
+          "PERSISTENCE_FAILED": "INFRASTRUCTURE_FAILURE",
+          "RESULT_DURABILITY_UNCONFIRMED": "INFRASTRUCTURE_FAILURE",
+          "EXECUTION_LEASE_EXPIRED": "INFRASTRUCTURE_FAILURE"
+        }
+      }
+    },
+    "api_result_availability": {
+      "source": "API",
+      "values": [
+        "NOT_YET_AVAILABLE",
+        "AVAILABLE",
+        "NOT_PRODUCED",
+        "REMOVED_UNDER_GOVERNANCE"
+      ],
+      "note": "AVAILABLE only for COMPLETED evaluations whose stored result exists; REMOVED_UNDER_GOVERNANCE marks a historical COMPLETED tombstone (P6-WP6/OI-05 own final semantics); NOT_PRODUCED for failed evaluations."
+    },
+    "api_review_state": {
+      "source": "API",
+      "values": [
+        "NOT_ROUTED",
+        "QUEUED",
+        "IN_REVIEW",
+        "ADJUDICATED",
+        "WITHDRAWN"
+      ],
+      "note": "",
+      "maps_from": {
+        "persistence_vocabulary": "review_queue_state",
+        "mapping": {
+          "NOT_ROUTED": "NOT_ROUTED",
+          "QUEUED": "QUEUED",
+          "IN_REVIEW": "IN_REVIEW",
+          "ADJUDICATED": "ADJUDICATED",
+          "WITHDRAWN": "WITHDRAWN"
+        }
+      }
+    },
+    "api_report_state": {
+      "source": "API",
+      "values": [
+        "GENERATING",
+        "GENERATED",
+        "FAILED",
+        "INTEGRITY_FAILED",
+        "REGENERATION_UNAVAILABLE",
+        "REMOVED_UNDER_GOVERNANCE"
+      ],
+      "note": "GENERATING is served from the REPORT_GENERATE cross-store operation before the report record's outcome exists.",
+      "maps_from": {
+        "persistence_vocabulary": "report_generation_outcome",
+        "mapping": {
+          "GENERATED": "GENERATED",
+          "FAILED": "FAILED",
+          "INTEGRITY_FAILED": "INTEGRITY_FAILED",
+          "REGENERATION_UNAVAILABLE": "REGENERATION_UNAVAILABLE"
+        }
+      }
+    },
+    "api_replay_state": {
+      "source": "API",
+      "values": [
+        "PENDING",
+        "COMPLETED"
+      ],
+      "note": "COMPLETED replays carry capability + outcome; unavailable material is an explicit outcome, never an error or success."
+    },
+    "api_deletion_state": {
+      "source": "API",
+      "values": [
+        "REQUESTED",
+        "AUTHORIZED",
+        "IN_PROGRESS",
+        "COMPLETE",
+        "PARTIALLY_FAILED",
+        "FAILED",
+        "REJECTED"
+      ],
+      "note": "",
+      "maps_from": {
+        "persistence_vocabulary": "deletion_request_state",
+        "mapping": {
+          "REQUESTED": "REQUESTED",
+          "AUTHORIZED": "AUTHORIZED",
+          "IN_PROGRESS": "IN_PROGRESS",
+          "COMPLETE": "COMPLETE",
+          "PARTIALLY_FAILED": "PARTIALLY_FAILED",
+          "FAILED": "FAILED",
+          "REJECTED": "REJECTED"
+        }
+      }
+    },
+    "api_knowledge_deployment_state": {
+      "source": "API",
+      "values": [
+        "NO_ACTIVE_BUNDLE",
+        "ACTIVE",
+        "ACTIVE_BUNDLE_WITHDRAWN"
+      ],
+      "note": "",
+      "maps_from": {
+        "persistence_vocabulary": "deployment_knowledge_state",
+        "mapping": {
+          "NO_ACTIVE_BUNDLE": "NO_ACTIVE_BUNDLE",
+          "ACTIVE": "ACTIVE",
+          "ACTIVE_BUNDLE_WITHDRAWN": "ACTIVE_BUNDLE_WITHDRAWN"
+        }
+      }
+    },
+    "analysis_mode": {
+      "source": "API",
+      "values": [
+        "DETERMINISTIC",
+        "AI_ASSISTED_IF_ENABLED"
+      ],
+      "note": "AI_ASSISTED_IF_ENABLED is honoured only when deployment policy enables Phase-4 extraction; otherwise deterministic with fallback AI_DISABLED."
+    },
+    "result_view": {
+      "source": "API",
+      "values": [
+        "STANDARD",
+        "DETAILED"
+      ],
+      "note": ""
+    },
+    "viewer_relationship": {
+      "source": "API",
+      "values": [
+        "OWNER",
+        "ASSIGNED_ANALYST",
+        "BREAK_GLASS"
+      ],
+      "note": ""
+    },
+    "probe_status": {
+      "source": "API",
+      "values": [
+        "OK",
+        "NOT_READY",
+        "FAILED"
+      ],
+      "note": ""
+    },
+    "dependency_health": {
+      "source": "API",
+      "values": [
+        "HEALTHY",
+        "DEGRADED",
+        "UNAVAILABLE",
+        "UNKNOWN"
+      ],
+      "note": "ARCH-006 §7.3; UNKNOWN is never HEALTHY."
+    },
+    "capability_category": {
+      "source": "API",
+      "values": [
+        "DETERMINISTIC_EVALUATION",
+        "EVIDENCE_STORAGE",
+        "OPERATIONAL_STORE",
+        "IDENTITY_VALIDATION",
+        "KEY_OPERATIONS",
+        "OPTIONAL_AI_EXTRACTION",
+        "AUDIT_SIGNING"
+      ],
+      "note": ""
+    },
+    "break_glass_review_outcome": {
+      "source": "API",
+      "values": [
+        "REVIEWED_APPROPRIATE",
+        "REVIEWED_INAPPROPRIATE"
+      ],
+      "note": ""
+    },
+    "retryability": {
+      "source": "API",
+      "values": [
+        "RETRYABLE",
+        "NOT_RETRYABLE",
+        "RETRY_WITH_CHANGES",
+        "RETRY_AS_NEW_EVALUATION"
+      ],
+      "note": ""
+    },
+    "error_code": {
+      "source": "API",
+      "values": [
+        "INVALID_REQUEST",
+        "UNAUTHENTICATED",
+        "FORBIDDEN",
+        "NOT_FOUND",
+        "CONFLICT",
+        "IDEMPOTENCY_KEY_REUSED",
+        "IDEMPOTENCY_IN_PROGRESS",
+        "STATE_CONFLICT",
+        "EVALUATION_NOT_COMPLETED",
+        "PRECONDITION_FAILED",
+        "PRECONDITION_REQUIRED",
+        "REMOVED_UNDER_GOVERNANCE",
+        "PAYLOAD_TOO_LARGE",
+        "UNSUPPORTED_MEDIA_TYPE",
+        "RATE_LIMITED",
+        "DEPENDENCY_UNAVAILABLE",
+        "INTEGRITY_FAILURE",
+        "REPLAY_UNAVAILABLE",
+        "REPORT_REGENERATION_UNAVAILABLE",
+        "KNOWLEDGE_NOT_ELIGIBLE",
+        "INTERNAL_ERROR"
+      ],
+      "note": ""
+    }
+  },
+  "schemas": {
+    "ApiError": {
+      "kind": "RESPONSE",
+      "body": "JSON",
+      "unknown_fields": "CLIENT_MUST_TOLERATE",
+      "description": "Canonical error envelope.",
+      "fields": [
+        {
+          "name": "error",
+          "type": "object",
+          "required": true,
+          "schema": "ApiErrorBody"
+        }
+      ]
+    },
+    "ApiErrorBody": {
+      "kind": "RESPONSE",
+      "body": "JSON",
+      "unknown_fields": "CLIENT_MUST_TOLERATE",
+      "description": "Error body; never contains stack traces, SQL, internal paths, credentials, tokens or evidence.",
+      "fields": [
+        {
+          "name": "code",
+          "type": "enum",
+          "required": true,
+          "vocabulary": "error_code"
+        },
+        {
+          "name": "message",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "request_id",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "retryability",
+          "type": "enum",
+          "required": true,
+          "vocabulary": "retryability"
+        },
+        {
+          "name": "field_errors",
+          "type": "array",
+          "required": false,
+          "items": "FieldError"
+        }
+      ]
+    },
+    "FieldError": {
+      "kind": "RESPONSE",
+      "body": "JSON",
+      "unknown_fields": "CLIENT_MUST_TOLERATE",
+      "description": "Per-field validation error (field path only; never echoes submitted values).",
+      "fields": [
+        {
+          "name": "field",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "code",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "message",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    "PageInfo": {
+      "kind": "RESPONSE",
+      "body": "JSON",
+      "unknown_fields": "CLIENT_MUST_TOLERATE",
+      "description": "Cursor pagination metadata.",
+      "fields": [
+        {
+          "name": "next_cursor",
+          "type": "string",
+          "required": false,
+          "nullable": true
+        },
+        {
+          "name": "limit",
+          "type": "integer",
+          "required": true
+        }
+      ]
+    },
+    "EmptyCommandRequest": {
+      "kind": "REQUEST",
+      "body": "JSON",
+      "unknown_fields": "REJECT",
+      "description": "Command with no body fields.",
+      "fields": []
+    },
+    "ReasonCommandRequest": {
+      "kind": "REQUEST",
+      "body": "JSON",
+      "unknown_fields": "REJECT",
+      "description": "Command carrying a categorical reason and optional bounded note (no evidence content).",
+      "fields": [
+        {
+          "name": "reason_code",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "reason_note",
+          "type": "string",
+          "required": false,
+          "max_length": "BOUNDED"
+        }
+      ]
+    },
+    "MeResponse": {
+      "kind": "RESPONSE",
+      "body": "JSON",
+      "unknown_fields": "CLIENT_MUST_TOLERATE",
+      "description": "Authenticated principal summary; never contains tokens or credentials.",
+      "fields": [
+        {
+          "name": "principal_id",
+          "type": "uuid",
+          "required": true
+        },
+        {
+          "name": "principal_kind",
+          "type": "enum",
+          "required": true,
+          "vocabulary": "principal_kind"
+        },
+        {
+          "name": "roles",
+          "type": "array",
+          "required": true,
+          "items_vocabulary": "trustlens_role"
+        },
+        {
+          "name": "capabilities",
+          "type": "array",
+          "required": true,
+          "items": "string"
+        }
+      ]
+    },
+    "HealthProbeResponse": {
+      "kind": "RESPONSE",
+      "body": "JSON",
+      "unknown_fields": "CLIENT_MUST_TOLERATE",
+      "description": "Minimal liveness/readiness body; no dependency or topology detail.",
+      "fields": [
+        {
+          "name": "status",
+          "type": "enum",
+          "required": true,
+          "vocabulary": "probe_status"
+        }
+      ]
+    },
+    "OperationalHealthResponse": {
+      "kind": "RESPONSE",
+      "body": "JSON",
+      "unknown_fields": "CLIENT_MUST_TOLERATE",
+      "description": "Categorical operator health; no hostnames, versions of infrastructure or topology.",
+      "fields": [
+        {
+          "name": "overall",
+          "type": "enum",
+          "required": true,
+          "vocabulary": "dependency_health"
+        },
+        {
+          "name": "capabilities",
+          "type": "array",
+          "required": true,
+          "items": "CapabilityHealth"
+        },
+        {
+          "name": "knowledge_state",
+          "type": "enum",
+          "required": true,
+          "vocabulary": "api_knowledge_deployment_state"
+        }
+      ]
+    },
+    "CapabilityHealth": {
+      "kind": "RESPONSE",
+      "body": "JSON",
+      "unknown_fields": "CLIENT_MUST_TOLERATE",
+      "description": "One capability's categorical health.",
+      "fields": [
+        {
+          "name": "capability",
+          "type": "enum",
+          "required": true,
+          "vocabulary": "capability_category"
+        },
+        {
+          "name": "health",
+          "type": "enum",
+          "required": true,
+          "vocabulary": "dependency_health"
+        }
+      ]
+    },
+    "CaseCreateRequest": {
+      "kind": "REQUEST",
+      "body": "JSON",
+      "unknown_fields": "REJECT",
+      "description": "Creates an empty case. Owner is the authenticated principal; no evidence required.",
+      "fields": [
+        {
+          "name": "relationship_to_content",
+          "type": "enum",
+          "required": false,
+          "vocabulary": "relationship_to_content"
+        }
+      ]
+    },
+    "CaseResponse": {
+      "kind": "RESPONSE",
+      "body": "JSON",
+      "unknown_fields": "CLIENT_MUST_TOLERATE",
+      "description": "Case resource. No verdict field: decisions exist only on evaluations.",
+      "fields": [
+        {
+          "name": "case_id",
+          "type": "uuid",
+          "required": true
+        },
+        {
+          "name": "state",
+          "type": "enum",
+          "required": true,
+          "vocabulary": "api_case_state"
+        },
+        {
+          "name": "is_synthetic",
+          "type": "boolean",
+          "required": true
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp",
+          "required": true
+        },
+        {
+          "name": "closed_at",
+          "type": "timestamp",
+          "required": false,
+          "nullable": true
+        },
+        {
+          "name": "viewer_access",
+          "type": "object",
+          "required": true,
+          "schema": "CaseViewerAccess"
+        },
+        {
+          "name": "etag",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "links",
+          "type": "object",
+          "required": true,
+          "schema": "Links"
+        }
+      ]
+    },
+    "CaseViewerAccess": {
+      "kind": "RESPONSE",
+      "body": "JSON",
+      "unknown_fields": "CLIENT_MUST_TOLERATE",
+      "description": "The caller's own access, computed server-side.",
+      "fields": [
+        {
+          "name": "relationship",
+          "type": "enum",
+          "required": true,
+          "vocabulary": "viewer_relationship"
+        },
+        {
+          "name": "can_view_evidence_content",
+          "type": "boolean",
+          "required": true
+        }
+      ]
+    },
+    "Links": {
+      "kind": "RESPONSE",
+      "body": "JSON",
+      "unknown_fields": "CLIENT_MUST_TOLERATE",
+      "description": "Relative API links.",
+      "fields": [
+        {
+          "name": "self",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "related",
+          "type": "object",
+          "required": false
+        }
+      ]
+    },
+    "CaseListResponse": {
+      "kind": "RESPONSE",
+      "body": "JSON",
+      "unknown_fields": "CLIENT_MUST_TOLERATE",
+      "description": "Paged cases.",
+      "fields": [
+        {
+          "name": "items",
+          "type": "array",
+          "required": true,
+          "items": "CaseResponse"
+        },
+        {
+          "name": "page",
+          "type": "object",
+          "required": true,
+          "schema": "PageInfo"
+        }
+      ]
+    },
+    "CaseCloseRequest": {
+      "kind": "REQUEST",
+      "body": "JSON",
+      "unknown_fields": "REJECT",
+      "description": "Close command (If-Match required).",
+      "fields": [
+        {
+          "name": "reason_code",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    "SubmissionCreateRequest": {
+      "kind": "REQUEST",
+      "body": "JSON",
+      "unknown_fields": "REJECT",
+      "description": "Categorical submission metadata only. Content (including free-text user context) is submitted through the evidence boundary.",
+      "fields": [
+        {
+          "name": "declared_input_type",
+          "type": "enum",
+          "required": true,
+          "vocabulary": "input_type"
+        },
+        {
+          "name": "relationship_to_content",
+          "type": "enum",
+          "required": false,
+          "vocabulary": "relationship_to_content"
+        }
+      ]
+    },
+    "SubmissionResponse": {
+      "kind": "RESPONSE",
+      "body": "JSON",
+      "unknown_fields": "CLIENT_MUST_TOLERATE",
+      "description": "Submission resource.",
+      "fields": [
+        {
+          "name": "submission_id",
+          "type": "uuid",
+          "required": true
+        },
+        {
+          "name": "case_id",
+          "type": "uuid",
+          "required": true
+        },
+        {
+          "name": "declared_input_type",
+          "type": "enum",
+          "required": true,
+          "vocabulary": "input_type"
+        },
+        {
+          "name": "relationship_to_content",
+          "type": "enum",
+          "required": false,
+          "vocabulary": "relationship_to_content"
+        },
+        {
+          "name": "state",
+          "type": "enum",
+          "required": true,
+          "vocabulary": "api_submission_state"
+        },
+        {
+          "name": "received_at",
+          "type": "timestamp",
+          "required": true
+        },
+        {
+          "name": "is_synthetic",
+          "type": "boolean",
+          "required": true
+        },
+        {
+          "name": "links",
+          "type": "object",
+          "required": true,
+          "schema": "Links"
+        }
+      ]
+    },
+    "SubmissionListResponse": {
+      "kind": "RESPONSE",
+      "body": "JSON",
+      "unknown_fields": "CLIENT_MUST_TOLERATE",
+      "description": "Paged submissions.",
+      "fields": [
+        {
+          "name": "items",
+          "type": "array",
+          "required": true,
+          "items": "SubmissionResponse"
+        },
+        {
+          "name": "page",
+          "type": "object",
+          "required": true,
+          "schema": "PageInfo"
+        }
+      ]
+    },
+    "EvidenceUploadCreateRequest": {
+      "kind": "REQUEST",
+      "body": "JSON",
+      "unknown_fields": "REJECT",
+      "description": "Initiates an evidence item. All values are untrusted declarations; the server computes the authoritative SHA-256.",
+      "fields": [
+        {
+          "name": "artifact_kind",
+          "type": "enum",
+          "required": true,
+          "vocabulary": "artifact_kind"
+        },
+        {
+          "name": "declared_media_type",
+          "type": "string",
+          "required": true,
+          "max_length": "BOUNDED"
+        },
+        {
+          "name": "declared_byte_length",
+          "type": "integer",
+          "required": true
+        },
+        {
+          "name": "display_filename",
+          "type": "string",
+          "required": false,
+          "max_length": "BOUNDED",
+          "untrusted": true
+        },
+        {
+          "name": "capture_declared_at",
+          "type": "timestamp",
+          "required": false
+        },
+        {
+          "name": "client_declared_sha256",
+          "type": "string",
+          "required": false,
+          "pattern": "^[0-9a-f]{64}$",
+          "advisory": true
+        }
+      ]
+    },
+    "EvidenceContentUpload": {
+      "kind": "REQUEST",
+      "body": "BINARY",
+      "unknown_fields": "REJECT",
+      "description": "Raw bytes of the evidence item (request body is the content; Content-Type = declared media type).",
+      "fields": []
+    },
+    "EvidenceFinalizeRequest": {
+      "kind": "REQUEST",
+      "body": "JSON",
+      "unknown_fields": "REJECT",
+      "description": "Requests server-side durable verification and manifest finalization.",
+      "fields": []
+    },
+    "EvidenceMetadataResponse": {
+      "kind": "RESPONSE",
+      "body": "JSON",
+      "unknown_fields": "CLIENT_MUST_TOLERATE",
+      "description": "Evidence metadata only — never content bytes, never the internal storage locator.",
+      "fields": [
+        {
+          "name": "evidence_id",
+          "type": "uuid",
+          "required": true
+        },
+        {
+          "name": "submission_id",
+          "type": "uuid",
+          "required": true
+        },
+        {
+          "name": "artifact_kind",
+          "type": "enum",
+          "required": true,
+          "vocabulary": "artifact_kind"
+        },
+        {
+          "name": "upload_state",
+          "type": "enum",
+          "required": true,
+          "vocabulary": "api_upload_state"
+        },
+        {
+          "name": "content_sha256",
+          "type": "string",
+          "required": false,
+          "pattern": "^[0-9a-f]{64}$",
+          "nullable": true
+        },
+        {
+          "name": "byte_length",
+          "type": "integer",
+          "required": false,
+          "nullable": true
+        },
+        {
+          "name": "declared_media_type",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "verified_media_type",
+          "type": "string",
+          "required": false,
+          "nullable": true
+        },
+        {
+          "name": "display_filename",
+          "type": "string",
+          "required": false,
+          "nullable": true,
+          "untrusted": true
+        },
+        {
+          "name": "ingested_at",
+          "type": "timestamp",
+          "required": true
+        },
+        {
+          "name": "finalized_at",
+          "type": "timestamp",
+          "required": false,
+          "nullable": true
+        },
+        {
+          "name": "content_link",
+          "type": "string",
+          "required": false,
+          "nullable": true
+        },
+        {
+          "name": "links",
+          "type": "object",
+          "required": true,
+          "schema": "Links"
+        }
+      ]
+    },
+    "EvidenceListResponse": {
+      "kind": "RESPONSE",
+      "body": "JSON",
+      "unknown_fields": "CLIENT_MUST_TOLERATE",
+      "description": "Paged evidence metadata.",
+      "fields": [
+        {
+          "name": "items",
+          "type": "array",
+          "required": true,
+          "items": "EvidenceMetadataResponse"
+        },
+        {
+          "name": "page",
+          "type": "object",
+          "required": true,
+          "schema": "PageInfo"
+        }
+      ]
+    },
+    "EvidenceContentDownload": {
+      "kind": "RESPONSE",
+      "body": "BINARY",
+      "unknown_fields": "CLIENT_MUST_TOLERATE",
+      "description": "Exact original bytes; Content-Type = verified media type; Content-Disposition: attachment with a server-generated filename; Cache-Control: no-store.",
+      "fields": []
+    },
+    "EvaluationCreateRequest": {
+      "kind": "REQUEST",
+      "body": "JSON",
+      "unknown_fields": "REJECT",
+      "description": "Requests deterministic evaluation of the submission's finalized evidence. Cannot carry any decision, provenance or knowledge field.",
+      "fields": [
+        {
+          "name": "analysis_mode",
+          "type": "enum",
+          "required": false,
+          "vocabulary": "analysis_mode"
+        },
+        {
+          "name": "predecessor_evaluation_id",
+          "type": "uuid",
+          "required": false
+        },
+        {
+          "name": "reason_code",
+          "type": "string",
+          "required": false
+        }
+      ]
+    },
+    "EvaluationBatchAcceptedResponse": {
+      "kind": "RESPONSE",
+      "body": "JSON",
+      "unknown_fields": "CLIENT_MUST_TOLERATE",
+      "description": "One evaluation per governed input envelope derived from the submission (exactly one for MVP text submissions).",
+      "fields": [
+        {
+          "name": "evaluations",
+          "type": "array",
+          "required": true,
+          "items": "EvaluationResponse"
+        }
+      ]
+    },
+    "EvaluationResponse": {
+      "kind": "RESPONSE",
+      "body": "JSON",
+      "unknown_fields": "CLIENT_MUST_TOLERATE",
+      "description": "Evaluation resource (read-only).",
+      "fields": [
+        {
+          "name": "evaluation_id",
+          "type": "uuid",
+          "required": true
+        },
+        {
+          "name": "case_id",
+          "type": "uuid",
+          "required": true
+        },
+        {
+          "name": "submission_id",
+          "type": "uuid",
+          "required": true
+        },
+        {
+          "name": "origin",
+          "type": "enum",
+          "required": true,
+          "vocabulary": "evaluation_origin"
+        },
+        {
+          "name": "predecessor_evaluation_id",
+          "type": "uuid",
+          "required": false,
+          "nullable": true
+        },
+        {
+          "name": "state",
+          "type": "enum",
+          "required": true,
+          "vocabulary": "api_evaluation_state"
+        },
+        {
+          "name": "failure",
+          "type": "object",
+          "required": false,
+          "nullable": true,
+          "schema": "EvaluationFailure"
+        },
+        {
+          "name": "result_availability",
+          "type": "enum",
+          "required": true,
+          "vocabulary": "api_result_availability"
+        },
+        {
+          "name": "requested_at",
+          "type": "timestamp",
+          "required": true
+        },
+        {
+          "name": "completed_at",
+          "type": "timestamp",
+          "required": false,
+          "nullable": true
+        },
+        {
+          "name": "ai_usage",
+          "type": "object",
+          "required": true,
+          "schema": "AiUsageSummary"
+        },
+        {
+          "name": "provenance",
+          "type": "object",
+          "required": false,
+          "nullable": true,
+          "schema": "ProvenanceSummary"
+        },
+        {
+          "name": "links",
+          "type": "object",
+          "required": true,
+          "schema": "Links"
+        }
+      ]
+    },
+    "EvaluationFailure": {
+      "kind": "RESPONSE",
+      "body": "JSON",
+      "unknown_fields": "CLIENT_MUST_TOLERATE",
+      "description": "Safe categorical failure; never a classification; never internal detail.",
+      "fields": [
+        {
+          "name": "failure_class",
+          "type": "enum",
+          "required": true,
+          "vocabulary": "api_evaluation_failure_class"
+        },
+        {
+          "name": "reason",
+          "type": "enum",
+          "required": true,
+          "vocabulary": "api_evaluation_failure_reason"
+        },
+        {
+          "name": "retry_guidance",
+          "type": "enum",
+          "required": true,
+          "vocabulary": "retryability"
+        }
+      ]
+    },
+    "AiUsageSummary": {
+      "kind": "RESPONSE",
+      "body": "JSON",
+      "unknown_fields": "CLIENT_MUST_TOLERATE",
+      "description": "Governed AI provenance only: no AI verdict, no model confidence.",
+      "fields": [
+        {
+          "name": "requested",
+          "type": "boolean",
+          "required": true
+        },
+        {
+          "name": "enabled_by_policy",
+          "type": "boolean",
+          "required": true
+        },
+        {
+          "name": "used",
+          "type": "boolean",
+          "required": true
+        },
+        {
+          "name": "fallback_reason",
+          "type": "enum",
+          "required": false,
+          "nullable": true,
+          "vocabulary": "ai_fallback_reason"
+        }
+      ]
+    },
+    "ProvenanceSummary": {
+      "kind": "RESPONSE",
+      "body": "JSON",
+      "unknown_fields": "CLIENT_MUST_TOLERATE",
+      "description": "Pinned provenance for interpretation.",
+      "fields": [
+        {
+          "name": "engine_version",
+          "type": "string",
+          "required": true,
+          "trace": "phase3:knowledge/schemas/detection/detection-result.schema.json#/properties/provenance/properties/engine_version"
+        },
+        {
+          "name": "result_contract_version",
+          "type": "string",
+          "required": true,
+          "trace": "phase3:knowledge/schemas/detection/detection-result.schema.json#/properties/result_contract_version"
+        },
+        {
+          "name": "bundle_content_digest",
+          "type": "string",
+          "required": true,
+          "pattern": "^[0-9a-f]{64}$",
+          "trace": "phase3:knowledge/schemas/detection/detection-result.schema.json#/properties/provenance/properties/bundle_content_digest"
+        },
+        {
+          "name": "bundle_version",
+          "type": "string",
+          "required": true,
+          "trace": "phase3:knowledge/schemas/detection/detection-result.schema.json#/properties/provenance/properties/bundle_version"
+        },
+        {
+          "name": "evaluation_profile_id",
+          "type": "string",
+          "required": true,
+          "trace": "phase3:knowledge/schemas/detection/detection-result.schema.json#/properties/provenance/properties/evaluation_profile/properties/profile_id"
+        },
+        {
+          "name": "evaluation_timestamp",
+          "type": "timestamp",
+          "required": true,
+          "trace": "phase3:knowledge/schemas/detection/detection-result.schema.json#/properties/evaluation_timestamp"
+        }
+      ]
+    },
+    "EvaluationListResponse": {
+      "kind": "RESPONSE",
+      "body": "JSON",
+      "unknown_fields": "CLIENT_MUST_TOLERATE",
+      "description": "Paged evaluations.",
+      "fields": [
+        {
+          "name": "items",
+          "type": "array",
+          "required": true,
+          "items": "EvaluationResponse"
+        },
+        {
+          "name": "page",
+          "type": "object",
+          "required": true,
+          "schema": "PageInfo"
+        }
+      ]
+    },
+    "DetectionResultResponse": {
+      "kind": "RESPONSE",
+      "body": "JSON",
+      "unknown_fields": "CLIENT_MUST_TOLERATE",
+      "description": "Exact Phase-3 decision axes (categorical; no probability or score). NO_SCAM_PATTERN means no governed pattern matched, never 'safe'.",
+      "fields": [
+        {
+          "name": "evaluation_id",
+          "type": "uuid",
+          "required": true,
+          "trace": "phase3:knowledge/schemas/detection/detection-result.schema.json#/properties/evaluation_id"
+        },
+        {
+          "name": "result_contract_version",
+          "type": "string",
+          "required": true,
+          "trace": "phase3:knowledge/schemas/detection/detection-result.schema.json#/properties/result_contract_version"
+        },
+        {
+          "name": "result_digest",
+          "type": "string",
+          "required": true,
+          "pattern": "^[0-9a-f]{64}$",
+          "trace": "api:PERSISTENCE_PROVENANCE"
+        },
+        {
+          "name": "view",
+          "type": "enum",
+          "required": true,
+          "vocabulary": "result_view",
+          "trace": "api:VIEW_SELECTOR"
+        },
+        {
+          "name": "input_support_status",
+          "type": "enum",
+          "required": true,
+          "vocabulary": "input_support_status",
+          "trace": "phase3:knowledge/schemas/detection/detection-result.schema.json#/properties/input_support_status"
+        },
+        {
+          "name": "language",
+          "type": "array",
+          "required": true,
+          "items": "string",
+          "trace": "phase3:knowledge/schemas/detection/detection-result.schema.json#/properties/language"
+        },
+        {
+          "name": "script",
+          "type": "array",
+          "required": true,
+          "items": "string",
+          "trace": "phase3:knowledge/schemas/detection/detection-result.schema.json#/properties/script"
+        },
+        {
+          "name": "classification",
+          "type": "enum",
+          "required": true,
+          "vocabulary": "classification",
+          "trace": "phase3:knowledge/schemas/detection/detection-result.schema.json#/properties/classification"
+        },
+        {
+          "name": "decision_severity",
+          "type": "enum",
+          "required": true,
+          "vocabulary": "decision_severity",
+          "trace": "phase3:knowledge/schemas/detection/detection-result.schema.json#/properties/decision_severity"
+        },
+        {
+          "name": "matched_evidence_strength",
+          "type": "enum",
+          "required": true,
+          "vocabulary": "matched_evidence_strength",
+          "trace": "phase3:knowledge/schemas/detection/detection-result.schema.json#/properties/matched_evidence_strength"
+        },
+        {
+          "name": "risk_level",
+          "type": "enum",
+          "required": true,
+          "vocabulary": "risk_level",
+          "trace": "phase3:knowledge/schemas/detection/detection-result.schema.json#/properties/risk_level"
+        },
+        {
+          "name": "detection_confidence",
+          "type": "enum",
+          "required": true,
+          "vocabulary": "detection_confidence",
+          "trace": "phase3:knowledge/schemas/detection/detection-result.schema.json#/properties/detection_confidence"
+        },
+        {
+          "name": "degraded",
+          "type": "boolean",
+          "required": true,
+          "trace": "phase3:knowledge/schemas/detection/detection-result.schema.json#/properties/degraded"
+        },
+        {
+          "name": "governing_rule",
+          "type": "object",
+          "required": false,
+          "nullable": true,
+          "schema": "RuleReference",
+          "trace": "phase3:knowledge/schemas/detection/rule-evaluation-result.schema.json#/properties/governing"
+        },
+        {
+          "name": "matched_rules",
+          "type": "array",
+          "required": true,
+          "items": "RuleReference",
+          "trace": "phase3:knowledge/schemas/detection/detection-result.schema.json#/properties/matched_rules"
+        },
+        {
+          "name": "explanation",
+          "type": "object",
+          "required": true,
+          "schema": "ExplanationView",
+          "trace": "phase3:knowledge/schemas/detection/detection-result.schema.json#/properties/explanation"
+        },
+        {
+          "name": "recommended_actions",
+          "type": "array",
+          "required": true,
+          "items": "RecommendedActionView",
+          "trace": "phase3:knowledge/schemas/detection/detection-result.schema.json#/properties/recommended_actions"
+        },
+        {
+          "name": "limitations",
+          "type": "array",
+          "required": true,
+          "items": "string",
+          "trace": "phase3:knowledge/schemas/detection/detection-result.schema.json#/properties/limitations"
+        },
+        {
+          "name": "unknowns",
+          "type": "array",
+          "required": true,
+          "items": "string",
+          "trace": "phase3:knowledge/schemas/detection/detection-result.schema.json#/properties/unknowns"
+        },
+        {
+          "name": "ambiguities",
+          "type": "array",
+          "required": true,
+          "items": "string",
+          "trace": "phase3:knowledge/schemas/detection/detection-result.schema.json#/properties/ambiguities"
+        },
+        {
+          "name": "rule_results",
+          "type": "array",
+          "required": false,
+          "items": "RuleResultView",
+          "visibility": "DETAILED_VIEW_ONLY",
+          "trace": "phase3:knowledge/schemas/detection/detection-result.schema.json#/properties/rule_results"
+        },
+        {
+          "name": "provenance",
+          "type": "object",
+          "required": true,
+          "schema": "ProvenanceSummary",
+          "trace": "phase3:knowledge/schemas/detection/detection-result.schema.json#/properties/provenance"
+        },
+        {
+          "name": "not_an_official_determination",
+          "type": "boolean",
+          "required": true,
+          "trace": "api:DISCLAIMER"
+        },
+        {
+          "name": "absence_of_finding_notice",
+          "type": "string",
+          "required": false,
+          "nullable": true,
+          "trace": "api:INTERPRETATION_NOTICE"
+        }
+      ]
+    },
+    "RuleReference": {
+      "kind": "RESPONSE",
+      "body": "JSON",
+      "unknown_fields": "CLIENT_MUST_TOLERATE",
+      "description": "Governed knowledge reference (not an operational ID).",
+      "fields": [
+        {
+          "name": "rule_id",
+          "type": "string",
+          "required": true,
+          "trace": "phase3:knowledge/schemas/detection/rule-evaluation-result.schema.json#/properties/rule_id"
+        },
+        {
+          "name": "rule_version",
+          "type": "string",
+          "required": true,
+          "trace": "phase3:knowledge/schemas/detection/rule-evaluation-result.schema.json#/properties/rule_version"
+        },
+        {
+          "name": "source_references",
+          "type": "array",
+          "required": false,
+          "items": "string",
+          "trace": "phase3:knowledge/schemas/detection/rule-evaluation-result.schema.json#/properties/source_references"
+        }
+      ]
+    },
+    "ExplanationView": {
+      "kind": "RESPONSE",
+      "body": "JSON",
+      "unknown_fields": "CLIENT_MUST_TOLERATE",
+      "description": "Templated Phase-3 explanation.",
+      "fields": [
+        {
+          "name": "summary",
+          "type": "string",
+          "required": true,
+          "trace": "phase3:knowledge/schemas/detection/detection-result.schema.json#/$defs/explanation/properties/summary"
+        },
+        {
+          "name": "evidence_basis",
+          "type": "array",
+          "required": false,
+          "items": "string",
+          "visibility": "CONTENT_PERMISSION",
+          "trace": "phase3:knowledge/schemas/detection/detection-result.schema.json#/$defs/explanation/properties/evidence_basis"
+        }
+      ]
+    },
+    "RecommendedActionView": {
+      "kind": "RESPONSE",
+      "body": "JSON",
+      "unknown_fields": "CLIENT_MUST_TOLERATE",
+      "description": "Governed action from the Phase-3 action policy. No priority: Phase 3 does not emit one (WP6), and the API never invents one.",
+      "fields": [
+        {
+          "name": "action_code",
+          "type": "string",
+          "required": true,
+          "trace": "phase3:knowledge/schemas/detection/detection-result.schema.json#/$defs/recommendedAction/properties/action_code"
+        }
+      ]
+    },
+    "RuleResultView": {
+      "kind": "RESPONSE",
+      "body": "JSON",
+      "unknown_fields": "CLIENT_MUST_TOLERATE",
+      "description": "Per-rule decomposition (detailed view).",
+      "fields": [
+        {
+          "name": "rule_id",
+          "type": "string",
+          "required": true,
+          "trace": "phase3:knowledge/schemas/detection/rule-evaluation-result.schema.json#/properties/rule_id"
+        },
+        {
+          "name": "rule_version",
+          "type": "string",
+          "required": true,
+          "trace": "phase3:knowledge/schemas/detection/rule-evaluation-result.schema.json#/properties/rule_version"
+        },
+        {
+          "name": "kind",
+          "type": "enum",
+          "required": true,
+          "vocabulary": "rule_kind",
+          "trace": "phase3:knowledge/schemas/detection/rule-evaluation-result.schema.json#/properties/kind"
+        },
+        {
+          "name": "evaluation_state",
+          "type": "enum",
+          "required": true,
+          "vocabulary": "rule_evaluation_state",
+          "trace": "phase3:knowledge/schemas/detection/rule-evaluation-result.schema.json#/properties/evaluation_state"
+        },
+        {
+          "name": "governing",
+          "type": "boolean",
+          "required": true,
+          "trace": "phase3:knowledge/schemas/detection/rule-evaluation-result.schema.json#/properties/governing"
+        },
+        {
+          "name": "effective_severity",
+          "type": "enum",
+          "required": false,
+          "nullable": true,
+          "vocabulary": "rule_effective_severity",
+          "trace": "phase3:knowledge/schemas/detection/rule-evaluation-result.schema.json#/properties/effective_severity"
+        },
+        {
+          "name": "rule_evidence_strength",
+          "type": "enum",
+          "required": false,
+          "nullable": true,
+          "vocabulary": "rule_evidence_strength",
+          "trace": "phase3:knowledge/schemas/detection/rule-evaluation-result.schema.json#/properties/rule_evidence_strength"
+        },
+        {
+          "name": "rule_detection_confidence",
+          "type": "enum",
+          "required": false,
+          "nullable": true,
+          "vocabulary": "rule_detection_confidence",
+          "trace": "phase3:knowledge/schemas/detection/rule-evaluation-result.schema.json#/properties/rule_detection_confidence"
+        }
+      ]
+    },
+    "UserCorrectionCreateRequest": {
+      "kind": "REQUEST",
+      "body": "JSON",
+      "unknown_fields": "REJECT",
+      "description": "User extraction correction; creates a new evaluation.",
+      "fields": [
+        {
+          "name": "correction_description",
+          "type": "string",
+          "required": true,
+          "max_length": "BOUNDED"
+        },
+        {
+          "name": "reason_code",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    "CorrectionAcceptedResponse": {
+      "kind": "RESPONSE",
+      "body": "JSON",
+      "unknown_fields": "CLIENT_MUST_TOLERATE",
+      "description": "Correction recorded; new evaluation accepted.",
+      "fields": [
+        {
+          "name": "correction_id",
+          "type": "uuid",
+          "required": true
+        },
+        {
+          "name": "corrected_evaluation_id",
+          "type": "uuid",
+          "required": true
+        },
+        {
+          "name": "new_evaluation",
+          "type": "object",
+          "required": true,
+          "schema": "EvaluationResponse"
+        }
+      ]
+    },
+    "EnrichmentListResponse": {
+      "kind": "RESPONSE",
+      "body": "JSON",
+      "unknown_fields": "CLIENT_MUST_TOLERATE",
+      "description": "Advisory enrichment (future, INT-001).",
+      "fields": [
+        {
+          "name": "items",
+          "type": "array",
+          "required": true,
+          "items": "EnrichmentView"
+        },
+        {
+          "name": "page",
+          "type": "object",
+          "required": true,
+          "schema": "PageInfo"
+        }
+      ]
+    },
+    "EnrichmentView": {
+      "kind": "RESPONSE",
+      "body": "JSON",
+      "unknown_fields": "CLIENT_MUST_TOLERATE",
+      "description": "Normalized, non-authoritative; no provider credentials or raw provider bodies.",
+      "fields": [
+        {
+          "name": "enrichment_id",
+          "type": "uuid",
+          "required": true
+        },
+        {
+          "name": "provider_category",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "status",
+          "type": "enum",
+          "required": true,
+          "vocabulary": "enrichment_status"
+        },
+        {
+          "name": "reputation_result",
+          "type": "enum",
+          "required": true,
+          "vocabulary": "reputation_result"
+        },
+        {
+          "name": "observed_at",
+          "type": "timestamp",
+          "required": false,
+          "nullable": true
+        },
+        {
+          "name": "advisory",
+          "type": "boolean",
+          "required": true
+        }
+      ]
+    },
+    "AdjudicationCreateRequest": {
+      "kind": "REQUEST",
+      "body": "JSON",
+      "unknown_fields": "REJECT",
+      "description": "New adjudication record; actor and time are server-side.",
+      "fields": [
+        {
+          "name": "adjudicated_result_digest",
+          "type": "string",
+          "required": true,
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        {
+          "name": "outcome",
+          "type": "enum",
+          "required": true,
+          "vocabulary": "adjudication_outcome"
+        },
+        {
+          "name": "rationale",
+          "type": "string",
+          "required": true,
+          "max_length": "BOUNDED"
+        },
+        {
+          "name": "supersedes_adjudication_id",
+          "type": "uuid",
+          "required": false
+        }
+      ]
+    },
+    "AdjudicationResponse": {
+      "kind": "RESPONSE",
+      "body": "JSON",
+      "unknown_fields": "CLIENT_MUST_TOLERATE",
+      "description": "Adjudication record.",
+      "fields": [
+        {
+          "name": "adjudication_id",
+          "type": "uuid",
+          "required": true
+        },
+        {
+          "name": "evaluation_id",
+          "type": "uuid",
+          "required": true
+        },
+        {
+          "name": "adjudicated_result_digest",
+          "type": "string",
+          "required": true,
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        {
+          "name": "outcome",
+          "type": "enum",
+          "required": true,
+          "vocabulary": "adjudication_outcome"
+        },
+        {
+          "name": "rationale",
+          "type": "string",
+          "required": false,
+          "visibility": "CONTENT_PERMISSION"
+        },
+        {
+          "name": "adjudicated_by",
+          "type": "uuid",
+          "required": true,
+          "visibility": "ANALYST_ONLY"
+        },
+        {
+          "name": "adjudicated_at",
+          "type": "timestamp",
+          "required": true
+        },
+        {
+          "name": "supersedes_adjudication_id",
+          "type": "uuid",
+          "required": false,
+          "nullable": true
+        }
+      ]
+    },
+    "AdjudicationListResponse": {
+      "kind": "RESPONSE",
+      "body": "JSON",
+      "unknown_fields": "CLIENT_MUST_TOLERATE",
+      "description": "Paged adjudications.",
+      "fields": [
+        {
+          "name": "items",
+          "type": "array",
+          "required": true,
+          "items": "AdjudicationResponse"
+        },
+        {
+          "name": "page",
+          "type": "object",
+          "required": true,
+          "schema": "PageInfo"
+        }
+      ]
+    },
+    "ReviewItemResponse": {
+      "kind": "RESPONSE",
+      "body": "JSON",
+      "unknown_fields": "CLIENT_MUST_TOLERATE",
+      "description": "Content-free review queue entry.",
+      "fields": [
+        {
+          "name": "review_item_id",
+          "type": "uuid",
+          "required": true
+        },
+        {
+          "name": "evaluation_id",
+          "type": "uuid",
+          "required": true
+        },
+        {
+          "name": "case_id",
+          "type": "uuid",
+          "required": true
+        },
+        {
+          "name": "state",
+          "type": "enum",
+          "required": true,
+          "vocabulary": "api_review_state"
+        },
+        {
+          "name": "routing_basis",
+          "type": "array",
+          "required": true,
+          "items_vocabulary": "review_routing_basis"
+        },
+        {
+          "name": "assigned_analyst_id",
+          "type": "uuid",
+          "required": false,
+          "nullable": true
+        },
+        {
+          "name": "queued_at",
+          "type": "timestamp",
+          "required": true
+        },
+        {
+          "name": "etag",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    "ReviewQueueResponse": {
+      "kind": "RESPONSE",
+      "body": "JSON",
+      "unknown_fields": "CLIENT_MUST_TOLERATE",
+      "description": "Paged review queue.",
+      "fields": [
+        {
+          "name": "items",
+          "type": "array",
+          "required": true,
+          "items": "ReviewItemResponse"
+        },
+        {
+          "name": "page",
+          "type": "object",
+          "required": true,
+          "schema": "PageInfo"
+        }
+      ]
+    },
+    "ReviewAssignmentRequest": {
+      "kind": "REQUEST",
+      "body": "JSON",
+      "unknown_fields": "REJECT",
+      "description": "Assigns an analyst (creates an ASSIGNED_ANALYST case grant).",
+      "fields": [
+        {
+          "name": "analyst_principal_id",
+          "type": "uuid",
+          "required": true
+        },
+        {
+          "name": "permits_evidence_content",
+          "type": "boolean",
+          "required": true
+        },
+        {
+          "name": "reason_code",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    "CaseAccessGrantResponse": {
+      "kind": "RESPONSE",
+      "body": "JSON",
+      "unknown_fields": "CLIENT_MUST_TOLERATE",
+      "description": "Case access grant (metadata).",
+      "fields": [
+        {
+          "name": "grant_id",
+          "type": "uuid",
+          "required": true
+        },
+        {
+          "name": "case_id",
+          "type": "uuid",
+          "required": true
+        },
+        {
+          "name": "principal_id",
+          "type": "uuid",
+          "required": true
+        },
+        {
+          "name": "grant_kind",
+          "type": "enum",
+          "required": true,
+          "vocabulary": "case_grant_kind"
+        },
+        {
+          "name": "permits_case_metadata",
+          "type": "boolean",
+          "required": true
+        },
+        {
+          "name": "permits_evidence_content",
+          "type": "boolean",
+          "required": true
+        },
+        {
+          "name": "effective_from",
+          "type": "timestamp",
+          "required": true
+        },
+        {
+          "name": "revoked_at",
+          "type": "timestamp",
+          "required": false,
+          "nullable": true
+        }
+      ]
+    },
+    "CaseAccessGrantListResponse": {
+      "kind": "RESPONSE",
+      "body": "JSON",
+      "unknown_fields": "CLIENT_MUST_TOLERATE",
+      "description": "Paged grants.",
+      "fields": [
+        {
+          "name": "items",
+          "type": "array",
+          "required": true,
+          "items": "CaseAccessGrantResponse"
+        },
+        {
+          "name": "page",
+          "type": "object",
+          "required": true,
+          "schema": "PageInfo"
+        }
+      ]
+    },
+    "ReportCreateRequest": {
+      "kind": "REQUEST",
+      "body": "JSON",
+      "unknown_fields": "REJECT",
+      "description": "Generates a new report revision or reproduces an existing one from its pins.",
+      "fields": [
+        {
+          "name": "evaluation_ids",
+          "type": "array",
+          "required": true,
+          "items": "uuid"
+        },
+        {
+          "name": "reproduction_of_report_id",
+          "type": "uuid",
+          "required": false
+        }
+      ]
+    },
+    "ReportResponse": {
+      "kind": "RESPONSE",
+      "body": "JSON",
+      "unknown_fields": "CLIENT_MUST_TOLERATE",
+      "description": "Report metadata/status.",
+      "fields": [
+        {
+          "name": "report_id",
+          "type": "uuid",
+          "required": true
+        },
+        {
+          "name": "case_id",
+          "type": "uuid",
+          "required": true
+        },
+        {
+          "name": "revision_number",
+          "type": "integer",
+          "required": false,
+          "nullable": true
+        },
+        {
+          "name": "state",
+          "type": "enum",
+          "required": true,
+          "vocabulary": "api_report_state"
+        },
+        {
+          "name": "report_contract_version",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "report_digest",
+          "type": "string",
+          "required": false,
+          "nullable": true,
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        {
+          "name": "reproduction_of_report_id",
+          "type": "uuid",
+          "required": false,
+          "nullable": true
+        },
+        {
+          "name": "unavailable_reason",
+          "type": "string",
+          "required": false,
+          "nullable": true
+        },
+        {
+          "name": "generated_at",
+          "type": "timestamp",
+          "required": false,
+          "nullable": true
+        },
+        {
+          "name": "content_link",
+          "type": "string",
+          "required": false,
+          "nullable": true
+        }
+      ]
+    },
+    "ReportListResponse": {
+      "kind": "RESPONSE",
+      "body": "JSON",
+      "unknown_fields": "CLIENT_MUST_TOLERATE",
+      "description": "Paged reports.",
+      "fields": [
+        {
+          "name": "items",
+          "type": "array",
+          "required": true,
+          "items": "ReportResponse"
+        },
+        {
+          "name": "page",
+          "type": "object",
+          "required": true,
+          "schema": "PageInfo"
+        }
+      ]
+    },
+    "ReportContentDownload": {
+      "kind": "RESPONSE",
+      "body": "BINARY",
+      "unknown_fields": "CLIENT_MUST_TOLERATE",
+      "description": "Report bytes (format owned by Phase 7 / REPORT-001); Cache-Control: no-store.",
+      "fields": []
+    },
+    "ReplayCreateRequest": {
+      "kind": "REQUEST",
+      "body": "JSON",
+      "unknown_fields": "REJECT",
+      "description": "Historical deterministic replay of exactly the pinned material. No mode, knowledge, AI or profile selection is accepted.",
+      "fields": [
+        {
+          "name": "reason_code",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    "ReplayResponse": {
+      "kind": "RESPONSE",
+      "body": "JSON",
+      "unknown_fields": "CLIENT_MUST_TOLERATE",
+      "description": "Replay verification record; never a new result.",
+      "fields": [
+        {
+          "name": "replay_id",
+          "type": "uuid",
+          "required": true
+        },
+        {
+          "name": "evaluation_id",
+          "type": "uuid",
+          "required": true
+        },
+        {
+          "name": "state",
+          "type": "enum",
+          "required": true,
+          "vocabulary": "api_replay_state"
+        },
+        {
+          "name": "capability",
+          "type": "enum",
+          "required": false,
+          "nullable": true,
+          "vocabulary": "replay_capability_state"
+        },
+        {
+          "name": "outcome",
+          "type": "enum",
+          "required": false,
+          "nullable": true,
+          "vocabulary": "replay_outcome"
+        },
+        {
+          "name": "missing_material_kinds",
+          "type": "array",
+          "required": false,
+          "items_vocabulary": "replay_material_kind"
+        },
+        {
+          "name": "replayed_result_digest",
+          "type": "string",
+          "required": false,
+          "nullable": true,
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        {
+          "name": "requested_at",
+          "type": "timestamp",
+          "required": true
+        },
+        {
+          "name": "completed_at",
+          "type": "timestamp",
+          "required": false,
+          "nullable": true
+        }
+      ]
+    },
+    "KnowledgeActiveResponse": {
+      "kind": "RESPONSE",
+      "body": "JSON",
+      "unknown_fields": "CLIENT_MUST_TOLERATE",
+      "description": "Active exact bundle identity for this deployment.",
+      "fields": [
+        {
+          "name": "deployment_state",
+          "type": "enum",
+          "required": true,
+          "vocabulary": "api_knowledge_deployment_state"
+        },
+        {
+          "name": "active_bundle",
+          "type": "object",
+          "required": false,
+          "nullable": true,
+          "schema": "KnowledgeBundleResponse"
+        },
+        {
+          "name": "state_changed_at",
+          "type": "timestamp",
+          "required": true
+        }
+      ]
+    },
+    "KnowledgeBundleResponse": {
+      "kind": "RESPONSE",
+      "body": "JSON",
+      "unknown_fields": "CLIENT_MUST_TOLERATE",
+      "description": "Bundle reference metadata; no rule bodies.",
+      "fields": [
+        {
+          "name": "content_digest",
+          "type": "string",
+          "required": true,
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        {
+          "name": "bundle_version",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "manifest_schema_version",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "commit_sha",
+          "type": "string",
+          "required": false,
+          "nullable": true
+        },
+        {
+          "name": "governance_eligibility",
+          "type": "enum",
+          "required": true,
+          "vocabulary": "knowledge_governance_eligibility"
+        }
+      ]
+    },
+    "KnowledgeActivationListResponse": {
+      "kind": "RESPONSE",
+      "body": "JSON",
+      "unknown_fields": "CLIENT_MUST_TOLERATE",
+      "description": "Activation history.",
+      "fields": [
+        {
+          "name": "items",
+          "type": "array",
+          "required": true,
+          "items": "KnowledgeActivationResponse"
+        },
+        {
+          "name": "page",
+          "type": "object",
+          "required": true,
+          "schema": "PageInfo"
+        }
+      ]
+    },
+    "KnowledgeActivationResponse": {
+      "kind": "RESPONSE",
+      "body": "JSON",
+      "unknown_fields": "CLIENT_MUST_TOLERATE",
+      "description": "Activation record.",
+      "fields": [
+        {
+          "name": "activation_id",
+          "type": "uuid",
+          "required": true
+        },
+        {
+          "name": "action_kind",
+          "type": "enum",
+          "required": true,
+          "vocabulary": "activation_action_kind"
+        },
+        {
+          "name": "content_digest",
+          "type": "string",
+          "required": true,
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        {
+          "name": "previous_content_digest",
+          "type": "string",
+          "required": false,
+          "nullable": true,
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        {
+          "name": "lifecycle_state",
+          "type": "enum",
+          "required": true,
+          "vocabulary": "activation_lifecycle_state"
+        },
+        {
+          "name": "outcome",
+          "type": "enum",
+          "required": true,
+          "vocabulary": "operation_outcome"
+        },
+        {
+          "name": "recorded_at",
+          "type": "timestamp",
+          "required": true
+        }
+      ]
+    },
+    "KnowledgeActivationRequest": {
+      "kind": "REQUEST",
+      "body": "JSON",
+      "unknown_fields": "REJECT",
+      "description": "Activate an exact published bundle by content_digest.",
+      "fields": [
+        {
+          "name": "content_digest",
+          "type": "string",
+          "required": true,
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        {
+          "name": "expected_active_content_digest",
+          "type": "string",
+          "required": false,
+          "pattern": "^[0-9a-f]{64}$",
+          "nullable": true
+        },
+        {
+          "name": "governance_change_ref",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    "KnowledgeRollbackRequest": {
+      "kind": "REQUEST",
+      "body": "JSON",
+      "unknown_fields": "REJECT",
+      "description": "Explicit rollback to an exact previously validated bundle (never 'previous').",
+      "fields": [
+        {
+          "name": "content_digest",
+          "type": "string",
+          "required": true,
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        {
+          "name": "expected_active_content_digest",
+          "type": "string",
+          "required": true,
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        {
+          "name": "reason_code",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    "KnowledgeWithdrawalRequest": {
+      "kind": "REQUEST",
+      "body": "JSON",
+      "unknown_fields": "REJECT",
+      "description": "Records the governed (Git/CI) withdrawal of the exact bundle in the path for this deployment.",
+      "fields": [
+        {
+          "name": "governance_change_ref",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "reason_code",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    "DeletionRequestCreateRequest": {
+      "kind": "REQUEST",
+      "body": "JSON",
+      "unknown_fields": "REJECT",
+      "description": "Governed deletion request; never immediate destruction.",
+      "fields": [
+        {
+          "name": "scope_kind",
+          "type": "enum",
+          "required": true,
+          "vocabulary": "deletion_scope_kind"
+        },
+        {
+          "name": "scope_id",
+          "type": "uuid",
+          "required": true
+        },
+        {
+          "name": "reason_code",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    "DeletionRequestResponse": {
+      "kind": "RESPONSE",
+      "body": "JSON",
+      "unknown_fields": "CLIENT_MUST_TOLERATE",
+      "description": "Deletion workflow status (content-free).",
+      "fields": [
+        {
+          "name": "deletion_request_id",
+          "type": "uuid",
+          "required": true
+        },
+        {
+          "name": "scope_kind",
+          "type": "enum",
+          "required": true,
+          "vocabulary": "deletion_scope_kind"
+        },
+        {
+          "name": "scope_id",
+          "type": "uuid",
+          "required": true
+        },
+        {
+          "name": "state",
+          "type": "enum",
+          "required": true,
+          "vocabulary": "api_deletion_state"
+        },
+        {
+          "name": "requested_at",
+          "type": "timestamp",
+          "required": true
+        },
+        {
+          "name": "completed_at",
+          "type": "timestamp",
+          "required": false,
+          "nullable": true
+        },
+        {
+          "name": "failure_category",
+          "type": "string",
+          "required": false,
+          "nullable": true
+        },
+        {
+          "name": "etag",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    "DeletionRequestListResponse": {
+      "kind": "RESPONSE",
+      "body": "JSON",
+      "unknown_fields": "CLIENT_MUST_TOLERATE",
+      "description": "Paged deletion requests.",
+      "fields": [
+        {
+          "name": "items",
+          "type": "array",
+          "required": true,
+          "items": "DeletionRequestResponse"
+        },
+        {
+          "name": "page",
+          "type": "object",
+          "required": true,
+          "schema": "PageInfo"
+        }
+      ]
+    },
+    "BreakGlassCreateRequest": {
+      "kind": "REQUEST",
+      "body": "JSON",
+      "unknown_fields": "REJECT",
+      "description": "Explicit, short-lived, audited emergency elevation.",
+      "fields": [
+        {
+          "name": "scope_kind",
+          "type": "enum",
+          "required": true,
+          "vocabulary": "break_glass_scope"
+        },
+        {
+          "name": "case_id",
+          "type": "uuid",
+          "required": true
+        },
+        {
+          "name": "evidence_id",
+          "type": "uuid",
+          "required": false
+        },
+        {
+          "name": "reason",
+          "type": "string",
+          "required": true,
+          "max_length": "BOUNDED"
+        }
+      ]
+    },
+    "BreakGlassGrantResponse": {
+      "kind": "RESPONSE",
+      "body": "JSON",
+      "unknown_fields": "CLIENT_MUST_TOLERATE",
+      "description": "Break-glass grant.",
+      "fields": [
+        {
+          "name": "break_glass_grant_id",
+          "type": "uuid",
+          "required": true
+        },
+        {
+          "name": "scope_kind",
+          "type": "enum",
+          "required": true,
+          "vocabulary": "break_glass_scope"
+        },
+        {
+          "name": "case_id",
+          "type": "uuid",
+          "required": true
+        },
+        {
+          "name": "evidence_id",
+          "type": "uuid",
+          "required": false,
+          "nullable": true
+        },
+        {
+          "name": "started_at",
+          "type": "timestamp",
+          "required": true
+        },
+        {
+          "name": "expires_at",
+          "type": "timestamp",
+          "required": true
+        },
+        {
+          "name": "ended_at",
+          "type": "timestamp",
+          "required": false,
+          "nullable": true
+        },
+        {
+          "name": "review_state",
+          "type": "enum",
+          "required": true,
+          "vocabulary": "break_glass_review_state"
+        }
+      ]
+    },
+    "BreakGlassReviewRequest": {
+      "kind": "REQUEST",
+      "body": "JSON",
+      "unknown_fields": "REJECT",
+      "description": "Mandatory post-event review by a different principal.",
+      "fields": [
+        {
+          "name": "review_outcome",
+          "type": "enum",
+          "required": true,
+          "vocabulary": "break_glass_review_outcome"
+        },
+        {
+          "name": "review_note",
+          "type": "string",
+          "required": false,
+          "max_length": "BOUNDED"
+        }
+      ]
+    },
+    "AuditEventListResponse": {
+      "kind": "RESPONSE",
+      "body": "JSON",
+      "unknown_fields": "CLIENT_MUST_TOLERATE",
+      "description": "Content-free audit events.",
+      "fields": [
+        {
+          "name": "items",
+          "type": "array",
+          "required": true,
+          "items": "AuditEventView"
+        },
+        {
+          "name": "page",
+          "type": "object",
+          "required": true,
+          "schema": "PageInfo"
+        }
+      ]
+    },
+    "AuditEventView": {
+      "kind": "RESPONSE",
+      "body": "JSON",
+      "unknown_fields": "CLIENT_MUST_TOLERATE",
+      "description": "Audit metadata only.",
+      "fields": [
+        {
+          "name": "event_id",
+          "type": "uuid",
+          "required": true
+        },
+        {
+          "name": "event_type",
+          "type": "enum",
+          "required": true,
+          "vocabulary": "audit_event_type"
+        },
+        {
+          "name": "occurred_at",
+          "type": "timestamp",
+          "required": true
+        },
+        {
+          "name": "actor_id",
+          "type": "uuid",
+          "required": false,
+          "nullable": true
+        },
+        {
+          "name": "actor_kind",
+          "type": "enum",
+          "required": true,
+          "vocabulary": "actor_kind"
+        },
+        {
+          "name": "outcome",
+          "type": "enum",
+          "required": true,
+          "vocabulary": "audit_outcome"
+        },
+        {
+          "name": "target_kind",
+          "type": "enum",
+          "required": true,
+          "vocabulary": "audit_target_kind"
+        },
+        {
+          "name": "target_id",
+          "type": "uuid",
+          "required": false,
+          "nullable": true
+        },
+        {
+          "name": "case_id",
+          "type": "uuid",
+          "required": false,
+          "nullable": true
+        },
+        {
+          "name": "correlation_id",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "chain_sequence",
+          "type": "integer",
+          "required": true
+        },
+        {
+          "name": "event_hash",
+          "type": "string",
+          "required": true,
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      ]
+    }
+  },
+  "resources": [
+    {
+      "name": "Principal",
+      "canonical_path": "/api/v1/me",
+      "data001_object": "PrincipalReference",
+      "api_mutability": "READ_ONLY"
+    },
+    {
+      "name": "Case",
+      "canonical_path": "/api/v1/cases/{case_id}",
+      "data001_object": "Case",
+      "api_mutability": "COMMAND_ONLY"
+    },
+    {
+      "name": "Submission",
+      "canonical_path": "/api/v1/submissions/{submission_id}",
+      "data001_object": "Submission",
+      "api_mutability": "IMMUTABLE_AFTER_CREATE"
+    },
+    {
+      "name": "EvidenceItem",
+      "canonical_path": "/api/v1/evidence/{evidence_id}",
+      "data001_object": "EvidenceItem",
+      "api_mutability": "COMMAND_ONLY"
+    },
+    {
+      "name": "EvidenceContent",
+      "canonical_path": "/api/v1/evidence/{evidence_id}/content",
+      "data001_object": "EvidenceItem",
+      "api_mutability": "WRITE_ONCE"
+    },
+    {
+      "name": "Evaluation",
+      "canonical_path": "/api/v1/evaluations/{evaluation_id}",
+      "data001_object": "Evaluation",
+      "api_mutability": "IMMUTABLE"
+    },
+    {
+      "name": "DetectionResult",
+      "canonical_path": "/api/v1/evaluations/{evaluation_id}/result",
+      "data001_object": "DetectionResultRecord",
+      "api_mutability": "IMMUTABLE"
+    },
+    {
+      "name": "UserCorrection",
+      "canonical_path": "/api/v1/evaluations/{evaluation_id}/corrections",
+      "data001_object": "UserCorrection",
+      "api_mutability": "APPEND_ONLY"
+    },
+    {
+      "name": "AnalystAdjudication",
+      "canonical_path": "/api/v1/adjudications/{adjudication_id}",
+      "data001_object": "AnalystAdjudication",
+      "api_mutability": "APPEND_ONLY"
+    },
+    {
+      "name": "ReviewItem",
+      "canonical_path": "/api/v1/review-queue/{review_item_id}",
+      "data001_object": "ReviewRoutingState",
+      "api_mutability": "COMMAND_ONLY"
+    },
+    {
+      "name": "CaseAccessGrant",
+      "canonical_path": "/api/v1/access-grants/{grant_id}",
+      "data001_object": "CaseAccessGrant",
+      "api_mutability": "APPEND_ONLY"
+    },
+    {
+      "name": "ReportBundle",
+      "canonical_path": "/api/v1/reports/{report_id}",
+      "data001_object": "ReportBundleRecord",
+      "api_mutability": "IMMUTABLE"
+    },
+    {
+      "name": "Replay",
+      "canonical_path": "/api/v1/replays/{replay_id}",
+      "data001_object": "ReplayExecution",
+      "api_mutability": "IMMUTABLE"
+    },
+    {
+      "name": "ExternalEnrichmentResult",
+      "canonical_path": "/api/v1/evaluations/{evaluation_id}/enrichments",
+      "data001_object": "ExternalEnrichmentResult",
+      "api_mutability": "IMMUTABLE"
+    },
+    {
+      "name": "KnowledgeDeploymentState",
+      "canonical_path": "/api/v1/knowledge/active",
+      "data001_object": "KnowledgeActivationRecord",
+      "api_mutability": "COMMAND_ONLY"
+    },
+    {
+      "name": "KnowledgeBundleReference",
+      "canonical_path": "/api/v1/knowledge/bundles/{content_digest}",
+      "data001_object": "KnowledgeBundleReference",
+      "api_mutability": "COMMAND_ONLY"
+    },
+    {
+      "name": "KnowledgeActivationRecord",
+      "canonical_path": "/api/v1/knowledge/activations",
+      "data001_object": "KnowledgeActivationRecord",
+      "api_mutability": "APPEND_ONLY"
+    },
+    {
+      "name": "DeletionRequest",
+      "canonical_path": "/api/v1/deletion-requests/{deletion_request_id}",
+      "data001_object": "DeletionRequest",
+      "api_mutability": "COMMAND_ONLY"
+    },
+    {
+      "name": "BreakGlassGrant",
+      "canonical_path": "/api/v1/break-glass-grants/{break_glass_grant_id}",
+      "data001_object": "BreakGlassGrant",
+      "api_mutability": "COMMAND_ONLY"
+    },
+    {
+      "name": "AuditEvent",
+      "canonical_path": "/api/v1/audit-events",
+      "data001_object": "AuditEventReference",
+      "api_mutability": "IMMUTABLE"
+    },
+    {
+      "name": "Health",
+      "canonical_path": "/health/*",
+      "data001_object": "—",
+      "api_mutability": "READ_ONLY"
+    }
+  ],
+  "field_visibility": {
+    "raw_evidence_content": {
+      "USER": "OWN_CASE",
+      "ANALYST": "IF_GRANTED_CONTENT",
+      "KNOWLEDGE_EDITOR": "HIDDEN",
+      "KNOWLEDGE_APPROVER": "HIDDEN",
+      "ADMINISTRATOR": "BREAK_GLASS_ONLY"
+    },
+    "evidence_metadata": {
+      "USER": "OWN_CASE",
+      "ANALYST": "ASSIGNED",
+      "KNOWLEDGE_EDITOR": "HIDDEN",
+      "KNOWLEDGE_APPROVER": "HIDDEN",
+      "ADMINISTRATOR": "HIDDEN"
+    },
+    "normalized_sensitive_content": {
+      "USER": "HIDDEN",
+      "ANALYST": "HIDDEN",
+      "KNOWLEDGE_EDITOR": "HIDDEN",
+      "KNOWLEDGE_APPROVER": "HIDDEN",
+      "ADMINISTRATOR": "HIDDEN"
+    },
+    "governed_observations": {
+      "USER": "HIDDEN",
+      "ANALYST": "IF_GRANTED_CONTENT",
+      "KNOWLEDGE_EDITOR": "HIDDEN",
+      "KNOWLEDGE_APPROVER": "HIDDEN",
+      "ADMINISTRATOR": "HIDDEN"
+    },
+    "result_decision_axes": {
+      "USER": "OWN_CASE",
+      "ANALYST": "ASSIGNED",
+      "KNOWLEDGE_EDITOR": "HIDDEN",
+      "KNOWLEDGE_APPROVER": "HIDDEN",
+      "ADMINISTRATOR": "HIDDEN"
+    },
+    "result_explanation_evidence_basis": {
+      "USER": "OWN_CASE",
+      "ANALYST": "IF_GRANTED_CONTENT",
+      "KNOWLEDGE_EDITOR": "HIDDEN",
+      "KNOWLEDGE_APPROVER": "HIDDEN",
+      "ADMINISTRATOR": "HIDDEN"
+    },
+    "per_rule_results": {
+      "USER": "HIDDEN",
+      "ANALYST": "IF_GRANTED_CONTENT",
+      "KNOWLEDGE_EDITOR": "HIDDEN",
+      "KNOWLEDGE_APPROVER": "HIDDEN",
+      "ADMINISTRATOR": "HIDDEN"
+    },
+    "knowledge_bundle_identity": {
+      "USER": "IN_OWN_RESULT_PROVENANCE",
+      "ANALYST": "VISIBLE",
+      "KNOWLEDGE_EDITOR": "VISIBLE",
+      "KNOWLEDGE_APPROVER": "VISIBLE",
+      "ADMINISTRATOR": "VISIBLE"
+    },
+    "provider_details": {
+      "USER": "HIDDEN",
+      "ANALYST": "NORMALIZED_ONLY",
+      "KNOWLEDGE_EDITOR": "HIDDEN",
+      "KNOWLEDGE_APPROVER": "HIDDEN",
+      "ADMINISTRATOR": "HIDDEN"
+    },
+    "adjudication_rationale": {
+      "USER": "HIDDEN",
+      "ANALYST": "IF_GRANTED_CONTENT",
+      "KNOWLEDGE_EDITOR": "HIDDEN",
+      "KNOWLEDGE_APPROVER": "HIDDEN",
+      "ADMINISTRATOR": "HIDDEN"
+    },
+    "audit_metadata": {
+      "USER": "HIDDEN",
+      "ANALYST": "HIDDEN",
+      "KNOWLEDGE_EDITOR": "HIDDEN",
+      "KNOWLEDGE_APPROVER": "HIDDEN",
+      "ADMINISTRATOR": "VISIBLE"
+    },
+    "principal_information": {
+      "USER": "SELF",
+      "ANALYST": "SELF",
+      "KNOWLEDGE_EDITOR": "SELF",
+      "KNOWLEDGE_APPROVER": "SELF",
+      "ADMINISTRATOR": "VISIBLE_NO_CREDENTIALS"
+    },
+    "secrets_and_keys": {
+      "USER": "HIDDEN",
+      "ANALYST": "HIDDEN",
+      "KNOWLEDGE_EDITOR": "HIDDEN",
+      "KNOWLEDGE_APPROVER": "HIDDEN",
+      "ADMINISTRATOR": "HIDDEN"
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "getMe",
+      "method": "GET",
+      "path": "/api/v1/me",
+      "purpose": "Authenticated principal summary",
+      "internal": false,
+      "authentication": "REQUIRED",
+      "roles": [
+        "USER",
+        "ANALYST",
+        "KNOWLEDGE_EDITOR",
+        "KNOWLEDGE_APPROVER",
+        "ADMINISTRATOR"
+      ],
+      "resource_authorization": "SELF",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": null,
+      "response_schema": "MeResponse",
+      "success_status": 200,
+      "mode": "SYNC",
+      "idempotency": "NOT_APPLICABLE",
+      "audit": "NOT_REQUIRED",
+      "audit_event": null,
+      "sensitivity": "C5",
+      "concurrency": "NONE",
+      "target_resource": "Principal",
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "INTERNAL_ERROR",
+        "RATE_LIMITED",
+        "UNAUTHENTICATED"
+      ],
+      "notes": ""
+    },
+    {
+      "operation_id": "getLiveness",
+      "method": "GET",
+      "path": "/health/live",
+      "purpose": "Liveness probe (internal routing only)",
+      "internal": true,
+      "authentication": "INTERNAL_PROBE",
+      "roles": [],
+      "resource_authorization": "NONE_INTERNAL_PROBE",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": null,
+      "response_schema": "HealthProbeResponse",
+      "success_status": 200,
+      "mode": "SYNC",
+      "idempotency": "NOT_APPLICABLE",
+      "audit": "NOT_REQUIRED",
+      "audit_event": null,
+      "sensitivity": "C2",
+      "concurrency": "NONE",
+      "target_resource": "Health",
+      "errors": [
+        "INTERNAL_ERROR"
+      ],
+      "notes": ""
+    },
+    {
+      "operation_id": "getReadiness",
+      "method": "GET",
+      "path": "/health/ready",
+      "purpose": "Readiness probe (internal routing only)",
+      "internal": true,
+      "authentication": "INTERNAL_PROBE",
+      "roles": [],
+      "resource_authorization": "NONE_INTERNAL_PROBE",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": null,
+      "response_schema": "HealthProbeResponse",
+      "success_status": 200,
+      "mode": "SYNC",
+      "idempotency": "NOT_APPLICABLE",
+      "audit": "NOT_REQUIRED",
+      "audit_event": null,
+      "sensitivity": "C2",
+      "concurrency": "NONE",
+      "target_resource": "Health",
+      "errors": [
+        "INTERNAL_ERROR"
+      ],
+      "notes": ""
+    },
+    {
+      "operation_id": "getOperationalHealth",
+      "method": "GET",
+      "path": "/api/v1/ops/health",
+      "purpose": "Categorical capability health for operators",
+      "internal": false,
+      "authentication": "REQUIRED",
+      "roles": [
+        "ADMINISTRATOR"
+      ],
+      "resource_authorization": "PLATFORM_ADMIN",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": null,
+      "response_schema": "OperationalHealthResponse",
+      "success_status": 200,
+      "mode": "SYNC",
+      "idempotency": "NOT_APPLICABLE",
+      "audit": "NOT_REQUIRED",
+      "audit_event": null,
+      "sensitivity": "C2",
+      "concurrency": "NONE",
+      "target_resource": "Health",
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "INTERNAL_ERROR",
+        "RATE_LIMITED",
+        "UNAUTHENTICATED"
+      ],
+      "notes": ""
+    },
+    {
+      "operation_id": "createCase",
+      "method": "POST",
+      "path": "/api/v1/cases",
+      "purpose": "Create an empty case owned by the caller",
+      "internal": false,
+      "authentication": "REQUIRED",
+      "roles": [
+        "USER"
+      ],
+      "resource_authorization": "SELF",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": "CaseCreateRequest",
+      "response_schema": "CaseResponse",
+      "success_status": 201,
+      "mode": "SYNC",
+      "idempotency": "REQUIRED",
+      "audit": "REQUIRED",
+      "audit_event": "CASE_CREATED",
+      "sensitivity": "C2",
+      "concurrency": "NONE",
+      "target_resource": "Case",
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "IDEMPOTENCY_IN_PROGRESS",
+        "IDEMPOTENCY_KEY_REUSED",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "RATE_LIMITED",
+        "UNAUTHENTICATED"
+      ],
+      "notes": ""
+    },
+    {
+      "operation_id": "listCases",
+      "method": "GET",
+      "path": "/api/v1/cases",
+      "purpose": "List cases the caller owns or is assigned to",
+      "internal": false,
+      "authentication": "REQUIRED",
+      "roles": [
+        "USER",
+        "ANALYST"
+      ],
+      "resource_authorization": "CASE_ACCESS",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": null,
+      "response_schema": "CaseListResponse",
+      "success_status": 200,
+      "mode": "SYNC",
+      "idempotency": "NOT_APPLICABLE",
+      "audit": "NOT_REQUIRED",
+      "audit_event": null,
+      "sensitivity": "C2",
+      "concurrency": "NONE",
+      "target_resource": "Case",
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "RATE_LIMITED",
+        "UNAUTHENTICATED"
+      ],
+      "notes": "",
+      "list": {
+        "pagination": "CURSOR",
+        "filters": [
+          "state",
+          "created_from",
+          "created_to",
+          "relationship"
+        ],
+        "sort": "created_at desc, id desc"
+      }
+    },
+    {
+      "operation_id": "getCase",
+      "method": "GET",
+      "path": "/api/v1/cases/{case_id}",
+      "purpose": "Read a case",
+      "internal": false,
+      "authentication": "REQUIRED",
+      "roles": [
+        "USER",
+        "ANALYST"
+      ],
+      "resource_authorization": "CASE_ACCESS",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": null,
+      "response_schema": "CaseResponse",
+      "success_status": 200,
+      "mode": "SYNC",
+      "idempotency": "NOT_APPLICABLE",
+      "audit": "NOT_REQUIRED",
+      "audit_event": null,
+      "sensitivity": "C2",
+      "concurrency": "NONE",
+      "target_resource": "Case",
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "NOT_FOUND",
+        "RATE_LIMITED",
+        "UNAUTHENTICATED"
+      ],
+      "notes": ""
+    },
+    {
+      "operation_id": "closeCase",
+      "method": "POST",
+      "path": "/api/v1/cases/{case_id}/close",
+      "purpose": "Close a case",
+      "internal": false,
+      "authentication": "REQUIRED",
+      "roles": [
+        "USER",
+        "ANALYST"
+      ],
+      "resource_authorization": "CASE_ACCESS",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": "CaseCloseRequest",
+      "response_schema": "CaseResponse",
+      "success_status": 200,
+      "mode": "SYNC",
+      "idempotency": "REQUIRED",
+      "audit": "REQUIRED",
+      "audit_event": "CASE_STATE_CHANGED",
+      "sensitivity": "C2",
+      "concurrency": "IF_MATCH_REQUIRED",
+      "target_resource": "Case",
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "IDEMPOTENCY_IN_PROGRESS",
+        "IDEMPOTENCY_KEY_REUSED",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "NOT_FOUND",
+        "PRECONDITION_FAILED",
+        "PRECONDITION_REQUIRED",
+        "RATE_LIMITED",
+        "STATE_CONFLICT",
+        "UNAUTHENTICATED"
+      ],
+      "notes": ""
+    },
+    {
+      "operation_id": "reopenCase",
+      "method": "POST",
+      "path": "/api/v1/cases/{case_id}/reopen",
+      "purpose": "Reopen a closed case",
+      "internal": false,
+      "authentication": "REQUIRED",
+      "roles": [
+        "USER",
+        "ANALYST"
+      ],
+      "resource_authorization": "CASE_ACCESS",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": "ReasonCommandRequest",
+      "response_schema": "CaseResponse",
+      "success_status": 200,
+      "mode": "SYNC",
+      "idempotency": "REQUIRED",
+      "audit": "REQUIRED",
+      "audit_event": "CASE_STATE_CHANGED",
+      "sensitivity": "C2",
+      "concurrency": "IF_MATCH_REQUIRED",
+      "target_resource": "Case",
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "IDEMPOTENCY_IN_PROGRESS",
+        "IDEMPOTENCY_KEY_REUSED",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "NOT_FOUND",
+        "PRECONDITION_FAILED",
+        "PRECONDITION_REQUIRED",
+        "RATE_LIMITED",
+        "STATE_CONFLICT",
+        "UNAUTHENTICATED"
+      ],
+      "notes": ""
+    },
+    {
+      "operation_id": "createSubmission",
+      "method": "POST",
+      "path": "/api/v1/cases/{case_id}/submissions",
+      "purpose": "Create a submission (categorical metadata only)",
+      "internal": false,
+      "authentication": "REQUIRED",
+      "roles": [
+        "USER"
+      ],
+      "resource_authorization": "CASE_OWNER",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": "SubmissionCreateRequest",
+      "response_schema": "SubmissionResponse",
+      "success_status": 201,
+      "mode": "SYNC",
+      "idempotency": "REQUIRED",
+      "audit": "NOT_REQUIRED",
+      "audit_event": null,
+      "sensitivity": "C2",
+      "concurrency": "NONE",
+      "target_resource": "Submission",
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "IDEMPOTENCY_IN_PROGRESS",
+        "IDEMPOTENCY_KEY_REUSED",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "NOT_FOUND",
+        "RATE_LIMITED",
+        "STATE_CONFLICT",
+        "UNAUTHENTICATED"
+      ],
+      "notes": ""
+    },
+    {
+      "operation_id": "listSubmissions",
+      "method": "GET",
+      "path": "/api/v1/cases/{case_id}/submissions",
+      "purpose": "List a case's submissions",
+      "internal": false,
+      "authentication": "REQUIRED",
+      "roles": [
+        "USER",
+        "ANALYST"
+      ],
+      "resource_authorization": "CASE_ACCESS",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": null,
+      "response_schema": "SubmissionListResponse",
+      "success_status": 200,
+      "mode": "SYNC",
+      "idempotency": "NOT_APPLICABLE",
+      "audit": "NOT_REQUIRED",
+      "audit_event": null,
+      "sensitivity": "C2",
+      "concurrency": "NONE",
+      "target_resource": "Submission",
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "NOT_FOUND",
+        "RATE_LIMITED",
+        "UNAUTHENTICATED"
+      ],
+      "notes": "",
+      "list": {
+        "pagination": "CURSOR",
+        "filters": [
+          "state",
+          "received_from",
+          "received_to"
+        ],
+        "sort": "created_at desc, id desc"
+      }
+    },
+    {
+      "operation_id": "getSubmission",
+      "method": "GET",
+      "path": "/api/v1/submissions/{submission_id}",
+      "purpose": "Read a submission",
+      "internal": false,
+      "authentication": "REQUIRED",
+      "roles": [
+        "USER",
+        "ANALYST"
+      ],
+      "resource_authorization": "CASE_ACCESS",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": null,
+      "response_schema": "SubmissionResponse",
+      "success_status": 200,
+      "mode": "SYNC",
+      "idempotency": "NOT_APPLICABLE",
+      "audit": "NOT_REQUIRED",
+      "audit_event": null,
+      "sensitivity": "C2",
+      "concurrency": "NONE",
+      "target_resource": "Submission",
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "NOT_FOUND",
+        "RATE_LIMITED",
+        "UNAUTHENTICATED"
+      ],
+      "notes": ""
+    },
+    {
+      "operation_id": "createEvidenceUpload",
+      "method": "POST",
+      "path": "/api/v1/submissions/{submission_id}/evidence",
+      "purpose": "Initiate an evidence item (metadata declaration)",
+      "internal": false,
+      "authentication": "REQUIRED",
+      "roles": [
+        "USER"
+      ],
+      "resource_authorization": "CASE_OWNER",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": "EvidenceUploadCreateRequest",
+      "response_schema": "EvidenceMetadataResponse",
+      "success_status": 201,
+      "mode": "SYNC",
+      "idempotency": "REQUIRED",
+      "audit": "REQUIRED",
+      "audit_event": "EVIDENCE_RECEIVED",
+      "sensitivity": "C2",
+      "concurrency": "NONE",
+      "target_resource": "EvidenceItem",
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "IDEMPOTENCY_IN_PROGRESS",
+        "IDEMPOTENCY_KEY_REUSED",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "NOT_FOUND",
+        "PAYLOAD_TOO_LARGE",
+        "RATE_LIMITED",
+        "STATE_CONFLICT",
+        "UNAUTHENTICATED",
+        "UNSUPPORTED_MEDIA_TYPE"
+      ],
+      "notes": ""
+    },
+    {
+      "operation_id": "putEvidenceContent",
+      "method": "PUT",
+      "path": "/api/v1/evidence/{evidence_id}/content",
+      "purpose": "Transfer the exact original bytes (server computes SHA-256)",
+      "internal": false,
+      "authentication": "REQUIRED",
+      "roles": [
+        "USER"
+      ],
+      "resource_authorization": "CASE_OWNER",
+      "sensitive_content_permission": "EVIDENCE_CONTENT",
+      "break_glass_roles": [],
+      "request_schema": "EvidenceContentUpload",
+      "response_schema": "EvidenceMetadataResponse",
+      "success_status": 200,
+      "mode": "SYNC",
+      "idempotency": "NATURALLY_IDEMPOTENT",
+      "audit": "REQUIRED",
+      "audit_event": "EVIDENCE_STORED",
+      "sensitivity": "C3",
+      "concurrency": "NONE",
+      "target_resource": "EvidenceContent",
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "INTEGRITY_FAILURE",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "NOT_FOUND",
+        "PAYLOAD_TOO_LARGE",
+        "RATE_LIMITED",
+        "STATE_CONFLICT",
+        "UNAUTHENTICATED",
+        "UNSUPPORTED_MEDIA_TYPE"
+      ],
+      "notes": "Allowed once while AWAITING_CONTENT; an identical re-PUT (same server-computed digest) returns the same state; different bytes after content exists -> STATE_CONFLICT."
+    },
+    {
+      "operation_id": "finalizeEvidence",
+      "method": "POST",
+      "path": "/api/v1/evidence/{evidence_id}/finalize",
+      "purpose": "Request durable verification and manifest finalization",
+      "internal": false,
+      "authentication": "REQUIRED",
+      "roles": [
+        "USER"
+      ],
+      "resource_authorization": "CASE_OWNER",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": "EvidenceFinalizeRequest",
+      "response_schema": "EvidenceMetadataResponse",
+      "success_status": 202,
+      "mode": "ASYNC",
+      "idempotency": "REQUIRED",
+      "audit": "REQUIRED",
+      "audit_event": "EVIDENCE_STORED",
+      "sensitivity": "C2",
+      "concurrency": "NONE",
+      "target_resource": "EvidenceItem",
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "IDEMPOTENCY_IN_PROGRESS",
+        "IDEMPOTENCY_KEY_REUSED",
+        "INTEGRITY_FAILURE",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "NOT_FOUND",
+        "RATE_LIMITED",
+        "STATE_CONFLICT",
+        "UNAUTHENTICATED"
+      ],
+      "notes": ""
+    },
+    {
+      "operation_id": "listEvidence",
+      "method": "GET",
+      "path": "/api/v1/submissions/{submission_id}/evidence",
+      "purpose": "List evidence metadata",
+      "internal": false,
+      "authentication": "REQUIRED",
+      "roles": [
+        "USER",
+        "ANALYST"
+      ],
+      "resource_authorization": "CASE_ACCESS",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": null,
+      "response_schema": "EvidenceListResponse",
+      "success_status": 200,
+      "mode": "SYNC",
+      "idempotency": "NOT_APPLICABLE",
+      "audit": "NOT_REQUIRED",
+      "audit_event": null,
+      "sensitivity": "C2",
+      "concurrency": "NONE",
+      "target_resource": "EvidenceItem",
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "NOT_FOUND",
+        "RATE_LIMITED",
+        "UNAUTHENTICATED"
+      ],
+      "notes": "",
+      "list": {
+        "pagination": "CURSOR",
+        "filters": [
+          "upload_state",
+          "artifact_kind"
+        ],
+        "sort": "created_at desc, id desc"
+      }
+    },
+    {
+      "operation_id": "getEvidenceMetadata",
+      "method": "GET",
+      "path": "/api/v1/evidence/{evidence_id}",
+      "purpose": "Read evidence metadata (never content)",
+      "internal": false,
+      "authentication": "REQUIRED",
+      "roles": [
+        "USER",
+        "ANALYST"
+      ],
+      "resource_authorization": "CASE_ACCESS",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": null,
+      "response_schema": "EvidenceMetadataResponse",
+      "success_status": 200,
+      "mode": "SYNC",
+      "idempotency": "NOT_APPLICABLE",
+      "audit": "NOT_REQUIRED",
+      "audit_event": null,
+      "sensitivity": "C2",
+      "concurrency": "NONE",
+      "target_resource": "EvidenceItem",
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "NOT_FOUND",
+        "RATE_LIMITED",
+        "UNAUTHENTICATED"
+      ],
+      "notes": ""
+    },
+    {
+      "operation_id": "getEvidenceContent",
+      "method": "GET",
+      "path": "/api/v1/evidence/{evidence_id}/content",
+      "purpose": "Download exact original evidence bytes",
+      "internal": false,
+      "authentication": "REQUIRED",
+      "roles": [
+        "USER",
+        "ANALYST"
+      ],
+      "resource_authorization": "CASE_EVIDENCE_CONTENT",
+      "sensitive_content_permission": "EVIDENCE_CONTENT",
+      "break_glass_roles": [
+        "ADMINISTRATOR"
+      ],
+      "request_schema": null,
+      "response_schema": "EvidenceContentDownload",
+      "success_status": 200,
+      "mode": "SYNC",
+      "idempotency": "NOT_APPLICABLE",
+      "audit": "REQUIRED",
+      "audit_event": "EVIDENCE_ACCESSED",
+      "sensitivity": "C3",
+      "concurrency": "NONE",
+      "target_resource": "EvidenceContent",
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "INTEGRITY_FAILURE",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "NOT_FOUND",
+        "RATE_LIMITED",
+        "REMOVED_UNDER_GOVERNANCE",
+        "STATE_CONFLICT",
+        "UNAUTHENTICATED"
+      ],
+      "notes": "Requires a grant with permits_evidence_content (owner by policy; assigned analyst only if granted) or an active break-glass grant covering the item. Case-metadata access alone is insufficient."
+    },
+    {
+      "operation_id": "createEvaluations",
+      "method": "POST",
+      "path": "/api/v1/submissions/{submission_id}/evaluations",
+      "purpose": "Request deterministic evaluation (new evaluation(s))",
+      "internal": false,
+      "authentication": "REQUIRED",
+      "roles": [
+        "USER",
+        "ANALYST"
+      ],
+      "resource_authorization": "CASE_ACCESS",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": "EvaluationCreateRequest",
+      "response_schema": "EvaluationBatchAcceptedResponse",
+      "success_status": 202,
+      "mode": "ASYNC",
+      "idempotency": "REQUIRED",
+      "audit": "REQUIRED",
+      "audit_event": "EVALUATION_STARTED",
+      "sensitivity": "C2",
+      "concurrency": "NONE",
+      "target_resource": "Evaluation",
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "IDEMPOTENCY_IN_PROGRESS",
+        "IDEMPOTENCY_KEY_REUSED",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "NOT_FOUND",
+        "RATE_LIMITED",
+        "STATE_CONFLICT",
+        "UNAUTHENTICATED"
+      ],
+      "notes": "",
+      "creates_new_evaluation": true
+    },
+    {
+      "operation_id": "listCaseEvaluations",
+      "method": "GET",
+      "path": "/api/v1/cases/{case_id}/evaluations",
+      "purpose": "List a case's evaluations",
+      "internal": false,
+      "authentication": "REQUIRED",
+      "roles": [
+        "USER",
+        "ANALYST"
+      ],
+      "resource_authorization": "CASE_ACCESS",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": null,
+      "response_schema": "EvaluationListResponse",
+      "success_status": 200,
+      "mode": "SYNC",
+      "idempotency": "NOT_APPLICABLE",
+      "audit": "NOT_REQUIRED",
+      "audit_event": null,
+      "sensitivity": "C2",
+      "concurrency": "NONE",
+      "target_resource": "Evaluation",
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "NOT_FOUND",
+        "RATE_LIMITED",
+        "UNAUTHENTICATED"
+      ],
+      "notes": "",
+      "list": {
+        "pagination": "CURSOR",
+        "filters": [
+          "state",
+          "submission_id",
+          "requested_from",
+          "requested_to",
+          "result_availability"
+        ],
+        "sort": "requested_at desc, id desc"
+      }
+    },
+    {
+      "operation_id": "getEvaluation",
+      "method": "GET",
+      "path": "/api/v1/evaluations/{evaluation_id}",
+      "purpose": "Read evaluation status",
+      "internal": false,
+      "authentication": "REQUIRED",
+      "roles": [
+        "USER",
+        "ANALYST"
+      ],
+      "resource_authorization": "CASE_ACCESS",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": null,
+      "response_schema": "EvaluationResponse",
+      "success_status": 200,
+      "mode": "SYNC",
+      "idempotency": "NOT_APPLICABLE",
+      "audit": "NOT_REQUIRED",
+      "audit_event": null,
+      "sensitivity": "C2",
+      "concurrency": "NONE",
+      "target_resource": "Evaluation",
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "NOT_FOUND",
+        "RATE_LIMITED",
+        "UNAUTHENTICATED"
+      ],
+      "notes": ""
+    },
+    {
+      "operation_id": "getDetectionResult",
+      "method": "GET",
+      "path": "/api/v1/evaluations/{evaluation_id}/result",
+      "purpose": "Read the immutable DetectionResult (?view=STANDARD or DETAILED)",
+      "internal": false,
+      "authentication": "REQUIRED",
+      "roles": [
+        "USER",
+        "ANALYST"
+      ],
+      "resource_authorization": "CASE_DERIVED_CONTENT",
+      "sensitive_content_permission": "DERIVED_CONTENT",
+      "break_glass_roles": [],
+      "request_schema": null,
+      "response_schema": "DetectionResultResponse",
+      "success_status": 200,
+      "mode": "SYNC",
+      "idempotency": "NOT_APPLICABLE",
+      "audit": "REQUIRED",
+      "audit_event": "EVIDENCE_ACCESSED",
+      "sensitivity": "C4",
+      "concurrency": "NONE",
+      "target_resource": "DetectionResult",
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "EVALUATION_NOT_COMPLETED",
+        "FORBIDDEN",
+        "INTEGRITY_FAILURE",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "NOT_FOUND",
+        "RATE_LIMITED",
+        "REMOVED_UNDER_GOVERNANCE",
+        "UNAUTHENTICATED"
+      ],
+      "notes": "DETAILED view: assigned analyst with permits_evidence_content only. Never PUT/PATCH/DELETE."
+    },
+    {
+      "operation_id": "createCorrection",
+      "method": "POST",
+      "path": "/api/v1/evaluations/{evaluation_id}/corrections",
+      "purpose": "User extraction correction -> NEW evaluation",
+      "internal": false,
+      "authentication": "REQUIRED",
+      "roles": [
+        "USER"
+      ],
+      "resource_authorization": "CASE_OWNER",
+      "sensitive_content_permission": "DERIVED_CONTENT",
+      "break_glass_roles": [],
+      "request_schema": "UserCorrectionCreateRequest",
+      "response_schema": "CorrectionAcceptedResponse",
+      "success_status": 202,
+      "mode": "ASYNC",
+      "idempotency": "REQUIRED",
+      "audit": "REQUIRED",
+      "audit_event": "USER_CORRECTION",
+      "sensitivity": "C4",
+      "concurrency": "NONE",
+      "target_resource": "UserCorrection",
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "EVALUATION_NOT_COMPLETED",
+        "FORBIDDEN",
+        "IDEMPOTENCY_IN_PROGRESS",
+        "IDEMPOTENCY_KEY_REUSED",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "NOT_FOUND",
+        "RATE_LIMITED",
+        "UNAUTHENTICATED"
+      ],
+      "notes": "",
+      "creates_new_evaluation": true
+    },
+    {
+      "operation_id": "listEvaluationEnrichments",
+      "method": "GET",
+      "path": "/api/v1/evaluations/{evaluation_id}/enrichments",
+      "purpose": "Advisory enrichment metadata (FUTURE: enabled only after INT-001/ADR-0012)",
+      "internal": false,
+      "authentication": "REQUIRED",
+      "roles": [
+        "ANALYST"
+      ],
+      "resource_authorization": "CASE_ACCESS",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": null,
+      "response_schema": "EnrichmentListResponse",
+      "success_status": 200,
+      "mode": "SYNC",
+      "idempotency": "NOT_APPLICABLE",
+      "audit": "NOT_REQUIRED",
+      "audit_event": null,
+      "sensitivity": "C2",
+      "concurrency": "NONE",
+      "target_resource": "ExternalEnrichmentResult",
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "NOT_FOUND",
+        "RATE_LIMITED",
+        "UNAUTHENTICATED"
+      ],
+      "notes": "",
+      "list": {
+        "pagination": "CURSOR",
+        "filters": [
+          "status"
+        ],
+        "sort": "created_at desc, id desc"
+      },
+      "availability": "FUTURE_INT_001"
+    },
+    {
+      "operation_id": "createAdjudication",
+      "method": "POST",
+      "path": "/api/v1/evaluations/{evaluation_id}/adjudications",
+      "purpose": "Record a new adjudication of the exact result",
+      "internal": false,
+      "authentication": "REQUIRED",
+      "roles": [
+        "ANALYST"
+      ],
+      "resource_authorization": "CASE_ASSIGNED_ANALYST",
+      "sensitive_content_permission": "DERIVED_CONTENT",
+      "break_glass_roles": [],
+      "request_schema": "AdjudicationCreateRequest",
+      "response_schema": "AdjudicationResponse",
+      "success_status": 201,
+      "mode": "SYNC",
+      "idempotency": "REQUIRED",
+      "audit": "REQUIRED",
+      "audit_event": "ANALYST_ADJUDICATION",
+      "sensitivity": "C4",
+      "concurrency": "NONE",
+      "target_resource": "AnalystAdjudication",
+      "errors": [
+        "CONFLICT",
+        "DEPENDENCY_UNAVAILABLE",
+        "EVALUATION_NOT_COMPLETED",
+        "FORBIDDEN",
+        "IDEMPOTENCY_IN_PROGRESS",
+        "IDEMPOTENCY_KEY_REUSED",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "NOT_FOUND",
+        "RATE_LIMITED",
+        "REMOVED_UNDER_GOVERNANCE",
+        "UNAUTHENTICATED"
+      ],
+      "notes": ""
+    },
+    {
+      "operation_id": "listAdjudications",
+      "method": "GET",
+      "path": "/api/v1/evaluations/{evaluation_id}/adjudications",
+      "purpose": "List adjudications of an evaluation",
+      "internal": false,
+      "authentication": "REQUIRED",
+      "roles": [
+        "USER",
+        "ANALYST"
+      ],
+      "resource_authorization": "CASE_ACCESS",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": null,
+      "response_schema": "AdjudicationListResponse",
+      "success_status": 200,
+      "mode": "SYNC",
+      "idempotency": "NOT_APPLICABLE",
+      "audit": "REQUIRED",
+      "audit_event": "EVIDENCE_ACCESSED",
+      "sensitivity": "C4",
+      "concurrency": "NONE",
+      "target_resource": "AnalystAdjudication",
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "NOT_FOUND",
+        "RATE_LIMITED",
+        "UNAUTHENTICATED"
+      ],
+      "notes": "Outcome visible with case access; rationale (C4) included only for an assigned analyst with permits_evidence_content, and that access is audited.",
+      "list": {
+        "pagination": "CURSOR",
+        "filters": [
+          "outcome"
+        ],
+        "sort": "adjudicated_at desc, id desc"
+      }
+    },
+    {
+      "operation_id": "getAdjudication",
+      "method": "GET",
+      "path": "/api/v1/adjudications/{adjudication_id}",
+      "purpose": "Read one adjudication",
+      "internal": false,
+      "authentication": "REQUIRED",
+      "roles": [
+        "USER",
+        "ANALYST"
+      ],
+      "resource_authorization": "CASE_ACCESS",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": null,
+      "response_schema": "AdjudicationResponse",
+      "success_status": 200,
+      "mode": "SYNC",
+      "idempotency": "NOT_APPLICABLE",
+      "audit": "REQUIRED",
+      "audit_event": "EVIDENCE_ACCESSED",
+      "sensitivity": "C4",
+      "concurrency": "NONE",
+      "target_resource": "AnalystAdjudication",
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "NOT_FOUND",
+        "RATE_LIMITED",
+        "UNAUTHENTICATED"
+      ],
+      "notes": "Outcome visible with case access; rationale (C4) included only for an assigned analyst with permits_evidence_content, and that access is audited."
+    },
+    {
+      "operation_id": "listReviewQueue",
+      "method": "GET",
+      "path": "/api/v1/review-queue",
+      "purpose": "Content-free review queue",
+      "internal": false,
+      "authentication": "REQUIRED",
+      "roles": [
+        "ANALYST"
+      ],
+      "resource_authorization": "REVIEW_QUEUE",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": null,
+      "response_schema": "ReviewQueueResponse",
+      "success_status": 200,
+      "mode": "SYNC",
+      "idempotency": "NOT_APPLICABLE",
+      "audit": "NOT_REQUIRED",
+      "audit_event": null,
+      "sensitivity": "C2",
+      "concurrency": "NONE",
+      "target_resource": "ReviewItem",
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "RATE_LIMITED",
+        "UNAUTHENTICATED"
+      ],
+      "notes": "",
+      "list": {
+        "pagination": "CURSOR",
+        "filters": [
+          "state",
+          "assigned_to_me",
+          "queued_from",
+          "queued_to"
+        ],
+        "sort": "queued_at asc, id asc"
+      },
+      "tenancy_status": "PROVISIONAL_BLOCKED_ON_ASM_002"
+    },
+    {
+      "operation_id": "assignReview",
+      "method": "POST",
+      "path": "/api/v1/review-queue/{review_item_id}/assignment",
+      "purpose": "Assign an analyst to a review item (creates ASSIGNED_ANALYST grant)",
+      "internal": false,
+      "authentication": "REQUIRED",
+      "roles": [
+        "ADMINISTRATOR"
+      ],
+      "resource_authorization": "PLATFORM_ADMIN",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": "ReviewAssignmentRequest",
+      "response_schema": "ReviewItemResponse",
+      "success_status": 200,
+      "mode": "SYNC",
+      "idempotency": "REQUIRED",
+      "audit": "REQUIRED",
+      "audit_event": "CASE_ACCESS_GRANTED",
+      "sensitivity": "C2",
+      "concurrency": "IF_MATCH_REQUIRED",
+      "target_resource": "ReviewItem",
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "IDEMPOTENCY_IN_PROGRESS",
+        "IDEMPOTENCY_KEY_REUSED",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "NOT_FOUND",
+        "PRECONDITION_FAILED",
+        "PRECONDITION_REQUIRED",
+        "RATE_LIMITED",
+        "STATE_CONFLICT",
+        "UNAUTHENTICATED"
+      ],
+      "notes": "analyst_principal_id must differ from the authenticated caller (also for a principal holding both ADMINISTRATOR and ANALYST) -> 403 FORBIDDEN; the assignee must hold the ANALYST role.",
+      "grants_case_access": true,
+      "caller_constraints": [
+        "ASSIGNEE_NOT_CALLER"
+      ]
+    },
+    {
+      "operation_id": "listCaseAccessGrants",
+      "method": "GET",
+      "path": "/api/v1/cases/{case_id}/access-grants",
+      "purpose": "List who can access a case",
+      "internal": false,
+      "authentication": "REQUIRED",
+      "roles": [
+        "USER",
+        "ADMINISTRATOR"
+      ],
+      "resource_authorization": "CASE_OWNER_OR_PLATFORM_ADMIN",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": null,
+      "response_schema": "CaseAccessGrantListResponse",
+      "success_status": 200,
+      "mode": "SYNC",
+      "idempotency": "NOT_APPLICABLE",
+      "audit": "NOT_REQUIRED",
+      "audit_event": null,
+      "sensitivity": "C5",
+      "concurrency": "NONE",
+      "target_resource": "CaseAccessGrant",
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "NOT_FOUND",
+        "RATE_LIMITED",
+        "UNAUTHENTICATED"
+      ],
+      "notes": "",
+      "list": {
+        "pagination": "CURSOR",
+        "filters": [
+          "grant_kind",
+          "active"
+        ],
+        "sort": "created_at desc, id desc"
+      }
+    },
+    {
+      "operation_id": "revokeCaseAccessGrant",
+      "method": "POST",
+      "path": "/api/v1/access-grants/{grant_id}/revoke",
+      "purpose": "Revoke a case access grant",
+      "internal": false,
+      "authentication": "REQUIRED",
+      "roles": [
+        "ADMINISTRATOR"
+      ],
+      "resource_authorization": "PLATFORM_ADMIN",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": "ReasonCommandRequest",
+      "response_schema": "CaseAccessGrantResponse",
+      "success_status": 200,
+      "mode": "SYNC",
+      "idempotency": "REQUIRED",
+      "audit": "REQUIRED",
+      "audit_event": "CASE_ACCESS_REVOKED",
+      "sensitivity": "C5",
+      "concurrency": "NONE",
+      "target_resource": "CaseAccessGrant",
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "IDEMPOTENCY_IN_PROGRESS",
+        "IDEMPOTENCY_KEY_REUSED",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "NOT_FOUND",
+        "RATE_LIMITED",
+        "STATE_CONFLICT",
+        "UNAUTHENTICATED"
+      ],
+      "notes": ""
+    },
+    {
+      "operation_id": "createReport",
+      "method": "POST",
+      "path": "/api/v1/cases/{case_id}/reports",
+      "purpose": "Generate a report revision or reproduce one from its pins",
+      "internal": false,
+      "authentication": "REQUIRED",
+      "roles": [
+        "USER",
+        "ANALYST"
+      ],
+      "resource_authorization": "CASE_DERIVED_CONTENT",
+      "sensitive_content_permission": "DERIVED_CONTENT",
+      "break_glass_roles": [],
+      "request_schema": "ReportCreateRequest",
+      "response_schema": "ReportResponse",
+      "success_status": 202,
+      "mode": "ASYNC",
+      "idempotency": "REQUIRED",
+      "audit": "REQUIRED",
+      "audit_event": "REPORT_GENERATED",
+      "sensitivity": "C4",
+      "concurrency": "NONE",
+      "target_resource": "ReportBundle",
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "EVALUATION_NOT_COMPLETED",
+        "FORBIDDEN",
+        "IDEMPOTENCY_IN_PROGRESS",
+        "IDEMPOTENCY_KEY_REUSED",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "NOT_FOUND",
+        "RATE_LIMITED",
+        "REMOVED_UNDER_GOVERNANCE",
+        "UNAUTHENTICATED"
+      ],
+      "notes": ""
+    },
+    {
+      "operation_id": "listReports",
+      "method": "GET",
+      "path": "/api/v1/cases/{case_id}/reports",
+      "purpose": "List report revisions",
+      "internal": false,
+      "authentication": "REQUIRED",
+      "roles": [
+        "USER",
+        "ANALYST"
+      ],
+      "resource_authorization": "CASE_ACCESS",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": null,
+      "response_schema": "ReportListResponse",
+      "success_status": 200,
+      "mode": "SYNC",
+      "idempotency": "NOT_APPLICABLE",
+      "audit": "NOT_REQUIRED",
+      "audit_event": null,
+      "sensitivity": "C2",
+      "concurrency": "NONE",
+      "target_resource": "ReportBundle",
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "NOT_FOUND",
+        "RATE_LIMITED",
+        "UNAUTHENTICATED"
+      ],
+      "notes": "",
+      "list": {
+        "pagination": "CURSOR",
+        "filters": [
+          "state"
+        ],
+        "sort": "created_at desc, id desc"
+      }
+    },
+    {
+      "operation_id": "getReport",
+      "method": "GET",
+      "path": "/api/v1/reports/{report_id}",
+      "purpose": "Report metadata/status",
+      "internal": false,
+      "authentication": "REQUIRED",
+      "roles": [
+        "USER",
+        "ANALYST"
+      ],
+      "resource_authorization": "CASE_ACCESS",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": null,
+      "response_schema": "ReportResponse",
+      "success_status": 200,
+      "mode": "SYNC",
+      "idempotency": "NOT_APPLICABLE",
+      "audit": "NOT_REQUIRED",
+      "audit_event": null,
+      "sensitivity": "C2",
+      "concurrency": "NONE",
+      "target_resource": "ReportBundle",
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "NOT_FOUND",
+        "RATE_LIMITED",
+        "UNAUTHENTICATED"
+      ],
+      "notes": ""
+    },
+    {
+      "operation_id": "getReportContent",
+      "method": "GET",
+      "path": "/api/v1/reports/{report_id}/content",
+      "purpose": "Download report content",
+      "internal": false,
+      "authentication": "REQUIRED",
+      "roles": [
+        "USER",
+        "ANALYST"
+      ],
+      "resource_authorization": "CASE_DERIVED_CONTENT",
+      "sensitive_content_permission": "DERIVED_CONTENT",
+      "break_glass_roles": [],
+      "request_schema": null,
+      "response_schema": "ReportContentDownload",
+      "success_status": 200,
+      "mode": "SYNC",
+      "idempotency": "NOT_APPLICABLE",
+      "audit": "REQUIRED",
+      "audit_event": "REPORT_EXPORTED",
+      "sensitivity": "C4",
+      "concurrency": "NONE",
+      "target_resource": "ReportBundle",
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "INTEGRITY_FAILURE",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "NOT_FOUND",
+        "RATE_LIMITED",
+        "REMOVED_UNDER_GOVERNANCE",
+        "REPORT_REGENERATION_UNAVAILABLE",
+        "STATE_CONFLICT",
+        "UNAUTHENTICATED"
+      ],
+      "notes": ""
+    },
+    {
+      "operation_id": "createReplay",
+      "method": "POST",
+      "path": "/api/v1/evaluations/{evaluation_id}/replays",
+      "purpose": "Historical replay of exactly the pinned material (verification only)",
+      "internal": false,
+      "authentication": "REQUIRED",
+      "roles": [
+        "ANALYST",
+        "ADMINISTRATOR"
+      ],
+      "resource_authorization": "CASE_ASSIGNED_ANALYST_OR_PLATFORM_ADMIN",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": "ReplayCreateRequest",
+      "response_schema": "ReplayResponse",
+      "success_status": 202,
+      "mode": "ASYNC",
+      "idempotency": "REQUIRED",
+      "audit": "REQUIRED",
+      "audit_event": "REPLAY_EXECUTED",
+      "sensitivity": "C2",
+      "concurrency": "NONE",
+      "target_resource": "Replay",
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "EVALUATION_NOT_COMPLETED",
+        "FORBIDDEN",
+        "IDEMPOTENCY_IN_PROGRESS",
+        "IDEMPOTENCY_KEY_REUSED",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "NOT_FOUND",
+        "RATE_LIMITED",
+        "REPLAY_UNAVAILABLE",
+        "UNAUTHENTICATED"
+      ],
+      "notes": "",
+      "replay_semantics": {
+        "ai_recall": false,
+        "knowledge_selection": "PINNED_ONLY",
+        "material_substitution": "FORBIDDEN",
+        "creates_new_evaluation": false
+      }
+    },
+    {
+      "operation_id": "getReplay",
+      "method": "GET",
+      "path": "/api/v1/replays/{replay_id}",
+      "purpose": "Replay status/outcome",
+      "internal": false,
+      "authentication": "REQUIRED",
+      "roles": [
+        "ANALYST",
+        "ADMINISTRATOR"
+      ],
+      "resource_authorization": "CASE_ASSIGNED_ANALYST_OR_PLATFORM_ADMIN",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": null,
+      "response_schema": "ReplayResponse",
+      "success_status": 200,
+      "mode": "SYNC",
+      "idempotency": "NOT_APPLICABLE",
+      "audit": "NOT_REQUIRED",
+      "audit_event": null,
+      "sensitivity": "C2",
+      "concurrency": "NONE",
+      "target_resource": "Replay",
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "NOT_FOUND",
+        "RATE_LIMITED",
+        "UNAUTHENTICATED"
+      ],
+      "notes": ""
+    },
+    {
+      "operation_id": "getActiveKnowledge",
+      "method": "GET",
+      "path": "/api/v1/knowledge/active",
+      "purpose": "Active exact bundle identity for this deployment",
+      "internal": false,
+      "authentication": "REQUIRED",
+      "roles": [
+        "ANALYST",
+        "KNOWLEDGE_EDITOR",
+        "KNOWLEDGE_APPROVER",
+        "ADMINISTRATOR"
+      ],
+      "resource_authorization": "KNOWLEDGE_READ",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": null,
+      "response_schema": "KnowledgeActiveResponse",
+      "success_status": 200,
+      "mode": "SYNC",
+      "idempotency": "NOT_APPLICABLE",
+      "audit": "NOT_REQUIRED",
+      "audit_event": null,
+      "sensitivity": "C1",
+      "concurrency": "NONE",
+      "target_resource": "KnowledgeDeploymentState",
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "INTERNAL_ERROR",
+        "RATE_LIMITED",
+        "UNAUTHENTICATED"
+      ],
+      "notes": ""
+    },
+    {
+      "operation_id": "getKnowledgeBundle",
+      "method": "GET",
+      "path": "/api/v1/knowledge/bundles/{content_digest}",
+      "purpose": "Bundle reference metadata by exact digest",
+      "internal": false,
+      "authentication": "REQUIRED",
+      "roles": [
+        "ANALYST",
+        "KNOWLEDGE_EDITOR",
+        "KNOWLEDGE_APPROVER",
+        "ADMINISTRATOR"
+      ],
+      "resource_authorization": "KNOWLEDGE_READ",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": null,
+      "response_schema": "KnowledgeBundleResponse",
+      "success_status": 200,
+      "mode": "SYNC",
+      "idempotency": "NOT_APPLICABLE",
+      "audit": "NOT_REQUIRED",
+      "audit_event": null,
+      "sensitivity": "C1",
+      "concurrency": "NONE",
+      "target_resource": "KnowledgeBundleReference",
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "NOT_FOUND",
+        "RATE_LIMITED",
+        "UNAUTHENTICATED"
+      ],
+      "notes": ""
+    },
+    {
+      "operation_id": "listKnowledgeActivations",
+      "method": "GET",
+      "path": "/api/v1/knowledge/activations",
+      "purpose": "Activation history",
+      "internal": false,
+      "authentication": "REQUIRED",
+      "roles": [
+        "KNOWLEDGE_EDITOR",
+        "KNOWLEDGE_APPROVER",
+        "ADMINISTRATOR"
+      ],
+      "resource_authorization": "KNOWLEDGE_READ",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": null,
+      "response_schema": "KnowledgeActivationListResponse",
+      "success_status": 200,
+      "mode": "SYNC",
+      "idempotency": "NOT_APPLICABLE",
+      "audit": "NOT_REQUIRED",
+      "audit_event": null,
+      "sensitivity": "C2",
+      "concurrency": "NONE",
+      "target_resource": "KnowledgeActivationRecord",
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "RATE_LIMITED",
+        "UNAUTHENTICATED"
+      ],
+      "notes": "",
+      "list": {
+        "pagination": "CURSOR",
+        "filters": [
+          "action_kind",
+          "outcome",
+          "recorded_from",
+          "recorded_to"
+        ],
+        "sort": "recorded_at desc, id desc"
+      }
+    },
+    {
+      "operation_id": "activateKnowledgeBundle",
+      "method": "POST",
+      "path": "/api/v1/knowledge/deployment/activate",
+      "purpose": "Activate an exact published, validated bundle",
+      "internal": false,
+      "authentication": "REQUIRED",
+      "roles": [
+        "ADMINISTRATOR"
+      ],
+      "resource_authorization": "KNOWLEDGE_OPERATION",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": "KnowledgeActivationRequest",
+      "response_schema": "KnowledgeActivationResponse",
+      "success_status": 202,
+      "mode": "ASYNC",
+      "idempotency": "REQUIRED",
+      "audit": "REQUIRED",
+      "audit_event": "KNOWLEDGE_ACTIVATED",
+      "sensitivity": "C2",
+      "concurrency": "NONE",
+      "target_resource": "KnowledgeActivationRecord",
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "IDEMPOTENCY_IN_PROGRESS",
+        "IDEMPOTENCY_KEY_REUSED",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "KNOWLEDGE_NOT_ELIGIBLE",
+        "PRECONDITION_FAILED",
+        "RATE_LIMITED",
+        "UNAUTHENTICATED"
+      ],
+      "notes": "",
+      "knowledge_control": true
+    },
+    {
+      "operation_id": "rollbackKnowledgeBundle",
+      "method": "POST",
+      "path": "/api/v1/knowledge/deployment/rollback",
+      "purpose": "Explicit rollback to an exact previously validated bundle",
+      "internal": false,
+      "authentication": "REQUIRED",
+      "roles": [
+        "ADMINISTRATOR"
+      ],
+      "resource_authorization": "KNOWLEDGE_OPERATION",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": "KnowledgeRollbackRequest",
+      "response_schema": "KnowledgeActivationResponse",
+      "success_status": 202,
+      "mode": "ASYNC",
+      "idempotency": "REQUIRED",
+      "audit": "REQUIRED",
+      "audit_event": "KNOWLEDGE_ROLLED_BACK",
+      "sensitivity": "C2",
+      "concurrency": "NONE",
+      "target_resource": "KnowledgeActivationRecord",
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "IDEMPOTENCY_IN_PROGRESS",
+        "IDEMPOTENCY_KEY_REUSED",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "KNOWLEDGE_NOT_ELIGIBLE",
+        "PRECONDITION_FAILED",
+        "RATE_LIMITED",
+        "UNAUTHENTICATED"
+      ],
+      "notes": "",
+      "knowledge_control": true
+    },
+    {
+      "operation_id": "withdrawKnowledgeBundle",
+      "method": "POST",
+      "path": "/api/v1/knowledge/bundles/{content_digest}/withdrawal",
+      "purpose": "Record governed withdrawal of an exact bundle for this deployment",
+      "internal": false,
+      "authentication": "REQUIRED",
+      "roles": [
+        "KNOWLEDGE_APPROVER"
+      ],
+      "resource_authorization": "KNOWLEDGE_OPERATION",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": "KnowledgeWithdrawalRequest",
+      "response_schema": "KnowledgeBundleResponse",
+      "success_status": 202,
+      "mode": "ASYNC",
+      "idempotency": "REQUIRED",
+      "audit": "REQUIRED",
+      "audit_event": "KNOWLEDGE_WITHDRAWN",
+      "sensitivity": "C2",
+      "concurrency": "NONE",
+      "target_resource": "KnowledgeBundleReference",
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "IDEMPOTENCY_IN_PROGRESS",
+        "IDEMPOTENCY_KEY_REUSED",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "NOT_FOUND",
+        "RATE_LIMITED",
+        "STATE_CONFLICT",
+        "UNAUTHENTICATED"
+      ],
+      "notes": "",
+      "knowledge_control": true
+    },
+    {
+      "operation_id": "createDeletionRequest",
+      "method": "POST",
+      "path": "/api/v1/deletion-requests",
+      "purpose": "Request governed deletion of an owned case/submission/evidence item",
+      "internal": false,
+      "authentication": "REQUIRED",
+      "roles": [
+        "USER"
+      ],
+      "resource_authorization": "DELETION_SCOPE_OWNER",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": "DeletionRequestCreateRequest",
+      "response_schema": "DeletionRequestResponse",
+      "success_status": 201,
+      "mode": "SYNC",
+      "idempotency": "REQUIRED",
+      "audit": "REQUIRED",
+      "audit_event": "DELETION_REQUESTED",
+      "sensitivity": "C2",
+      "concurrency": "NONE",
+      "target_resource": "DeletionRequest",
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "IDEMPOTENCY_IN_PROGRESS",
+        "IDEMPOTENCY_KEY_REUSED",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "NOT_FOUND",
+        "RATE_LIMITED",
+        "STATE_CONFLICT",
+        "UNAUTHENTICATED"
+      ],
+      "notes": ""
+    },
+    {
+      "operation_id": "listDeletionRequests",
+      "method": "GET",
+      "path": "/api/v1/deletion-requests",
+      "purpose": "List deletion requests (own, or all for administrators)",
+      "internal": false,
+      "authentication": "REQUIRED",
+      "roles": [
+        "USER",
+        "ADMINISTRATOR"
+      ],
+      "resource_authorization": "DELETION_SCOPE_OWNER_OR_PLATFORM_ADMIN",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": null,
+      "response_schema": "DeletionRequestListResponse",
+      "success_status": 200,
+      "mode": "SYNC",
+      "idempotency": "NOT_APPLICABLE",
+      "audit": "NOT_REQUIRED",
+      "audit_event": null,
+      "sensitivity": "C2",
+      "concurrency": "NONE",
+      "target_resource": "DeletionRequest",
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "RATE_LIMITED",
+        "UNAUTHENTICATED"
+      ],
+      "notes": "",
+      "list": {
+        "pagination": "CURSOR",
+        "filters": [
+          "state",
+          "scope_kind",
+          "requested_from",
+          "requested_to"
+        ],
+        "sort": "requested_at desc, id desc"
+      }
+    },
+    {
+      "operation_id": "getDeletionRequest",
+      "method": "GET",
+      "path": "/api/v1/deletion-requests/{deletion_request_id}",
+      "purpose": "Deletion request status",
+      "internal": false,
+      "authentication": "REQUIRED",
+      "roles": [
+        "USER",
+        "ADMINISTRATOR"
+      ],
+      "resource_authorization": "DELETION_SCOPE_OWNER_OR_PLATFORM_ADMIN",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": null,
+      "response_schema": "DeletionRequestResponse",
+      "success_status": 200,
+      "mode": "SYNC",
+      "idempotency": "NOT_APPLICABLE",
+      "audit": "NOT_REQUIRED",
+      "audit_event": null,
+      "sensitivity": "C2",
+      "concurrency": "NONE",
+      "target_resource": "DeletionRequest",
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "INTERNAL_ERROR",
+        "NOT_FOUND",
+        "RATE_LIMITED",
+        "UNAUTHENTICATED"
+      ],
+      "notes": ""
+    },
+    {
+      "operation_id": "authorizeDeletionRequest",
+      "method": "POST",
+      "path": "/api/v1/deletion-requests/{deletion_request_id}/authorize",
+      "purpose": "Authorize a deletion request (content-free)",
+      "internal": false,
+      "authentication": "REQUIRED",
+      "roles": [
+        "ADMINISTRATOR"
+      ],
+      "resource_authorization": "PLATFORM_ADMIN",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": "ReasonCommandRequest",
+      "response_schema": "DeletionRequestResponse",
+      "success_status": 202,
+      "mode": "ASYNC",
+      "idempotency": "REQUIRED",
+      "audit": "REQUIRED",
+      "audit_event": "RETENTION_ACTION",
+      "sensitivity": "C2",
+      "concurrency": "IF_MATCH_REQUIRED",
+      "target_resource": "DeletionRequest",
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "IDEMPOTENCY_IN_PROGRESS",
+        "IDEMPOTENCY_KEY_REUSED",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "NOT_FOUND",
+        "PRECONDITION_FAILED",
+        "PRECONDITION_REQUIRED",
+        "RATE_LIMITED",
+        "STATE_CONFLICT",
+        "UNAUTHENTICATED"
+      ],
+      "notes": ""
+    },
+    {
+      "operation_id": "rejectDeletionRequest",
+      "method": "POST",
+      "path": "/api/v1/deletion-requests/{deletion_request_id}/reject",
+      "purpose": "Reject a deletion request",
+      "internal": false,
+      "authentication": "REQUIRED",
+      "roles": [
+        "ADMINISTRATOR"
+      ],
+      "resource_authorization": "PLATFORM_ADMIN",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": "ReasonCommandRequest",
+      "response_schema": "DeletionRequestResponse",
+      "success_status": 200,
+      "mode": "SYNC",
+      "idempotency": "REQUIRED",
+      "audit": "REQUIRED",
+      "audit_event": "RETENTION_ACTION",
+      "sensitivity": "C2",
+      "concurrency": "IF_MATCH_REQUIRED",
+      "target_resource": "DeletionRequest",
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "IDEMPOTENCY_IN_PROGRESS",
+        "IDEMPOTENCY_KEY_REUSED",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "NOT_FOUND",
+        "PRECONDITION_FAILED",
+        "PRECONDITION_REQUIRED",
+        "RATE_LIMITED",
+        "STATE_CONFLICT",
+        "UNAUTHENTICATED"
+      ],
+      "notes": ""
+    },
+    {
+      "operation_id": "createBreakGlassGrant",
+      "method": "POST",
+      "path": "/api/v1/break-glass-grants",
+      "purpose": "Request explicit emergency content elevation",
+      "internal": false,
+      "authentication": "REQUIRED",
+      "roles": [
+        "ADMINISTRATOR"
+      ],
+      "resource_authorization": "BREAK_GLASS_SELF",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": "BreakGlassCreateRequest",
+      "response_schema": "BreakGlassGrantResponse",
+      "success_status": 201,
+      "mode": "SYNC",
+      "idempotency": "REQUIRED",
+      "audit": "REQUIRED",
+      "audit_event": "BREAK_GLASS_ACTIVATED",
+      "sensitivity": "C5",
+      "concurrency": "NONE",
+      "target_resource": "BreakGlassGrant",
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "IDEMPOTENCY_IN_PROGRESS",
+        "IDEMPOTENCY_KEY_REUSED",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "NOT_FOUND",
+        "RATE_LIMITED",
+        "UNAUTHENTICATED"
+      ],
+      "notes": "v1: ADMINISTRATOR is the only creator/activator (an ANALYST cannot self-elevate). Reason required; server-set short expiry (duration NOT YET SPECIFIED); always audited and signalled; mandatory review by a different principal. Analyst request/approval is a possible future, separately reviewed workflow."
+    },
+    {
+      "operation_id": "getBreakGlassGrant",
+      "method": "GET",
+      "path": "/api/v1/break-glass-grants/{break_glass_grant_id}",
+      "purpose": "Read a break-glass grant",
+      "internal": false,
+      "authentication": "REQUIRED",
+      "roles": [
+        "ADMINISTRATOR"
+      ],
+      "resource_authorization": "BREAK_GLASS_GRANTEE_OR_PLATFORM_ADMIN",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": null,
+      "response_schema": "BreakGlassGrantResponse",
+      "success_status": 200,
+      "mode": "SYNC",
+      "idempotency": "NOT_APPLICABLE",
+      "audit": "NOT_REQUIRED",
+      "audit_event": null,
+      "sensitivity": "C5",
+      "concurrency": "NONE",
+      "target_resource": "BreakGlassGrant",
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "INTERNAL_ERROR",
+        "NOT_FOUND",
+        "RATE_LIMITED",
+        "UNAUTHENTICATED"
+      ],
+      "notes": ""
+    },
+    {
+      "operation_id": "endBreakGlassGrant",
+      "method": "POST",
+      "path": "/api/v1/break-glass-grants/{break_glass_grant_id}/end",
+      "purpose": "End a break-glass grant early",
+      "internal": false,
+      "authentication": "REQUIRED",
+      "roles": [
+        "ADMINISTRATOR"
+      ],
+      "resource_authorization": "BREAK_GLASS_GRANTEE",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": "EmptyCommandRequest",
+      "response_schema": "BreakGlassGrantResponse",
+      "success_status": 200,
+      "mode": "SYNC",
+      "idempotency": "REQUIRED",
+      "audit": "REQUIRED",
+      "audit_event": "BREAK_GLASS_EXPIRED",
+      "sensitivity": "C5",
+      "concurrency": "NONE",
+      "target_resource": "BreakGlassGrant",
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "IDEMPOTENCY_IN_PROGRESS",
+        "IDEMPOTENCY_KEY_REUSED",
+        "INTERNAL_ERROR",
+        "NOT_FOUND",
+        "RATE_LIMITED",
+        "STATE_CONFLICT",
+        "UNAUTHENTICATED"
+      ],
+      "notes": ""
+    },
+    {
+      "operation_id": "reviewBreakGlassGrant",
+      "method": "POST",
+      "path": "/api/v1/break-glass-grants/{break_glass_grant_id}/review",
+      "purpose": "Mandatory post-event review (different principal)",
+      "internal": false,
+      "authentication": "REQUIRED",
+      "roles": [
+        "ADMINISTRATOR"
+      ],
+      "resource_authorization": "BREAK_GLASS_REVIEWER",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": "BreakGlassReviewRequest",
+      "response_schema": "BreakGlassGrantResponse",
+      "success_status": 200,
+      "mode": "SYNC",
+      "idempotency": "REQUIRED",
+      "audit": "REQUIRED",
+      "audit_event": "BREAK_GLASS_REVIEWED",
+      "sensitivity": "C5",
+      "concurrency": "NONE",
+      "target_resource": "BreakGlassGrant",
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "IDEMPOTENCY_IN_PROGRESS",
+        "IDEMPOTENCY_KEY_REUSED",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "NOT_FOUND",
+        "RATE_LIMITED",
+        "STATE_CONFLICT",
+        "UNAUTHENTICATED"
+      ],
+      "notes": "",
+      "caller_constraints": [
+        "REVIEWER_NOT_GRANTEE"
+      ]
+    },
+    {
+      "operation_id": "listAuditEvents",
+      "method": "GET",
+      "path": "/api/v1/audit-events",
+      "purpose": "Content-free audit investigation",
+      "internal": false,
+      "authentication": "REQUIRED",
+      "roles": [
+        "ADMINISTRATOR"
+      ],
+      "resource_authorization": "AUDIT_READ",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": null,
+      "response_schema": "AuditEventListResponse",
+      "success_status": 200,
+      "mode": "SYNC",
+      "idempotency": "NOT_APPLICABLE",
+      "audit": "REQUIRED",
+      "audit_event": "PENDING_TAXONOMY_P6_WP6",
+      "sensitivity": "C6",
+      "concurrency": "NONE",
+      "target_resource": "AuditEvent",
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "RATE_LIMITED",
+        "UNAUTHENTICATED"
+      ],
+      "notes": "Audit read access is itself audited; the persistence audit taxonomy has no audit-read event type yet — additive extension owned by P6-WP6.",
+      "list": {
+        "pagination": "CURSOR",
+        "filters": [
+          "case_id",
+          "event_type",
+          "target_kind",
+          "target_id",
+          "occurred_from",
+          "occurred_to"
+        ],
+        "sort": "chain_sequence asc"
+      }
+    }
+  ]
+}

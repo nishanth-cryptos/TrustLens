@@ -1,0 +1,627 @@
+{
+  "description": "Negative fixtures for knowledge/validation/validate_api_contract.py. Each mutation is applied to an in-memory copy of contracts/api/api-v1.json and the named check MUST reject it.",
+  "mutations": [
+    {
+      "id": "NEG-01",
+      "expect": "AC-06",
+      "description": "PATCH on the immutable DetectionResult",
+      "op": "append",
+      "path": [
+        "operations"
+      ],
+      "value": {
+        "operation_id": "patchDetectionResult",
+        "method": "PATCH",
+        "path": "/api/v1/evaluations/{evaluation_id}/result",
+        "purpose": "negative fixture",
+        "internal": false,
+        "authentication": "REQUIRED",
+        "roles": [
+          "ANALYST"
+        ],
+        "resource_authorization": "CASE_ACCESS",
+        "sensitive_content_permission": "NONE",
+        "break_glass_roles": [],
+        "request_schema": "EvaluationCreateRequest",
+        "response_schema": "CaseResponse",
+        "success_status": 200,
+        "mode": "SYNC",
+        "idempotency": "REQUIRED",
+        "audit": "NOT_REQUIRED",
+        "audit_event": null,
+        "sensitivity": "C2",
+        "concurrency": "NONE",
+        "target_resource": "DetectionResult",
+        "errors": [
+          "IDEMPOTENCY_KEY_REUSED",
+          "INTERNAL_ERROR"
+        ],
+        "notes": ""
+      }
+    },
+    {
+      "id": "NEG-02",
+      "expect": "AC-05",
+      "description": "evidence download without content-level resource authorization",
+      "op": "set",
+      "path": [
+        "operations",
+        {
+          "operation_id": "getEvidenceContent"
+        },
+        "resource_authorization"
+      ],
+      "value": "CASE_ACCESS"
+    },
+    {
+      "id": "NEG-03",
+      "expect": "AC-05",
+      "description": "administrator implicitly allowed all evidence content",
+      "op": "append",
+      "path": [
+        "operations",
+        {
+          "operation_id": "getEvidenceContent"
+        },
+        "roles"
+      ],
+      "value": "ADMINISTRATOR"
+    },
+    {
+      "id": "NEG-04",
+      "expect": "AC-10",
+      "description": "knowledge activation by bundle_version only",
+      "op": "set",
+      "path": [
+        "schemas",
+        "KnowledgeActivationRequest",
+        "fields"
+      ],
+      "value": [
+        {
+          "name": "bundle_version",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "governance_change_ref",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "NEG-05",
+      "expect": "AC-10",
+      "description": "activate 'latest' endpoint",
+      "op": "append",
+      "path": [
+        "operations"
+      ],
+      "value": {
+        "operation_id": "activateLatestKnowledge",
+        "method": "POST",
+        "path": "/api/v1/knowledge/deployment/activate-latest",
+        "purpose": "negative fixture",
+        "internal": false,
+        "authentication": "REQUIRED",
+        "roles": [
+          "ADMINISTRATOR"
+        ],
+        "resource_authorization": "KNOWLEDGE_OPERATION",
+        "sensitive_content_permission": "NONE",
+        "break_glass_roles": [],
+        "request_schema": "EmptyCommandRequest",
+        "response_schema": "CaseResponse",
+        "success_status": 200,
+        "mode": "SYNC",
+        "idempotency": "REQUIRED",
+        "audit": "REQUIRED",
+        "audit_event": "KNOWLEDGE_ACTIVATED",
+        "sensitivity": "C2",
+        "concurrency": "NONE",
+        "target_resource": "KnowledgeActivationRecord",
+        "errors": [
+          "IDEMPOTENCY_KEY_REUSED",
+          "INTERNAL_ERROR"
+        ],
+        "notes": "",
+        "knowledge_control": true
+      }
+    },
+    {
+      "id": "NEG-06",
+      "expect": "AC-11",
+      "description": "generic arbitrary URL fetch operation",
+      "op": "append",
+      "path": [
+        "operations"
+      ],
+      "value": {
+        "operation_id": "fetchUrl",
+        "method": "POST",
+        "path": "/api/v1/url-fetch",
+        "purpose": "negative fixture",
+        "internal": false,
+        "authentication": "REQUIRED",
+        "roles": [
+          "ANALYST"
+        ],
+        "resource_authorization": "CASE_ACCESS",
+        "sensitive_content_permission": "NONE",
+        "break_glass_roles": [],
+        "request_schema": "EmptyCommandRequest",
+        "response_schema": "CaseResponse",
+        "success_status": 200,
+        "mode": "SYNC",
+        "idempotency": "REQUIRED",
+        "audit": "NOT_REQUIRED",
+        "audit_event": null,
+        "sensitivity": "C2",
+        "concurrency": "NONE",
+        "target_resource": "Case",
+        "errors": [
+          "IDEMPOTENCY_KEY_REUSED",
+          "INTERNAL_ERROR"
+        ],
+        "notes": "",
+        "server_side_fetch": true
+      }
+    },
+    {
+      "id": "NEG-07",
+      "expect": "AC-12",
+      "description": "tenant_id introduced into a request",
+      "op": "append",
+      "path": [
+        "schemas",
+        "CaseCreateRequest",
+        "fields"
+      ],
+      "value": {
+        "name": "tenant_id",
+        "type": "uuid",
+        "required": false
+      }
+    },
+    {
+      "id": "NEG-08",
+      "expect": "AC-14",
+      "description": "replay allows AI recall",
+      "op": "set",
+      "path": [
+        "operations",
+        {
+          "operation_id": "createReplay"
+        },
+        "replay_semantics",
+        "ai_recall"
+      ],
+      "value": true
+    },
+    {
+      "id": "NEG-09",
+      "expect": "AC-15",
+      "description": "adjudication request permits actor_id",
+      "op": "append",
+      "path": [
+        "schemas",
+        "AdjudicationCreateRequest",
+        "fields"
+      ],
+      "value": {
+        "name": "actor_id",
+        "type": "uuid",
+        "required": false
+      }
+    },
+    {
+      "id": "NEG-10",
+      "expect": "AC-15",
+      "description": "evaluation request permits classification",
+      "op": "append",
+      "path": [
+        "schemas",
+        "EvaluationCreateRequest",
+        "fields"
+      ],
+      "value": {
+        "name": "classification",
+        "type": "enum",
+        "required": false,
+        "vocabulary": "classification"
+      }
+    },
+    {
+      "id": "NEG-11",
+      "expect": "AC-02",
+      "description": "duplicate operation_id",
+      "op": "set",
+      "path": [
+        "operations",
+        {
+          "operation_id": "listCases"
+        },
+        "operation_id"
+      ],
+      "value": "getCase"
+    },
+    {
+      "id": "NEG-12",
+      "expect": "AC-02",
+      "description": "duplicate method + path",
+      "op": "append",
+      "path": [
+        "operations"
+      ],
+      "value": {
+        "operation_id": "getCaseAgain",
+        "method": "GET",
+        "path": "/api/v1/cases/{case_id}",
+        "purpose": "negative fixture",
+        "internal": false,
+        "authentication": "REQUIRED",
+        "roles": [
+          "USER"
+        ],
+        "resource_authorization": "CASE_ACCESS",
+        "sensitive_content_permission": "NONE",
+        "break_glass_roles": [],
+        "request_schema": null,
+        "response_schema": "CaseResponse",
+        "success_status": 200,
+        "mode": "SYNC",
+        "idempotency": "NOT_APPLICABLE",
+        "audit": "NOT_REQUIRED",
+        "audit_event": null,
+        "sensitivity": "C2",
+        "concurrency": "NONE",
+        "target_resource": "Case",
+        "errors": [
+          "IDEMPOTENCY_KEY_REUSED",
+          "INTERNAL_ERROR"
+        ],
+        "notes": ""
+      }
+    },
+    {
+      "id": "NEG-13",
+      "expect": "AC-13",
+      "description": "scam score in the result response",
+      "op": "append",
+      "path": [
+        "schemas",
+        "DetectionResultResponse",
+        "fields"
+      ],
+      "value": {
+        "name": "scam_score",
+        "type": "integer",
+        "required": false
+      }
+    },
+    {
+      "id": "NEG-14",
+      "expect": "AC-07",
+      "description": "immediate DELETE of evidence bypassing governed deletion",
+      "op": "append",
+      "path": [
+        "operations"
+      ],
+      "value": {
+        "operation_id": "deleteEvidence",
+        "method": "DELETE",
+        "path": "/api/v1/evidence/{evidence_id}",
+        "purpose": "negative fixture",
+        "internal": false,
+        "authentication": "REQUIRED",
+        "roles": [
+          "USER"
+        ],
+        "resource_authorization": "CASE_ACCESS",
+        "sensitive_content_permission": "NONE",
+        "break_glass_roles": [],
+        "request_schema": null,
+        "response_schema": "CaseResponse",
+        "success_status": 200,
+        "mode": "SYNC",
+        "idempotency": "NOT_APPLICABLE",
+        "audit": "NOT_REQUIRED",
+        "audit_event": null,
+        "sensitivity": "C2",
+        "concurrency": "NONE",
+        "target_resource": "EvidenceItem",
+        "errors": [
+          "IDEMPOTENCY_KEY_REUSED",
+          "INTERNAL_ERROR"
+        ],
+        "notes": ""
+      }
+    },
+    {
+      "id": "NEG-15",
+      "expect": "AC-14",
+      "description": "replay uses latest knowledge",
+      "op": "set",
+      "path": [
+        "operations",
+        {
+          "operation_id": "createReplay"
+        },
+        "replay_semantics",
+        "knowledge_selection"
+      ],
+      "value": "LATEST"
+    },
+    {
+      "id": "NEG-16",
+      "expect": "AC-09",
+      "description": "creation command without idempotency",
+      "op": "set",
+      "path": [
+        "operations",
+        {
+          "operation_id": "createAdjudication"
+        },
+        "idempotency"
+      ],
+      "value": "NOT_APPLICABLE"
+    },
+    {
+      "id": "NEG-17",
+      "expect": "AC-16",
+      "description": "request schema silently ignores unknown fields",
+      "op": "set",
+      "path": [
+        "schemas",
+        "EvaluationCreateRequest",
+        "unknown_fields"
+      ],
+      "value": "IGNORE"
+    },
+    {
+      "id": "NEG-18",
+      "expect": "AC-17",
+      "description": "persistence-pending evaluation exposed as COMPLETED",
+      "op": "set",
+      "path": [
+        "vocabularies",
+        "api_evaluation_state",
+        "maps_from",
+        "mapping",
+        "RESULT_COMPUTED_PERSISTENCE_PENDING"
+      ],
+      "value": "COMPLETED"
+    },
+    {
+      "id": "NEG-19",
+      "expect": "AC-08",
+      "description": "evidence content access not audited",
+      "op": "set",
+      "path": [
+        "operations",
+        {
+          "operation_id": "getEvidenceContent"
+        },
+        "audit"
+      ],
+      "value": "NOT_REQUIRED"
+    },
+    {
+      "id": "NEG-20",
+      "expect": "AC-10",
+      "description": "direct rule-body mutation API",
+      "op": "append",
+      "path": [
+        "operations"
+      ],
+      "value": {
+        "operation_id": "createRule",
+        "method": "POST",
+        "path": "/api/v1/rules",
+        "purpose": "negative fixture",
+        "internal": false,
+        "authentication": "REQUIRED",
+        "roles": [
+          "KNOWLEDGE_EDITOR"
+        ],
+        "resource_authorization": "CASE_ACCESS",
+        "sensitive_content_permission": "NONE",
+        "break_glass_roles": [],
+        "request_schema": "EmptyCommandRequest",
+        "response_schema": "CaseResponse",
+        "success_status": 200,
+        "mode": "SYNC",
+        "idempotency": "REQUIRED",
+        "audit": "NOT_REQUIRED",
+        "audit_event": null,
+        "sensitivity": "C2",
+        "concurrency": "NONE",
+        "target_resource": "Case",
+        "errors": [
+          "IDEMPOTENCY_KEY_REUSED",
+          "INTERNAL_ERROR"
+        ],
+        "notes": ""
+      }
+    },
+    {
+      "id": "NEG-21",
+      "expect": "AC-23",
+      "description": "administrator sees raw evidence by role",
+      "op": "set",
+      "path": [
+        "field_visibility",
+        "raw_evidence_content",
+        "ADMINISTRATOR"
+      ],
+      "value": "VISIBLE"
+    },
+    {
+      "id": "NEG-22",
+      "expect": "AC-20",
+      "description": "list filter on an internal field",
+      "op": "append",
+      "path": [
+        "operations",
+        {
+          "operation_id": "listCases"
+        },
+        "list",
+        "filters"
+      ],
+      "value": "owner_principal_id"
+    },
+    {
+      "id": "NEG-23",
+      "expect": "AC-24",
+      "description": "MEDIUM-1: API-invented priority on RecommendedActionView",
+      "op": "append",
+      "path": [
+        "schemas",
+        "RecommendedActionView",
+        "fields"
+      ],
+      "value": {
+        "name": "priority",
+        "type": "string",
+        "required": true,
+        "trace": "api:VIEW_SELECTOR"
+      }
+    },
+    {
+      "id": "NEG-24",
+      "expect": "AC-24",
+      "description": "MEDIUM-1: priority traced to the schema-reserved but never-emitted Phase-3 field",
+      "op": "append",
+      "path": [
+        "schemas",
+        "RecommendedActionView",
+        "fields"
+      ],
+      "value": {
+        "name": "priority",
+        "type": "string",
+        "required": false,
+        "trace": "phase3:knowledge/schemas/detection/detection-result.schema.json#/$defs/recommendedAction/properties/priority"
+      }
+    },
+    {
+      "id": "NEG-25",
+      "expect": "AC-24",
+      "description": "invented decision category in the result response",
+      "op": "append",
+      "path": [
+        "schemas",
+        "DetectionResultResponse",
+        "fields"
+      ],
+      "value": {
+        "name": "scam_category",
+        "type": "string",
+        "required": false,
+        "trace": "api:INTERPRETATION_NOTICE"
+      }
+    },
+    {
+      "id": "NEG-26",
+      "expect": "AC-24",
+      "description": "untraced field in the per-rule result view",
+      "op": "append",
+      "path": [
+        "schemas",
+        "RuleResultView",
+        "fields"
+      ],
+      "value": {
+        "name": "rule_weight",
+        "type": "integer",
+        "required": false
+      }
+    },
+    {
+      "id": "NEG-27",
+      "expect": "AC-25",
+      "description": "MEDIUM-2: ANALYST may create/activate break-glass",
+      "op": "append",
+      "path": [
+        "operations",
+        {
+          "operation_id": "createBreakGlassGrant"
+        },
+        "roles"
+      ],
+      "value": "ANALYST"
+    },
+    {
+      "id": "NEG-28",
+      "expect": "AC-25",
+      "description": "ANALYST break-glass content access",
+      "op": "append",
+      "path": [
+        "operations",
+        {
+          "operation_id": "getEvidenceContent"
+        },
+        "break_glass_roles"
+      ],
+      "value": "ANALYST"
+    },
+    {
+      "id": "NEG-29",
+      "expect": "AC-26",
+      "description": "LOW-1: review assignment allows self-assignment",
+      "op": "set",
+      "path": [
+        "operations",
+        {
+          "operation_id": "assignReview"
+        },
+        "caller_constraints"
+      ],
+      "value": []
+    },
+    {
+      "id": "NEG-30",
+      "expect": "AC-27",
+      "description": "LOW-4: adjudication rationale without content permission",
+      "op": "set",
+      "path": [
+        "schemas",
+        "AdjudicationResponse",
+        "fields",
+        {
+          "name": "rationale"
+        },
+        "visibility"
+      ],
+      "value": "ANALYST_ONLY"
+    },
+    {
+      "id": "NEG-31",
+      "expect": "AC-27",
+      "description": "LOW-4: assignment alone reveals adjudication rationale",
+      "op": "set",
+      "path": [
+        "field_visibility",
+        "adjudication_rationale",
+        "ANALYST"
+      ],
+      "value": "ASSIGNED"
+    },
+    {
+      "id": "NEG-32",
+      "expect": "AC-27",
+      "description": "LOW-4: adjudication read classified C2 although it can return C4 rationale",
+      "op": "set",
+      "path": [
+        "operations",
+        {
+          "operation_id": "getAdjudication"
+        },
+        "sensitivity"
+      ],
+      "value": "C2"
+    }
+  ]
+}
