@@ -148,6 +148,23 @@ def d_unfenced_result_insert(root: Path):
     return p, orig
 
 
+def d_mutable_detection_result(root: Path):
+    p = root / "contracts" / "api" / "api-v1.json"
+    orig = p.read_bytes()
+    d = load(p)
+    # Adding a PATCH operation on the completed DetectionResult would let a client rewrite an authoritative Phase-3
+    # decision through the API. No persistence or runtime validator reads the API catalog, so only the P6-WP3
+    # API-contract gate (AC-06 immutability) can bite -> validate_api_contract.py.
+    template = next((o for o in d["operations"] if o["operation_id"] == "getDetectionResult"), None)
+    if template is None:
+        raise RuntimeError("ci_selftest could not find getDetectionResult in the API catalog (renamed?)")
+    patch = dict(template, operation_id="patchDetectionResult", method="PATCH",
+                 request_schema="EvaluationCreateRequest", idempotency="NOT_APPLICABLE")
+    d["operations"].append(patch)
+    dump(p, d)
+    return p, orig
+
+
 DEFECTS = [
     ("unknown indicator reference", d_unknown_indicator, "validate_rules.py"),
     ("invalid taxonomy ID", d_invalid_taxonomy, "validate_rules.py"),
@@ -158,6 +175,7 @@ DEFECTS = [
     ("AI feature flag defaults ON (P4-WP5)", d_ai_default_on, "validate_ai_integration.py"),
     ("shared governed input artifact breaks evaluation 1:1 (P6-WP2)", d_shared_governed_artifact, "validate_data_contract.py"),
     ("result insertable under a fenced/failed evaluation (P6-WP2 MEDIUM-1)", d_unfenced_result_insert, "validate_data_contract.py"),
+    ("completed DetectionResult made mutable through the API (P6-WP3)", d_mutable_detection_result, "validate_api_contract.py"),
 ]
 
 

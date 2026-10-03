@@ -1,0 +1,610 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://trustlens/contracts/api/api-contract.schema.json",
+  "title": "TrustLens API v1 operation catalog (P6-WP3)",
+  "description": "Structural schema for contracts/api/api-v*.json. Narrow by design: cross-reference, authorization and authority invariants are enforced by knowledge/validation/validate_api_contract.py. Some enums deliberately admit forbidden values (e.g. DELETE, CASCADE-like semantics are absent; PATCH/DELETE methods are admitted) so named checks can reject them. Not OpenAPI.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "catalog_schema_version",
+    "api_version",
+    "base_path",
+    "status",
+    "authority_note",
+    "human_contract",
+    "persistence_contract",
+    "tenancy",
+    "conventions",
+    "roles",
+    "error_codes",
+    "vocabularies",
+    "schemas",
+    "resources",
+    "field_visibility",
+    "operations"
+  ],
+  "properties": {
+    "catalog_schema_version": {
+      "const": "1.0.0"
+    },
+    "api_version": {
+      "const": "v1"
+    },
+    "base_path": {
+      "const": "/api/v1"
+    },
+    "status": {
+      "type": "string"
+    },
+    "authority_note": {
+      "type": "string"
+    },
+    "human_contract": {
+      "type": "string"
+    },
+    "persistence_contract": {
+      "type": "string"
+    },
+    "tenancy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "asm_002_status",
+        "tenant_fields_permitted",
+        "note"
+      ],
+      "properties": {
+        "asm_002_status": {
+          "enum": [
+            "UNCONFIRMED_PROVISIONAL",
+            "CONFIRMED_SINGLE_TENANT",
+            "CONFIRMED_MULTI_TENANT"
+          ]
+        },
+        "tenant_fields_permitted": {
+          "type": "boolean"
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    },
+    "conventions": {
+      "type": "object"
+    },
+    "roles": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "USER",
+          "ANALYST",
+          "KNOWLEDGE_EDITOR",
+          "KNOWLEDGE_APPROVER",
+          "ADMINISTRATOR"
+        ]
+      },
+      "uniqueItems": true
+    },
+    "error_codes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "code",
+          "http_status",
+          "retryability",
+          "meaning"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z_]+$"
+          },
+          "http_status": {
+            "type": "integer",
+            "minimum": 400,
+            "maximum": 599
+          },
+          "retryability": {
+            "type": "string"
+          },
+          "meaning": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "vocabularies": {
+      "type": "object",
+      "additionalProperties": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "source",
+              "persistence_vocabulary"
+            ],
+            "properties": {
+              "source": {
+                "const": "PERSISTENCE"
+              },
+              "persistence_vocabulary": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "source",
+              "values",
+              "note"
+            ],
+            "properties": {
+              "source": {
+                "const": "API"
+              },
+              "values": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9_]+$"
+                }
+              },
+              "note": {
+                "type": "string"
+              },
+              "maps_from": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "persistence_vocabulary",
+                  "mapping"
+                ],
+                "properties": {
+                  "persistence_vocabulary": {
+                    "type": "string"
+                  },
+                  "mapping": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "schemas": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/schemaDef"
+      }
+    },
+    "resources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "canonical_path",
+          "data001_object",
+          "api_mutability"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "canonical_path": {
+            "type": "string"
+          },
+          "data001_object": {
+            "type": "string"
+          },
+          "api_mutability": {
+            "enum": [
+              "READ_ONLY",
+              "IMMUTABLE",
+              "IMMUTABLE_AFTER_CREATE",
+              "APPEND_ONLY",
+              "WRITE_ONCE",
+              "COMMAND_ONLY",
+              "PATCHABLE_FIELDS"
+            ]
+          }
+        }
+      }
+    },
+    "field_visibility": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "string"
+        }
+      }
+    },
+    "operations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/operation"
+      }
+    }
+  },
+  "$defs": {
+    "field": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "type",
+        "required"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$"
+        },
+        "type": {
+          "enum": [
+            "string",
+            "uuid",
+            "integer",
+            "boolean",
+            "timestamp",
+            "enum",
+            "array",
+            "object"
+          ]
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "nullable": {
+          "type": "boolean"
+        },
+        "vocabulary": {
+          "type": "string"
+        },
+        "items": {
+          "type": "string"
+        },
+        "items_vocabulary": {
+          "type": "string"
+        },
+        "schema": {
+          "type": "string"
+        },
+        "pattern": {
+          "type": "string"
+        },
+        "max_length": {
+          "const": "BOUNDED"
+        },
+        "untrusted": {
+          "type": "boolean"
+        },
+        "advisory": {
+          "type": "boolean"
+        },
+        "visibility": {
+          "enum": [
+            "DETAILED_VIEW_ONLY",
+            "CONTENT_PERMISSION",
+            "ANALYST_ONLY"
+          ]
+        },
+        "trace": {
+          "type": "string",
+          "pattern": "^(phase3:[^#]+#/.+|api:[A-Z_]+)$"
+        }
+      }
+    },
+    "schemaDef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "body",
+        "unknown_fields",
+        "description",
+        "fields"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "REQUEST",
+            "RESPONSE"
+          ]
+        },
+        "body": {
+          "enum": [
+            "JSON",
+            "BINARY"
+          ]
+        },
+        "unknown_fields": {
+          "enum": [
+            "REJECT",
+            "IGNORE",
+            "CLIENT_MUST_TOLERATE"
+          ]
+        },
+        "description": {
+          "type": "string"
+        },
+        "fields": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/field"
+          }
+        }
+      }
+    },
+    "operation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "operation_id",
+        "method",
+        "path",
+        "purpose",
+        "internal",
+        "authentication",
+        "roles",
+        "resource_authorization",
+        "sensitive_content_permission",
+        "break_glass_roles",
+        "request_schema",
+        "response_schema",
+        "success_status",
+        "mode",
+        "idempotency",
+        "audit",
+        "audit_event",
+        "sensitivity",
+        "concurrency",
+        "target_resource",
+        "errors",
+        "notes"
+      ],
+      "properties": {
+        "operation_id": {
+          "type": "string",
+          "pattern": "^[a-z][A-Za-z0-9]+$"
+        },
+        "method": {
+          "enum": [
+            "GET",
+            "POST",
+            "PUT",
+            "PATCH",
+            "DELETE"
+          ]
+        },
+        "path": {
+          "type": "string",
+          "pattern": "^/"
+        },
+        "purpose": {
+          "type": "string",
+          "minLength": 5
+        },
+        "internal": {
+          "type": "boolean"
+        },
+        "authentication": {
+          "enum": [
+            "REQUIRED",
+            "INTERNAL_PROBE",
+            "NONE"
+          ]
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "USER",
+              "ANALYST",
+              "KNOWLEDGE_EDITOR",
+              "KNOWLEDGE_APPROVER",
+              "ADMINISTRATOR"
+            ]
+          }
+        },
+        "resource_authorization": {
+          "type": "string",
+          "pattern": "^[A-Z_]+$"
+        },
+        "sensitive_content_permission": {
+          "enum": [
+            "NONE",
+            "DERIVED_CONTENT",
+            "EVIDENCE_CONTENT"
+          ]
+        },
+        "break_glass_roles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "request_schema": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "response_schema": {
+          "type": "string"
+        },
+        "success_status": {
+          "enum": [
+            200,
+            201,
+            202,
+            204
+          ]
+        },
+        "mode": {
+          "enum": [
+            "SYNC",
+            "ASYNC"
+          ]
+        },
+        "idempotency": {
+          "enum": [
+            "REQUIRED",
+            "RECOMMENDED",
+            "NATURALLY_IDEMPOTENT",
+            "NOT_APPLICABLE"
+          ]
+        },
+        "audit": {
+          "enum": [
+            "REQUIRED",
+            "NOT_REQUIRED"
+          ]
+        },
+        "audit_event": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "sensitivity": {
+          "enum": [
+            "C1",
+            "C2",
+            "C3",
+            "C4",
+            "C5",
+            "C6"
+          ]
+        },
+        "concurrency": {
+          "enum": [
+            "NONE",
+            "IF_MATCH_REQUIRED"
+          ]
+        },
+        "target_resource": {
+          "type": "string"
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "notes": {
+          "type": "string"
+        },
+        "list": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "pagination",
+            "filters",
+            "sort"
+          ],
+          "properties": {
+            "pagination": {
+              "enum": [
+                "CURSOR",
+                "OFFSET"
+              ]
+            },
+            "filters": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9_]*$"
+              }
+            },
+            "sort": {
+              "type": "string"
+            }
+          }
+        },
+        "creates_new_evaluation": {
+          "type": "boolean"
+        },
+        "knowledge_control": {
+          "type": "boolean"
+        },
+        "availability": {
+          "enum": [
+            "FUTURE_INT_001"
+          ]
+        },
+        "tenancy_status": {
+          "enum": [
+            "PROVISIONAL_BLOCKED_ON_ASM_002"
+          ]
+        },
+        "server_side_fetch": {
+          "type": "boolean"
+        },
+        "replay_semantics": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "ai_recall",
+            "knowledge_selection",
+            "material_substitution",
+            "creates_new_evaluation"
+          ],
+          "properties": {
+            "ai_recall": {
+              "type": "boolean"
+            },
+            "knowledge_selection": {
+              "enum": [
+                "PINNED_ONLY",
+                "LATEST",
+                "CURRENT"
+              ]
+            },
+            "material_substitution": {
+              "enum": [
+                "FORBIDDEN",
+                "ALLOWED"
+              ]
+            },
+            "creates_new_evaluation": {
+              "type": "boolean"
+            }
+          }
+        },
+        "grants_case_access": {
+          "type": "boolean"
+        },
+        "caller_constraints": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "ASSIGNEE_NOT_CALLER",
+              "REVIEWER_NOT_GRANTEE"
+            ]
+          },
+          "uniqueItems": true
+        }
+      }
+    }
+  }
+}

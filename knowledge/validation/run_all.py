@@ -32,7 +32,8 @@ Order (dependency-aware, see ORDER below):
   Phase-3 engine integration + result assembly (P3-WP8: final DetectionResult contract + provenance pinning + CI closure) →
   Phase-4 AI provider seam (P4-WP2) → strict response validation (P4-WP3) → containment/provenance/replay (P4-WP4) →
   Phase-3 integration + default-OFF fallback (P4-WP5) → cross-WP adversarial closure (P4-WP7) →
-  Phase-6 PostgreSQL persistence contract (P6-WP2: static data-contract validation)
+  Phase-6 PostgreSQL persistence contract (P6-WP2: static data-contract validation) →
+  Phase-6 API v1 resource/authorization/protocol catalog (P6-WP3: static API-contract validation)
 
 Usage:
   python knowledge/validation/run_all.py             # human-readable; runs all; non-zero on any failure
@@ -99,6 +100,9 @@ ROOT = Path(__file__).resolve().parents[2]
 #  24 the Phase-6 P6-WP2 data-contract gate runs last: it is a STATIC check of the machine-readable PostgreSQL persistence
 #     contract (contracts/postgresql/schema-v1.json) against its JSON Schema and the DATA-001 logical contract, and reads
 #     the promoted Phase-2/3/4 schemas only to prove its controlled vocabularies have not drifted. No database is used.
+#  25 the Phase-6 P6-WP3 API-contract gate runs after it because it maps API state vocabularies onto the persistence
+#     contract's states: a STATIC check of contracts/api/api-v1.json (authorization, immutability, idempotency, replay,
+#     knowledge-control and protocol invariants). No server, framework or network is used.
 ORDER = [
     ("knowledge/validation/manual_evidence_check.py", "durable-truth: evidence integrity + automated-status preservation"),
     ("knowledge/validation/phase1_consistency_check.py", "Phase-1 counts consistent across manifest / taxonomy / matrix / corpus"),
@@ -124,6 +128,7 @@ ORDER = [
     ("knowledge/validation/validate_ai_integration.py", "Phase-4 P4-WP5 Phase-3 integration: default-OFF feature flag, WP2->WP3->WP4->WP5 mapping into the UNCHANGED evaluate_detection_from_governed, exact deterministic fallback, exact consumed-artifact pinning + replay, no AI-authored decision field"),
     ("knowledge/validation/validate_ai_phase4_closure.py", "Phase-4 P4-WP7 cross-WP closure: committed offline adversarial fixture matrix over the public entry point — flag OFF equivalence, injection-as-data, atomic rejection/fallback, support-first, confidence caps, exact replay + fail-closed tampering; G-09 OPEN"),
     ("knowledge/validation/validate_data_contract.py", "Phase-6 P6-WP2 PostgreSQL persistence contract: schema-valid physical contract mapping every DATA-001 object; Git/bundle knowledge authority, ECS-only raw evidence, immutable fully-pinned DetectionResult, evaluation<->governed-artifact 1:1, append-only audit, no cascade/score/secret/tenant/retention-duration columns, promoted-vocabulary sync, complete replay material set; negative mutations must bite"),
+    ("knowledge/validation/validate_api_contract.py", "Phase-6 P6-WP3 API v1 catalog: schema-valid operations under /api/v1; RBAC + resource-level authorization, no administrator content access by role, immutable DetectionResult, no governed DELETE, idempotent commands, exact content_digest knowledge control (no latest), no URL fetch, no tenant or score fields, replay distinct from re-evaluation, mass-assignment guards, persistence-state mapping; negative mutations must bite"),
 ]
 
 # Network-capable modules a validator must never import — the offline guarantee (WP7 STEP 7).
@@ -217,7 +222,7 @@ def main() -> int:
         f"Phase-1/2 knowledge + published bundle, Phase-3 deterministic runtime (design → contracts → loader → "
         f"evaluator → suppression → aggregation → explanation → golden replay → engine integration), and the "
         f"Phase-4 bounded offline AI layer (provider seam → response validation → containment/provenance/replay → "
-        f"Phase-3 integration → cross-WP adversarial closure) plus the Phase-6 static persistence-contract check")
+        f"Phase-3 integration → cross-WP adversarial closure) plus the Phase-6 static persistence- and API-contract checks")
     log(f"interpreter: {sys.executable}")
     log(f"repo root  : {ROOT}\n")
 
