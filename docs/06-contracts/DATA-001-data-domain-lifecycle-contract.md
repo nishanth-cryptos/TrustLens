@@ -14,7 +14,9 @@
 | Checkpoint | [GATE-019](../00-program/GATE-019-phase-6-data-contract-foundation.md) |
 | Physical supplement | [DATA-001-WP2](DATA-001-WP2-postgresql-persistence-contract.md) PostgreSQL persistence contract + `contracts/postgresql/schema-v1.json` (P6-WP2 persistence contract approved following independent review; ADR-0011 Accepted; remote CI + merge pending) — see §28 |
 | Later Phase-6 consumers | P6-WP2 persistence/schema + ADR-0011 (**persistence contract approved following independent review**; remote CI + merge pending) · P6-WP3 API · P6-WP4 OpenAPI · P6-WP5 integrations (INT-001, ADR-0012) · P6-WP6 operational contracts |
-| Last updated | 2026-10-02 |
+| P6-WP6 additive revision | **P6-WP6 ADDITIVE REVISION** — logical objects `ApiIdempotencyRecord` (§5.22) and `GovernedRemovalTombstone` (§5.23), Matrix A rows 29–30, §29; reviewed by [GATE-024](../00-program/GATE-024-phase-6-operational-contract.md). GATE-019 did not review this delta |
+| Current revision state | Original P6-WP1 work package merged (PR #26); the approval above is historical. This document also contains a P6-WP6 additive delta: APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING (GATE-024) |
+| Last updated | 2026-10-03 |
 
 ---
 
@@ -625,6 +627,57 @@ matrix is §16.
   result or adjudication (SRS 5.5.8, ADR-0007 Decision 12). Free text is `C4`. **Store:** `OPS`.
   **Mutability:** `M-APP`.
 
+### 5.22 `ApiIdempotencyRecord` (P6-WP6 additive revision)
+
+- **Purpose:** durable API-boundary request deduplication: it lets a client safely retry a command and receive the
+  original API outcome **without re-executing the governed effect**. It is not multi-store coordinated work (that is
+  `CrossStoreOperation`, §5.20) and it is not an accountability record.
+- **Authority:** operational API execution-control record, owned by the API boundary (application layer).
+- **Store:** `OPS` (PostgreSQL). **Classification:** `C2` — opaque identifiers, digests, status codes and timestamps; it
+  holds no request or response content.
+- **Mutability:** `M-OPS` — the execution state moves from in-progress to a terminal outcome (or is released after a
+  transient failure); identity, scope and request fingerprint are write-once.
+- **Logical content:** authenticated principal reference; operation identity (API `operation_id`); target-resource scope
+  (canonical target resource path); a non-reversible digest of the client `Idempotency-Key` (never the raw key); a
+  versioned semantic-request fingerprint; execution state and claim fence; the original outcome as HTTP status, safe
+  machine error code and an opaque reference to the resulting/targeted resource where applicable; instants; a server-set
+  active-window end.
+- **Relationships:** principal (`PrincipalReference`) 1 → 0..n; the outcome reference is a soft reference to the
+  resulting resource and never blocks governed deletion of that resource.
+- **Retention:** finite governed active window (duration **NOT YET SPECIFIED**, governed runtime configuration); after
+  it the record no longer governs the key and is purged by governed retention action. It stores no response body and no
+  C4 content, so it never becomes an undeletable hidden response cache.
+- **Security:** the `Idempotency-Key` and its digest are **not** authentication or authorization; the record never
+  authorizes access to the resulting resource — normal role + resource authorization always runs first. Scopes of
+  different principals are independent.
+- **Replay relevance:** **none** — not part of the `DetectionResult` historical replay material (RM-01…RM-14).
+- **Physical:** `api_idempotency_record` (DATA-001-WP2 P6-WP6-ADD-001); semantics in OPS-001 §§4–5.
+
+### 5.23 `GovernedRemovalTombstone` (P6-WP6 additive revision)
+
+- **Purpose:** content-free, immutable residual governance record of the fact that a governed resource was removed.
+  It supports `410 REMOVED_UNDER_GOVERNANCE`, restore anti-resurrection reconciliation, and preservation of the minimum
+  governance metadata about the removal.
+- **Authority:** governed deletion / removal history (privacy/lifecycle).
+- **Store:** `OPS`. **Classification:** `C2` (operational metadata: opaque identifiers, categories, instants).
+- **Mutability:** `M-IMM` — written once when the removal is verified; never edited. Only governed minimization (a
+  future OI-05 decision on permitted residual metadata) may reduce it.
+- **Identity:** exactly one marker per removed resource (resource kind + prior opaque resource identity).
+- **Logical content:** resource kind; prior opaque resource identity; authorizing `DeletionRequest`; the verifying
+  `DeletionAction` where applicable; safe removal-reason category; removal-verified instant; governing retention/deletion
+  policy reference.
+- **Must never preserve:** `DetectionResult` body, raw evidence, report content, provider raw body, C4 rationale,
+  secret material, or a digest of the deleted content (no accepted policy authorizes such a digest while OI-05 is open).
+- **Relationship to `DeletionAction` (§5.19.3):** a `DeletionAction` records the **execution** of one deletion step in
+  one store (planned → executing → verified absent | residual found | failed). A `GovernedRemovalTombstone` records the
+  **durable residual fact** that a governed resource has been removed, created only once every required action for
+  that resource is verified absent. They are related (the tombstone references the request and, where applicable, the
+  verifying action) but are distinct objects and are not conflated. The "residual tombstone content" mentioned in
+  §5.19.3 is this object.
+- **Replay relevance:** **not** a substitute for deleted replay material — if required material is gone, replay is
+  `REPLAY_UNAVAILABLE` and report regeneration is unavailable (§§11, 17).
+- **Physical:** `governed_removal_tombstone` (DATA-001-WP2 P6-WP6-ADD-001); semantics in OPS-001 §§9, 11.
+
 ## 6. Matrix A — canonical data-object catalog
 
 | # | Object | Purpose | Authority | Sensitivity | Authoritative store class | Mutability | Replay relevance |
@@ -657,6 +710,8 @@ matrix is §16.
 | 26 | `DeletionAction` | Verified deletion step (OPS workflow) + separate audit proof | Privacy/lifecycle | `C2` workflow / `C6` audit event | `OPS` workflow + `AUD` event | `M-OPS` workflow / `M-APP` event | — |
 | 27 | `CrossStoreOperation` | Idempotent multi-store operation | Owning module | `C2` | `OPS` | `M-OPS` | — |
 | 28 | `Feedback` | User feedback (Post-MVP) | User; non-authoritative | `C4` | `OPS` | `M-APP` | None |
+| 29 | `ApiIdempotencyRecord` | API-boundary request deduplication + original-outcome replay (P6-WP6 additive) | API boundary (operational execution control) | `C2` | `OPS` | `M-OPS` | None |
+| 30 | `GovernedRemovalTombstone` | Content-free residual record of a governed removal (P6-WP6 additive) | Privacy/lifecycle (governed removal history) | `C2` | `OPS` | `M-IMM` | None (never substitutes deleted material) |
 
 Secrets and keys (`C7`) are deliberately **absent** from this catalog: they are not application data objects and
 live only behind `SEC`. Application records hold, at most, versioned key **references**.
@@ -1228,3 +1283,18 @@ Representation choices recorded for traceability (no semantic change): Phase-4 a
 the evaluation record and the sealed AI result + replay snapshot are persisted only when AI was used (the only case in
 which they exist); free-text/PII user context is kept in the EvidenceContentStore-held input envelope rather than on
 the submission record; input envelopes and content-bearing derivatives are stored only in EvidenceContentStore.
+
+## 29. P6-WP6 ADDITIVE REVISION (reviewed by GATE-024)
+
+The P6-WP1 approval and review history above (§27) and the P6-WP2 supplement (§28) are preserved unchanged. This
+section records the P6-WP6 logical-object delta; GATE-019 did not review it, and
+[GATE-024](../00-program/GATE-024-phase-6-operational-contract.md) owns its acceptance.
+
+| Change | Reason |
+|---|---|
+| New object `ApiIdempotencyRecord` (§5.22; Matrix A row 29) | The durable API idempotency record has its own purpose, authority, lifecycle, state machine, retention and ownership; it is not a `CrossStoreOperation` |
+| New object `GovernedRemovalTombstone` (§5.23; Matrix A row 30) | The durable residual removal fact is distinct from the `DeletionAction` that executed a deletion step; §5.19.3's "residual tombstone content" is now modelled explicitly |
+
+No existing object, classification, mutability or rule changes. Physical mappings: `api_idempotency_record` →
+`ApiIdempotencyRecord`; `governed_removal_tombstone` → `GovernedRemovalTombstone` (DATA-001-WP2 §27,
+`schema-v1.json` 0.2.0). DC-05 continues to require every physical table to map to a declared Matrix-A object.

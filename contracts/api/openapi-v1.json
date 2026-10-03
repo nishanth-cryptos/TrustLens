@@ -4617,7 +4617,7 @@
     "/api/v1/evaluations/{evaluation_id}/enrichments": {
       "get": {
         "operationId": "listEvaluationEnrichments",
-        "summary": "Advisory enrichment metadata (FUTURE: enabled only after INT-001/ADR-0012)",
+        "summary": "Advisory enrichment metadata (provider assertions only; never a TrustLens verdict)",
         "tags": [
           "ExternalEnrichmentResult"
         ],
@@ -4637,7 +4637,6 @@
         "x-trustlens-mode": "SYNC",
         "x-trustlens-concurrency": "NONE",
         "x-trustlens-target-resource": "ExternalEnrichmentResult",
-        "x-trustlens-availability": "FUTURE_INT_001",
         "security": [
           {
             "bearerAuth": []
@@ -4812,7 +4811,8 @@
               "DEPENDENCY_UNAVAILABLE"
             ]
           }
-        }
+        },
+        "description": "P6-WP6 ADDITIVE ACTIVATION: the reserved FUTURE_INT_001 guard is removed now that INT-001/ADR-0012 are accepted; method, path, operationId, roles, resource authorization, success status and pagination are unchanged. Advisory metadata only: no raw provider body, ECS locator, credential reference, network target or raw evidence; provider CLEAN is a provider assertion (no adverse reputation asserted by the provider), never TrustLens safe. Contract-level activation only — runtime serving requires the Phase-9 implementation."
       }
     },
     "/api/v1/evaluations/{evaluation_id}/adjudications": {
@@ -10726,7 +10726,7 @@
         "x-trustlens-idempotency": "NOT_APPLICABLE",
         "x-trustlens-audit": {
           "required": true,
-          "event": "PENDING_TAXONOMY_P6_WP6"
+          "event": "AUDIT_LOG_ACCESSED"
         },
         "x-trustlens-sensitivity": "C6",
         "x-trustlens-mode": "SYNC",
@@ -11847,7 +11847,7 @@
       },
       "EnrichmentView": {
         "type": "object",
-        "description": "Normalized, non-authoritative; no provider credentials or raw provider bodies.",
+        "description": "Normalized, non-authoritative advisory metadata; no provider credentials, raw provider bodies, ECS locators or network targets. reputation_result CLEAN is a provider assertion only, never TrustLens safe (advisory = true).",
         "properties": {
           "enrichment_id": {
             "type": "string",
@@ -12129,7 +12129,15 @@
           "RESTORE_STARTED",
           "RESTORE_VERIFIED",
           "RESTORE_PROMOTED_OR_REJECTED",
-          "CHECKPOINT_SIGNING_TERMINAL_FAILURE"
+          "CHECKPOINT_SIGNING_TERMINAL_FAILURE",
+          "ENRICHMENT_REQUESTED",
+          "PROVIDER_POLICY_SELECTED",
+          "ENRICHMENT_ACCEPTED",
+          "CREDENTIAL_REFERENCE_FAILURE",
+          "PROVIDER_POLICY_PUBLISHED",
+          "PROVIDER_POLICY_ACTIVATED",
+          "PROVIDER_POLICY_WITHDRAWN",
+          "AUDIT_LOG_ACCESSED"
         ],
         "x-trustlens-vocabulary": "audit_event_type"
       },
@@ -12164,7 +12172,10 @@
           "DELETION_ACTION",
           "AUDIT_CHECKPOINT",
           "RESTORE",
-          "OTHER"
+          "OTHER",
+          "EXTERNAL_ENRICHMENT",
+          "PROVIDER_POLICY",
+          "AUDIT_LOG"
         ],
         "x-trustlens-vocabulary": "audit_target_kind"
       },
@@ -13983,7 +13994,7 @@
   "x-trustlens-etag-strategy": {
     "decision": "B_SERVER_REVISION_REQUIRED",
     "rule": "ETag = opaque strong validator derived from the resource's server-authoritative monotonic revision; never derived solely from fields that can return to a prior state.",
-    "implementation_dependency": "Additive DATA-001-WP2 revision (monotonic revision for case_record and review_routing_state; deletion_request may reuse it) before implementation."
+    "implementation_dependency": "Satisfied at contract level by the P6-WP6 additive DATA-001-WP2 revision (server-only monotonic mutation_revision on case_record, review_routing_state and deletion_request; compare-and-swap writes; OPS-001 §6). Runtime implementation pending Phase 9."
   },
   "x-trustlens-tenancy": {
     "asm_002_status": "UNCONFIRMED_PROVISIONAL",

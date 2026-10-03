@@ -13,6 +13,7 @@
 | Decision record | [ADR-0012](../../adr/ADR-0012-threat-intelligence-adapter-architecture-provider-selection.md) (Accepted following independent P6-WP5 review) |
 | Gate | [GATE-023](../00-program/GATE-023-phase-6-integration-contract.md) |
 | Governing authority | DATA-001 §5.16/§20; DATA-001-WP2 (`external_enrichment_result`, RM-09); API-001 §22; OAS-001; ARCH-004 §8/E10; ADR-0007/0009/0010/0013/0016/0017; DET-001 |
+| Current revision state | Original P6-WP5 work package merged (PR #30); the status above is historical. This document also contains a P6-WP6 additive note (§34): APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING (GATE-024) |
 | Last updated | 2026-10-03 |
 
 ## 1. Purpose and claim boundary
@@ -497,6 +498,12 @@ activated through governed API-001 / OAS-001 bookkeeping. `EnrichmentView` maps 
 `reputation_result` ← WP2 `reputation_result`; `observed_at` ← WP2 `responded_at`; `advisory` = `true`. The OpenAPI/API
 freeze is respected: `api-v1.json`, `openapi-v1.json`, API-001, OAS-001, GATE-021 and GATE-022 are unchanged.
 
+**P6-WP6 additive note (GATE-024).** P6-WP6 performed the activation at **contract level** (guard removed in API-001 /
+OAS-001; method, path, operationId, roles, authorization and pagination unchanged). Runtime serving still requires the
+Phase-9 implementation. The machine contract records `api_surface.availability = ACTIVE_CONTRACT`, and IC-46 now checks
+that the catalog and OpenAPI availability match that record. The INT-001 persistence additions (§33) are defined by
+DATA-001-WP2 P6-WP6-ADD-001 (OPS-001 §7).
+
 ## 35. Tenancy
 
 ASM-002 remains **UNCONFIRMED / PROVISIONAL**. No `tenant_id`, `X-Tenant`, tenant routing or tenant-specific provider
@@ -676,7 +683,7 @@ See §27.
 | IC-43 | provider policy is governed operator configuration, versioned, binds the full endpoint; analysts/AI/providers cannot change it |
 | IC-44 | indicator types map exactly to existing url-observation authority; unsupported indicator kinds not permitted |
 | IC-45 | outcome vocabulary and mappings use only accepted WP2 vocabularies and columns |
-| IC-46 | no public API endpoint added; reserved listEvaluationEnrichments surface unchanged and mapped |
+| IC-46 | no public API endpoint added; the listEvaluationEnrichments surface keeps its reserved method/path/operationId/roles/authorization/pagination, its availability matches api_surface (FUTURE_INT_001 until the P6-WP6 contract-level activation, ACTIVE_CONTRACT after) in both API catalog and OpenAPI, and it is mapped |
 | IC-47 | provider-neutral: no vendor named, no provider selected |
 | IC-48 | no numeric limit invented anywhere in the contract |
 | IC-49 | audit and telemetry separated; no secrets/raw evidence in audit, telemetry or logs; data classified |
@@ -823,3 +830,4 @@ See §27.
 | 0.1 | 2026-10-03 | P6-WP5: initial integration contract candidate (provider-neutral indicator lookup, outbound network / SSRF control, outcomes, provenance, cache/freshness, replay), machine contract + schema + validator + negative mutations; ADR-0012 issued |
 | 0.1 (review correction) | 2026-10-03 | Independent-review corrections: MEDIUM-1 governed-proxy final-hop assurance (§17: REQUIRED_AND_VERIFIED enforcement of the full connector scope, DEPLOYMENT_BLOCKED / `POLICY_REJECTED` when unverified, `PROXY_ENFORCEMENT_UNVERIFIED`; structural IC-19; proxy conformance scenarios and negative mutations); LOW-1 ADR-0012 returned to Proposed pending review; INFO-1 ADR embedded-IPv4 wording aligned; INFO-3 validator-only URL splitter statement (§36) |
 | 0.1 (approved) | 2026-10-03 | Acceptance bookkeeping: targeted independent re-review APPROVE (BLOCKER 0 / HIGH 0 / MEDIUM 0 / LOW 1 / INFO 4); status APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING; ADR-0012 Accepted; LOW-2 and INFO-A…D carried (§38); review history in GATE-023 §7–§8 |
+| 0.1 (P6-WP6 note) | 2026-10-03 | P6-WP6 additive (GATE-024): §34 note on the contract-level activation of `listEvaluationEnrichments`; machine contract `api_surface` = ACTIVE_CONTRACT; IC-46 re-pinned to the recorded availability (matrix K regenerated) |

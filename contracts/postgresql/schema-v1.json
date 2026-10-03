@@ -1,8 +1,8 @@
 {
   "contract_schema_version": "1.0.0",
   "contract_id": "TRUSTLENS-POSTGRESQL-PERSISTENCE",
-  "contract_version": "0.1.0",
-  "status": "P6-WP2 PERSISTENCE CONTRACT CANDIDATE",
+  "contract_version": "0.2.0",
+  "status": "P6-WP2 PERSISTENCE CONTRACT APPROVED (merged); P6-WP6 ADDITIVE REVISION (contract 0.2.0) APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING (GATE-024)",
   "authority_note": "Phase-6 contract artifact for static validation. It is NOT runtime database authority, NOT a migration, and NOT knowledge authority. Knowledge authority remains Git + immutable bundle (ADR-0004/0013). This JSON file is the maintained source artifact; the scratch generator used during initial authoring is not required. Hand edits must pass the JSON Schema, validate_data_contract.py (including its negative mutations), the CI self-test and the canonical gate.",
   "logical_contract": {
     "document": "docs/06-contracts/DATA-001-data-domain-lifecycle-contract.md",
@@ -846,9 +846,17 @@
         "RESTORE_STARTED",
         "RESTORE_VERIFIED",
         "RESTORE_PROMOTED_OR_REJECTED",
-        "CHECKPOINT_SIGNING_TERMINAL_FAILURE"
+        "CHECKPOINT_SIGNING_TERMINAL_FAILURE",
+        "ENRICHMENT_REQUESTED",
+        "PROVIDER_POLICY_SELECTED",
+        "ENRICHMENT_ACCEPTED",
+        "CREDENTIAL_REFERENCE_FAILURE",
+        "PROVIDER_POLICY_PUBLISHED",
+        "PROVIDER_POLICY_ACTIVATED",
+        "PROVIDER_POLICY_WITHDRAWN",
+        "AUDIT_LOG_ACCESSED"
       ],
-      "note": "ADR-0010 §9 + ADR-0013 Decision 14 + ADR-0009/ARCH-004 §9.2 + ARCH-005 §11.4 + ARCH-006 §8; additive extension only"
+      "note": "ADR-0010 §9 + ADR-0013 Decision 14 + ADR-0009/ARCH-004 §9.2 + ARCH-005 §11.4 + ARCH-006 §8; additive extension only P6-WP6 additive: INT-001 enrichment events, provider-policy lifecycle events and the audit-read accountability event (OPS-001 §8)."
     },
     "audit_target_kind": {
       "authority": "PERSISTENCE_CONTRACT",
@@ -872,7 +880,10 @@
         "DELETION_ACTION",
         "AUDIT_CHECKPOINT",
         "RESTORE",
-        "OTHER"
+        "OTHER",
+        "EXTERNAL_ENRICHMENT",
+        "PROVIDER_POLICY",
+        "AUDIT_LOG"
       ],
       "note": "Audit target kinds"
     },
@@ -886,6 +897,115 @@
         "CHECKPOINT_TERMINAL_FAILURE"
       ],
       "note": "ARCH-005 §7.2 / ARCH-006 §8"
+    },
+    "api_idempotency_state": {
+      "authority": "PERSISTENCE_CONTRACT",
+      "source": "DATA-001-WP2 P6-WP6 additive revision",
+      "values": [
+        "IN_PROGRESS",
+        "COMPLETED",
+        "FAILED_TERMINAL",
+        "RELEASED"
+      ],
+      "note": "OPS-001 §5"
+    },
+    "enrichment_indicator_type": {
+      "authority": "PERSISTENCE_CONTRACT",
+      "source": "DATA-001-WP2 P6-WP6 additive revision",
+      "values": [
+        "URL",
+        "HOSTNAME",
+        "REGISTERED_DOMAIN"
+      ],
+      "note": "INT-001 §5 / external-enrichment-v1.json indicator_types.permitted"
+    },
+    "enrichment_lookup_outcome": {
+      "authority": "PERSISTENCE_CONTRACT",
+      "source": "DATA-001-WP2 P6-WP6 additive revision",
+      "values": [
+        "FOUND",
+        "NOT_FOUND",
+        "UNAVAILABLE",
+        "POLICY_REJECTED",
+        "INVALID_RESPONSE"
+      ],
+      "note": "INT-001 §22 outcomes.vocabulary"
+    },
+    "enrichment_freshness_state": {
+      "authority": "PERSISTENCE_CONTRACT",
+      "source": "DATA-001-WP2 P6-WP6 additive revision",
+      "values": [
+        "FRESH",
+        "STALE",
+        "UNKNOWN"
+      ],
+      "note": "INT-001 §26 freshness.states"
+    },
+    "enrichment_provider_response_category": {
+      "authority": "PERSISTENCE_CONTRACT",
+      "source": "DATA-001-WP2 P6-WP6 additive revision",
+      "values": [
+        "HTTP_2XX",
+        "HTTP_3XX",
+        "HTTP_4XX",
+        "HTTP_429",
+        "HTTP_5XX",
+        "NO_RESPONSE"
+      ],
+      "note": "OPS-001 §7 (provider-neutral transport categories)"
+    },
+    "enrichment_safe_error_category": {
+      "authority": "PERSISTENCE_CONTRACT",
+      "source": "DATA-001-WP2 P6-WP6 additive revision",
+      "values": [
+        "DNS_FAILURE",
+        "CONNECTION_FAILURE",
+        "TLS_FAILURE",
+        "TIMEOUT",
+        "PROVIDER_CLIENT_ERROR",
+        "PROVIDER_SERVER_ERROR",
+        "RATE_LIMITED",
+        "INVALID_CONTENT_TYPE",
+        "OVERSIZED_RESPONSE",
+        "DECOMPRESSION_LIMIT_EXCEEDED",
+        "SCHEMA_INVALID_RESPONSE",
+        "POLICY_REJECTION",
+        "REDIRECT_POLICY_REJECTION",
+        "DESTINATION_ADDRESS_REJECTION",
+        "PROXY_ENFORCEMENT_UNVERIFIED",
+        "CREDENTIAL_UNAVAILABLE",
+        "PROVIDER_UNAVAILABLE"
+      ],
+      "note": "INT-001 §22 failure_semantics (exact)"
+    },
+    "governed_removal_resource_kind": {
+      "authority": "PERSISTENCE_CONTRACT",
+      "source": "DATA-001-WP2 P6-WP6 additive revision",
+      "values": [
+        "CASE",
+        "SUBMISSION",
+        "EVIDENCE_ITEM",
+        "EVIDENCE_DERIVATIVE",
+        "INPUT_ENVELOPE",
+        "GOVERNED_INPUT_ARTIFACT",
+        "AI_EXTRACTION_PROVENANCE",
+        "DETECTION_RESULT",
+        "CASE_NOTE",
+        "USER_CORRECTION",
+        "ANALYST_ADJUDICATION",
+        "REPORT_BUNDLE",
+        "EXTERNAL_ENRICHMENT_RESULT"
+      ],
+      "note": "OPS-001 §9"
+    },
+    "governed_removal_reason": {
+      "authority": "PERSISTENCE_CONTRACT",
+      "source": "DATA-001-WP2 P6-WP6 additive revision",
+      "values": [
+        "GOVERNED_DELETION_REQUEST",
+        "RETENTION_POLICY_ACTION"
+      ],
+      "note": "OPS-001 §9"
     }
   },
   "logical_object_coverage": {
@@ -984,7 +1104,13 @@
     ],
     "Feedback": {
       "deferred": "Post-MVP (FR-064); non-authoritative; physical mapping deferred until the feedback capability is scheduled. Never auto-trains (SRS 5.5.8)."
-    }
+    },
+    "ApiIdempotencyRecord": [
+      "api_idempotency_record"
+    ],
+    "GovernedRemovalTombstone": [
+      "governed_removal_tombstone"
+    ]
   },
   "replay_material_set": [
     {
@@ -2028,6 +2154,13 @@
           "nullable": false,
           "classification": "C2",
           "description": "Retention class/policy reference (no duration; OI-05)."
+        },
+        {
+          "name": "mutation_revision",
+          "type": "bigint",
+          "nullable": false,
+          "classification": "C2",
+          "description": "P6-WP6 additive revision: server-only monotonic mutation revision. Starts at 1 on insert; incremented by exactly 1 by the database in the same statement as every committed mutation of this aggregate; never decremented, reset or reused. Sole source of the opaque strong ETag; never an API field and never client-writable."
         }
       ],
       "primary_key": [
@@ -2060,7 +2193,13 @@
         }
       ],
       "unique": [],
-      "checks": [],
+      "checks": [
+        {
+          "name": "ck_case_record_mutation_revision_positive",
+          "rule": "mutation_revision >= 1",
+          "purpose": "P6-WP6 additive revision: revision is a positive monotonic counter."
+        }
+      ],
       "indexes": [
         {
           "name": "ix_case_record_owner",
@@ -2072,11 +2211,14 @@
       ],
       "mutable_columns": [
         "lifecycle_state",
-        "closed_at"
+        "closed_at",
+        "mutation_revision"
       ],
       "write_once_columns": [],
       "soft_references": [],
-      "transition_guards": []
+      "transition_guards": [
+        "P6-WP6 additive revision: BEFORE UPDATE trigger sets NEW.mutation_revision = OLD.mutation_revision + 1 on every update and ignores/rejects any externally supplied value (revision never decreases and never returns to an earlier value, so OPEN -> CLOSED -> OPEN yields three distinct revisions). If-Match writes are compare-and-swap: UPDATE case_record SET ... WHERE case_record_id = $id AND mutation_revision = $expected_revision; zero rows updated means no mutation and the API answers 412 PRECONDITION_FAILED; a missing If-Match is rejected with 428 before any write."
+      ]
     },
     {
       "name": "case_note",
@@ -5011,6 +5153,13 @@
           "nullable": false,
           "classification": "C2",
           "description": "Last transition."
+        },
+        {
+          "name": "mutation_revision",
+          "type": "bigint",
+          "nullable": false,
+          "classification": "C2",
+          "description": "P6-WP6 additive revision: server-only monotonic mutation revision. Starts at 1 on insert; incremented by exactly 1 by the database in the same statement as every committed mutation of this aggregate; never decremented, reset or reused. Sole source of the opaque strong ETag; never an API field and never client-writable."
         }
       ],
       "primary_key": [
@@ -5068,6 +5217,11 @@
           "name": "ck_review_routing_in_review_assigned",
           "rule": "queue_state <> 'IN_REVIEW' OR assigned_analyst_principal_id IS NOT NULL",
           "purpose": "Review requires an assigned analyst."
+        },
+        {
+          "name": "ck_review_routing_state_mutation_revision_positive",
+          "rule": "mutation_revision >= 1",
+          "purpose": "P6-WP6 additive revision: revision is a positive monotonic counter."
         }
       ],
       "indexes": [
@@ -5101,12 +5255,14 @@
         "queue_state",
         "routing_policy_version",
         "assigned_analyst_principal_id",
-        "state_changed_at"
+        "state_changed_at",
+        "mutation_revision"
       ],
       "write_once_columns": [],
       "soft_references": [],
       "transition_guards": [
-        "Assigned analyst must hold an active ASSIGNED_ANALYST case_access_grant on the case (constraint trigger)."
+        "Assigned analyst must hold an active ASSIGNED_ANALYST case_access_grant on the case (constraint trigger).",
+        "P6-WP6 additive revision: BEFORE UPDATE trigger sets NEW.mutation_revision = OLD.mutation_revision + 1 on every update and ignores/rejects any externally supplied value (revision never decreases and never returns to an earlier value, so OPEN -> CLOSED -> OPEN yields three distinct revisions). If-Match writes are compare-and-swap: UPDATE review_routing_state SET ... WHERE review_routing_state_id = $id AND mutation_revision = $expected_revision; zero rows updated means no mutation and the API answers 412 PRECONDITION_FAILED; a missing If-Match is rejected with 428 before any write."
       ]
     },
     {
@@ -6086,7 +6242,8 @@
           "type": "text",
           "nullable": true,
           "classification": "C2",
-          "description": "Safe error category."
+          "description": "Safe error category (governed INT-001 failure vocabulary; P6-WP6 additive CHECK binding).",
+          "vocabulary": "enrichment_safe_error_category"
         },
         {
           "name": "reputation_result",
@@ -6139,6 +6296,108 @@
           "nullable": false,
           "classification": "C2",
           "description": "Retention class/policy reference (no duration; OI-05)."
+        },
+        {
+          "name": "indicator_type",
+          "type": "text",
+          "nullable": false,
+          "classification": "C2",
+          "description": "P6-WP6 additive revision: INT-001 indicator type (lookup data kind).",
+          "vocabulary": "enrichment_indicator_type"
+        },
+        {
+          "name": "normalized_indicator_ref",
+          "type": "text",
+          "nullable": false,
+          "classification": "C4",
+          "description": "P6-WP6 additive revision: SHA-256 reference of the normalized indicator (TRUSTLENS_CANONICAL_JSON_V1 over indicator type + normalized value); the raw value is not stored. Classified C4 because a digest of a low-entropy indicator (e.g. a domain) is dictionary-reversible, so it follows the evaluation/evidence deletion graph.",
+          "pattern": "^[0-9a-f]{64}$",
+          "content_kind": "DIGEST"
+        },
+        {
+          "name": "lookup_outcome",
+          "type": "text",
+          "nullable": true,
+          "classification": "C2",
+          "description": "P6-WP6 additive revision: INT-001 technical outcome (NULL only when status = NOT_EVALUATED). Never a TrustLens classification.",
+          "vocabulary": "enrichment_lookup_outcome"
+        },
+        {
+          "name": "provider_response_category",
+          "type": "text",
+          "nullable": true,
+          "classification": "C2",
+          "description": "P6-WP6 additive revision: Provider response status category (transport-level, provider-neutral).",
+          "vocabulary": "enrichment_provider_response_category"
+        },
+        {
+          "name": "freshness_state",
+          "type": "text",
+          "nullable": false,
+          "classification": "C2",
+          "description": "P6-WP6 additive revision: INT-001 freshness at recording time; technical recency only, never confidence or risk.",
+          "vocabulary": "enrichment_freshness_state"
+        },
+        {
+          "name": "freshness_policy_ref",
+          "type": "text",
+          "nullable": true,
+          "classification": "C2",
+          "description": "P6-WP6 additive revision: Governed freshness-policy reference from the pinned provider policy (period NOT YET SPECIFIED)."
+        },
+        {
+          "name": "cache_used",
+          "type": "boolean",
+          "nullable": false,
+          "classification": "C2",
+          "description": "P6-WP6 additive revision: Whether a governed cache entry supplied the observation."
+        },
+        {
+          "name": "provider_policy_ref",
+          "type": "text",
+          "nullable": false,
+          "classification": "C2",
+          "description": "P6-WP6 additive revision: Provider policy reference pinned at call time."
+        },
+        {
+          "name": "provider_policy_version",
+          "type": "text",
+          "nullable": false,
+          "classification": "C2",
+          "description": "P6-WP6 additive revision: Provider policy version pinned at call time (never 'latest')."
+        },
+        {
+          "name": "provider_policy_digest",
+          "type": "text",
+          "nullable": false,
+          "classification": "C2",
+          "description": "P6-WP6 additive revision: Exact immutable provider-policy identity (SHA-256 of the canonical published policy).",
+          "pattern": "^[0-9a-f]{64}$",
+          "content_kind": "DIGEST"
+        },
+        {
+          "name": "parser_schema_version",
+          "type": "text",
+          "nullable": false,
+          "classification": "C2",
+          "description": "P6-WP6 additive revision: Response parser/schema version used for validation and normalization."
+        },
+        {
+          "name": "response_artifact_digest",
+          "type": "text",
+          "nullable": true,
+          "classification": "C2",
+          "description": "P6-WP6 additive revision: Digest of the immutable normalized response artifact TrustLens recorded (recording integrity only — not provider truth or authenticity).",
+          "pattern": "^[0-9a-f]{64}$",
+          "content_kind": "DIGEST"
+        },
+        {
+          "name": "retained_provider_artifact_ecs_locator",
+          "type": "text",
+          "nullable": true,
+          "classification": "C2",
+          "description": "P6-WP6 additive revision: Opaque ECS locator of retained provider material, present only where raw_provider_content_policy_ref permits retention; raw provider bodies are never stored inline.",
+          "content_kind": "OPAQUE_ECS_LOCATOR"
         }
       ],
       "primary_key": [
@@ -6210,6 +6469,31 @@
           "name": "ck_external_enrichment_target",
           "rule": "num_nonnulls(evaluation_id, target_evidence_item_id, target_evidence_derivative_id) >= 1",
           "purpose": "Never orphaned."
+        },
+        {
+          "name": "ck_external_enrichment_outcome_status",
+          "rule": "(status = 'NOT_EVALUATED' AND lookup_outcome IS NULL) OR (lookup_outcome IN ('FOUND','NOT_FOUND') AND status = 'SUCCEEDED') OR (lookup_outcome = 'UNAVAILABLE' AND status IN ('FAILED','TIMED_OUT')) OR (lookup_outcome = 'POLICY_REJECTED' AND status = 'REJECTED') OR (lookup_outcome = 'INVALID_RESPONSE' AND status = 'FAILED')",
+          "purpose": "P6-WP6 additive revision: technical outcome maps onto the WP2 status exactly as INT-001 outcomes.mapping."
+        },
+        {
+          "name": "ck_external_enrichment_not_found_unknown",
+          "rule": "lookup_outcome IS DISTINCT FROM 'NOT_FOUND' OR (reputation_result = 'UNKNOWN' AND allowlist_result IN ('NOT_ALLOWLISTED','NOT_EVALUATED') AND domain_matches_claimed_brand = 'UNKNOWN')",
+          "purpose": "P6-WP6 additive revision: NOT_FOUND is absence of information — never CLEAN, ALLOWLISTED or MATCH."
+        },
+        {
+          "name": "ck_external_enrichment_error_category",
+          "rule": "(lookup_outcome IN ('UNAVAILABLE','POLICY_REJECTED','INVALID_RESPONSE') AND safe_error_category IS NOT NULL) OR ((lookup_outcome IS NULL OR lookup_outcome NOT IN ('UNAVAILABLE','POLICY_REJECTED','INVALID_RESPONSE')) AND safe_error_category IS NULL)",
+          "purpose": "P6-WP6 additive revision: every failure outcome carries a governed safe error category; successes carry none."
+        },
+        {
+          "name": "ck_external_enrichment_artifact",
+          "rule": "lookup_outcome IS NULL OR lookup_outcome NOT IN ('FOUND','NOT_FOUND') OR response_artifact_digest IS NOT NULL",
+          "purpose": "P6-WP6 additive revision: every accepted provider observation pins its recorded response-artifact digest."
+        },
+        {
+          "name": "ck_external_enrichment_retained_artifact",
+          "rule": "retained_provider_artifact_ecs_locator IS NULL OR response_artifact_digest IS NOT NULL",
+          "purpose": "P6-WP6 additive revision: retained provider material is always bound to its recorded digest."
         }
       ],
       "indexes": [
@@ -6238,7 +6522,9 @@
       "mutable_columns": [],
       "write_once_columns": [],
       "soft_references": [],
-      "transition_guards": []
+      "transition_guards": [
+        "P6-WP6 additive revision: rows are immutable historical provenance: provider reputation changes, cache refresh, provider-policy change or re-analysis insert a NEW row and never update an existing one; consumed_in_governed_artifact stays false (RM-09); provider CLEAN is a provider assertion only."
+      ]
     },
     {
       "name": "knowledge_bundle_reference",
@@ -6835,6 +7121,13 @@
           "nullable": true,
           "classification": "C2",
           "description": "Safe failure category."
+        },
+        {
+          "name": "mutation_revision",
+          "type": "bigint",
+          "nullable": false,
+          "classification": "C2",
+          "description": "P6-WP6 additive revision: server-only monotonic mutation revision. Starts at 1 on insert; incremented by exactly 1 by the database in the same statement as every committed mutation of this aggregate; never decremented, reset or reused. Sole source of the opaque strong ETag; never an API field and never client-writable."
         }
       ],
       "primary_key": [
@@ -6884,6 +7177,11 @@
           "name": "ck_deletion_request_terminal",
           "rule": "(state IN ('COMPLETE','PARTIALLY_FAILED','FAILED','REJECTED')) = (completed_at IS NOT NULL)",
           "purpose": "Terminal states are explicit."
+        },
+        {
+          "name": "ck_deletion_request_mutation_revision_positive",
+          "rule": "mutation_revision >= 1",
+          "purpose": "P6-WP6 additive revision: revision is a positive monotonic counter."
         }
       ],
       "indexes": [
@@ -6899,7 +7197,8 @@
       ],
       "mutable_columns": [
         "state",
-        "failure_category"
+        "failure_category",
+        "mutation_revision"
       ],
       "write_once_columns": [
         "authorized_by_principal_id",
@@ -6917,7 +7216,9 @@
           "reason": "Must outlive the deleted target."
         }
       ],
-      "transition_guards": []
+      "transition_guards": [
+        "P6-WP6 additive revision: BEFORE UPDATE trigger sets NEW.mutation_revision = OLD.mutation_revision + 1 on every update and ignores/rejects any externally supplied value (revision never decreases and never returns to an earlier value, so OPEN -> CLOSED -> OPEN yields three distinct revisions). If-Match writes are compare-and-swap: UPDATE deletion_request SET ... WHERE deletion_request_id = $id AND mutation_revision = $expected_revision; zero rows updated means no mutation and the API answers 412 PRECONDITION_FAILED; a missing If-Match is rejected with 428 before any write."
+      ]
     },
     {
       "name": "deletion_action",
@@ -7847,6 +8148,426 @@
       "write_once_columns": [],
       "soft_references": [],
       "transition_guards": []
+    },
+    {
+      "name": "api_idempotency_record",
+      "logical_object": "ApiIdempotencyRecord",
+      "purpose": "P6-WP6 additive revision: durable API-boundary request deduplication (DATA-001 §5.22 ApiIdempotencyRecord); closes the P6-WP3/WP4 idempotency persistence LOW at contract level. Stores a key digest, never the raw key, and never acts as an authorization credential.",
+      "store_class": "OPS",
+      "authority": "OPERATIONAL_RECORD",
+      "classification": "C2",
+      "mutability": "M-OPS",
+      "delete_policy": "GOVERNED_DELETION_ONLY",
+      "retention": {
+        "mode": "NOT_APPLICABLE"
+      },
+      "columns": [
+        {
+          "name": "api_idempotency_record_id",
+          "type": "uuid",
+          "nullable": false,
+          "classification": "C2",
+          "description": "Opaque UUIDv4 identifier (application-generated, CSPRNG); non-semantic."
+        },
+        {
+          "name": "principal_reference_id",
+          "type": "uuid",
+          "nullable": false,
+          "classification": "C2",
+          "description": "Authenticated principal (scope component 1)."
+        },
+        {
+          "name": "operation_id",
+          "type": "text",
+          "nullable": false,
+          "classification": "C2",
+          "description": "API catalog operation_id (scope component 2)."
+        },
+        {
+          "name": "target_resource_scope",
+          "type": "text",
+          "nullable": false,
+          "classification": "C2",
+          "description": "Canonical concrete target resource path without query string (scope component 3)."
+        },
+        {
+          "name": "idempotency_key_digest",
+          "type": "text",
+          "nullable": false,
+          "classification": "C2",
+          "description": "SHA-256 of the client Idempotency-Key bytes (scope component 4). The raw key is never stored, logged as authentication material or used to grant access.",
+          "pattern": "^[0-9a-f]{64}$",
+          "content_kind": "DIGEST"
+        },
+        {
+          "name": "request_fingerprint_version",
+          "type": "text",
+          "nullable": false,
+          "classification": "C2",
+          "description": "Semantic request fingerprint canonicalization identifier (TRUSTLENS_IDEMPOTENCY_REQUEST_FINGERPRINT_V1)."
+        },
+        {
+          "name": "request_semantic_digest",
+          "type": "text",
+          "nullable": false,
+          "classification": "C2",
+          "description": "SHA-256 of the canonical semantic request (operation_id, target scope, canonical JSON body or uploaded-content digest, semantically relevant headers only); excludes X-Request-Id, traceparent, the Idempotency-Key and connection headers.",
+          "pattern": "^[0-9a-f]{64}$",
+          "content_kind": "DIGEST"
+        },
+        {
+          "name": "execution_state",
+          "type": "text",
+          "nullable": false,
+          "classification": "C2",
+          "description": "Execution state of the claimed command.",
+          "vocabulary": "api_idempotency_state"
+        },
+        {
+          "name": "claim_token",
+          "type": "uuid",
+          "nullable": false,
+          "classification": "C2",
+          "description": "Execution fence token; rotated on every (re-)claim so a stale executor cannot complete."
+        },
+        {
+          "name": "in_progress_lease_until",
+          "type": "timestamptz",
+          "nullable": true,
+          "classification": "C2",
+          "description": "Claim lease end while IN_PROGRESS (duration: governed configuration, NOT YET SPECIFIED)."
+        },
+        {
+          "name": "outcome_http_status",
+          "type": "integer",
+          "nullable": true,
+          "classification": "C2",
+          "description": "Original HTTP status of the terminal outcome."
+        },
+        {
+          "name": "outcome_error_code",
+          "type": "text",
+          "nullable": true,
+          "classification": "C2",
+          "description": "Original safe machine error code (API error vocabulary) where the outcome was an error."
+        },
+        {
+          "name": "outcome_resource_kind",
+          "type": "text",
+          "nullable": true,
+          "classification": "C2",
+          "description": "Kind of the resource created or targeted by the original outcome."
+        },
+        {
+          "name": "outcome_resource_id",
+          "type": "uuid",
+          "nullable": true,
+          "classification": "C2",
+          "description": "Opaque identity of that resource (soft reference; no response body is stored)."
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "classification": "C2",
+          "description": "Claim instant."
+        },
+        {
+          "name": "terminal_at",
+          "type": "timestamptz",
+          "nullable": true,
+          "classification": "C2",
+          "description": "Terminal instant."
+        },
+        {
+          "name": "active_until",
+          "type": "timestamptz",
+          "nullable": false,
+          "classification": "C2",
+          "description": "Server-set end of the governed active window (created_at + governed configuration; value NOT YET SPECIFIED)."
+        }
+      ],
+      "primary_key": [
+        "api_idempotency_record_id"
+      ],
+      "foreign_keys": [
+        {
+          "columns": [
+            "principal_reference_id"
+          ],
+          "references": {
+            "table": "principal_reference",
+            "columns": [
+              "principal_reference_id"
+            ]
+          },
+          "on_delete": "RESTRICT"
+        }
+      ],
+      "unique": [
+        {
+          "name": "uq_api_idempotency_scope",
+          "columns": [
+            "principal_reference_id",
+            "operation_id",
+            "target_resource_scope",
+            "idempotency_key_digest"
+          ],
+          "purpose": "Atomic claim: exactly one record per principal + operation + target resource + key; concurrent duplicates conflict on this constraint instead of check-then-insert."
+        }
+      ],
+      "checks": [
+        {
+          "name": "ck_api_idempotency_state",
+          "rule": "(execution_state = 'IN_PROGRESS' AND terminal_at IS NULL AND outcome_http_status IS NULL AND in_progress_lease_until IS NOT NULL) OR (execution_state IN ('COMPLETED','FAILED_TERMINAL','RELEASED') AND terminal_at IS NOT NULL AND outcome_http_status IS NOT NULL AND in_progress_lease_until IS NULL)",
+          "purpose": "In-progress claims hold a lease and no outcome; terminal records hold their original outcome."
+        },
+        {
+          "name": "ck_api_idempotency_window",
+          "rule": "active_until > created_at",
+          "purpose": "Finite, server-set active window."
+        },
+        {
+          "name": "ck_api_idempotency_http_status",
+          "rule": "outcome_http_status IS NULL OR outcome_http_status BETWEEN 100 AND 599",
+          "purpose": "Outcome is an HTTP status code."
+        }
+      ],
+      "indexes": [
+        {
+          "name": "ix_api_idempotency_record_active_until",
+          "columns": [
+            "active_until"
+          ],
+          "justification": "Governed purge of records past their active window."
+        }
+      ],
+      "mutable_columns": [
+        "execution_state",
+        "claim_token",
+        "in_progress_lease_until",
+        "outcome_http_status",
+        "outcome_error_code",
+        "outcome_resource_kind",
+        "outcome_resource_id",
+        "terminal_at"
+      ],
+      "write_once_columns": [
+        "principal_reference_id",
+        "operation_id",
+        "target_resource_scope",
+        "idempotency_key_digest",
+        "request_fingerprint_version",
+        "request_semantic_digest",
+        "created_at",
+        "active_until"
+      ],
+      "soft_references": [
+        {
+          "column": "outcome_resource_id",
+          "refers_to": [
+            "case_record",
+            "submission",
+            "evidence_item",
+            "evaluation",
+            "user_correction",
+            "analyst_adjudication",
+            "case_access_grant",
+            "break_glass_grant",
+            "report_bundle_record",
+            "replay_execution",
+            "deletion_request",
+            "knowledge_activation_record"
+          ],
+          "reason": "Outcome reference must not block governed deletion of the resource; no content is copied."
+        }
+      ],
+      "transition_guards": [
+        "Order: authenticate -> authorize (normal role + resource checks; the key never authorizes) -> claim.",
+        "Claim = INSERT ... ON CONFLICT (uq_api_idempotency_scope) DO NOTHING with execution_state IN_PROGRESS and a fresh claim_token; only the inserting request executes.",
+        "On conflict, read the existing row: different request_semantic_digest -> 409 IDEMPOTENCY_KEY_REUSED; same digest and IN_PROGRESS with a live lease -> 409 IDEMPOTENCY_IN_PROGRESS; same digest and COMPLETED/FAILED_TERMINAL -> replay the stored status/error code/resource reference without executing again.",
+        "Completion: the governed effect and the transition to COMPLETED/FAILED_TERMINAL commit in the same transaction, guarded by WHERE claim_token = $claim_token; a stale executor updates zero rows and its effect rolls back.",
+        "Transient failures (5xx/429/DEPENDENCY_UNAVAILABLE) end in RELEASED; an IN_PROGRESS claim whose lease expired may be re-claimed by a request with the SAME semantic digest via compare-and-swap on claim_token (the effect cannot have committed, because effect and completion are atomic).",
+        "After active_until the record no longer governs the key and may be purged by governed retention action; behaviour of a reused key after expiry is the documented expiry policy (OPS-001 §5)."
+      ]
+    },
+    {
+      "name": "governed_removal_tombstone",
+      "logical_object": "GovernedRemovalTombstone",
+      "purpose": "P6-WP6 additive revision: content-free residual record of a governed removal (DATA-001 §5.23 GovernedRemovalTombstone) that lets the API answer 410 REMOVED_UNDER_GOVERNANCE and lets restore reconciliation re-apply deletions, without retaining deleted content or mutating any immutable record.",
+      "store_class": "OPS",
+      "authority": "OPERATIONAL_RECORD",
+      "classification": "C2",
+      "mutability": "M-IMM",
+      "delete_policy": "GOVERNED_MINIMIZATION_ONLY",
+      "retention": {
+        "mode": "EXPLICIT",
+        "column": "retention_policy_reference_id"
+      },
+      "columns": [
+        {
+          "name": "governed_removal_tombstone_id",
+          "type": "uuid",
+          "nullable": false,
+          "classification": "C2",
+          "description": "Opaque UUIDv4 identifier (application-generated, CSPRNG); non-semantic."
+        },
+        {
+          "name": "resource_kind",
+          "type": "text",
+          "nullable": false,
+          "classification": "C2",
+          "description": "Kind of the removed resource.",
+          "vocabulary": "governed_removal_resource_kind"
+        },
+        {
+          "name": "prior_resource_id",
+          "type": "uuid",
+          "nullable": false,
+          "classification": "C2",
+          "description": "Opaque identity the removed resource had (soft reference; the resource no longer exists)."
+        },
+        {
+          "name": "deletion_request_id",
+          "type": "uuid",
+          "nullable": false,
+          "classification": "C2",
+          "description": "Authorizing deletion request."
+        },
+        {
+          "name": "deletion_action_id",
+          "type": "uuid",
+          "nullable": true,
+          "classification": "C2",
+          "description": "Verified deletion action that removed the last required copy, where applicable."
+        },
+        {
+          "name": "removal_reason_category",
+          "type": "text",
+          "nullable": false,
+          "classification": "C2",
+          "description": "Safe reason category.",
+          "vocabulary": "governed_removal_reason"
+        },
+        {
+          "name": "removed_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "classification": "C2",
+          "description": "Instant the removal was verified complete for this resource."
+        },
+        {
+          "name": "retention_policy_reference_id",
+          "type": "uuid",
+          "nullable": false,
+          "classification": "C2",
+          "description": "Governing retention/deletion policy reference (no duration; OI-05)."
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "classification": "C2",
+          "description": "Created instant."
+        }
+      ],
+      "primary_key": [
+        "governed_removal_tombstone_id"
+      ],
+      "foreign_keys": [
+        {
+          "columns": [
+            "deletion_request_id"
+          ],
+          "references": {
+            "table": "deletion_request",
+            "columns": [
+              "deletion_request_id"
+            ]
+          },
+          "on_delete": "RESTRICT"
+        },
+        {
+          "columns": [
+            "deletion_action_id"
+          ],
+          "references": {
+            "table": "deletion_action",
+            "columns": [
+              "deletion_action_id"
+            ]
+          },
+          "on_delete": "RESTRICT"
+        },
+        {
+          "columns": [
+            "retention_policy_reference_id"
+          ],
+          "references": {
+            "table": "retention_policy_reference",
+            "columns": [
+              "retention_policy_reference_id"
+            ]
+          },
+          "on_delete": "RESTRICT"
+        }
+      ],
+      "unique": [
+        {
+          "name": "uq_governed_removal_tombstone_resource",
+          "columns": [
+            "resource_kind",
+            "prior_resource_id"
+          ],
+          "purpose": "One tombstone per removed resource; the 410 lookup key."
+        }
+      ],
+      "checks": [],
+      "indexes": [
+        {
+          "name": "ix_governed_removal_tombstone_request",
+          "columns": [
+            "deletion_request_id"
+          ],
+          "justification": "Tombstones by deletion request (completion and restore reconciliation)."
+        },
+        {
+          "name": "ix_governed_removal_tombstone_action",
+          "columns": [
+            "deletion_action_id"
+          ],
+          "where": "deletion_action_id IS NOT NULL",
+          "justification": "Tombstone by verified action."
+        }
+      ],
+      "mutable_columns": [],
+      "write_once_columns": [],
+      "soft_references": [
+        {
+          "column": "prior_resource_id",
+          "refers_to": [
+            "case_record",
+            "submission",
+            "evidence_item",
+            "evidence_derivative",
+            "input_envelope_record",
+            "governed_input_artifact",
+            "ai_extraction_provenance",
+            "detection_result",
+            "case_note",
+            "user_correction",
+            "analyst_adjudication",
+            "report_bundle_record",
+            "external_enrichment_result"
+          ],
+          "reason": "The referenced row has been removed under governance; the tombstone must outlive it."
+        }
+      ],
+      "transition_guards": [
+        "Inserted only in the transaction that records the final VERIFIED_ABSENT deletion_action covering the resource; never before absence is verified in every required store.",
+        "Carries no content: no DetectionResult body, no evidence or report bytes, no provider body, no C4 rationale, no secret, and no digest of the deleted content (retaining digests of deleted content is not permitted while OI-05 is open).",
+        "An immutable DetectionResult is never set to a 'deleted' status: governed deletion removes the row/ECS object in dependency order and the tombstone records the removal separately."
+      ]
     }
   ],
   "completion_protocol": {
@@ -7926,5 +8647,21 @@
       "COMMIT"
     ],
     "notes": "Row locks on the evaluation serialise completion and fencing; whichever commits first wins and the other matches zero rows. A retry is always a NEW evaluation (origin RETRY_AFTER_FAILURE); a stale worker can neither complete, resurrect, nor touch the retry."
-  }
+  },
+  "additive_revisions": [
+    {
+      "id": "P6-WP6-ADD-001",
+      "work_package": "P6-WP6",
+      "contract_version": "0.2.0",
+      "status": "P6-WP6 ADDITIVE REVISION APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING (reviewed only through GATE-024; GATE-020 did not review this delta)",
+      "operational_contract": "docs/06-contracts/OPS-001-operational-replay-persistence-contract.md",
+      "changes": [
+        "mutation_revision (server-only monotonic) on case_record, review_routing_state, deletion_request",
+        "external_enrichment_result: INT-001 provenance, outcome, freshness, cache, policy identity and artifact columns; safe_error_category vocabulary",
+        "api_idempotency_record table (durable API idempotency) -> DATA-001 ApiIdempotencyRecord (§5.22)",
+        "governed_removal_tombstone table (410 REMOVED_UNDER_GOVERNANCE + restore anti-resurrection) -> DATA-001 GovernedRemovalTombstone (§5.23)",
+        "audit_event_type: enrichment, provider-policy lifecycle and AUDIT_LOG_ACCESSED; audit_target_kind: EXTERNAL_ENRICHMENT, PROVIDER_POLICY, AUDIT_LOG"
+      ]
+    }
+  ]
 }
