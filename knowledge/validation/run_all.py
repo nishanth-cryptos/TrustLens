@@ -36,7 +36,8 @@ Order (dependency-aware, see ORDER below):
   Phase-6 API v1 resource/authorization/protocol catalog (P6-WP3: static API-contract validation) →
   Phase-6 OpenAPI 3.1 encoding parity (P6-WP4: static OpenAPI-contract validation) →
   Phase-6 external-enrichment integration contract (P6-WP5: static integration-contract validation) →
-  Phase-6 operational / replay / persistence-follow-up contract (P6-WP6: static operational-contract validation)
+  Phase-6 operational / replay / persistence-follow-up contract (P6-WP6: static operational-contract validation) →
+  Phase-6 integrated closure (P6-WP7: pinned-artifact snapshot + cross-contract closure validation)
 
 Usage:
   python knowledge/validation/run_all.py             # human-readable; runs all; non-zero on any failure
@@ -112,9 +113,12 @@ ROOT = Path(__file__).resolve().parents[2]
 #  27 the Phase-6 P6-WP5 integration-contract gate runs after the API gates because it proves the INT-001 policy
 #     (contracts/integrations/external-enrichment-v1.json) maps only onto the accepted WP2 enrichment row and the
 #     reserved API operation. Static only: no DNS lookup, socket, HTTP request, provider or API key.
-#  28 the Phase-6 P6-WP6 operational gate runs last because it cross-checks the additive persistence revision, the
+#  28 the Phase-6 P6-WP6 operational gate runs after them because it cross-checks the additive persistence revision, the
 #     enrichment-endpoint activation in the API catalog/OpenAPI and the INT-001 contract that checks 24-27 have just
 #     validated, then replays its idempotency / ETag / deletion / restore / replay scenarios. Static only.
+#  29 the Phase-6 P6-WP7 closure gate runs last of all: it recomputes the SHA-256 of every pinned canonical Phase-6 artifact
+#     against contracts/phase6/phase6-closure-v1.json and cross-checks the integrated final state of the contracts that
+#     checks 24-28 have just validated (merge evidence, invariants, open items, claim boundary, Phase-7 handoff). Static only.
 ORDER = [
     ("knowledge/validation/manual_evidence_check.py", "durable-truth: evidence integrity + automated-status preservation"),
     ("knowledge/validation/phase1_consistency_check.py", "Phase-1 counts consistent across manifest / taxonomy / matrix / corpus"),
@@ -144,6 +148,7 @@ ORDER = [
     ("knowledge/validation/validate_openapi_contract.py", "Phase-6 P6-WP4 OpenAPI 3.1 encoding: exact parity with the API catalog (53 operations: method/path/operationId, request/response schemas, success and error statuses, auth/roles, resource authorization, idempotency, audit, sensitivity, async, If-Match), local refs only, immutable DetectionResult, no invented decision fields, exact content_digest activation, administrator-only break-glass, no self-assignment, C4 visibility, pinned replay, no tenant/URL fetch, ETag server-revision decision; negative mutations must bite"),
     ("knowledge/validation/validate_integration_contract.py", "Phase-6 P6-WP5 INT-001 external-enrichment integration contract: schema-valid provider-neutral indicator-lookup policy; deny-by-default egress, governed destinations only, no generic fetch, HTTPS + verification, DNS/connect binding, forbidden address classes incl. IPv4-mapped IPv6, mixed answers rejected, redirect revalidation, no env-proxy, credential references only, least-data outbound, NOT_FOUND/failure never safe, no provider verdict, provenance/cache/freshness, no-refetch replay, offline conformance scenarios; negative mutations must bite"),
     ("knowledge/validation/validate_operational_contract.py", "Phase-6 P6-WP6 OPS-001 operational contract: durable API idempotency (scoped key digest, atomic claim, no response cache, finite window), monotonic mutation revisions on every If-Match aggregate, INT-001 enrichment persistence, enrichment/provider-policy/audit-read audit events, content-free tombstones, verified cross-store deletion, restore anti-resurrection, no-AI/no-provider/no-latest replay, provider-policy identity, listEvaluationEnrichments activation parity, runtime-parameter registry; offline scenarios; negative mutations must bite"),
+    ("knowledge/validation/validate_phase6_closure.py", "Phase-6 P6-WP7 integrated closure: schema-valid closure manifest; P6-WP1..WP6 merge evidence (PRs #26-#31, exact merge SHAs, successor-baseline citations, recorded remote CI); SHA-256 snapshot of the canonical contract surface recomputed from exact bytes (drift fails); DATA/PostgreSQL coverage, API/OpenAPI 53/53 parity, enrichment activation, immutable DetectionResult, no invented decision fields, advisory enrichment, exact replay, deletion/restore, contract-level carryovers, ADR-0012/0011 Accepted, G-09/OI-05 OPEN, ASM-002 provisional, Phase 1 PARTIAL, no tenant/numeric invention, claim boundary, Phase-7 handoff; negative mutations must bite"),
 ]
 
 # Network-capable modules a validator must never import — the offline guarantee (WP7 STEP 7).
@@ -237,7 +242,7 @@ def main() -> int:
         f"Phase-1/2 knowledge + published bundle, Phase-3 deterministic runtime (design → contracts → loader → "
         f"evaluator → suppression → aggregation → explanation → golden replay → engine integration), and the "
         f"Phase-4 bounded offline AI layer (provider seam → response validation → containment/provenance/replay → "
-        f"Phase-3 integration → cross-WP adversarial closure) plus the Phase-6 static persistence-, API-, OpenAPI-, integration- and operational-contract checks")
+        f"Phase-3 integration → cross-WP adversarial closure) plus the Phase-6 static persistence-, API-, OpenAPI-, integration- and operational-contract checks and the Phase-6 integrated closure check")
     log(f"interpreter: {sys.executable}")
     log(f"repo root  : {ROOT}\n")
 

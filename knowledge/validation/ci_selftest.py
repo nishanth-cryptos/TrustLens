@@ -212,6 +212,21 @@ def d_case_revision_removed(root: Path):
     return p, orig
 
 
+def d_closure_digest_corrupted(root: Path):
+    p = root / "contracts" / "phase6" / "phase6-closure-v1.json"
+    orig = p.read_bytes()
+    d = load(p)
+    # Corrupting ONE pinned SHA-256 in the Phase-6 closure snapshot (the pinned artifact itself is untouched) must be detected
+    # as drift between pinned digest and actual bytes. Only the P6-WP7 closure gate reads the closure manifest, so only it
+    # can bite (P6C-11) -> validate_phase6_closure.py.
+    art = next((a for a in d.get("snapshot", {}).get("artifacts", []) if a.get("path") == "contracts/api/api-v1.json"), None)
+    if art is None:
+        raise RuntimeError("ci_selftest could not find the pinned api-v1.json digest in phase6-closure-v1.json (renamed?)")
+    art["sha256"] = ("0" if art["sha256"][0] != "0" else "1") + art["sha256"][1:]
+    dump(p, d)
+    return p, orig
+
+
 DEFECTS = [
     ("unknown indicator reference", d_unknown_indicator, "validate_rules.py"),
     ("invalid taxonomy ID", d_invalid_taxonomy, "validate_rules.py"),
@@ -226,6 +241,7 @@ DEFECTS = [
     ("DetectionResult PATCH published only in OpenAPI (P6-WP4)", d_openapi_mutable_result, "validate_openapi_contract.py"),
     ("user input controls the enrichment destination URL (P6-WP5)", d_user_controlled_destination, "validate_integration_contract.py"),
     ("case_record monotonic mutation revision removed (P6-WP6)", d_case_revision_removed, "validate_operational_contract.py"),
+    ("pinned Phase-6 closure artifact digest corrupted (P6-WP7)", d_closure_digest_corrupted, "validate_phase6_closure.py"),
 ]
 
 
