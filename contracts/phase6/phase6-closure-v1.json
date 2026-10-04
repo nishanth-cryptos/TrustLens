@@ -4,16 +4,16 @@
   "manifest_version": "0.1.0",
   "phase_id": "PHASE-6",
   "phase_name": "Data, API & Integration Contracts",
-  "closure_status": "PHASE 6 CLOSURE APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING",
-  "phase_state": "NOT YET CLOSED",
+  "closure_status": "PHASE 6 CLOSED",
+  "phase_state": "CLOSED",
   "closure_gate": {
     "id": "GATE-025",
     "path": "docs/00-program/GATE-025-phase-6-closure.md",
-    "status": "PHASE 6 INTEGRATED CLOSURE APPROVED — REMOTE CI + MERGE PENDING"
+    "status": "PHASE 6 INTEGRATED CLOSURE PASSED — PHASE 6 CLOSED"
   },
   "closure_document": "docs/00-program/PHASE-6-CLOSURE.md",
   "baseline_commit": "eba1882058e2638a7c4e11a610201d752b920654",
-  "baseline_note": "Phase-6 closure input baseline = merged P6-WP6 main commit (PR #31). The future P6-WP7 merge commit is not recorded here.",
+  "baseline_note": "Phase-6 closure INPUT baseline = merged P6-WP6 main commit (PR #31), from which P6-WP7 was built. The Phase-6 closure merge commit (P6-WP7, PR #32) is recorded separately in current_work_package.merge_commit.",
   "authority_note": "Machine-readable Phase-6 closure manifest. It records what Phase 6 approved and pins the canonical contract authority surface by SHA-256; it is not an implementation, not runtime authority and not knowledge authority. It does not freeze the contracts forever: any later material change needs an explicit governed revision traceable to the authorizing phase/work package, which must also update this snapshot (no silent drift).",
   "work_packages": [
     {
@@ -176,10 +176,23 @@
   ],
   "current_work_package": {
     "id": "P6-WP7",
-    "state": "APPROVED_PENDING_REMOTE_CI_AND_MERGE",
-    "merged": false,
-    "pr_number": null,
-    "merge_commit": null
+    "state": "CLOSED",
+    "merged": true,
+    "pr_number": 32,
+    "merge_commit": "858784428c3caa00da958e170211f03b466941a9",
+    "pr_head_commit": "d7a6bba6688101f70243fc73f361b37fca38583a",
+    "independent_review": "APPROVE (BLOCKER 0 / HIGH 0 / MEDIUM 0 / LOW 1 / INFO 3)",
+    "remote_ci": {
+      "workflow": "Knowledge validation",
+      "checks": [
+        "Knowledge validation suite",
+        "Quality-gate self-test (gate must bite)"
+      ],
+      "conclusion": "success",
+      "pr_head_run_id": 37181604935,
+      "merge_commit_run_id": 37182107516,
+      "evidence_source": "GitHub check-runs for the P6-WP7 PR head and merge commits, confirmed by independent programme verification and read by the builder during post-merge closure finalization; recorded evidence, not re-verified by offline CI"
+    }
   },
   "snapshot": {
     "algorithm": "SHA-256",
@@ -706,7 +719,8 @@
     }
   ],
   "phase7_handoff": {
-    "phase7_status": "NOT STARTED",
+    "phase7_status_at_phase6_closure": "NOT STARTED",
+    "phase7_started_at_phase6_closure": false,
     "phase7_name": "UX, evidence and reporting",
     "may_design": [
       "USER_FLOWS",
@@ -743,7 +757,7 @@
         "IMPLEMENTATION_BLUEPRINT",
         "DELIVERY_PLAN"
       ],
-      "status": "NOT STARTED"
+      "status_at_phase6_closure": "NOT STARTED"
     },
     {
       "phase": "Phase 9",
@@ -759,7 +773,7 @@
         "RESTORE_DELETION_AUTHORITY",
         "OPERATIONAL_CONFIGURATION_VALUES_AS_APPROVED"
       ],
-      "status": "NOT STARTED"
+      "status_at_phase6_closure": "NOT STARTED"
     },
     {
       "phase": "Phase 10",
@@ -770,7 +784,7 @@
         "QA",
         "G_09_EVALUATION_DEPENDENCY"
       ],
-      "status": "NOT STARTED"
+      "status_at_phase6_closure": "NOT STARTED"
     }
   ],
   "invariants": [

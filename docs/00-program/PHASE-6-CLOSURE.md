@@ -5,12 +5,13 @@
 | Document ID | PHASE-6-CLOSURE |
 | Phase | 6 — Data, API & Integration Contracts |
 | Version | 0.1 |
-| Status | **PHASE 6 CLOSURE APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING** — Phase 6 not yet closed; Phase 7 not started |
+| Status | **PHASE 6 CLOSED** — contract phase closed (P6-WP7 PR #32 merged; remote CI success); not product implemented; Phase 7 had not started when Phase 6 closed |
 | Closure gate | [GATE-025](GATE-025-phase-6-closure.md) |
-| Baseline | P6-WP6 merge `eba1882058e2638a7c4e11a610201d752b920654` (PR #31) |
+| Baseline | Closure input baseline: P6-WP6 merge `eba1882058e2638a7c4e11a610201d752b920654` (PR #31) |
+| Closure merge | P6-WP7 PR #32 — head `d7a6bba6688101f70243fc73f361b37fca38583a`, merge `858784428c3caa00da958e170211f03b466941a9`; remote CI runs 37181604935 (PR head) and 37182107516 (merge commit): both required jobs success |
 | Machine manifest | [`contracts/phase6/phase6-closure-v1.json`](../../contracts/phase6/phase6-closure-v1.json) + [`phase6-closure-contract.schema.json`](../../contracts/phase6/phase6-closure-contract.schema.json) + `contracts/phase6/fixtures/negative-mutations.json` |
 | Validator | `knowledge/validation/validate_phase6_closure.py` (P6C-01…P6C-64; gate check 29) |
-| Work package | P6-WP7 — integrated Phase-6 closure (approved following independent review; remote CI + merge pending) |
+| Work package | P6-WP7 — integrated Phase-6 closure (CLOSED — merged as PR #32) |
 | Owner role | Technical Program Director / Lead Architect |
 | Last updated | 2026-10-04 |
 
@@ -53,7 +54,7 @@ time. This is recorded evidence; canonical offline CI does not re-fetch it.
 | P6-WP4 | OAS-001 + `openapi-v1.json` | GATE-022 | #29 | `9fa022f` | APPROVE | success (runs 37111449035 / 37111786108) | CLOSED (merged) |
 | P6-WP5 | INT-001 + `external-enrichment-v1.json` + ADR-0012 | GATE-023 | #30 | `8fb963e` | APPROVE after targeted correction | success (runs 37133623775 / 37134199625) | CLOSED (merged) |
 | P6-WP6 | OPS-001 + `operational-v1.json` | GATE-024 | #31 | `eba1882` | APPROVE after targeted correction | success (runs 37143306920 / 37143730034) | CLOSED (merged) |
-| P6-WP7 | this record + GATE-025 + closure manifest | GATE-025 | — | — | APPROVE (BLOCKER 0 / HIGH 0 / MEDIUM 0 / LOW 1 / INFO 3; §16) | pending | APPROVED — REMOTE CI + MERGE PENDING |
+| P6-WP7 | this record + GATE-025 + closure manifest | GATE-025 | #32 | `8587844` | APPROVE (BLOCKER 0 / HIGH 0 / MEDIUM 0 / LOW 1 / INFO 3; §16) | success (runs 37181604935 / 37182107516) | CLOSED (merged) |
 
 ## 4. Review history (summary; gate files are authority)
 
@@ -228,7 +229,8 @@ frontend exists, or that production readiness exists — none of these is true.
 
 ## 12. Phase-7 handoff
 
-Phase 7 — UX, evidence and reporting: NOT STARTED. When authorized, Phase 7 may design:
+Phase 7 — UX, evidence and reporting: NOT STARTED at the moment Phase 6 closed (it may begin after closure under its
+own gate). When authorized, Phase 7 may design:
 
 - user flows; case / submission / evidence UX; result explanation presentation; evidence review UX; adjudication UX;
 - report UX; replay and re-analysis UX; deletion and unavailability states (`REMOVED_UNDER_GOVERNANCE`,
@@ -243,7 +245,7 @@ open UX-relevant item: cookie-session/CSRF variant and user data export (API-001
 
 ## 13. Phase-8 / Phase-9 / Phase-10 handoff (ownership only; nothing implemented)
 
-| Phase | Owns | Status |
+| Phase | Owns | Status at Phase-6 closure |
 |---|---|---|
 | Phase 8 — Implementation blueprint | implementation blueprint; delivery plan | NOT STARTED |
 | Phase 9 — Implementation | runtime backend/frontend; SQL/Alembic; FastAPI; workers; external connector; persistence repositories; provider-policy storage; restore/deletion authority; operational configuration values as approved | NOT STARTED |
@@ -251,17 +253,19 @@ open UX-relevant item: cookie-session/CSRF variant and user data export (API-001
 
 No later phase is claimed complete.
 
-## 14. Phase status at P6-WP7 build time
+## 14. Phase status history
 
-| Item | State |
-|---|---|
-| P6-WP1 … P6-WP6 | CLOSED (merged; remote CI success recorded) |
-| P6-WP7 | APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING |
-| Phase 6 | NOT YET CLOSED |
-| Phase 7 | NOT STARTED |
+| Item | At P6-WP7 build | After independent closure review | At Phase-6 closure (final record) |
+|---|---|---|---|
+| P6-WP1 … P6-WP6 | CLOSED | CLOSED | CLOSED (merged; remote CI success recorded) |
+| P6-WP7 | CANDIDATE | APPROVED — remote CI + merge pending | CLOSED (PR #32 merged; remote CI success) |
+| Phase 6 | NOT YET CLOSED | NOT YET CLOSED | **CLOSED** |
+| Phase 7 | NOT STARTED | NOT STARTED | NOT STARTED at closure time |
 
-Phase 6 may become CLOSED only after GATE-025's exit criteria are met: independent closure review (met — APPROVE, §16),
-then remote CI and merge of P6-WP7 (pending).
+**Closure-time state vs later repository state.** "Phase 7 NOT STARTED" above is a historical fact about the moment
+Phase 6 closed (manifest `phase7_started_at_phase6_closure = false`). It does not forbid Phase 7 from starting later: once
+Phase 6 is CLOSED with complete P6-WP7 evidence, later-phase gates (GATE-026+) and Phase-7 artifacts may exist without
+invalidating this record or its snapshot (P6C-46), and this record need not be rewritten when Phase 7 begins.
 
 ## 15. Closure observations for the independent reviewer (not contradictions)
 
@@ -285,7 +289,7 @@ Independent P6-WP7 closure review: **BLOCKER 0 / HIGH 0 / MEDIUM 0 / LOW 1 / INF
 Reviewer validation: `run_all` PASS 29/29; `run_all --json` gate=PASS, validators_run=29, validators_failed=0;
 `ci_selftest` PASS 14/14; closure validator PASS (64 checks, 97/97 negative mutations rejected); `ENGINE_VERSION = 1.0.0`.
 Reviewer closing statement: P6-WP7 is ready for acceptance bookkeeping and commit/PR closure; Phase 6 is not closed until
-the P6-WP7 remote CI passes and the PR is merged; Phase 7 has not started. No further review cycle is required.
+the P6-WP7 remote CI passes and the PR is merged; Phase 7 has not started.
 
 | Finding | Disposition |
 |---|---|
@@ -294,16 +298,38 @@ the P6-WP7 remote CI passes and the PR is merged; Phase 7 has not started. No fu
 | INFO-2 — historical predecessor status rows and INT-001 idempotency/ETag forward pointers (§15 items 1–2) | **Informational.** Frozen predecessor artifacts stay unedited; this closure record supersedes them for current state; OPS-001 / GATE-024 are the later accepted authority that closed those items at contract level |
 | INFO-3 — `roadmap.md` names a future Phase-10 placeholder `OPS-001` (§15 item 3) | **Informational; does not block Phase-6 closure.** The accepted Phase-6 OPS-001 keeps its identifier; Phase-8 / Phase-10 planning must allocate a different identifier to that future deliverable before it becomes authoritative |
 
-## 17. Validation evidence (local builder)
+## 17. Post-merge closure finalization
+
+P6-WP7 passed independent closure review (§16), passed remote CI and merged to `main`:
+
+| Evidence | Value |
+|---|---|
+| PR | #32 |
+| PR head | `d7a6bba6688101f70243fc73f361b37fca38583a` |
+| Merge commit (closure commit) | `858784428c3caa00da958e170211f03b466941a9` |
+| Closure input baseline (unchanged) | `eba1882058e2638a7c4e11a610201d752b920654` |
+| Workflow run, PR head | 37181604935 — "Knowledge validation suite" success; "Quality-gate self-test (gate must bite)" success |
+| Workflow run, merge commit | 37182107516 — both required jobs success |
+
+Phase 6 is therefore **CLOSED** as a contract phase. It is not a product implementation and not a deployment statement;
+it makes no production-readiness claim (§10, §11). The remote-CI facts come from independent programme verification and
+GitHub check-runs; the offline closure validator checks that this evidence is recorded and complete — it does not contact
+GitHub. The finalization also made the closure validator lifecycle-aware: P6C-45 rejects a CLOSED claim without complete
+P6-WP7 evidence, and P6C-46 rejects later-phase gates only while Phase 6 is not evidenced-CLOSED. The 19 pinned
+artifacts and their SHA-256 values are unchanged; closure LOW-1 remains OPEN / NON-BLOCKING; G-09 and OI-05 remain OPEN;
+ASM-002 remains UNCONFIRMED / PROVISIONAL; Phase 1 remains `PARTIAL`.
+
+## 18. Validation evidence (local builder)
 
 `run_all` 29/29 PASS (`validate_phase6_closure.py` is check 29); `run_all --json` gate=PASS, validators_run=29,
 validators_failed=0; `ci_selftest` 14/14 (defect 14 corrupts one pinned SHA-256 in the closure manifest and is caught by
 `validate_phase6_closure.py` only); closure validator PASS (64 checks; every closure negative mutation rejected by its
 named check); `ENGINE_VERSION = 1.0.0`. Local builder evidence only — not independent review, not remote CI.
 
-## 18. Change log
+## 19. Change log
 
 | Version | Date | Change | Author role |
 |---|---|---|---|
 | 0.1 | 2026-10-04 | Phase-6 integrated closure candidate (P6-WP7): merge evidence, readiness, invariants, open items, claim boundary, snapshot, Phase-7/8/9/10 handoff | Technical Program Director / Lead Architect |
 | 0.1 (approved) | 2026-10-04 | Acceptance bookkeeping after independent closure review APPROVE (0/0/0, LOW 1, INFO 3): status → approved following independent review, remote CI + merge pending; §16 review record; LOW-1 carried forward; INFO-1 resolved by post-review verification; snapshot (19 artifacts) unchanged | Technical Program Director / Lead Architect |
+| 0.1 (closed) | 2026-10-04 | Post-merge closure finalization: PR #32 merged (`8587844`), remote CI success (runs 37181604935 / 37182107516) → **PHASE 6 CLOSED**; §14 status history; §17 finalization record; closure validator made lifecycle-aware (P6C-01/02/05/45/46); snapshot (19 artifacts) and LOW-1 unchanged | Technical Program Director / Lead Architect |

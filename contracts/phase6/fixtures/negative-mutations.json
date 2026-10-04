@@ -1,5 +1,5 @@
 {
-  "description": "Negative mutations for knowledge/validation/validate_phase6_closure.py. Each mutation is applied to an in-memory copy of the closure manifest (default) or, via 'target', of another Phase-6 contract or text input; the named P6C check must fail. Text targets use replace_text/append_text.",
+  "description": "Negative mutations for knowledge/validation/validate_phase6_closure.py. Each mutation is applied to an in-memory copy of the closure manifest (default) or, via 'target', of another Phase-6 contract or text input; the named P6C check must fail. Text targets use replace_text/append_text. 'steps' applies several mutations in order; 'positive_scenarios' are lifecycle scenarios that must produce NO violation.",
   "mutations": [
     {
       "id": "NEG-P6C-01",
@@ -465,22 +465,22 @@
     },
     {
       "id": "NEG-P6C-36",
-      "description": "phase closure prematurely CLOSED",
+      "description": "manifest closure_status reverted to approved-pending as the current state",
       "expect": "P6C-45",
       "op": "set",
       "path": [
         "closure_status"
       ],
-      "value": "PHASE 6 CLOSED"
+      "value": "PHASE 6 CLOSURE APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING"
     },
     {
       "id": "NEG-P6C-37",
-      "description": "mark Phase 7 started",
+      "description": "Phase 7 recorded as started at Phase-6 closure",
       "expect": "P6C-46",
       "op": "set",
       "path": [
         "phase7_handoff",
-        "phase7_status"
+        "phase7_status_at_phase6_closure"
       ],
       "value": "STARTED"
     },
@@ -576,30 +576,30 @@
     },
     {
       "id": "NEG-P6C-46",
-      "description": "closure document status claims PHASE 6 CLOSED before remote CI + merge",
-      "expect": "P6C-45",
-      "target": "closure_doc",
-      "op": "replace_text",
-      "old": "| Status | **PHASE 6 CLOSURE APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING**",
-      "new": "| Status | **PHASE 6 CLOSED**"
-    },
-    {
-      "id": "NEG-P6C-47",
-      "description": "closure document status claims P6-WP7 MERGED before remote CI + merge",
+      "description": "closure document current status reverted to remote CI + merge pending",
       "expect": "P6C-01",
       "target": "closure_doc",
       "op": "replace_text",
-      "old": "REMOTE CI + MERGE PENDING** —",
-      "new": "MERGED** —"
+      "old": "| Status | **PHASE 6 CLOSED**",
+      "new": "| Status | **PHASE 6 CLOSURE APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING**"
+    },
+    {
+      "id": "NEG-P6C-47",
+      "description": "closure document current status reverted to candidate",
+      "expect": "P6C-01",
+      "target": "closure_doc",
+      "op": "replace_text",
+      "old": "**PHASE 6 CLOSED** —",
+      "new": "**PHASE 6 CLOSURE CANDIDATE** —"
     },
     {
       "id": "NEG-P6C-48",
-      "description": "GATE-025 status claims remote CI passed and merged",
+      "description": "GATE-025 current status reverted to remote CI + merge pending",
       "expect": "P6C-02",
       "target": "gate_doc",
       "op": "replace_text",
-      "old": "**PHASE 6 INTEGRATED CLOSURE APPROVED — REMOTE CI + MERGE PENDING**",
-      "new": "**PHASE 6 INTEGRATED CLOSURE APPROVED — REMOTE CI PASS; MERGED**"
+      "old": "**PHASE 6 INTEGRATED CLOSURE PASSED — PHASE 6 CLOSED**",
+      "new": "**PHASE 6 INTEGRATED CLOSURE APPROVED — REMOTE CI + MERGE PENDING**"
     },
     {
       "id": "NEG-P6C-49",
@@ -623,14 +623,14 @@
     },
     {
       "id": "NEG-P6C-51",
-      "description": "P6-WP7 recorded as merged",
-      "expect": "P6C-05",
+      "description": "Phase 6 CLOSED while P6-WP7 recorded unmerged",
+      "expect": "P6C-45",
       "op": "set",
       "path": [
         "current_work_package",
         "merged"
       ],
-      "value": true
+      "value": false
     },
     {
       "id": "NEG-P6C-52",
@@ -1214,6 +1214,233 @@
         "tombstone_digest_retained"
       ],
       "value": true
+    },
+    {
+      "id": "NEG-P6C-98",
+      "description": "Phase 6 CLOSED but P6-WP7 PR number missing",
+      "expect": "P6C-45",
+      "op": "set",
+      "path": [
+        "current_work_package",
+        "pr_number"
+      ],
+      "value": null
+    },
+    {
+      "id": "NEG-P6C-99",
+      "description": "Phase 6 CLOSED but P6-WP7 merge SHA missing",
+      "expect": "P6C-45",
+      "op": "set",
+      "path": [
+        "current_work_package",
+        "merge_commit"
+      ],
+      "value": null
+    },
+    {
+      "id": "NEG-P6C-100",
+      "description": "Phase 6 CLOSED with a wrong P6-WP7 merge SHA",
+      "expect": "P6C-45",
+      "op": "set",
+      "path": [
+        "current_work_package",
+        "merge_commit"
+      ],
+      "value": "2222222222222222222222222222222222222222"
+    },
+    {
+      "id": "NEG-P6C-101",
+      "description": "Phase 6 CLOSED but P6-WP7 remote CI failed",
+      "expect": "P6C-45",
+      "op": "set",
+      "path": [
+        "current_work_package",
+        "remote_ci",
+        "conclusion"
+      ],
+      "value": "failure"
+    },
+    {
+      "id": "NEG-P6C-102",
+      "description": "Phase 6 CLOSED but P6-WP7 remote CI evidence absent",
+      "expect": "P6C-45",
+      "op": "remove",
+      "path": [
+        "current_work_package",
+        "remote_ci"
+      ]
+    },
+    {
+      "id": "NEG-P6C-103",
+      "description": "Phase 6 CLOSED but the quality-gate self-test job is missing from P6-WP7 CI evidence",
+      "expect": "P6C-45",
+      "op": "set",
+      "path": [
+        "current_work_package",
+        "remote_ci",
+        "checks"
+      ],
+      "value": [
+        "Knowledge validation suite"
+      ]
+    },
+    {
+      "id": "NEG-P6C-104",
+      "description": "Phase 6 CLOSED while P6-WP7 state remains approved-pending",
+      "expect": "P6C-45",
+      "op": "set",
+      "path": [
+        "current_work_package",
+        "state"
+      ],
+      "value": "APPROVED_PENDING_REMOTE_CI_AND_MERGE"
+    },
+    {
+      "id": "NEG-P6C-105",
+      "description": "Phase 6 CLOSED with a non-approving P6-WP7 independent review",
+      "expect": "P6C-45",
+      "op": "set",
+      "path": [
+        "current_work_package",
+        "independent_review"
+      ],
+      "value": "REQUEST_CHANGES (MEDIUM 1)"
+    },
+    {
+      "id": "NEG-P6C-106",
+      "description": "closure merge commit conflated with the closure input baseline",
+      "expect": "P6C-05",
+      "op": "set",
+      "path": [
+        "current_work_package",
+        "merge_commit"
+      ],
+      "value": "eba1882058e2638a7c4e11a610201d752b920654"
+    },
+    {
+      "id": "NEG-P6C-107",
+      "description": "Phase 7 recorded as started at Phase-6 closure (boolean)",
+      "expect": "P6C-46",
+      "op": "set",
+      "path": [
+        "phase7_handoff",
+        "phase7_started_at_phase6_closure"
+      ],
+      "value": true
+    },
+    {
+      "id": "NEG-P6C-108",
+      "description": "Phase 8 recorded as started at Phase-6 closure",
+      "expect": "P6C-46",
+      "op": "set",
+      "path": [
+        "later_phase_handoff",
+        {
+          "phase": "Phase 8"
+        },
+        "status_at_phase6_closure"
+      ],
+      "value": "STARTED"
+    },
+    {
+      "id": "NEG-P6C-109",
+      "description": "recorded P6-WP7 CI run id not cited by the closure record",
+      "expect": "P6C-01",
+      "op": "set",
+      "path": [
+        "current_work_package",
+        "remote_ci",
+        "pr_head_run_id"
+      ],
+      "value": 37181604936
+    },
+    {
+      "id": "NEG-P6C-110",
+      "description": "later GATE-026 exists while Phase 6 is still approved-pending",
+      "expect": "P6C-46",
+      "steps": [
+        {
+          "op": "set",
+          "path": [
+            "closure_status"
+          ],
+          "value": "PHASE 6 CLOSURE APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING"
+        },
+        {
+          "op": "set",
+          "path": [
+            "phase_state"
+          ],
+          "value": "NOT YET CLOSED"
+        },
+        {
+          "op": "set",
+          "path": [
+            "current_work_package",
+            "state"
+          ],
+          "value": "APPROVED_PENDING_REMOTE_CI_AND_MERGE"
+        },
+        {
+          "target": "later_gates",
+          "op": "append",
+          "path": [],
+          "value": "GATE-026-phase-7-ux-foundation.md"
+        }
+      ]
+    },
+    {
+      "id": "NEG-P6C-111",
+      "description": "later GATE-026 exists while Phase 6 is claimed CLOSED without exact P6-WP7 merge evidence",
+      "expect": "P6C-46",
+      "steps": [
+        {
+          "op": "set",
+          "path": [
+            "current_work_package",
+            "merge_commit"
+          ],
+          "value": null
+        },
+        {
+          "target": "later_gates",
+          "op": "append",
+          "path": [],
+          "value": "GATE-026-phase-7-ux-foundation.md"
+        }
+      ]
+    }
+  ],
+  "positive_scenarios": [
+    {
+      "id": "POS-P6C-01",
+      "description": "later GATE-026 exists after a fully evidenced CLOSED Phase 6 (must not fail merely because it exists)",
+      "steps": [
+        {
+          "target": "later_gates",
+          "op": "append",
+          "path": [],
+          "value": "GATE-026-phase-7-ux-foundation.md"
+        }
+      ]
+    },
+    {
+      "id": "POS-P6C-02",
+      "description": "several later-phase gates exist after a fully evidenced CLOSED Phase 6",
+      "steps": [
+        {
+          "target": "later_gates",
+          "op": "append",
+          "path": [],
+          "value": "GATE-026-phase-7-ux-foundation.md"
+        },
+        {
+          "target": "later_gates",
+          "op": "append",
+          "path": [],
+          "value": "GATE-027-phase-7-submission.md"
+        }
+      ]
     }
   ]
 }
