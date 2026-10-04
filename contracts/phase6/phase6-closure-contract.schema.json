@@ -305,7 +305,7 @@
           "uniqueItems": true,
           "minItems": 1
         },
-        "status": {
+        "status_at_phase6_closure": {
           "type": "string",
           "minLength": 1
         }
@@ -314,7 +314,7 @@
         "phase",
         "name",
         "owns",
-        "status"
+        "status_at_phase6_closure"
       ],
       "additionalProperties": false
     }
@@ -413,6 +413,59 @@
             "string",
             "null"
           ]
+        },
+        "pr_head_commit": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "independent_review": {
+          "type": "string",
+          "minLength": 1
+        },
+        "remote_ci": {
+          "type": "object",
+          "properties": {
+            "workflow": {
+              "type": "string",
+              "minLength": 1
+            },
+            "checks": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "uniqueItems": true,
+              "minItems": 1
+            },
+            "conclusion": {
+              "type": "string",
+              "minLength": 1
+            },
+            "pr_head_run_id": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "merge_commit_run_id": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "evidence_source": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "workflow",
+            "checks",
+            "conclusion",
+            "pr_head_run_id",
+            "merge_commit_run_id",
+            "evidence_source"
+          ],
+          "additionalProperties": false
         }
       },
       "required": [
@@ -420,7 +473,10 @@
         "state",
         "merged",
         "pr_number",
-        "merge_commit"
+        "merge_commit",
+        "pr_head_commit",
+        "independent_review",
+        "remote_ci"
       ],
       "additionalProperties": false
     },
@@ -1172,9 +1228,12 @@
     "phase7_handoff": {
       "type": "object",
       "properties": {
-        "phase7_status": {
+        "phase7_status_at_phase6_closure": {
           "type": "string",
           "minLength": 1
+        },
+        "phase7_started_at_phase6_closure": {
+          "type": "boolean"
         },
         "phase7_name": {
           "type": "string",
@@ -1200,7 +1259,8 @@
         }
       },
       "required": [
-        "phase7_status",
+        "phase7_status_at_phase6_closure",
+        "phase7_started_at_phase6_closure",
         "phase7_name",
         "may_design",
         "must_not_redefine"

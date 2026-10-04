@@ -1,4 +1,4 @@
-"""TrustLens Phase 6 P6-WP7 — static validator for the integrated Phase-6 closure (approved; remote CI + merge pending).
+"""TrustLens Phase 6 P6-WP7 — static validator for the integrated Phase-6 closure (Phase 6 CLOSED; lifecycle-aware).
 
 Validates contracts/phase6/phase6-closure-v1.json against contracts/phase6/phase6-closure-contract.schema.json, recomputes
 the SHA-256 of every pinned canonical Phase-6 artifact from its exact file bytes, and cross-checks the FINAL integrated
@@ -9,14 +9,14 @@ validate_api_contract.py, validate_openapi_contract.py, validate_integration_con
 validate_operational_contract.py. No database, server, git process, network or API key is used: remote-CI evidence is
 recorded data (checked for completeness and consistency), not re-fetched.
 
-  P6C-01 PHASE-6-CLOSURE.md exists; Version 0.1; status PHASE 6 CLOSURE APPROVED FOLLOWING INDEPENDENT REVIEW with
-         remote CI + merge pending; closure gate GATE-025; baseline
-  P6C-02 GATE-025 exists with status PHASE 6 INTEGRATED CLOSURE APPROVED, remote CI + merge pending, and references the
-         closure record + manifest
+  P6C-01 PHASE-6-CLOSURE.md exists; Version 0.1; current status PHASE 6 CLOSED (no "pending" current state) and cites
+         the recorded P6-WP7 closure evidence (PR, head, merge commit, CI runs); closure gate GATE-025; input baseline
+  P6C-02 GATE-025 exists with current status PHASE 6 INTEGRATED CLOSURE PASSED — PHASE 6 CLOSED, cites the same P6-WP7
+         evidence and references the closure record + manifest
   P6C-03 closure manifest is valid against its JSON Schema (Draft 2020-12)
   P6C-04 baseline commit exact (= merged P6-WP6 commit) in the manifest, closure document and GATE-025
-  P6C-05 exactly six predecessor WPs (P6-WP1…WP6, in order), each merged and CLOSED; P6-WP7 approved, pending remote CI
-         and merge (no PR number / merge commit recorded)
+  P6C-05 exactly six predecessor WPs (P6-WP1…WP6, in order), each merged and CLOSED; P6-WP7 CLOSED and merged with the
+         exact PR #32, head and merge commit
   P6C-06 PR numbers 26…31 exact and recorded in the closure document
   P6C-07 merge SHAs exact; each successor gate's Baseline row cites its predecessor's merge SHA and PR
   P6C-08 GATE-019…024 referenced; gate files exist with matching Document IDs; recorded in the closure document
@@ -57,8 +57,11 @@ recorded data (checked for completeness and consistency), not re-fetched.
   P6C-42 no tenant_id / tenant field anywhere in the Phase-6 contracts or the manifest
   P6C-43 ENGINE_VERSION = 1.0.0
   P6C-44 no numeric policy values invented (24 parameters NOT YET SPECIFIED; no duration/size literals in the manifest)
-  P6C-45 closure status = approved / remote CI + merge pending; never prematurely CLOSED / COMPLETE / PASS / MERGED
-  P6C-46 Phase 7 (and later phases) not started; no later gate exists
+  P6C-45 premature closure: a CLOSED / MERGED / PASS claim (manifest or document status) requires complete P6-WP7 closure
+         evidence (state CLOSED, merged, exact PR / head / merge commit, approving review, successful required CI jobs with
+         run ids); manifest closure_status / phase_state / WP7 state consistently CLOSED
+  P6C-46 lifecycle: Phase 7 and later phases were NOT STARTED at the moment Phase 6 closed (historical fact); a later-phase
+         gate (GATE-026+) is rejected while Phase 6 is not CLOSED with complete evidence and is permitted afterwards
   P6C-47 implementation-deferred list present and owned; no runtime implementation introduced
   P6C-48 no production-readiness / deployment / certification claim
   P6C-49 no legal / compliance / admissibility claim
@@ -83,7 +86,7 @@ It then applies every mutation in contracts/phase6/fixtures/negative-mutations.j
 to another Phase-6 contract or text input) and requires the named check to fail.
 
 Usage:  .venv/bin/python knowledge/validation/validate_phase6_closure.py [--quiet]
-Exit 0 = approved Phase-6 closure (remote CI + merge pending) consistent and every negative mutation rejected by its expected check.
+Exit 0 = evidenced Phase-6 closure consistent and every negative mutation rejected by its expected check.
 """
 
 from __future__ import annotations
@@ -159,9 +162,11 @@ REQUIRED_ARTIFACTS = {
 } | set(GATE_FILES.values())
 EXCLUDED_PATH = re.compile(r"(^|/)(\.git|\.venv|__pycache__|\.pytest_cache|tmp|node_modules)(/|$)|\.pyc$|\.DS_Store$")
 
-APPROVED = "PHASE 6 CLOSURE APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING"
-GATE_APPROVED = "PHASE 6 INTEGRATED CLOSURE APPROVED — REMOTE CI + MERGE PENDING"
-WP7_STATE = "APPROVED_PENDING_REMOTE_CI_AND_MERGE"
+CLOSED_STATUS = "PHASE 6 CLOSED"
+GATE_CLOSED = "PHASE 6 INTEGRATED CLOSURE PASSED — PHASE 6 CLOSED"
+WP7_PR = 32  # P6-WP7 closure evidence — verified against git history and GitHub check-runs at post-merge finalization
+WP7_HEAD = "d7a6bba6688101f70243fc73f361b37fca38583a"
+WP7_MERGE = "858784428c3caa00da958e170211f03b466941a9"
 NYS = "NOT YET SPECIFIED"
 CI_CHECKS = ["Knowledge validation suite", "Quality-gate self-test (gate must bite)"]
 METHODS = ("get", "put", "post", "delete", "patch", "options", "head", "trace")
@@ -274,6 +279,34 @@ def premature(status: str) -> bool:
     return bool(PREMATURE.search(NEGATED.sub("", status)))
 
 
+def wp7_evidence_gaps(m: dict) -> list[str]:
+    """What is missing for a CLOSED Phase 6 (empty list = fully evidenced P6-WP7 merge)."""
+    cur = m.get("current_work_package") or {}
+    rc = cur.get("remote_ci") or {}
+    gaps = []
+    if cur.get("id") != "P6-WP7" or cur.get("state") != "CLOSED":
+        gaps.append("P6-WP7 state CLOSED")
+    if cur.get("merged") is not True:
+        gaps.append("P6-WP7 merged")
+    if cur.get("pr_number") != WP7_PR:
+        gaps.append(f"P6-WP7 PR #{WP7_PR}")
+    if cur.get("merge_commit") != WP7_MERGE:
+        gaps.append(f"P6-WP7 merge commit {WP7_MERGE}")
+    if cur.get("pr_head_commit") != WP7_HEAD:
+        gaps.append(f"P6-WP7 PR head {WP7_HEAD}")
+    if "APPROVE" not in str(cur.get("independent_review")) or "REQUEST_CHANGES" in str(cur.get("independent_review")):
+        gaps.append("P6-WP7 approving independent review")
+    if rc.get("conclusion") != "success" or rc.get("checks") != CI_CHECKS or not isinstance(rc.get("pr_head_run_id"), int) \
+            or isinstance(rc.get("pr_head_run_id"), bool) or not isinstance(rc.get("merge_commit_run_id"), int) \
+            or "not re-verified by offline CI" not in str(rc.get("evidence_source")):
+        gaps.append("P6-WP7 successful required remote-CI jobs with run ids")
+    return gaps
+
+
+def evidenced_closed(m: dict) -> bool:
+    return m.get("closure_status") == CLOSED_STATUS and m.get("phase_state") == "CLOSED" and not wp7_evidence_gaps(m)
+
+
 def unnegated_lines(text: str, pattern: re.Pattern) -> list[str]:
     """Lines that match `pattern` without any negation on the same line (an affirmative claim)."""
     return [ln.strip()[:120] for ln in text.splitlines() if pattern.search(ln) and not NEG.search(ln)]
@@ -348,13 +381,20 @@ def check(d: dict, ctx: dict) -> list[tuple[str, str]]:
     counts = m.get("contract_counts") or {}
     oi = by_id(m.get("open_items"))
 
+    cur7 = m.get("current_work_package") or {}
+    rc7 = cur7.get("remote_ci") or {}
+    wp7_cited = [f"#{WP7_PR}", WP7_MERGE, WP7_HEAD, str(rc7.get("pr_head_run_id")), str(rc7.get("merge_commit_run_id"))]
+
     # ---------------- P6C-01 closure document
     if not cdoc:
         e("P6C-01", "docs/00-program/PHASE-6-CLOSURE.md missing")
     else:
         st = meta_row(cdoc, "Status")
-        if APPROVED not in st:
-            e("P6C-01", f"closure document status must be {APPROVED!r}, found {st!r}")
+        if f"**{CLOSED_STATUS}**" not in st or re.search(r"PENDING|CANDIDATE", st):
+            e("P6C-01", f"closure document current status must be {CLOSED_STATUS!r} (no pending/candidate state), found {st!r}")
+        for ev in wp7_cited:
+            if ev not in cdoc:
+                e("P6C-01", f"closure document does not cite recorded P6-WP7 closure evidence {ev}")
         if meta_row(cdoc, "Version") != "0.1":
             e("P6C-01", "closure document Version must be 0.1")
         if "GATE-025" not in meta_row(cdoc, "Closure gate"):
@@ -368,14 +408,18 @@ def check(d: dict, ctx: dict) -> list[tuple[str, str]]:
     else:
         if meta_row(gdoc, "Document ID") != "GATE-025":
             e("P6C-02", "GATE-025 Document ID row missing")
-        if GATE_APPROVED not in meta_row(gdoc, "Status"):
-            e("P6C-02", f"GATE-025 status must be {GATE_APPROVED!r}")
+        gst = meta_row(gdoc, "Status")
+        if f"**{GATE_CLOSED}**" not in gst or re.search(r"PENDING|CANDIDATE", gst):
+            e("P6C-02", f"GATE-025 current status must be {GATE_CLOSED!r} (no pending/candidate state)")
+        for ev in wp7_cited:
+            if ev not in gdoc:
+                e("P6C-02", f"GATE-025 does not cite recorded P6-WP7 closure evidence {ev}")
         for ref in ("PHASE-6-CLOSURE.md", "phase6-closure-v1.json", "validate_phase6_closure.py"):
             if ref not in gdoc:
                 e("P6C-02", f"GATE-025 must reference {ref}")
     cg = m.get("closure_gate") or {}
-    if cg.get("id") != "GATE-025" or cg.get("status") != GATE_APPROVED or cg.get("path") != "docs/00-program/GATE-025-phase-6-closure.md":
-        e("P6C-02", "manifest closure_gate must be GATE-025 / PHASE 6 INTEGRATED CLOSURE APPROVED — REMOTE CI + MERGE PENDING")
+    if cg.get("id") != "GATE-025" or cg.get("status") != GATE_CLOSED or cg.get("path") != "docs/00-program/GATE-025-phase-6-closure.md":
+        e("P6C-02", f"manifest closure_gate must be GATE-025 / {GATE_CLOSED}")
 
     # ---------------- P6C-03 schema / P6C-55 external refs
     sch = d["schema"]
@@ -411,9 +455,11 @@ def check(d: dict, ctx: dict) -> list[tuple[str, str]]:
         if w.get("merged") is not True or w.get("closure_state") != "CLOSED":
             e("P6C-05", f"{w.get('id')}: predecessor must be merged and CLOSED")
     cur = m.get("current_work_package") or {}
-    if cur.get("id") != "P6-WP7" or cur.get("state") != WP7_STATE or cur.get("merged") is not False \
-            or cur.get("merge_commit") is not None or cur.get("pr_number") is not None:
-        e("P6C-05", "P6-WP7 must be APPROVED_PENDING_REMOTE_CI_AND_MERGE, unmerged, with no PR/merge commit recorded")
+    if cur.get("id") != "P6-WP7" or cur.get("state") != "CLOSED" or cur.get("merged") is not True \
+            or cur.get("pr_number") != WP7_PR or cur.get("merge_commit") != WP7_MERGE or cur.get("pr_head_commit") != WP7_HEAD:
+        e("P6C-05", f"P6-WP7 must be CLOSED and merged as PR #{WP7_PR} (head {WP7_HEAD[:12]}, merge {WP7_MERGE[:12]})")
+    if cur.get("merge_commit") == m.get("baseline_commit"):
+        e("P6C-05", "the closure merge commit must stay distinct from the closure input baseline")
     gate_ids = []
     for i, (wp, gate, pr, sha) in enumerate(EXPECTED_WPS):
         w = wpmap.get(wp) or {}
@@ -795,7 +841,8 @@ def check(d: dict, ctx: dict) -> list[tuple[str, str]]:
             return
         if isinstance(n, (int, float)):
             ok = any(path[:len(k)] == k for k in NUMERIC_KEYS) or \
-                (len(path) >= 3 and path[0] == "work_packages" and path[-1] in NUMERIC_WP_KEYS)
+                (len(path) >= 3 and path[0] == "work_packages" and path[-1] in NUMERIC_WP_KEYS) or \
+                (path[:1] == ("current_work_package",) and path[-1] in NUMERIC_WP_KEYS)
             if not ok:
                 e("P6C-44", f"manifest numeric value at {'/'.join(map(str, path))} is not a count or identifier")
         elif isinstance(n, str) and (not path or path[-1] not in DIGEST_KEYS) and DURATION_LITERAL.search(n):
@@ -814,21 +861,26 @@ def check(d: dict, ctx: dict) -> list[tuple[str, str]]:
             or cls.get("CONFIGURATION_REQUIRED_FOR_IMPLEMENTATION_PROFILE") != counts.get("parameters_implementation_profile"):
         e("P6C-44", f"operational parameters must remain 24 NOT YET SPECIFIED with their existing classes {cls}")
 
-    # ---------------- P6C-45 closure status
-    if m.get("closure_status") != APPROVED or m.get("phase_state") != "NOT YET CLOSED" or premature(m.get("closure_status", "")):
-        e("P6C-45", "Phase-6 closure must be approved / remote CI + merge pending and NOT YET CLOSED")
-    for label, t in (("closure document", cdoc), ("GATE-025", gdoc)):
-        if premature(meta_row(t, "Status")):
-            e("P6C-45", f"{label} status claims closure/merge/pass before independent review + remote CI + merge")
+    # ---------------- P6C-45 premature closure (lifecycle-aware)
+    gaps = wp7_evidence_gaps(m)
+    claims = [("manifest closure_status", m.get("closure_status", "")), ("manifest phase_state", m.get("phase_state", "")),
+              ("manifest P6-WP7 state", str(cur.get("state"))), ("closure document status", meta_row(cdoc, "Status")),
+              ("GATE-025 status", meta_row(gdoc, "Status"))]
+    for label, text_ in claims:
+        if premature(text_) and gaps:
+            e("P6C-45", f"{label} claims closure without complete P6-WP7 closure evidence (missing: {gaps})")
+    if m.get("closure_status") != CLOSED_STATUS or m.get("phase_state") != "CLOSED" or cur.get("state") != "CLOSED":
+        e("P6C-45", "manifest closure_status / phase_state / P6-WP7 state must be consistently CLOSED (no pending current state)")
 
-    # ---------------- P6C-46 Phase 7 not started
+    # ---------------- P6C-46 lifecycle: historical "not started at closure" vs current repository state
     h7 = m.get("phase7_handoff") or {}
-    if h7.get("phase7_status") != "NOT STARTED" or any(x.get("status") != "NOT STARTED" for x in m.get("later_phase_handoff") or []):
-        e("P6C-46", "Phase 7 and later phases must be NOT STARTED")
-    if ctx["later_gates"]:
-        e("P6C-46", f"later gates exist {ctx['later_gates']}: a later phase has started")
+    if h7.get("phase7_status_at_phase6_closure") != "NOT STARTED" or h7.get("phase7_started_at_phase6_closure") is not False \
+            or any(x.get("status_at_phase6_closure") != "NOT STARTED" for x in m.get("later_phase_handoff") or []):
+        e("P6C-46", "Phase 7 and later phases must be recorded as NOT STARTED at the moment Phase 6 closed")
+    if d["later_gates"] and not evidenced_closed(m):
+        e("P6C-46", f"later-phase gates {d['later_gates']} exist while Phase 6 is not CLOSED with complete P6-WP7 evidence")
     if not re.search(r"Phase 7[^\n]{0,40}NOT STARTED", cdoc):
-        e("P6C-46", "closure document must state Phase 7 NOT STARTED")
+        e("P6C-46", "closure document must record that Phase 7 had NOT STARTED when Phase 6 closed")
 
     # ---------------- P6C-47 implementation deferred
     dl = by_id(m.get("implementation_deferred"), "item")
@@ -995,8 +1047,16 @@ def _select(node, seg):
 
 
 def apply_mutation(docs: dict, mut: dict) -> dict:
+    if "steps" in mut:  # composite mutation / lifecycle scenario: apply each step in order
+        out = docs
+        for step in mut["steps"]:
+            out = apply_mutation(out, step)
+        return out
     out = dict(docs)
     tgt = mut.get("target", "closure")
+    if mut["op"] == "append" and not mut.get("path"):
+        out[tgt] = list(docs[tgt]) + [copy.deepcopy(mut["value"])]
+        return out
     if mut["op"] in ("replace_text", "append_text"):
         text = docs[tgt]
         if mut["op"] == "append_text":
@@ -1030,11 +1090,12 @@ def inputs() -> tuple[dict, dict]:
     docs.update({k: load(p) for k, p in JSON_INPUTS.items()})
     docs.update({k: read(p) for k, p in TEXT_INPUTS.items()})
     docs["gates"] = {g: read(ROOT / p) for g, p in GATE_FILES.items()}
+    # current repository state: later-phase gates (GATE-026+) legitimately appear once Phase 6 is CLOSED
+    docs["later_gates"] = sorted(p.name for p in PROGRAM.glob("GATE-*.md")
+                                 if re.match(r"GATE-(\d+)", p.name) and int(re.match(r"GATE-(\d+)", p.name).group(1)) > 25)
     snap_paths = {a.get("path") for a in docs["closure"].get("snapshot", {}).get("artifacts", [])} | REQUIRED_ARTIFACTS
     ctx = {
         "actual_sha": {p: sha256_file(ROOT / p) for p in snap_paths if isinstance(p, str)},
-        "later_gates": sorted(p.name for p in PROGRAM.glob("GATE-*.md")
-                              if re.match(r"GATE-(\d+)", p.name) and int(re.match(r"GATE-(\d+)", p.name).group(1)) > 25),
         "migration_paths": [p for p in MIGRATION_PATHS if (ROOT / p).exists()],
     }
     return docs, ctx
@@ -1067,6 +1128,17 @@ def main() -> int:
             failures.append(f"{mut['id']}: expected {mut['expect']}, got {sorted(found) or 'no violation'}")
         elif not quiet:
             print(f"  ok    {mut['id']} rejected by {mut['expect']}: {mut['description']}")
+    positives = load(NEGATIVE_PATH).get("positive_scenarios", [])
+    for sc in positives:
+        try:
+            found = sorted({code for code, _ in check(apply_mutation(docs, sc), ctx)})
+        except (KeyError, IndexError, ValueError, TypeError) as ex:
+            failures.append(f"{sc['id']}: positive scenario could not be applied ({ex})")
+            continue
+        if found:
+            failures.append(f"{sc['id']}: positive lifecycle scenario must pass, got {found}")
+        elif not quiet:
+            print(f"  ok    {sc['id']} accepted: {sc['description']}")
     if failures:
         for f in failures:
             print(f"  FAIL  negative fixture {f}")
@@ -1077,8 +1149,8 @@ def main() -> int:
     print(f"PHASE-6 CLOSURE: PASS — {m['closure_status']} at baseline {m['baseline_commit'][:12]}; {len(m['work_packages'])} "
           f"merged predecessor WPs; {len(m['snapshot']['artifacts'])} canonical artifacts SHA-256 pinned and verified; "
           f"{m['contract_counts']['postgresql_tables']} tables / {m['contract_counts']['api_operations']} API = "
-          f"{m['contract_counts']['openapi_operations']} OpenAPI operations; {n_checks} checks; {len(negatives)} negative "
-          f"mutations rejected (static closure validation; no runtime exists; Phase 6 not yet closed)")
+          f"{m['contract_counts']['openapi_operations']} OpenAPI operations; {n_checks} checks; {len(positives)} positive lifecycle scenario(s) accepted; {len(negatives)} negative "
+          f"mutations rejected (static closure validation; no runtime exists; contract phase closed, not product implemented)")
     return 0
 
 

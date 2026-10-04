@@ -4,10 +4,11 @@
 |---|---|
 | Document ID | GATE-025 |
 | Version | 1.0 |
-| Status | **PHASE 6 INTEGRATED CLOSURE APPROVED — REMOTE CI + MERGE PENDING**; Phase 6 not yet closed; Phase 7 not started |
+| Status | **PHASE 6 INTEGRATED CLOSURE PASSED — PHASE 6 CLOSED** (P6-WP7 PR #32 merged; remote CI success; §9); Phase 7 had not started when Phase 6 closed |
 | Phase assessed | Phase 6 — Data, API & Integration Contracts (integrated closure, P6-WP7) |
 | Owner role | Technical Program Director / Lead Architect |
-| Baseline | P6-WP6 merge `eba1882058e2638a7c4e11a610201d752b920654` (PR #31) |
+| Baseline | Closure input baseline: P6-WP6 merge `eba1882058e2638a7c4e11a610201d752b920654` (PR #31) |
+| Closure merge | P6-WP7 PR #32 — head `d7a6bba6688101f70243fc73f361b37fca38583a`, merge `858784428c3caa00da958e170211f03b466941a9`; workflow runs 37181604935 (PR head) and 37182107516 (merge commit): both required jobs success |
 | Primary deliverables | [PHASE-6-CLOSURE.md](PHASE-6-CLOSURE.md) v0.1; [`contracts/phase6/phase6-closure-v1.json`](../../contracts/phase6/phase6-closure-v1.json); [`phase6-closure-contract.schema.json`](../../contracts/phase6/phase6-closure-contract.schema.json); `contracts/phase6/fixtures/negative-mutations.json`; `knowledge/validation/validate_phase6_closure.py` |
 | Predecessor gates | GATE-019 … GATE-024 (referenced, not modified) |
 | Independent review | BLOCKER 0 / HIGH 0 / MEDIUM 0 / LOW 1 / INFO 3 — **APPROVE** (§8) |
@@ -18,8 +19,8 @@
 
 GATE-025 decides whether Phase 6 may be closed. It assesses the integrated state of the merged P6-WP1…P6-WP6 contracts
 through PHASE-6-CLOSURE.md and the machine-validated closure manifest. It creates no architecture and modifies no accepted
-contract, ADR or earlier gate. Following the independent closure review (§8) the state is **PHASE 6 INTEGRATED
-CLOSURE APPROVED — REMOTE CI + MERGE PENDING**; Phase 6 is not closed until exit criterion 12 is met.
+contract, ADR or earlier gate. History: candidate → independent closure review APPROVE (§8) → remote CI success and
+merge of P6-WP7 (§9). All exit criteria are met; the gate has passed and **Phase 6 is CLOSED**.
 
 ## 2. Phase-6 exit criteria
 
@@ -36,9 +37,10 @@ CLOSURE APPROVED — REMOTE CI + MERGE PENDING**; Phase 6 is not closed until ex
 | 9 | Implementation-deferred list explicit | PHASE-6-CLOSURE §11, §13; P6C-47 | MET |
 | 10 | Phase-7 handoff explicit | PHASE-6-CLOSURE §12; P6C-51, P6C-52 | MET |
 | 11 | Independent closure review | §8 — BLOCKER 0 / HIGH 0 / MEDIUM 0 / LOW 1 / INFO 3, APPROVE | **MET** |
-| 12 | Remote CI + merge of P6-WP7 | — | **PENDING** |
+| 12 | Remote CI + merge of P6-WP7 | §9 — PR #32 merged as `8587844`; runs 37181604935 / 37182107516 success | **MET** |
 
-Only after criterion 12 (P6-WP7 remote CI PASS + merge) is met may Phase 6 and this gate be recorded as CLOSED.
+Only after criterion 12 (P6-WP7 remote CI PASS + merge) is met may Phase 6 and this gate be recorded as CLOSED. Criterion 12
+is met (§9).
 
 ## 3. Validation evidence (local builder)
 
@@ -81,15 +83,16 @@ replay semantics specified. Nothing here claims any of the following (each is NO
 
 ## 7. Decision
 
-**PHASE 6 INTEGRATED CLOSURE APPROVED — REMOTE CI + MERGE PENDING.** Recommendation: proceed to the P6-WP7 commit and PR.
-After the P6-WP7 remote CI passes and the PR is merged, Phase 6 and this gate may be recorded as CLOSED. Until then Phase 6
-is not yet closed; Phase 7 has not started and must not start before that.
+**PHASE 6 INTEGRATED CLOSURE PASSED — PHASE 6 CLOSED** (contract phase closed; not product implemented). Decision
+history: candidate (P6-WP7 build) → approved, remote CI + merge pending (after §8) → passed and CLOSED after the P6-WP7
+remote CI succeeded and PR #32 merged (§9). Phase 7 had not started at the moment Phase 6 closed; it may now begin under
+its own gate (GATE-026+), which no longer conflicts with this closure (P6C-46 is lifecycle-aware).
 
 ## 8. Independent closure review — APPROVE
 
 | Item | Result |
 |---|---|
-| Counts | BLOCKER 0 / HIGH 0 / MEDIUM 0 / LOW 1 / INFO 3 — **APPROVE**; no further review cycle required |
+| Counts | BLOCKER 0 / HIGH 0 / MEDIUM 0 / LOW 1 / INFO 3 — **APPROVE** (programme decision, not reviewer text: no further review cycle required) |
 | Reviewer validation | `run_all` PASS 29/29; `run_all --json` gate=PASS, validators_run=29, validators_failed=0; `ci_selftest` PASS 14/14; closure validator PASS (64 checks, 97/97 negative mutations rejected); `ENGINE_VERSION = 1.0.0` |
 | LOW-1 | **OPEN / NON-BLOCKING — carried forward.** The snapshot pins 19 artifacts but not the four contract JSON Schemas (`contracts/postgresql/schema-contract.schema.json`, `contracts/api/api-contract.schema.json`, `contracts/integrations/integration-contract.schema.json`, `contracts/operations/operational-contract.schema.json`). Not fixed in acceptance bookkeeping (that would change the reviewed snapshot). Owner: next governed Phase-6 snapshot revision / Programme governance |
 | INFO-1 | Reviewer could not verify predecessor remote-CI run IDs (GitHub API rate limiting). **Resolved by post-review independent programme verification**: PR-head runs 37017385182 / 37042623603 / 37099884050 / 37111449035 / 37133623775 / 37143306920 (WP1…WP6), both required jobs completed / success, equal to the manifest. The offline closure validator does not verify GitHub |
@@ -98,3 +101,23 @@ is not yet closed; Phase 7 has not started and must not start before that.
 
 Reviewer closing statement: P6-WP7 is ready for acceptance bookkeeping and commit/PR closure. Phase 6 is not closed until
 the P6-WP7 remote CI passes and the PR is merged. Phase 7 has not started.
+
+## 9. Post-merge closure finalization — PHASE 6 CLOSED
+
+| Item | Result |
+|---|---|
+| Independent review | BLOCKER 0 / HIGH 0 / MEDIUM 0 / LOW 1 / INFO 3 — APPROVE (§8) |
+| PR | #32 |
+| PR head | `d7a6bba6688101f70243fc73f361b37fca38583a` |
+| Merge commit | `858784428c3caa00da958e170211f03b466941a9` (closure commit; distinct from the input baseline `eba1882058e2638a7c4e11a610201d752b920654`) |
+| Remote CI (PR head) | workflow run 37181604935 — "Knowledge validation suite" SUCCESS; "Quality-gate self-test (gate must bite)" SUCCESS |
+| Remote CI (merge commit) | workflow run 37182107516 — both required jobs SUCCESS |
+| Evidence source | Independent programme verification and GitHub check-runs; the offline closure validator checks the recorded evidence and does not contact GitHub |
+| Phase-6 result | **CLOSED** (contract phase; not product implemented) |
+| Phase 7 at closure time | NOT STARTED (historical fact; Phase 7 may begin afterwards) |
+| Snapshot | 19 pinned artifacts, SHA-256 unchanged; LOW-1 remains OPEN / NON-BLOCKING |
+| Open items | G-09 OPEN; OI-05 OPEN; ASM-002 UNCONFIRMED / PROVISIONAL; Phase 1 `PARTIAL`; 24 operational values NOT YET SPECIFIED |
+
+Lifecycle correction applied with this finalization: the closure validator now requires this evidenced CLOSED state
+(P6C-01/02/05/45) and permits later-phase gates only once Phase 6 is CLOSED with complete P6-WP7 evidence (P6C-46). The
+earlier candidate and approved-pending history above is preserved.
