@@ -1,0 +1,1219 @@
+{
+  "description": "Negative mutations for knowledge/validation/validate_phase6_closure.py. Each mutation is applied to an in-memory copy of the closure manifest (default) or, via 'target', of another Phase-6 contract or text input; the named P6C check must fail. Text targets use replace_text/append_text.",
+  "mutations": [
+    {
+      "id": "NEG-P6C-01",
+      "description": "remove P6-WP6 from the predecessor work packages",
+      "expect": "P6C-05",
+      "op": "remove",
+      "path": [
+        "work_packages",
+        {
+          "id": "P6-WP6"
+        }
+      ]
+    },
+    {
+      "id": "NEG-P6C-02",
+      "description": "mark predecessor P6-WP3 unmerged",
+      "expect": "P6C-05",
+      "op": "set",
+      "path": [
+        "work_packages",
+        {
+          "id": "P6-WP3"
+        },
+        "merged"
+      ],
+      "value": false
+    },
+    {
+      "id": "NEG-P6C-03",
+      "description": "wrong PR number for P6-WP4",
+      "expect": "P6C-06",
+      "op": "set",
+      "path": [
+        "work_packages",
+        {
+          "id": "P6-WP4"
+        },
+        "pr_number"
+      ],
+      "value": 99
+    },
+    {
+      "id": "NEG-P6C-04",
+      "description": "wrong merge SHA for P6-WP2",
+      "expect": "P6C-07",
+      "op": "set",
+      "path": [
+        "work_packages",
+        {
+          "id": "P6-WP2"
+        },
+        "merge_commit"
+      ],
+      "value": "1111111111111111111111111111111111111111"
+    },
+    {
+      "id": "NEG-P6C-05",
+      "description": "remove the GATE-024 reference (P6-WP6 points at GATE-023)",
+      "expect": "P6C-08",
+      "op": "set",
+      "path": [
+        "work_packages",
+        {
+          "id": "P6-WP6"
+        },
+        "gate_id"
+      ],
+      "value": "GATE-023"
+    },
+    {
+      "id": "NEG-P6C-06",
+      "description": "alter ONLY the OPS-001 pinned digest (set to another valid digest)",
+      "expect": "P6C-11",
+      "op": "set",
+      "path": [
+        "snapshot",
+        "artifacts",
+        {
+          "id": "OPS-001"
+        },
+        "sha256"
+      ],
+      "value": "d6fa8626e678b7b597ee58d5283f389afd8729e4a650859b28656009fb0731d1"
+    },
+    {
+      "id": "NEG-P6C-07",
+      "description": "remove the canonical API catalog from the snapshot",
+      "expect": "P6C-09",
+      "op": "remove",
+      "path": [
+        "snapshot",
+        "artifacts",
+        {
+          "id": "API-CATALOG-V1"
+        }
+      ]
+    },
+    {
+      "id": "NEG-P6C-08",
+      "description": "API operation count mismatch (manifest records 54)",
+      "expect": "P6C-15",
+      "op": "set",
+      "path": [
+        "contract_counts",
+        "api_operations"
+      ],
+      "value": 54
+    },
+    {
+      "id": "NEG-P6C-09",
+      "description": "OpenAPI operation count mismatch (an OpenAPI path removed)",
+      "expect": "P6C-16",
+      "target": "openapi",
+      "op": "remove",
+      "path": [
+        "paths",
+        "/api/v1/me"
+      ]
+    },
+    {
+      "id": "NEG-P6C-10",
+      "description": "listEvaluationEnrichments reverted to FUTURE in INT-001",
+      "expect": "P6C-18",
+      "target": "integration",
+      "op": "set",
+      "path": [
+        "api_surface",
+        "availability"
+      ],
+      "value": "FUTURE_INT_001"
+    },
+    {
+      "id": "NEG-P6C-11",
+      "description": "DetectionResult made mutable in persistence",
+      "expect": "P6C-19",
+      "target": "persistence",
+      "op": "append",
+      "path": [
+        "tables",
+        {
+          "name": "detection_result"
+        },
+        "mutable_columns"
+      ],
+      "value": "classification"
+    },
+    {
+      "id": "NEG-P6C-12",
+      "description": "add scam_probability to the DetectionResult response",
+      "expect": "P6C-20",
+      "target": "api",
+      "op": "append",
+      "path": [
+        "schemas",
+        "DetectionResultResponse",
+        "fields"
+      ],
+      "value": {
+        "name": "scam_probability",
+        "type": "number",
+        "required": false
+      }
+    },
+    {
+      "id": "NEG-P6C-13",
+      "description": "enrichment consumed_in_governed_artifact = true",
+      "expect": "P6C-21",
+      "target": "integration",
+      "op": "set",
+      "path": [
+        "decision_boundary",
+        "consumed_in_governed_artifact"
+      ],
+      "value": true
+    },
+    {
+      "id": "NEG-P6C-14",
+      "description": "provider CLEAN described as TrustLens safe",
+      "expect": "P6C-22",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "enrichment_persistence",
+        "provider_clean"
+      ],
+      "value": "TRUSTLENS_SAFE"
+    },
+    {
+      "id": "NEG-P6C-15",
+      "description": "replay may call AI",
+      "expect": "P6C-23",
+      "target": "operations",
+      "op": "remove",
+      "path": [
+        "replay",
+        "forbidden",
+        {
+          "$value": "AI_CALL"
+        }
+      ]
+    },
+    {
+      "id": "NEG-P6C-16",
+      "description": "replay may call the enrichment provider",
+      "expect": "P6C-24",
+      "target": "integration",
+      "op": "set",
+      "path": [
+        "replay",
+        "historical",
+        "provider_call"
+      ],
+      "value": true
+    },
+    {
+      "id": "NEG-P6C-17",
+      "description": "replay permits latest knowledge",
+      "expect": "P6C-25",
+      "target": "operations",
+      "op": "remove",
+      "path": [
+        "replay",
+        "forbidden",
+        {
+          "$value": "LATEST_OR_CURRENT_KNOWLEDGE"
+        }
+      ]
+    },
+    {
+      "id": "NEG-P6C-18",
+      "description": "RM material set altered (RM-14 removed from persistence)",
+      "expect": "P6C-26",
+      "target": "persistence",
+      "op": "remove",
+      "path": [
+        "replay_material_set",
+        {
+          "id": "RM-14"
+        }
+      ]
+    },
+    {
+      "id": "NEG-P6C-19",
+      "description": "replay substitutes missing material",
+      "expect": "P6C-27",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "replay",
+        "missing_material"
+      ],
+      "value": "SUBSTITUTE_CURRENT_MATERIAL"
+    },
+    {
+      "id": "NEG-P6C-20",
+      "description": "report regeneration reconstructs from latest material",
+      "expect": "P6C-28",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "report",
+        "reconstruct_from_latest"
+      ],
+      "value": true
+    },
+    {
+      "id": "NEG-P6C-21",
+      "description": "tombstone stores deleted content",
+      "expect": "P6C-29",
+      "target": "persistence",
+      "op": "append",
+      "path": [
+        "tables",
+        {
+          "name": "governed_removal_tombstone"
+        },
+        "columns"
+      ],
+      "value": {
+        "name": "deleted_content_body",
+        "type": "text",
+        "nullable": true
+      }
+    },
+    {
+      "id": "NEG-P6C-22",
+      "description": "deletion COMPLETE on call return before verification",
+      "expect": "P6C-30",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "deletion",
+        "completion_on_call_return"
+      ],
+      "value": true
+    },
+    {
+      "id": "NEG-P6C-23",
+      "description": "restore may resurrect deleted content",
+      "expect": "P6C-31",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "restore",
+        "anti_resurrection_required"
+      ],
+      "value": false
+    },
+    {
+      "id": "NEG-P6C-24",
+      "description": "idempotency carryover reopened",
+      "expect": "P6C-32",
+      "op": "set",
+      "path": [
+        "carryover_closures",
+        {
+          "id": "IDEMPOTENCY_PERSISTENCE"
+        },
+        "contract_status"
+      ],
+      "value": "OPEN"
+    },
+    {
+      "id": "NEG-P6C-25",
+      "description": "ETag carryover reopened",
+      "expect": "P6C-33",
+      "op": "set",
+      "path": [
+        "carryover_closures",
+        {
+          "id": "ETAG_REVISION_PERSISTENCE"
+        },
+        "contract_status"
+      ],
+      "value": "OPEN"
+    },
+    {
+      "id": "NEG-P6C-26",
+      "description": "ADR-0012 not Accepted",
+      "expect": "P6C-35",
+      "target": "adr0012_text",
+      "op": "replace_text",
+      "old": "| Status | **Accepted**",
+      "new": "| Status | **Proposed**"
+    },
+    {
+      "id": "NEG-P6C-27",
+      "description": "allow generic fetch",
+      "expect": "P6C-36",
+      "target": "integration",
+      "op": "set",
+      "path": [
+        "egress",
+        "generic_fetch_primitive"
+      ],
+      "value": true
+    },
+    {
+      "id": "NEG-P6C-28",
+      "description": "governed proxy final-hop enforcement optional",
+      "expect": "P6C-37",
+      "target": "integration",
+      "op": "set",
+      "path": [
+        "proxy",
+        "final_hop_enforcement"
+      ],
+      "value": "OPTIONAL"
+    },
+    {
+      "id": "NEG-P6C-29",
+      "description": "G-09 CLOSED",
+      "expect": "P6C-38",
+      "op": "set",
+      "path": [
+        "open_items",
+        {
+          "id": "G-09"
+        },
+        "state"
+      ],
+      "value": "CLOSED"
+    },
+    {
+      "id": "NEG-P6C-30",
+      "description": "OI-05 CLOSED",
+      "expect": "P6C-39",
+      "op": "set",
+      "path": [
+        "open_items",
+        {
+          "id": "OI-05"
+        },
+        "state"
+      ],
+      "value": "CLOSED"
+    },
+    {
+      "id": "NEG-P6C-31",
+      "description": "ASM-002 CONFIRMED without sponsor authority",
+      "expect": "P6C-40",
+      "op": "set",
+      "path": [
+        "open_items",
+        {
+          "id": "ASM-002"
+        },
+        "state"
+      ],
+      "value": "CONFIRMED"
+    },
+    {
+      "id": "NEG-P6C-32",
+      "description": "Phase 1 PASS",
+      "expect": "P6C-41",
+      "op": "set",
+      "path": [
+        "phase1_status"
+      ],
+      "value": "PASS"
+    },
+    {
+      "id": "NEG-P6C-33",
+      "description": "introduce tenant_id on case_record",
+      "expect": "P6C-42",
+      "target": "persistence",
+      "op": "append",
+      "path": [
+        "tables",
+        {
+          "name": "case_record"
+        },
+        "columns"
+      ],
+      "value": {
+        "name": "tenant_id",
+        "type": "uuid",
+        "nullable": false
+      }
+    },
+    {
+      "id": "NEG-P6C-34",
+      "description": "ENGINE_VERSION changed",
+      "expect": "P6C-43",
+      "target": "engine_text",
+      "op": "replace_text",
+      "old": "ENGINE_VERSION = \"1.0.0\"",
+      "new": "ENGINE_VERSION = \"1.1.0\""
+    },
+    {
+      "id": "NEG-P6C-35",
+      "description": "invent a numeric retention duration in the manifest",
+      "expect": "P6C-44",
+      "op": "set",
+      "path": [
+        "open_items",
+        {
+          "id": "OI-05"
+        },
+        "phase6_impact"
+      ],
+      "value": "Retention duration fixed at 365 days."
+    },
+    {
+      "id": "NEG-P6C-36",
+      "description": "phase closure prematurely CLOSED",
+      "expect": "P6C-45",
+      "op": "set",
+      "path": [
+        "closure_status"
+      ],
+      "value": "PHASE 6 CLOSED"
+    },
+    {
+      "id": "NEG-P6C-37",
+      "description": "mark Phase 7 started",
+      "expect": "P6C-46",
+      "op": "set",
+      "path": [
+        "phase7_handoff",
+        "phase7_status"
+      ],
+      "value": "STARTED"
+    },
+    {
+      "id": "NEG-P6C-38",
+      "description": "claim API deployed",
+      "expect": "P6C-48",
+      "op": "append",
+      "path": [
+        "claim_boundary",
+        "may_support"
+      ],
+      "value": "API_DEPLOYED"
+    },
+    {
+      "id": "NEG-P6C-39",
+      "description": "claim production ready in the closure document",
+      "expect": "P6C-48",
+      "target": "closure_doc",
+      "op": "append_text",
+      "value": "\nTrustLens is production ready.\n"
+    },
+    {
+      "id": "NEG-P6C-40",
+      "description": "claim accuracy / precision / recall",
+      "expect": "P6C-50",
+      "op": "append",
+      "path": [
+        "claim_boundary",
+        "may_support"
+      ],
+      "value": "ACCURACY"
+    },
+    {
+      "id": "NEG-P6C-41",
+      "description": "remove the Phase-7 handoff",
+      "expect": "P6C-51",
+      "op": "remove",
+      "path": [
+        "phase7_handoff"
+      ]
+    },
+    {
+      "id": "NEG-P6C-42",
+      "description": "remove the future owner from an open item",
+      "expect": "P6C-53",
+      "op": "set",
+      "path": [
+        "open_items",
+        {
+          "id": "OI-05"
+        },
+        "future_owner"
+      ],
+      "value": ""
+    },
+    {
+      "id": "NEG-P6C-43",
+      "description": "corrupt one canonical SHA-256 (one hex digit of api-v1.json)",
+      "expect": "P6C-11",
+      "op": "set",
+      "path": [
+        "snapshot",
+        "artifacts",
+        {
+          "id": "API-CATALOG-V1"
+        },
+        "sha256"
+      ],
+      "value": "06fa8626e678b7b597ee58d5283f389afd8729e4a650859b28656009fb0731d1"
+    },
+    {
+      "id": "NEG-P6C-44",
+      "description": "add an external schema $ref",
+      "expect": "P6C-55",
+      "target": "schema",
+      "op": "set",
+      "path": [
+        "$defs",
+        "relpath"
+      ],
+      "value": {
+        "$ref": "https://example.invalid/relpath.json"
+      }
+    },
+    {
+      "id": "NEG-P6C-45",
+      "description": "closure validator requires network",
+      "expect": "P6C-54",
+      "target": "self_source",
+      "op": "append_text",
+      "value": "\nimport socket\n"
+    },
+    {
+      "id": "NEG-P6C-46",
+      "description": "closure document status claims PHASE 6 CLOSED before remote CI + merge",
+      "expect": "P6C-45",
+      "target": "closure_doc",
+      "op": "replace_text",
+      "old": "| Status | **PHASE 6 CLOSURE APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING**",
+      "new": "| Status | **PHASE 6 CLOSED**"
+    },
+    {
+      "id": "NEG-P6C-47",
+      "description": "closure document status claims P6-WP7 MERGED before remote CI + merge",
+      "expect": "P6C-01",
+      "target": "closure_doc",
+      "op": "replace_text",
+      "old": "REMOTE CI + MERGE PENDING** —",
+      "new": "MERGED** —"
+    },
+    {
+      "id": "NEG-P6C-48",
+      "description": "GATE-025 status claims remote CI passed and merged",
+      "expect": "P6C-02",
+      "target": "gate_doc",
+      "op": "replace_text",
+      "old": "**PHASE 6 INTEGRATED CLOSURE APPROVED — REMOTE CI + MERGE PENDING**",
+      "new": "**PHASE 6 INTEGRATED CLOSURE APPROVED — REMOTE CI PASS; MERGED**"
+    },
+    {
+      "id": "NEG-P6C-49",
+      "description": "manifest gains an unknown top-level property",
+      "expect": "P6C-03",
+      "op": "set",
+      "path": [
+        "production_ready"
+      ],
+      "value": true
+    },
+    {
+      "id": "NEG-P6C-50",
+      "description": "baseline commit changed to the P6-WP5 merge",
+      "expect": "P6C-04",
+      "op": "set",
+      "path": [
+        "baseline_commit"
+      ],
+      "value": "8fb963e955c06ded736c81d8f8a076ee599b910d"
+    },
+    {
+      "id": "NEG-P6C-51",
+      "description": "P6-WP7 recorded as merged",
+      "expect": "P6C-05",
+      "op": "set",
+      "path": [
+        "current_work_package",
+        "merged"
+      ],
+      "value": true
+    },
+    {
+      "id": "NEG-P6C-52",
+      "description": "pinned artifact path does not exist",
+      "expect": "P6C-10",
+      "op": "set",
+      "path": [
+        "snapshot",
+        "artifacts",
+        {
+          "id": "ADR-0011"
+        },
+        "path"
+      ],
+      "value": "adr/ADR-0011-missing.md"
+    },
+    {
+      "id": "NEG-P6C-53",
+      "description": "pinned artifact path escapes the repository",
+      "expect": "P6C-09",
+      "op": "set",
+      "path": [
+        "snapshot",
+        "artifacts",
+        {
+          "id": "GATE-019"
+        },
+        "path"
+      ],
+      "value": "../outside/GATE-019.md"
+    },
+    {
+      "id": "NEG-P6C-54",
+      "description": "manifest table count does not match the measured persistence contract",
+      "expect": "P6C-12",
+      "op": "set",
+      "path": [
+        "contract_counts",
+        "postgresql_tables"
+      ],
+      "value": 38
+    },
+    {
+      "id": "NEG-P6C-55",
+      "description": "evaluation <-> governed artifact 1:1 constraint removed",
+      "expect": "P6C-12",
+      "target": "persistence",
+      "op": "remove",
+      "path": [
+        "tables",
+        {
+          "name": "governed_input_artifact"
+        },
+        "unique",
+        {
+          "name": "uq_governed_input_artifact_evaluation"
+        }
+      ]
+    },
+    {
+      "id": "NEG-P6C-56",
+      "description": "api_idempotency_record re-mapped to CrossStoreOperation",
+      "expect": "P6C-13",
+      "target": "persistence",
+      "op": "set",
+      "path": [
+        "tables",
+        {
+          "name": "api_idempotency_record"
+        },
+        "logical_object"
+      ],
+      "value": "CrossStoreOperation"
+    },
+    {
+      "id": "NEG-P6C-57",
+      "description": "idempotency stores the raw key",
+      "expect": "P6C-13",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "idempotency",
+        "key",
+        "raw_key_stored"
+      ],
+      "value": true
+    },
+    {
+      "id": "NEG-P6C-58",
+      "description": "governed_removal_tombstone re-mapped to DeletionAction",
+      "expect": "P6C-14",
+      "target": "persistence",
+      "op": "set",
+      "path": [
+        "tables",
+        {
+          "name": "governed_removal_tombstone"
+        },
+        "logical_object"
+      ],
+      "value": "DeletionAction"
+    },
+    {
+      "id": "NEG-P6C-59",
+      "description": "OpenAPI listEvaluationEnrichments roles drift from the catalog",
+      "expect": "P6C-17",
+      "target": "openapi",
+      "op": "set",
+      "path": [
+        "paths",
+        "/api/v1/evaluations/{evaluation_id}/enrichments",
+        "get",
+        "x-trustlens-roles"
+      ],
+      "value": [
+        "ANALYST",
+        "USER"
+      ]
+    },
+    {
+      "id": "NEG-P6C-60",
+      "description": "OpenAPI createCase idempotency drifts from the catalog",
+      "expect": "P6C-17",
+      "target": "openapi",
+      "op": "set",
+      "path": [
+        "paths",
+        "/api/v1/cases",
+        "post",
+        "x-trustlens-idempotency"
+      ],
+      "value": "NOT_APPLICABLE"
+    },
+    {
+      "id": "NEG-P6C-61",
+      "description": "EnrichmentView exposes the raw provider body",
+      "expect": "P6C-18",
+      "target": "api",
+      "op": "append",
+      "path": [
+        "schemas",
+        "EnrichmentView",
+        "fields"
+      ],
+      "value": {
+        "name": "raw_provider_body",
+        "type": "string",
+        "required": false
+      }
+    },
+    {
+      "id": "NEG-P6C-62",
+      "description": "manifest records listEvaluationEnrichments as runtime-deployed",
+      "expect": "P6C-18",
+      "op": "set",
+      "path": [
+        "enrichment_boundary",
+        "list_evaluation_enrichments",
+        "runtime_deployed"
+      ],
+      "value": true
+    },
+    {
+      "id": "NEG-P6C-63",
+      "description": "persistence classification vocabulary drifts from Phase 3",
+      "expect": "P6C-20",
+      "target": "persistence",
+      "op": "append",
+      "path": [
+        "vocabularies",
+        "classification",
+        "values"
+      ],
+      "value": "LIKELY_SAFE"
+    },
+    {
+      "id": "NEG-P6C-64",
+      "description": "enrichment persistence carryover reopened",
+      "expect": "P6C-34",
+      "op": "set",
+      "path": [
+        "carryover_closures",
+        {
+          "id": "ENRICHMENT_PERSISTENCE"
+        },
+        "runtime_implemented"
+      ],
+      "value": true
+    },
+    {
+      "id": "NEG-P6C-65",
+      "description": "ETag revision made client-writable",
+      "expect": "P6C-33",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "concurrency",
+        "revision",
+        "client_writable"
+      ],
+      "value": true
+    },
+    {
+      "id": "NEG-P6C-66",
+      "description": "ADR-0011 no longer Accepted",
+      "expect": "P6C-35",
+      "target": "adr0011_text",
+      "op": "replace_text",
+      "old": "| Status | **Accepted**",
+      "new": "| Status | **Superseded**"
+    },
+    {
+      "id": "NEG-P6C-67",
+      "description": "SSRF claimed universally solved",
+      "expect": "P6C-37",
+      "op": "set",
+      "path": [
+        "security",
+        "ssrf_universally_solved_claimed"
+      ],
+      "value": true
+    },
+    {
+      "id": "NEG-P6C-68",
+      "description": "ASM-002 recorded as confirmed in the assumption register",
+      "expect": "P6C-40",
+      "target": "assumption_text",
+      "op": "replace_text",
+      "old": "| ASM-002 | Deployment is single-tenant.",
+      "new": "| ASM-002 | CONFIRMED — Deployment is single-tenant."
+    },
+    {
+      "id": "NEG-P6C-69",
+      "description": "Phase-1 PARTIAL removed from GATE-001",
+      "expect": "P6C-41",
+      "target": "gate001_text",
+      "op": "replace_text",
+      "old": "Phase 1 is `PARTIAL`",
+      "new": "Phase 1 is `PASS`"
+    },
+    {
+      "id": "NEG-P6C-70",
+      "description": "runtime parameter value invented",
+      "expect": "P6C-44",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "runtime_parameters",
+        {
+          "id": "PROVIDER_CONNECT_TIMEOUT"
+        },
+        "value"
+      ],
+      "value": "PT5S"
+    },
+    {
+      "id": "NEG-P6C-71",
+      "description": "ISO-8601 duration literal in the manifest",
+      "expect": "P6C-44",
+      "op": "set",
+      "path": [
+        "operational_parameters",
+        "source"
+      ],
+      "value": "RETENTION_DURATIONS = P1Y"
+    },
+    {
+      "id": "NEG-P6C-72",
+      "description": "implementation-deferred item removed",
+      "expect": "P6C-47",
+      "op": "remove",
+      "path": [
+        "implementation_deferred",
+        {
+          "item": "PROVIDER_POLICY_STORE"
+        }
+      ]
+    },
+    {
+      "id": "NEG-P6C-73",
+      "description": "OPS-001 claims runtime code added",
+      "expect": "P6C-47",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "implementation",
+        "fastapi_added"
+      ],
+      "value": true
+    },
+    {
+      "id": "NEG-P6C-74",
+      "description": "claim legal compliance",
+      "expect": "P6C-49",
+      "op": "append",
+      "path": [
+        "claim_boundary",
+        "may_support"
+      ],
+      "value": "LEGAL_COMPLIANCE"
+    },
+    {
+      "id": "NEG-P6C-75",
+      "description": "claim detection accuracy in GATE-025",
+      "expect": "P6C-50",
+      "target": "gate_doc",
+      "op": "append_text",
+      "value": "\nTrustLens achieves high accuracy on real scams.\n"
+    },
+    {
+      "id": "NEG-P6C-76",
+      "description": "Phase-7 handoff may redesign classification",
+      "expect": "P6C-52",
+      "op": "append",
+      "path": [
+        "phase7_handoff",
+        "may_design"
+      ],
+      "value": "CLASSIFICATION_REDESIGN"
+    },
+    {
+      "id": "NEG-P6C-77",
+      "description": "Phase-7 handoff drops the provider-CLEAN guard",
+      "expect": "P6C-52",
+      "op": "remove",
+      "path": [
+        "phase7_handoff",
+        "must_not_redefine",
+        {
+          "$value": "PROVIDER_CLEAN_MEANING"
+        }
+      ]
+    },
+    {
+      "id": "NEG-P6C-78",
+      "description": "closure CI requires live network",
+      "expect": "P6C-54",
+      "op": "set",
+      "path": [
+        "ci",
+        "live_network"
+      ],
+      "value": true
+    },
+    {
+      "id": "NEG-P6C-79",
+      "description": "manifest carries an external URL",
+      "expect": "P6C-55",
+      "op": "set",
+      "path": [
+        "authority_note"
+      ],
+      "value": "See https://example.invalid/closure for details."
+    },
+    {
+      "id": "NEG-P6C-80",
+      "description": "P6-WP5 independent review recorded as REQUEST_CHANGES",
+      "expect": "P6C-56",
+      "op": "set",
+      "path": [
+        "work_packages",
+        {
+          "id": "P6-WP5"
+        },
+        "independent_review"
+      ],
+      "value": "REQUEST_CHANGES (MEDIUM 1)"
+    },
+    {
+      "id": "NEG-P6C-81",
+      "description": "unresolved MEDIUM finding recorded",
+      "expect": "P6C-56",
+      "op": "set",
+      "path": [
+        "unresolved_phase6_review_findings",
+        "MEDIUM"
+      ],
+      "value": 1
+    },
+    {
+      "id": "NEG-P6C-82",
+      "description": "remote CI conclusion failure for P6-WP1",
+      "expect": "P6C-57",
+      "op": "set",
+      "path": [
+        "work_packages",
+        {
+          "id": "P6-WP1"
+        },
+        "remote_ci",
+        "conclusion"
+      ],
+      "value": "failure"
+    },
+    {
+      "id": "NEG-P6C-83",
+      "description": "administrator receives raw evidence by role",
+      "expect": "P6C-58",
+      "target": "api",
+      "op": "set",
+      "path": [
+        "field_visibility",
+        "raw_evidence_content",
+        "ADMINISTRATOR"
+      ],
+      "value": "VISIBLE"
+    },
+    {
+      "id": "NEG-P6C-84",
+      "description": "analyst may create break-glass",
+      "expect": "P6C-58",
+      "target": "api",
+      "op": "set",
+      "path": [
+        "operations",
+        {
+          "operation_id": "createBreakGlassGrant"
+        },
+        "roles"
+      ],
+      "value": [
+        "ANALYST",
+        "ADMINISTRATOR"
+      ]
+    },
+    {
+      "id": "NEG-P6C-85",
+      "description": "knowledge activation by bundle_version",
+      "expect": "P6C-59",
+      "target": "api",
+      "op": "append",
+      "path": [
+        "schemas",
+        "KnowledgeActivationRequest",
+        "fields"
+      ],
+      "value": {
+        "name": "bundle_version",
+        "type": "string",
+        "required": false
+      }
+    },
+    {
+      "id": "NEG-P6C-86",
+      "description": "unsupported input treated as benign",
+      "expect": "P6C-60",
+      "op": "set",
+      "path": [
+        "unsupported_language_boundary",
+        "unsupported_is_benign"
+      ],
+      "value": true
+    },
+    {
+      "id": "NEG-P6C-87",
+      "description": "closure document says unsupported input is safe",
+      "expect": "P6C-60",
+      "target": "closure_doc",
+      "op": "append_text",
+      "value": "\nUnsupported-language input is safe to ignore.\n"
+    },
+    {
+      "id": "NEG-P6C-88",
+      "description": "closure document says AI cannot influence the decision",
+      "expect": "P6C-61",
+      "target": "closure_doc",
+      "op": "append_text",
+      "value": "\nAI cannot influence the decision in any way.\n"
+    },
+    {
+      "id": "NEG-P6C-89",
+      "description": "AI may directly set the DetectionResult",
+      "expect": "P6C-61",
+      "op": "remove",
+      "path": [
+        "ai_boundary",
+        "may_not_directly",
+        {
+          "$value": "SET_DETECTION_RESULT"
+        }
+      ]
+    },
+    {
+      "id": "NEG-P6C-90",
+      "description": "raw evidence bytes stored in PostgreSQL",
+      "expect": "P6C-62",
+      "target": "persistence",
+      "op": "append",
+      "path": [
+        "tables",
+        {
+          "name": "evidence_item"
+        },
+        "columns"
+      ],
+      "value": {
+        "name": "raw_content",
+        "type": "bytea",
+        "nullable": true
+      }
+    },
+    {
+      "id": "NEG-P6C-91",
+      "description": "knowledge authority moved to PostgreSQL in the hierarchy",
+      "expect": "P6C-62",
+      "op": "set",
+      "path": [
+        "authority_hierarchy",
+        "knowledge_authority"
+      ],
+      "value": "POSTGRESQL"
+    },
+    {
+      "id": "NEG-P6C-92",
+      "description": "re-analysis overwrites the historical Evaluation",
+      "expect": "P6C-63",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "reanalysis",
+        "overwrites_history"
+      ],
+      "value": true
+    },
+    {
+      "id": "NEG-P6C-93",
+      "description": "provider policy resolved latest-by-name",
+      "expect": "P6C-64",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "provider_policy",
+        "latest_by_name_authority"
+      ],
+      "value": true
+    },
+    {
+      "id": "NEG-P6C-94",
+      "description": "analyst may mutate provider policy",
+      "expect": "P6C-64",
+      "target": "operations",
+      "op": "remove",
+      "path": [
+        "provider_policy",
+        "may_not_change",
+        {
+          "$value": "ANALYST"
+        }
+      ]
+    },
+    {
+      "id": "NEG-P6C-95",
+      "description": "historical replay may substitute current evidence (manifest)",
+      "expect": "P6C-25",
+      "op": "set",
+      "path": [
+        "replay",
+        "substitutes_current_evidence"
+      ],
+      "value": true
+    },
+    {
+      "id": "NEG-P6C-96",
+      "description": "deletion claims a distributed PostgreSQL/ECS transaction",
+      "expect": "P6C-30",
+      "op": "set",
+      "path": [
+        "deletion",
+        "distributed_transaction_claimed"
+      ],
+      "value": true
+    },
+    {
+      "id": "NEG-P6C-97",
+      "description": "tombstone retains a digest of deleted content",
+      "expect": "P6C-29",
+      "target": "operations",
+      "op": "set",
+      "path": [
+        "deletion",
+        "tombstone_digest_retained"
+      ],
+      "value": true
+    }
+  ]
+}
