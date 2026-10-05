@@ -1,0 +1,845 @@
+{
+  "fixture_version": "1.0",
+  "mutations": [
+    {
+      "id": "NEG-UXF-001",
+      "description": "Invent new RBAC role REVIEWER",
+      "expected_check": "UXF-08",
+      "target": "contract",
+      "op": "replace",
+      "path": "/accepted_roles",
+      "value": [
+        "USER",
+        "ANALYST",
+        "KNOWLEDGE_EDITOR",
+        "KNOWLEDGE_APPROVER",
+        "ADMINISTRATOR",
+        "REVIEWER"
+      ]
+    },
+    {
+      "id": "NEG-UXF-002",
+      "description": "Persona becomes authorization role",
+      "expected_check": "UXF-09",
+      "target": "contract",
+      "op": "replace",
+      "path": "/personas/1/authorization_role",
+      "value": true
+    },
+    {
+      "id": "NEG-UXF-003",
+      "description": "Evidence content uses role-only access",
+      "expected_check": "UXF-20",
+      "target": "contract",
+      "op": "replace",
+      "path": "/surfaces/6/content_permission_required",
+      "value": "ROLE_ONLY"
+    },
+    {
+      "id": "NEG-UXF-004",
+      "description": "Administrator automatically receives content",
+      "expected_check": "UXF-21",
+      "target": "contract",
+      "op": "replace",
+      "path": "/authorization/administrator_content_by_role",
+      "value": true
+    },
+    {
+      "id": "NEG-UXF-005",
+      "description": "Analyst creates administrator break-glass",
+      "expected_check": "UXF-22",
+      "target": "contract",
+      "op": "replace",
+      "path": "/authorization/analyst_creates_break_glass",
+      "value": true
+    },
+    {
+      "id": "NEG-UXF-006",
+      "description": "Resource authorization removed",
+      "expected_check": "UXF-19",
+      "target": "contract",
+      "op": "replace",
+      "path": "/surfaces/3/resource_authorization_required",
+      "value": false
+    },
+    {
+      "id": "NEG-UXF-007",
+      "description": "Self-assignment allowed",
+      "expected_check": "UXF-23",
+      "target": "contract",
+      "op": "replace",
+      "path": "/authorization/self_assignment",
+      "value": "SELF_ALLOWED"
+    },
+    {
+      "id": "NEG-UXF-008",
+      "description": "C4 rationale exposed without permission",
+      "expected_check": "UXF-24",
+      "target": "contract",
+      "op": "replace",
+      "path": "/authorization/c4_rationale_permission",
+      "value": "VISIBLE_TO_ALL"
+    },
+    {
+      "id": "NEG-UXF-009",
+      "description": "DetectionResult editable",
+      "expected_check": "UXF-11",
+      "target": "contract",
+      "op": "replace",
+      "path": "/semantics/result_immutable",
+      "value": false
+    },
+    {
+      "id": "NEG-UXF-010",
+      "description": "Override-result action added",
+      "expected_check": "UXF-25",
+      "target": "contract",
+      "op": "replace",
+      "path": "/semantics/result_actions",
+      "value": [
+        "READ",
+        "OVERRIDE_RESULT"
+      ]
+    },
+    {
+      "id": "NEG-UXF-011",
+      "description": "Re-analysis mutates historical Evaluation",
+      "expected_check": "UXF-14",
+      "target": "contract",
+      "op": "replace",
+      "path": "/semantics/reanalysis/overwrites_history",
+      "value": true
+    },
+    {
+      "id": "NEG-UXF-012",
+      "description": "Replay described as current rerun",
+      "expected_check": "UXF-13",
+      "target": "contract",
+      "op": "replace",
+      "path": "/semantics/replay/meaning",
+      "value": "CURRENT_ANALYSIS_RERUN"
+    },
+    {
+      "id": "NEG-UXF-013",
+      "description": "scam_probability introduced",
+      "expected_check": "UXF-26",
+      "target": "contract",
+      "op": "add",
+      "path": "/result_guardrails/scam_probability",
+      "value": 73
+    },
+    {
+      "id": "NEG-UXF-014",
+      "description": "0–100 trust score introduced",
+      "expected_check": "UXF-27",
+      "target": "contract",
+      "op": "add",
+      "path": "/result_guardrails/trust_score",
+      "value": 85
+    },
+    {
+      "id": "NEG-UXF-015",
+      "description": "NO_SCAM_PATTERN maps to SAFE",
+      "expected_check": "UXF-28",
+      "target": "contract",
+      "op": "replace",
+      "path": "/result_guardrails/classification_meanings/NO_SCAM_PATTERN",
+      "value": "SAFE"
+    },
+    {
+      "id": "NEG-UXF-016",
+      "description": "INSUFFICIENT_EVIDENCE maps to SAFE",
+      "expected_check": "UXF-29",
+      "target": "contract",
+      "op": "replace",
+      "path": "/result_guardrails/classification_meanings/INSUFFICIENT_EVIDENCE",
+      "value": "SAFE"
+    },
+    {
+      "id": "NEG-UXF-017",
+      "description": "UNSUPPORTED maps to SAFE",
+      "expected_check": "UXF-30",
+      "target": "contract",
+      "op": "replace",
+      "path": "/result_guardrails/classification_meanings/UNSUPPORTED",
+      "value": "SAFE"
+    },
+    {
+      "id": "NEG-UXF-018",
+      "description": "ERROR maps to SAFE",
+      "expected_check": "UXF-31",
+      "target": "contract",
+      "op": "replace",
+      "path": "/result_guardrails/classification_meanings/ERROR",
+      "value": "SAFE"
+    },
+    {
+      "id": "NEG-UXF-019",
+      "description": "Provider CLEAN maps to SAFE",
+      "expected_check": "UXF-32",
+      "target": "contract",
+      "op": "replace",
+      "path": "/enrichment_guardrails/outcome_meanings/CLEAN",
+      "value": "SAFE"
+    },
+    {
+      "id": "NEG-UXF-020",
+      "description": "Provider NOT_FOUND maps to SAFE",
+      "expected_check": "UXF-33",
+      "target": "contract",
+      "op": "replace",
+      "path": "/enrichment_guardrails/outcome_meanings/NOT_FOUND",
+      "value": "SAFE"
+    },
+    {
+      "id": "NEG-UXF-021",
+      "description": "Provider UNAVAILABLE maps to SAFE",
+      "expected_check": "UXF-34",
+      "target": "contract",
+      "op": "replace",
+      "path": "/enrichment_guardrails/outcome_meanings/UNAVAILABLE",
+      "value": "SAFE"
+    },
+    {
+      "id": "NEG-UXF-022",
+      "description": "Enrichment becomes primary verdict",
+      "expected_check": "UXF-35",
+      "target": "contract",
+      "op": "replace",
+      "path": "/enrichment_guardrails/primary_verdict",
+      "value": true
+    },
+    {
+      "id": "NEG-UXF-023",
+      "description": "AI directly sets verdict",
+      "expected_check": "UXF-36",
+      "target": "contract",
+      "op": "replace",
+      "path": "/ai_guardrails/direct_verdict",
+      "value": true
+    },
+    {
+      "id": "NEG-UXF-024",
+      "description": "AI can never influence the result claim",
+      "expected_check": "UXF-37",
+      "target": "contract",
+      "op": "replace",
+      "path": "/ai_guardrails/never_influences_result",
+      "value": true
+    },
+    {
+      "id": "NEG-UXF-025",
+      "description": "Loading says safe",
+      "expected_check": "UXF-39",
+      "target": "contract",
+      "op": "replace",
+      "path": "/presentation_states/0/implies_safe",
+      "value": true
+    },
+    {
+      "id": "NEG-UXF-026",
+      "description": "Empty says no scam",
+      "expected_check": "UXF-38",
+      "target": "contract",
+      "op": "replace",
+      "path": "/presentation_states/1/meaning",
+      "value": "No scam"
+    },
+    {
+      "id": "NEG-UXF-027",
+      "description": "Async pending says cleared",
+      "expected_check": "UXF-39",
+      "target": "contract",
+      "op": "replace",
+      "path": "/interaction/asynchronous/pending_implies_safe",
+      "value": true
+    },
+    {
+      "id": "NEG-UXF-028",
+      "description": "Governed removal state removed",
+      "expected_check": "UXF-40",
+      "target": "contract",
+      "op": "remove",
+      "path": "/presentation_states/12"
+    },
+    {
+      "id": "NEG-UXF-029",
+      "description": "Replay unavailable silently uses latest",
+      "expected_check": "UXF-41",
+      "target": "contract",
+      "op": "replace",
+      "path": "/semantics/replay/uses_latest",
+      "value": true
+    },
+    {
+      "id": "NEG-UXF-030",
+      "description": "Report unavailable silently uses latest",
+      "expected_check": "UXF-42",
+      "target": "contract",
+      "op": "replace",
+      "path": "/semantics/report/uses_latest",
+      "value": true
+    },
+    {
+      "id": "NEG-UXF-031",
+      "description": "Unknown API operationId",
+      "expected_check": "UXF-15",
+      "target": "contract",
+      "op": "replace",
+      "path": "/surfaces/5/api_operations/0",
+      "value": "getUnacceptedEvidence"
+    },
+    {
+      "id": "NEG-UXF-032",
+      "description": "Data surface has no operation",
+      "expected_check": "UXF-16",
+      "target": "contract",
+      "op": "replace",
+      "path": "/surfaces/6/api_operations",
+      "value": []
+    },
+    {
+      "id": "NEG-UXF-033",
+      "description": "UI directly uses database table",
+      "expected_check": "UXF-17",
+      "target": "contract",
+      "op": "replace",
+      "path": "/surfaces/3/data_source",
+      "value": "DB_TABLE:case_record"
+    },
+    {
+      "id": "NEG-UXF-034",
+      "description": "New persisted UX-only domain object",
+      "expected_check": "UXF-10",
+      "target": "contract",
+      "op": "replace",
+      "path": "/mental_model/20",
+      "value": {
+        "concept_id": "Home",
+        "kind": "DATA_001",
+        "data_object": "PersistedDashboard",
+        "persisted_ux_entity": true,
+        "meaning": "Persisted UX dashboard"
+      }
+    },
+    {
+      "id": "NEG-UXF-035",
+      "description": "tenant_id introduced",
+      "expected_check": "UXF-47",
+      "target": "contract",
+      "op": "add",
+      "path": "/tenancy/tenant_id",
+      "value": "tenant-example"
+    },
+    {
+      "id": "NEG-UXF-036",
+      "description": "Organization switcher grants tenancy authority",
+      "expected_check": "UXF-47",
+      "target": "contract",
+      "op": "replace",
+      "path": "/tenancy/organization_switcher_authority",
+      "value": true
+    },
+    {
+      "id": "NEG-UXF-037",
+      "description": "30-day retention invented",
+      "expected_check": "UXF-51",
+      "target": "contract",
+      "op": "replace",
+      "path": "/retention/duration",
+      "value": "30 days"
+    },
+    {
+      "id": "NEG-UXF-038",
+      "description": "OI-05 closed",
+      "expected_check": "UXF-49",
+      "target": "contract",
+      "op": "replace",
+      "path": "/carryovers/OI-05/status",
+      "value": "CLOSED"
+    },
+    {
+      "id": "NEG-UXF-039",
+      "description": "G-09 closed",
+      "expected_check": "UXF-48",
+      "target": "contract",
+      "op": "replace",
+      "path": "/carryovers/G-09/status",
+      "value": "CLOSED"
+    },
+    {
+      "id": "NEG-UXF-040",
+      "description": "ASM-002 confirmed",
+      "expected_check": "UXF-50",
+      "target": "contract",
+      "op": "replace",
+      "path": "/carryovers/ASM-002/status",
+      "value": "CONFIRMED"
+    },
+    {
+      "id": "NEG-UXF-041",
+      "description": "Colour-only status",
+      "expected_check": "UXF-43",
+      "target": "contract",
+      "op": "replace",
+      "path": "/accessibility/colour_only_meaning",
+      "value": true
+    },
+    {
+      "id": "NEG-UXF-042",
+      "description": "Keyboard baseline removed",
+      "expected_check": "UXF-45",
+      "target": "contract",
+      "op": "remove",
+      "path": "/accessibility/keyboard_operable"
+    },
+    {
+      "id": "NEG-UXF-043",
+      "description": "Accessibility certified claim",
+      "expected_check": "UXF-46",
+      "target": "contract",
+      "op": "replace",
+      "path": "/accessibility/certification_claim",
+      "value": true
+    },
+    {
+      "id": "NEG-UXF-044",
+      "description": "Frontend implemented claim",
+      "expected_check": "UXF-54",
+      "target": "contract",
+      "op": "replace",
+      "path": "/claims/frontend_implemented",
+      "value": true
+    },
+    {
+      "id": "NEG-UXF-045",
+      "description": "Production-ready claim",
+      "expected_check": "UXF-55",
+      "target": "contract",
+      "op": "replace",
+      "path": "/claims/production_ready",
+      "value": true
+    },
+    {
+      "id": "NEG-UXF-046",
+      "description": "Accuracy/false-positive efficacy claim",
+      "expected_check": "UXF-62",
+      "target": "contract",
+      "op": "replace",
+      "path": "/claims/detection_effectiveness",
+      "value": true
+    },
+    {
+      "id": "NEG-UXF-047",
+      "description": "ENGINE_VERSION changed in runtime",
+      "expected_check": "UXF-56",
+      "target": "engine",
+      "op": "replace_text",
+      "old": "ENGINE_VERSION = \"1.0.0\"",
+      "value": "ENGINE_VERSION = \"1.1.0\""
+    },
+    {
+      "id": "NEG-UXF-048",
+      "description": "Approved UX foundation prematurely closed",
+      "expected_check": "UXF-01",
+      "target": "doc",
+      "op": "replace_text",
+      "old": "| Status | P7-WP1 UX FOUNDATION APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING |",
+      "value": "| Status | P7-WP1 CLOSED |"
+    },
+    {
+      "id": "NEG-UXF-049",
+      "description": "Approved gate prematurely claims remote CI pass and merge",
+      "expected_check": "UXF-02",
+      "target": "gate",
+      "op": "replace_text",
+      "old": "| Status | P7-WP1 UX FOUNDATION APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING |",
+      "value": "| Status | P7-WP1 UX FOUNDATION MERGED — REMOTE CI PASS |"
+    },
+    {
+      "id": "NEG-UXF-050",
+      "description": "Arbitrary extension escape hatch added",
+      "expected_check": "UXF-03",
+      "target": "contract",
+      "op": "add",
+      "path": "/extensions",
+      "value": {}
+    },
+    {
+      "id": "NEG-UXF-051",
+      "description": "External schema reference introduced",
+      "expected_check": "UXF-04",
+      "target": "schema",
+      "op": "add",
+      "path": "/properties/claims/$ref",
+      "value": "https://untrusted.invalid/schema"
+    },
+    {
+      "id": "NEG-UXF-052",
+      "description": "Open object schema escape hatch",
+      "expected_check": "UXF-04",
+      "target": "schema",
+      "op": "replace",
+      "path": "/additionalProperties",
+      "value": true
+    },
+    {
+      "id": "NEG-UXF-053",
+      "description": "Wrong baseline",
+      "expected_check": "UXF-05",
+      "target": "contract",
+      "op": "replace",
+      "path": "/baseline",
+      "value": "0000000000000000000000000000000000000000"
+    },
+    {
+      "id": "NEG-UXF-054",
+      "description": "Frozen API bytes drift",
+      "expected_check": "UXF-06",
+      "target": "asset_hashes",
+      "op": "replace",
+      "path": "/contracts~1api~1api-v1.json",
+      "value": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "id": "NEG-UXF-055",
+      "description": "Accepted role omitted",
+      "expected_check": "UXF-07",
+      "target": "contract",
+      "op": "replace",
+      "path": "/accepted_roles",
+      "value": [
+        "USER",
+        "ANALYST",
+        "KNOWLEDGE_EDITOR",
+        "KNOWLEDGE_APPROVER"
+      ]
+    },
+    {
+      "id": "NEG-UXF-056",
+      "description": "Adjudication overwrites system result",
+      "expected_check": "UXF-12",
+      "target": "contract",
+      "op": "replace",
+      "path": "/semantics/adjudication_overwrites_result",
+      "value": true
+    },
+    {
+      "id": "NEG-UXF-057",
+      "description": "Presentation-only Home relabelled as domain object",
+      "expected_check": "UXF-18",
+      "target": "contract",
+      "op": "replace",
+      "path": "/mental_model/20/kind",
+      "value": "DATA_001"
+    },
+    {
+      "id": "NEG-UXF-058",
+      "description": "Status lacks textual equivalent",
+      "expected_check": "UXF-44",
+      "target": "contract",
+      "op": "replace",
+      "path": "/accessibility/textual_status_equivalents",
+      "value": false
+    },
+    {
+      "id": "NEG-UXF-059",
+      "description": "WP6 handoff removed",
+      "expected_check": "UXF-52",
+      "target": "contract",
+      "op": "remove",
+      "path": "/handoffs/4"
+    },
+    {
+      "id": "NEG-UXF-060",
+      "description": "WP2 falsely marked complete",
+      "expected_check": "UXF-53",
+      "target": "contract",
+      "op": "replace",
+      "path": "/handoffs/0/status",
+      "value": "COMPLETE"
+    },
+    {
+      "id": "NEG-UXF-061",
+      "description": "Surface parent cycle",
+      "expected_check": "UXF-57",
+      "target": "contract",
+      "op": "replace",
+      "path": "/surfaces/3/parent_surface_id",
+      "value": "UX-CASE"
+    },
+    {
+      "id": "NEG-UXF-062",
+      "description": "API role widened for content operation",
+      "expected_check": "UXF-58",
+      "target": "contract",
+      "op": "replace",
+      "path": "/surfaces/6/operation_access/0/roles",
+      "value": [
+        "USER",
+        "ANALYST",
+        "ADMINISTRATOR"
+      ]
+    },
+    {
+      "id": "NEG-UXF-063",
+      "description": "If-Match silently overwrites",
+      "expected_check": "UXF-59",
+      "target": "contract",
+      "op": "replace",
+      "path": "/interaction/concurrency/silent_overwrite",
+      "value": true
+    },
+    {
+      "id": "NEG-UXF-064",
+      "description": "Raw provider bodies exposed",
+      "expected_check": "UXF-60",
+      "target": "contract",
+      "op": "replace",
+      "path": "/exposure/raw_provider_bodies",
+      "value": true
+    },
+    {
+      "id": "NEG-UXF-065",
+      "description": "Surface prose projection drifts",
+      "expected_check": "UXF-61",
+      "target": "doc",
+      "op": "replace_text",
+      "old": "Task / category",
+      "value": "Task / database table"
+    },
+    {
+      "id": "NEG-UXF-066",
+      "description": "Snapshot LOW falsely closed",
+      "expected_check": "UXF-63",
+      "target": "contract",
+      "op": "replace",
+      "path": "/carryovers/P6-WP7-LOW-1/status",
+      "value": "CLOSED"
+    },
+    {
+      "id": "NEG-UXF-067",
+      "description": "Missing precondition collapsed into stale",
+      "expected_check": "UXF-64",
+      "target": "contract",
+      "op": "replace",
+      "path": "/presentation_states/9/api_error_codes",
+      "value": [
+        "PRECONDITION_FAILED"
+      ]
+    },
+    {
+      "id": "NEG-UXF-068",
+      "description": "Mobile reveals protected content",
+      "expected_check": "UXF-65",
+      "target": "contract",
+      "op": "replace",
+      "path": "/responsive/narrow_layout_exposes_hidden_content",
+      "value": true
+    },
+    {
+      "id": "NEG-UXF-069",
+      "description": "Breakpoints numerically specified",
+      "expected_check": "UXF-65",
+      "target": "contract",
+      "op": "replace",
+      "path": "/responsive/breakpoint_values",
+      "value": "768px"
+    },
+    {
+      "id": "NEG-UXF-070",
+      "description": "Focus baseline disabled",
+      "expected_check": "UXF-45",
+      "target": "contract",
+      "op": "replace",
+      "path": "/accessibility/visible_focus",
+      "value": false
+    },
+    {
+      "id": "NEG-UXF-071",
+      "description": "Metadata automatically exposes content",
+      "expected_check": "UXF-20",
+      "target": "contract",
+      "op": "replace",
+      "path": "/surfaces/5/sensitivity_behavior/metadata_implies_content",
+      "value": true
+    },
+    {
+      "id": "NEG-UXF-072",
+      "description": "Dual-role self-assignment exception",
+      "expected_check": "UXF-23",
+      "target": "contract",
+      "op": "replace",
+      "path": "/authorization/dual_role_exemption",
+      "value": true
+    },
+    {
+      "id": "NEG-UXF-073",
+      "description": "Result risk axis altered",
+      "expected_check": "UXF-65",
+      "target": "contract",
+      "op": "replace",
+      "path": "/result_guardrails/categorical_axes/risk_level",
+      "value": [
+        "SAFE",
+        "UNSAFE"
+      ]
+    },
+    {
+      "id": "NEG-UXF-074",
+      "description": "Governed input becomes editable user content",
+      "expected_check": "UXF-65",
+      "target": "contract",
+      "op": "replace",
+      "path": "/semantics/governed_input_editable",
+      "value": true
+    },
+    {
+      "id": "NEG-UXF-075",
+      "description": "Unsupported language becomes benign",
+      "expected_check": "UXF-65",
+      "target": "contract",
+      "op": "replace",
+      "path": "/unsupported_language/benign_inference",
+      "value": true
+    },
+    {
+      "id": "NEG-UXF-076",
+      "description": "New case-level verdict",
+      "expected_check": "UXF-65",
+      "target": "contract",
+      "op": "replace",
+      "path": "/semantics/case_aggregate_verdict",
+      "value": true
+    },
+    {
+      "id": "NEG-UXF-077",
+      "description": "Provider identity field invented",
+      "expected_check": "UXF-60",
+      "target": "contract",
+      "op": "replace",
+      "path": "/enrichment_guardrails/api_view_fields",
+      "value": [
+        "enrichment_id",
+        "provider_category",
+        "status",
+        "reputation_result",
+        "observed_at",
+        "advisory",
+        "provider_ref"
+      ]
+    },
+    {
+      "id": "NEG-UXF-078",
+      "description": "UI hiding treated as security control",
+      "expected_check": "UXF-19",
+      "target": "contract",
+      "op": "replace",
+      "path": "/authorization/hidden_ui_security_control",
+      "value": true
+    },
+    {
+      "id": "NEG-UXF-079",
+      "description": "Arbitrary progress percentage",
+      "expected_check": "UXF-59",
+      "target": "contract",
+      "op": "replace",
+      "path": "/interaction/asynchronous/invented_progress_percentage",
+      "value": true
+    },
+    {
+      "id": "NEG-UXF-080",
+      "description": "Silent break-glass elevation",
+      "expected_check": "UXF-59",
+      "target": "contract",
+      "op": "replace",
+      "path": "/authorization/break_glass/silent_elevation",
+      "value": true
+    },
+    {
+      "id": "NEG-UXF-081",
+      "description": "Replay calls AI again",
+      "expected_check": "UXF-13",
+      "target": "contract",
+      "op": "replace",
+      "path": "/semantics/replay/calls_ai",
+      "value": true
+    },
+    {
+      "id": "NEG-UXF-082",
+      "description": "Report auto-transmits without user action",
+      "expected_check": "UXF-65",
+      "target": "contract",
+      "op": "replace",
+      "path": "/semantics/report/automatic_transmission",
+      "value": true
+    },
+    {
+      "id": "NEG-UXF-083",
+      "description": "Internal probe presented as user surface",
+      "expected_check": "UXF-15",
+      "target": "contract",
+      "op": "replace",
+      "path": "/surfaces/20/api_operations",
+      "value": [
+        "getLiveness"
+      ]
+    },
+    {
+      "id": "NEG-UXF-084",
+      "description": "Adjudication rationale visibility widened in field matrix",
+      "expected_check": "UXF-58",
+      "target": "contract",
+      "op": "replace",
+      "path": "/authorization/field_visibility/adjudication_rationale/USER",
+      "value": "VISIBLE"
+    },
+    {
+      "id": "NEG-UXF-085",
+      "description": "LOADING wording implies safety despite false safety flag",
+      "expected_check": "UXF-39",
+      "target": "contract",
+      "op": "replace",
+      "path": "/presentation_states/0/meaning",
+      "value": "Safe"
+    },
+    {
+      "id": "NEG-UXF-086",
+      "description": "ACTION_PENDING wording implies safety despite false safety flag",
+      "expected_check": "UXF-39",
+      "target": "contract",
+      "op": "replace",
+      "path": "/presentation_states/3/meaning",
+      "value": "Cleared"
+    },
+    {
+      "id": "NEG-UXF-087",
+      "description": "Terminal FAILED / NOT_PRODUCED Evaluation incorrectly presented as pending",
+      "expected_check": "UXF-64",
+      "target": "contract",
+      "op": "replace",
+      "path": "/evaluation_error_presentation/rules/2/presentation_state",
+      "value": "ACTION_PENDING"
+    },
+    {
+      "id": "NEG-UXF-088",
+      "description": "Terminal FAILED / NOT_PRODUCED branch removed from failure mapping",
+      "expected_check": "UXF-64",
+      "target": "contract",
+      "op": "remove",
+      "path": "/evaluation_error_presentation/rules/2"
+    },
+    {
+      "id": "NEG-UXF-089",
+      "description": "Evaluation error distinction collapsed to unconditional pending mapping",
+      "expected_check": "UXF-64",
+      "target": "contract",
+      "op": "replace",
+      "path": "/evaluation_error_presentation",
+      "value": {
+        "error_code": "EVALUATION_NOT_COMPLETED",
+        "presentation_state": "ACTION_PENDING"
+      }
+    }
+  ]
+}
