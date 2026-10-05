@@ -227,6 +227,20 @@ def d_closure_digest_corrupted(root: Path):
     return p, orig
 
 
+def d_ux_role_only_evidence_content(root: Path):
+    p = root / "contracts" / "ux" / "ux-foundation-v1.json"
+    orig = p.read_bytes()
+    d = load(p)
+    surface = next((s for s in d["surfaces"] if s["surface_id"] == "UX-EVIDENCE-CONTENT"), None)
+    if surface is None or surface["content_permission_required"] != "CONTENT_PERMISSION_REQUIRED":
+        raise RuntimeError("ci_selftest could not find the governed evidence-content UX permission")
+    # P7-WP1-only defect: the UX surface bypasses the separate evidence-content permission.
+    # Accepted API / data / Phase-6 artifacts stay untouched; UXF-20 must catch it.
+    surface["content_permission_required"] = "ROLE_ONLY"
+    dump(p, d)
+    return p, orig
+
+
 DEFECTS = [
     ("unknown indicator reference", d_unknown_indicator, "validate_rules.py"),
     ("invalid taxonomy ID", d_invalid_taxonomy, "validate_rules.py"),
@@ -242,6 +256,7 @@ DEFECTS = [
     ("user input controls the enrichment destination URL (P6-WP5)", d_user_controlled_destination, "validate_integration_contract.py"),
     ("case_record monotonic mutation revision removed (P6-WP6)", d_case_revision_removed, "validate_operational_contract.py"),
     ("pinned Phase-6 closure artifact digest corrupted (P6-WP7)", d_closure_digest_corrupted, "validate_phase6_closure.py"),
+    ("evidence-content UX uses role-only access (P7-WP1)", d_ux_role_only_evidence_content, "validate_ux_foundation.py"),
 ]
 
 

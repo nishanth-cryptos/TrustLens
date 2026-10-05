@@ -1,0 +1,2229 @@
+{
+  "contract_id": "UX-001",
+  "contract_version": "0.1",
+  "phase": "Phase 7 — UX, Evidence & Reporting Design",
+  "work_package": "P7-WP1",
+  "baseline": "bbe741b8ebfb7adbc399c1231b74f67f73ba2cfc",
+  "status": "P7-WP1 UX FOUNDATION APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING",
+  "engine_version": "1.0.0",
+  "accepted_roles": [
+    "USER",
+    "ANALYST",
+    "KNOWLEDGE_EDITOR",
+    "KNOWLEDGE_APPROVER",
+    "ADMINISTRATOR"
+  ],
+  "personas": [
+    {
+      "name": "Reporter",
+      "classification": "UX PERSONA ONLY",
+      "authorization_role": false
+    },
+    {
+      "name": "Reviewer",
+      "classification": "UX PERSONA ONLY",
+      "authorization_role": false
+    },
+    {
+      "name": "Operator",
+      "classification": "UX PERSONA ONLY",
+      "authorization_role": false
+    }
+  ],
+  "principles": [
+    {
+      "principle_id": "EXPLAINABLE",
+      "requirement": "Explainable over impressive."
+    },
+    {
+      "principle_id": "UNCERTAINTY",
+      "requirement": "Uncertainty must be visible."
+    },
+    {
+      "principle_id": "PROVENANCE",
+      "requirement": "Provenance must be distinguishable from interpretation."
+    },
+    {
+      "principle_id": "CERTAINTY",
+      "requirement": "UX must never imply more certainty than accepted contracts provide."
+    },
+    {
+      "principle_id": "INTENT",
+      "requirement": "Destructive and privileged actions require explicit intent."
+    },
+    {
+      "principle_id": "SENSITIVE_VISIBILITY",
+      "requirement": "Sensitive content visibility is permission-aware."
+    },
+    {
+      "principle_id": "BACKEND_AUTHORITY",
+      "requirement": "Backend authorization remains authoritative."
+    },
+    {
+      "principle_id": "HIDDEN_UI",
+      "requirement": "Hiding UI is not a security control."
+    },
+    {
+      "principle_id": "NO_SAFETY_INFERENCE",
+      "requirement": "Empty, loading and error states never imply safety."
+    },
+    {
+      "principle_id": "HISTORY",
+      "requirement": "Historical state must not silently become current state."
+    },
+    {
+      "principle_id": "PROVIDER_ASSERTIONS",
+      "requirement": "Provider assertions remain provider assertions."
+    },
+    {
+      "principle_id": "HUMAN_SYSTEM_SEPARATION",
+      "requirement": "System result and human adjudication remain separate."
+    }
+  ],
+  "mental_model": [
+    {
+      "concept_id": "Case",
+      "kind": "DATA_001",
+      "data_object": "Case",
+      "persisted_ux_entity": false,
+      "meaning": "Primary workspace/container for related activity; accepted lifecycle and resource authorization unchanged; no case-level verdict."
+    },
+    {
+      "concept_id": "Submission",
+      "kind": "DATA_001",
+      "data_object": "Submission",
+      "persisted_ux_entity": false,
+      "meaning": "Material presented in one submission act, separate from evidence, execution and result; content-bearing context follows the evidence boundary."
+    },
+    {
+      "concept_id": "EvidenceItem",
+      "kind": "DATA_001",
+      "data_object": "EvidenceItem",
+      "persisted_ux_entity": false,
+      "meaning": "Retained original material with integrity/custody provenance; metadata visibility does not grant content visibility."
+    },
+    {
+      "concept_id": "EvidenceDerivative",
+      "kind": "DATA_001",
+      "data_object": "EvidenceDerivative",
+      "persisted_ux_entity": false,
+      "meaning": "A governed transform with exact parent lineage; never replaces its original; no standalone derivative API surface is available."
+    },
+    {
+      "concept_id": "Evaluation",
+      "kind": "DATA_001",
+      "data_object": "Evaluation",
+      "persisted_ux_entity": false,
+      "meaning": "One governed analysis execution with its own historical context, exact input and pins."
+    },
+    {
+      "concept_id": "GovernedInputArtifact",
+      "kind": "DATA_001",
+      "data_object": "GovernedInputArtifact",
+      "persisted_ux_entity": false,
+      "meaning": "Exact governed input consumed by exactly one Evaluation; distinct from raw evidence and never ordinary editable user content; no standalone API editor or viewer."
+    },
+    {
+      "concept_id": "DetectionResult",
+      "kind": "DATA_001",
+      "data_object": "DetectionResultRecord",
+      "persisted_ux_entity": false,
+      "meaning": "Immutable completed deterministic result of one Evaluation; no edit, override or aggregate case verdict."
+    },
+    {
+      "concept_id": "Adjudication",
+      "kind": "DATA_001",
+      "data_object": "AnalystAdjudication",
+      "persisted_ux_entity": false,
+      "meaning": "Separate append-only human review/context of a pinned result; never overwrites that result; C4 rationale requires permission."
+    },
+    {
+      "concept_id": "Report",
+      "kind": "DATA_001",
+      "data_object": "ReportBundleRecord",
+      "persisted_ux_entity": false,
+      "meaning": "Report / ReportBundle revision with pinned sources; metadata and content are separate; format deferred to P7-WP5."
+    },
+    {
+      "concept_id": "Replay",
+      "kind": "DATA_001",
+      "data_object": "ReplayExecution",
+      "persisted_ux_entity": false,
+      "meaning": "Reproduce/verify the historical deterministic result from exact required historical material; not current analysis."
+    },
+    {
+      "concept_id": "ExternalEnrichment",
+      "kind": "DATA_001",
+      "data_object": "ExternalEnrichmentResult",
+      "persisted_ux_entity": false,
+      "meaning": "Advisory supporting provider assertions; no TrustLens verdict and no governed-artifact consumption."
+    },
+    {
+      "concept_id": "GovernedRemoval",
+      "kind": "DATA_001",
+      "data_object": "GovernedRemovalTombstone",
+      "persisted_ux_entity": false,
+      "meaning": "Content-free governed removal fact, where the API exposes it; distinct from ordinary not-found and never reconstruction of content."
+    },
+    {
+      "concept_id": "DeletionRequest",
+      "kind": "DATA_001",
+      "data_object": "DeletionRequest",
+      "persisted_ux_entity": false,
+      "meaning": "Governed request and server-confirmed outcome; completion is not inferred from an accepted request."
+    },
+    {
+      "concept_id": "ReviewItem",
+      "kind": "DATA_001",
+      "data_object": "ReviewRoutingState",
+      "persisted_ux_entity": false,
+      "meaning": "Content-free routing/assignment metadata; neither a detection score nor an adjudication."
+    },
+    {
+      "concept_id": "CaseAccessGrant",
+      "kind": "DATA_001",
+      "data_object": "CaseAccessGrant",
+      "persisted_ux_entity": false,
+      "meaning": "Accepted resource grant; metadata and content permission remain separate."
+    },
+    {
+      "concept_id": "BreakGlassGrant",
+      "kind": "DATA_001",
+      "data_object": "BreakGlassGrant",
+      "persisted_ux_entity": false,
+      "meaning": "Explicit scoped temporary administrator privilege with reason, audit and independent post-event review."
+    },
+    {
+      "concept_id": "AuditEvent",
+      "kind": "DATA_001",
+      "data_object": "AuditEventReference",
+      "persisted_ux_entity": false,
+      "meaning": "Governed accountability metadata; ordinary activity and telemetry never substitute for it."
+    },
+    {
+      "concept_id": "Principal",
+      "kind": "DATA_001",
+      "data_object": "PrincipalReference",
+      "persisted_ux_entity": false,
+      "meaning": "Authenticated caller reference from getMe; no client-authored identity authority."
+    },
+    {
+      "concept_id": "KnowledgeBundle",
+      "kind": "DATA_001",
+      "data_object": "KnowledgeBundleReference",
+      "persisted_ux_entity": false,
+      "meaning": "Exact governed bundle reference; no application rule authoring or database knowledge authority."
+    },
+    {
+      "concept_id": "KnowledgeActivation",
+      "kind": "DATA_001",
+      "data_object": "KnowledgeActivationRecord",
+      "persisted_ux_entity": false,
+      "meaning": "Accepted activation history metadata; historical pins do not become the current active bundle."
+    },
+    {
+      "concept_id": "Home",
+      "kind": "PRESENTATION_ONLY",
+      "data_object": null,
+      "persisted_ux_entity": false,
+      "meaning": "Navigation shell only; no workload aggregate or persisted dashboard object."
+    },
+    {
+      "concept_id": "Overview",
+      "kind": "PRESENTATION_ONLY",
+      "data_object": null,
+      "persisted_ux_entity": false,
+      "meaning": "Composition of permitted case metadata; not a new aggregate verdict."
+    },
+    {
+      "concept_id": "Activity",
+      "kind": "PRESENTATION_ONLY",
+      "data_object": null,
+      "persisted_ux_entity": false,
+      "meaning": "Summary of already permitted resource timestamps/statuses only; no invented activity-feed API or audit authority."
+    },
+    {
+      "concept_id": "History",
+      "kind": "PRESENTATION_ONLY",
+      "data_object": null,
+      "persisted_ux_entity": false,
+      "meaning": "Composition of permitted evaluation/report/adjudication records; no new history entity."
+    },
+    {
+      "concept_id": "SupportingContext",
+      "kind": "PRESENTATION_ONLY",
+      "data_object": null,
+      "persisted_ux_entity": false,
+      "meaning": "Presentation grouping of attributed advisory enrichment separate from the deterministic result."
+    },
+    {
+      "concept_id": "ReAnalysis",
+      "kind": "PRESENTATION_ONLY",
+      "data_object": null,
+      "persisted_ux_entity": false,
+      "meaning": "Task that creates a NEW Evaluation and NEW GovernedInputArtifact under current governed conditions; never overwrites history."
+    },
+    {
+      "concept_id": "SessionEntry",
+      "kind": "PRESENTATION_ONLY",
+      "data_object": null,
+      "persisted_ux_entity": false,
+      "meaning": "UI entry to the accepted external identity boundary; no invented login API or local credential store."
+    }
+  ],
+  "surface_categories": [
+    "NON_RESOURCE_SURFACE",
+    "COLLECTION",
+    "RESOURCE_WORKSPACE",
+    "RESOURCE_DETAIL",
+    "REVIEW_WORKSPACE",
+    "REPORTING",
+    "SUPPORTING_CONTEXT",
+    "PRIVILEGED_ACTION",
+    "AUDIT_ADMIN"
+  ],
+  "surfaces": [
+    {
+      "surface_id": "UX-SESSION",
+      "title": "Session / sign-in",
+      "category": "NON_RESOURCE_SURFACE",
+      "parent_surface_id": null,
+      "objects": [
+        "SessionEntry"
+      ],
+      "allowed_roles": [
+        "USER",
+        "ANALYST",
+        "KNOWLEDGE_EDITOR",
+        "KNOWLEDGE_APPROVER",
+        "ADMINISTRATOR"
+      ],
+      "resource_authorization_required": false,
+      "content_permission_required": "NONE",
+      "role_alone_sufficient": false,
+      "api_operations": [],
+      "operation_access": [],
+      "data_source": "NONE",
+      "sensitivity_behavior": {
+        "classes": [],
+        "metadata_implies_content": false,
+        "c4_default_visible": false,
+        "placeholder_content_free": true
+      },
+      "scope_note": "No TrustLens login operation; external OIDC boundary; browser session/CSRF choice deferred."
+    },
+    {
+      "surface_id": "UX-HOME",
+      "title": "Work overview",
+      "category": "NON_RESOURCE_SURFACE",
+      "parent_surface_id": null,
+      "objects": [
+        "Home"
+      ],
+      "allowed_roles": [
+        "USER",
+        "ANALYST",
+        "KNOWLEDGE_EDITOR",
+        "KNOWLEDGE_APPROVER",
+        "ADMINISTRATOR"
+      ],
+      "resource_authorization_required": false,
+      "content_permission_required": "NONE",
+      "role_alone_sufficient": false,
+      "api_operations": [],
+      "operation_access": [],
+      "data_source": "NONE",
+      "sensitivity_behavior": {
+        "classes": [],
+        "metadata_implies_content": false,
+        "c4_default_visible": false,
+        "placeholder_content_free": true
+      },
+      "scope_note": "Task navigation only; no aggregate work counters or cross-case content."
+    },
+    {
+      "surface_id": "UX-CASES",
+      "title": "Cases",
+      "category": "COLLECTION",
+      "parent_surface_id": "UX-HOME",
+      "objects": [
+        "Case"
+      ],
+      "allowed_roles": [
+        "USER",
+        "ANALYST"
+      ],
+      "resource_authorization_required": true,
+      "content_permission_required": "NONE",
+      "role_alone_sufficient": false,
+      "api_operations": [
+        "listCases",
+        "createCase"
+      ],
+      "operation_access": [
+        {
+          "operation_id": "listCases",
+          "roles": [
+            "USER",
+            "ANALYST"
+          ],
+          "resource_authorization": "CASE_ACCESS",
+          "sensitive_content_permission": "NONE",
+          "break_glass_roles": [],
+          "sensitivity": "C2",
+          "caller_constraints": []
+        },
+        {
+          "operation_id": "createCase",
+          "roles": [
+            "USER"
+          ],
+          "resource_authorization": "SELF",
+          "sensitive_content_permission": "NONE",
+          "break_glass_roles": [],
+          "sensitivity": "C2",
+          "caller_constraints": []
+        }
+      ],
+      "data_source": "API_ONLY",
+      "sensitivity_behavior": {
+        "classes": [
+          "C2"
+        ],
+        "metadata_implies_content": false,
+        "c4_default_visible": false,
+        "placeholder_content_free": true
+      },
+      "scope_note": "Permitted case metadata only; creating a case remains USER-only."
+    },
+    {
+      "surface_id": "UX-CASE",
+      "title": "Case workspace",
+      "category": "RESOURCE_WORKSPACE",
+      "parent_surface_id": "UX-CASES",
+      "objects": [
+        "Case",
+        "Overview",
+        "Activity"
+      ],
+      "allowed_roles": [
+        "USER",
+        "ANALYST"
+      ],
+      "resource_authorization_required": true,
+      "content_permission_required": "NONE",
+      "role_alone_sufficient": false,
+      "api_operations": [
+        "getCase",
+        "closeCase",
+        "reopenCase"
+      ],
+      "operation_access": [
+        {
+          "operation_id": "getCase",
+          "roles": [
+            "USER",
+            "ANALYST"
+          ],
+          "resource_authorization": "CASE_ACCESS",
+          "sensitive_content_permission": "NONE",
+          "break_glass_roles": [],
+          "sensitivity": "C2",
+          "caller_constraints": []
+        },
+        {
+          "operation_id": "closeCase",
+          "roles": [
+            "USER",
+            "ANALYST"
+          ],
+          "resource_authorization": "CASE_ACCESS",
+          "sensitive_content_permission": "NONE",
+          "break_glass_roles": [],
+          "sensitivity": "C2",
+          "caller_constraints": []
+        },
+        {
+          "operation_id": "reopenCase",
+          "roles": [
+            "USER",
+            "ANALYST"
+          ],
+          "resource_authorization": "CASE_ACCESS",
+          "sensitive_content_permission": "NONE",
+          "break_glass_roles": [],
+          "sensitivity": "C2",
+          "caller_constraints": []
+        }
+      ],
+      "data_source": "API_ONLY",
+      "sensitivity_behavior": {
+        "classes": [
+          "C2"
+        ],
+        "metadata_implies_content": false,
+        "c4_default_visible": false,
+        "placeholder_content_free": true
+      },
+      "scope_note": "No case verdict or free-text case-note editor; activity is permitted metadata composition."
+    },
+    {
+      "surface_id": "UX-SUBMISSION",
+      "title": "Submission detail",
+      "category": "RESOURCE_DETAIL",
+      "parent_surface_id": "UX-CASE",
+      "objects": [
+        "Submission"
+      ],
+      "allowed_roles": [
+        "USER",
+        "ANALYST"
+      ],
+      "resource_authorization_required": true,
+      "content_permission_required": "NONE",
+      "role_alone_sufficient": false,
+      "api_operations": [
+        "listSubmissions",
+        "getSubmission"
+      ],
+      "operation_access": [
+        {
+          "operation_id": "listSubmissions",
+          "roles": [
+            "USER",
+            "ANALYST"
+          ],
+          "resource_authorization": "CASE_ACCESS",
+          "sensitive_content_permission": "NONE",
+          "break_glass_roles": [],
+          "sensitivity": "C2",
+          "caller_constraints": []
+        },
+        {
+          "operation_id": "getSubmission",
+          "roles": [
+            "USER",
+            "ANALYST"
+          ],
+          "resource_authorization": "CASE_ACCESS",
+          "sensitive_content_permission": "NONE",
+          "break_glass_roles": [],
+          "sensitivity": "C2",
+          "caller_constraints": []
+        }
+      ],
+      "data_source": "API_ONLY",
+      "sensitivity_behavior": {
+        "classes": [
+          "C2"
+        ],
+        "metadata_implies_content": false,
+        "c4_default_visible": false,
+        "placeholder_content_free": true
+      },
+      "scope_note": "Intake details deferred to WP2; no content-bearing free text in submission metadata."
+    },
+    {
+      "surface_id": "UX-EVIDENCE-METADATA",
+      "title": "Evidence metadata",
+      "category": "RESOURCE_DETAIL",
+      "parent_surface_id": "UX-SUBMISSION",
+      "objects": [
+        "EvidenceItem"
+      ],
+      "allowed_roles": [
+        "USER",
+        "ANALYST"
+      ],
+      "resource_authorization_required": true,
+      "content_permission_required": "NONE",
+      "role_alone_sufficient": false,
+      "api_operations": [
+        "listEvidence",
+        "getEvidenceMetadata"
+      ],
+      "operation_access": [
+        {
+          "operation_id": "listEvidence",
+          "roles": [
+            "USER",
+            "ANALYST"
+          ],
+          "resource_authorization": "CASE_ACCESS",
+          "sensitive_content_permission": "NONE",
+          "break_glass_roles": [],
+          "sensitivity": "C2",
+          "caller_constraints": []
+        },
+        {
+          "operation_id": "getEvidenceMetadata",
+          "roles": [
+            "USER",
+            "ANALYST"
+          ],
+          "resource_authorization": "CASE_ACCESS",
+          "sensitive_content_permission": "NONE",
+          "break_glass_roles": [],
+          "sensitivity": "C2",
+          "caller_constraints": []
+        }
+      ],
+      "data_source": "API_ONLY",
+      "sensitivity_behavior": {
+        "classes": [
+          "C2"
+        ],
+        "metadata_implies_content": false,
+        "c4_default_visible": false,
+        "placeholder_content_free": true
+      },
+      "scope_note": "Metadata never includes evidence bytes or storage locators."
+    },
+    {
+      "surface_id": "UX-EVIDENCE-CONTENT",
+      "title": "Evidence content",
+      "category": "RESOURCE_DETAIL",
+      "parent_surface_id": "UX-EVIDENCE-METADATA",
+      "objects": [
+        "EvidenceItem"
+      ],
+      "allowed_roles": [
+        "USER",
+        "ANALYST"
+      ],
+      "resource_authorization_required": true,
+      "content_permission_required": "CONTENT_PERMISSION_REQUIRED",
+      "role_alone_sufficient": false,
+      "api_operations": [
+        "getEvidenceContent"
+      ],
+      "operation_access": [
+        {
+          "operation_id": "getEvidenceContent",
+          "roles": [
+            "USER",
+            "ANALYST"
+          ],
+          "resource_authorization": "CASE_EVIDENCE_CONTENT",
+          "sensitive_content_permission": "EVIDENCE_CONTENT",
+          "break_glass_roles": [
+            "ADMINISTRATOR"
+          ],
+          "sensitivity": "C3",
+          "caller_constraints": []
+        }
+      ],
+      "data_source": "API_ONLY",
+      "sensitivity_behavior": {
+        "classes": [
+          "C3"
+        ],
+        "metadata_implies_content": false,
+        "c4_default_visible": false,
+        "placeholder_content_free": true
+      },
+      "scope_note": "Application-mediated attachment download only; no inline raw rendering promised. ADMINISTRATOR needs accepted scoped break-glass."
+    },
+    {
+      "surface_id": "UX-EVALUATION",
+      "title": "Evaluation history / execution",
+      "category": "RESOURCE_DETAIL",
+      "parent_surface_id": "UX-CASE",
+      "objects": [
+        "Evaluation",
+        "GovernedInputArtifact",
+        "History",
+        "ReAnalysis"
+      ],
+      "allowed_roles": [
+        "USER",
+        "ANALYST"
+      ],
+      "resource_authorization_required": true,
+      "content_permission_required": "NONE",
+      "role_alone_sufficient": false,
+      "api_operations": [
+        "listCaseEvaluations",
+        "getEvaluation",
+        "createEvaluations"
+      ],
+      "operation_access": [
+        {
+          "operation_id": "listCaseEvaluations",
+          "roles": [
+            "USER",
+            "ANALYST"
+          ],
+          "resource_authorization": "CASE_ACCESS",
+          "sensitive_content_permission": "NONE",
+          "break_glass_roles": [],
+          "sensitivity": "C2",
+          "caller_constraints": []
+        },
+        {
+          "operation_id": "getEvaluation",
+          "roles": [
+            "USER",
+            "ANALYST"
+          ],
+          "resource_authorization": "CASE_ACCESS",
+          "sensitive_content_permission": "NONE",
+          "break_glass_roles": [],
+          "sensitivity": "C2",
+          "caller_constraints": []
+        },
+        {
+          "operation_id": "createEvaluations",
+          "roles": [
+            "USER",
+            "ANALYST"
+          ],
+          "resource_authorization": "CASE_ACCESS",
+          "sensitive_content_permission": "NONE",
+          "break_glass_roles": [],
+          "sensitivity": "C2",
+          "caller_constraints": []
+        }
+      ],
+      "data_source": "API_ONLY",
+      "sensitivity_behavior": {
+        "classes": [
+          "C2"
+        ],
+        "metadata_implies_content": false,
+        "c4_default_visible": false,
+        "placeholder_content_free": true
+      },
+      "scope_note": "Status and existing API provenance only; no raw governed artifact exposure; current analysis creates a new Evaluation."
+    },
+    {
+      "surface_id": "UX-RESULT",
+      "title": "Detection result",
+      "category": "RESOURCE_DETAIL",
+      "parent_surface_id": "UX-EVALUATION",
+      "objects": [
+        "DetectionResult"
+      ],
+      "allowed_roles": [
+        "USER",
+        "ANALYST"
+      ],
+      "resource_authorization_required": true,
+      "content_permission_required": "CONTENT_PERMISSION_REQUIRED",
+      "role_alone_sufficient": false,
+      "api_operations": [
+        "getDetectionResult"
+      ],
+      "operation_access": [
+        {
+          "operation_id": "getDetectionResult",
+          "roles": [
+            "USER",
+            "ANALYST"
+          ],
+          "resource_authorization": "CASE_DERIVED_CONTENT",
+          "sensitive_content_permission": "DERIVED_CONTENT",
+          "break_glass_roles": [],
+          "sensitivity": "C4",
+          "caller_constraints": []
+        }
+      ],
+      "data_source": "API_ONLY",
+      "sensitivity_behavior": {
+        "classes": [
+          "C4"
+        ],
+        "metadata_implies_content": false,
+        "c4_default_visible": false,
+        "placeholder_content_free": true
+      },
+      "scope_note": "STANDARD requires content permission; DETAILED additionally requires assigned ANALYST; no editing."
+    },
+    {
+      "surface_id": "UX-ADJUDICATION",
+      "title": "Human review history",
+      "category": "REVIEW_WORKSPACE",
+      "parent_surface_id": "UX-EVALUATION",
+      "objects": [
+        "Adjudication",
+        "History"
+      ],
+      "allowed_roles": [
+        "USER",
+        "ANALYST"
+      ],
+      "resource_authorization_required": true,
+      "content_permission_required": "FIELD_PERMISSION_REQUIRED",
+      "role_alone_sufficient": false,
+      "api_operations": [
+        "listAdjudications",
+        "getAdjudication",
+        "createAdjudication"
+      ],
+      "operation_access": [
+        {
+          "operation_id": "listAdjudications",
+          "roles": [
+            "USER",
+            "ANALYST"
+          ],
+          "resource_authorization": "CASE_ACCESS",
+          "sensitive_content_permission": "NONE",
+          "break_glass_roles": [],
+          "sensitivity": "C4",
+          "caller_constraints": []
+        },
+        {
+          "operation_id": "getAdjudication",
+          "roles": [
+            "USER",
+            "ANALYST"
+          ],
+          "resource_authorization": "CASE_ACCESS",
+          "sensitive_content_permission": "NONE",
+          "break_glass_roles": [],
+          "sensitivity": "C4",
+          "caller_constraints": []
+        },
+        {
+          "operation_id": "createAdjudication",
+          "roles": [
+            "ANALYST"
+          ],
+          "resource_authorization": "CASE_ASSIGNED_ANALYST",
+          "sensitive_content_permission": "DERIVED_CONTENT",
+          "break_glass_roles": [],
+          "sensitivity": "C4",
+          "caller_constraints": []
+        }
+      ],
+      "data_source": "API_ONLY",
+      "sensitivity_behavior": {
+        "classes": [
+          "C4"
+        ],
+        "metadata_implies_content": false,
+        "c4_default_visible": false,
+        "placeholder_content_free": true
+      },
+      "scope_note": "Outcome/time available per case access; rationale only for assigned ANALYST with content permission; create is separately restricted."
+    },
+    {
+      "surface_id": "UX-REPORTS",
+      "title": "Reports / history",
+      "category": "REPORTING",
+      "parent_surface_id": "UX-CASE",
+      "objects": [
+        "Report",
+        "History"
+      ],
+      "allowed_roles": [
+        "USER",
+        "ANALYST"
+      ],
+      "resource_authorization_required": true,
+      "content_permission_required": "NONE",
+      "role_alone_sufficient": false,
+      "api_operations": [
+        "listReports",
+        "getReport"
+      ],
+      "operation_access": [
+        {
+          "operation_id": "listReports",
+          "roles": [
+            "USER",
+            "ANALYST"
+          ],
+          "resource_authorization": "CASE_ACCESS",
+          "sensitive_content_permission": "NONE",
+          "break_glass_roles": [],
+          "sensitivity": "C2",
+          "caller_constraints": []
+        },
+        {
+          "operation_id": "getReport",
+          "roles": [
+            "USER",
+            "ANALYST"
+          ],
+          "resource_authorization": "CASE_ACCESS",
+          "sensitive_content_permission": "NONE",
+          "break_glass_roles": [],
+          "sensitivity": "C2",
+          "caller_constraints": []
+        }
+      ],
+      "data_source": "API_ONLY",
+      "sensitivity_behavior": {
+        "classes": [
+          "C2"
+        ],
+        "metadata_implies_content": false,
+        "c4_default_visible": false,
+        "placeholder_content_free": true
+      },
+      "scope_note": "Case-scoped report metadata; no global report collection endpoint."
+    },
+    {
+      "surface_id": "UX-REPORT-CONTENT",
+      "title": "Report generation / content",
+      "category": "REPORTING",
+      "parent_surface_id": "UX-REPORTS",
+      "objects": [
+        "Report"
+      ],
+      "allowed_roles": [
+        "USER",
+        "ANALYST"
+      ],
+      "resource_authorization_required": true,
+      "content_permission_required": "CONTENT_PERMISSION_REQUIRED",
+      "role_alone_sufficient": false,
+      "api_operations": [
+        "createReport",
+        "getReportContent"
+      ],
+      "operation_access": [
+        {
+          "operation_id": "createReport",
+          "roles": [
+            "USER",
+            "ANALYST"
+          ],
+          "resource_authorization": "CASE_DERIVED_CONTENT",
+          "sensitive_content_permission": "DERIVED_CONTENT",
+          "break_glass_roles": [],
+          "sensitivity": "C4",
+          "caller_constraints": []
+        },
+        {
+          "operation_id": "getReportContent",
+          "roles": [
+            "USER",
+            "ANALYST"
+          ],
+          "resource_authorization": "CASE_DERIVED_CONTENT",
+          "sensitive_content_permission": "DERIVED_CONTENT",
+          "break_glass_roles": [],
+          "sensitivity": "C4",
+          "caller_constraints": []
+        }
+      ],
+      "data_source": "API_ONLY",
+      "sensitivity_behavior": {
+        "classes": [
+          "C4"
+        ],
+        "metadata_implies_content": false,
+        "c4_default_visible": false,
+        "placeholder_content_free": true
+      },
+      "scope_note": "Derived content permission; no automatic transmission; exact pinned regeneration only."
+    },
+    {
+      "surface_id": "UX-REPLAY",
+      "title": "Historical verification",
+      "category": "SUPPORTING_CONTEXT",
+      "parent_surface_id": "UX-EVALUATION",
+      "objects": [
+        "Replay"
+      ],
+      "allowed_roles": [
+        "ANALYST",
+        "ADMINISTRATOR"
+      ],
+      "resource_authorization_required": true,
+      "content_permission_required": "NONE",
+      "role_alone_sufficient": false,
+      "api_operations": [
+        "createReplay",
+        "getReplay"
+      ],
+      "operation_access": [
+        {
+          "operation_id": "createReplay",
+          "roles": [
+            "ANALYST",
+            "ADMINISTRATOR"
+          ],
+          "resource_authorization": "CASE_ASSIGNED_ANALYST_OR_PLATFORM_ADMIN",
+          "sensitive_content_permission": "NONE",
+          "break_glass_roles": [],
+          "sensitivity": "C2",
+          "caller_constraints": []
+        },
+        {
+          "operation_id": "getReplay",
+          "roles": [
+            "ANALYST",
+            "ADMINISTRATOR"
+          ],
+          "resource_authorization": "CASE_ASSIGNED_ANALYST_OR_PLATFORM_ADMIN",
+          "sensitive_content_permission": "NONE",
+          "break_glass_roles": [],
+          "sensitivity": "C2",
+          "caller_constraints": []
+        }
+      ],
+      "data_source": "API_ONLY",
+      "sensitivity_behavior": {
+        "classes": [
+          "C2"
+        ],
+        "metadata_implies_content": false,
+        "c4_default_visible": false,
+        "placeholder_content_free": true
+      },
+      "scope_note": "Content-free outcomes/digests; administrator can enter through an authorized reference without access to the parent case."
+    },
+    {
+      "surface_id": "UX-REVIEW-QUEUE",
+      "title": "Review queue",
+      "category": "REVIEW_WORKSPACE",
+      "parent_surface_id": "UX-HOME",
+      "objects": [
+        "ReviewItem"
+      ],
+      "allowed_roles": [
+        "ANALYST"
+      ],
+      "resource_authorization_required": true,
+      "content_permission_required": "NONE",
+      "role_alone_sufficient": false,
+      "api_operations": [
+        "listReviewQueue"
+      ],
+      "operation_access": [
+        {
+          "operation_id": "listReviewQueue",
+          "roles": [
+            "ANALYST"
+          ],
+          "resource_authorization": "REVIEW_QUEUE",
+          "sensitive_content_permission": "NONE",
+          "break_glass_roles": [],
+          "sensitivity": "C2",
+          "caller_constraints": []
+        }
+      ],
+      "data_source": "API_ONLY",
+      "sensitivity_behavior": {
+        "classes": [
+          "C2"
+        ],
+        "metadata_implies_content": false,
+        "c4_default_visible": false,
+        "placeholder_content_free": true
+      },
+      "scope_note": "ANALYST-only content-free queue; deployment scope remains provisional under ASM-002."
+    },
+    {
+      "surface_id": "UX-ASSIGNMENT",
+      "title": "Review assignment",
+      "category": "PRIVILEGED_ACTION",
+      "parent_surface_id": "UX-HOME",
+      "objects": [
+        "ReviewItem",
+        "CaseAccessGrant"
+      ],
+      "allowed_roles": [
+        "ADMINISTRATOR"
+      ],
+      "resource_authorization_required": true,
+      "content_permission_required": "NONE",
+      "role_alone_sufficient": false,
+      "api_operations": [
+        "assignReview"
+      ],
+      "operation_access": [
+        {
+          "operation_id": "assignReview",
+          "roles": [
+            "ADMINISTRATOR"
+          ],
+          "resource_authorization": "PLATFORM_ADMIN",
+          "sensitive_content_permission": "NONE",
+          "break_glass_roles": [],
+          "sensitivity": "C2",
+          "caller_constraints": [
+            "ASSIGNEE_NOT_CALLER"
+          ]
+        }
+      ],
+      "data_source": "API_ONLY",
+      "sensitivity_behavior": {
+        "classes": [
+          "C2"
+        ],
+        "metadata_implies_content": false,
+        "c4_default_visible": false,
+        "placeholder_content_free": true
+      },
+      "scope_note": "Administrator command for an already-authorized target reference. No administrator queue-read or principal-directory API exists; target/ETag discovery is unresolved for WP4/API owner."
+    },
+    {
+      "surface_id": "UX-AUDIT",
+      "title": "Audit / accountability",
+      "category": "AUDIT_ADMIN",
+      "parent_surface_id": "UX-HOME",
+      "objects": [
+        "AuditEvent"
+      ],
+      "allowed_roles": [
+        "ADMINISTRATOR"
+      ],
+      "resource_authorization_required": true,
+      "content_permission_required": "NONE",
+      "role_alone_sufficient": false,
+      "api_operations": [
+        "listAuditEvents"
+      ],
+      "operation_access": [
+        {
+          "operation_id": "listAuditEvents",
+          "roles": [
+            "ADMINISTRATOR"
+          ],
+          "resource_authorization": "AUDIT_READ",
+          "sensitive_content_permission": "NONE",
+          "break_glass_roles": [],
+          "sensitivity": "C6",
+          "caller_constraints": []
+        }
+      ],
+      "data_source": "API_ONLY",
+      "sensitivity_behavior": {
+        "classes": [
+          "C6"
+        ],
+        "metadata_implies_content": false,
+        "c4_default_visible": false,
+        "placeholder_content_free": true
+      },
+      "scope_note": "Content-free governed audit; authorized administrator read is itself audited."
+    },
+    {
+      "surface_id": "UX-ENRICHMENT",
+      "title": "External supporting context",
+      "category": "SUPPORTING_CONTEXT",
+      "parent_surface_id": "UX-EVALUATION",
+      "objects": [
+        "ExternalEnrichment",
+        "SupportingContext"
+      ],
+      "allowed_roles": [
+        "ANALYST"
+      ],
+      "resource_authorization_required": true,
+      "content_permission_required": "NONE",
+      "role_alone_sufficient": false,
+      "api_operations": [
+        "listEvaluationEnrichments"
+      ],
+      "operation_access": [
+        {
+          "operation_id": "listEvaluationEnrichments",
+          "roles": [
+            "ANALYST"
+          ],
+          "resource_authorization": "CASE_ACCESS",
+          "sensitive_content_permission": "NONE",
+          "break_glass_roles": [],
+          "sensitivity": "C2",
+          "caller_constraints": []
+        }
+      ],
+      "data_source": "API_ONLY",
+      "sensitivity_behavior": {
+        "classes": [
+          "C2"
+        ],
+        "metadata_implies_content": false,
+        "c4_default_visible": false,
+        "placeholder_content_free": true
+      },
+      "scope_note": "ANALYST-only normalized advisory metadata; attribute provider category and observed time if returned; no raw provider body or invented provider identity field."
+    },
+    {
+      "surface_id": "UX-BREAK-GLASS",
+      "title": "Privileged evidence access",
+      "category": "PRIVILEGED_ACTION",
+      "parent_surface_id": "UX-HOME",
+      "objects": [
+        "BreakGlassGrant"
+      ],
+      "allowed_roles": [
+        "ADMINISTRATOR"
+      ],
+      "resource_authorization_required": true,
+      "content_permission_required": "NONE",
+      "role_alone_sufficient": false,
+      "api_operations": [
+        "createBreakGlassGrant",
+        "getBreakGlassGrant",
+        "endBreakGlassGrant",
+        "reviewBreakGlassGrant"
+      ],
+      "operation_access": [
+        {
+          "operation_id": "createBreakGlassGrant",
+          "roles": [
+            "ADMINISTRATOR"
+          ],
+          "resource_authorization": "BREAK_GLASS_SELF",
+          "sensitive_content_permission": "NONE",
+          "break_glass_roles": [],
+          "sensitivity": "C5",
+          "caller_constraints": []
+        },
+        {
+          "operation_id": "getBreakGlassGrant",
+          "roles": [
+            "ADMINISTRATOR"
+          ],
+          "resource_authorization": "BREAK_GLASS_GRANTEE_OR_PLATFORM_ADMIN",
+          "sensitive_content_permission": "NONE",
+          "break_glass_roles": [],
+          "sensitivity": "C5",
+          "caller_constraints": []
+        },
+        {
+          "operation_id": "endBreakGlassGrant",
+          "roles": [
+            "ADMINISTRATOR"
+          ],
+          "resource_authorization": "BREAK_GLASS_GRANTEE",
+          "sensitive_content_permission": "NONE",
+          "break_glass_roles": [],
+          "sensitivity": "C5",
+          "caller_constraints": []
+        },
+        {
+          "operation_id": "reviewBreakGlassGrant",
+          "roles": [
+            "ADMINISTRATOR"
+          ],
+          "resource_authorization": "BREAK_GLASS_REVIEWER",
+          "sensitive_content_permission": "NONE",
+          "break_glass_roles": [],
+          "sensitivity": "C5",
+          "caller_constraints": [
+            "REVIEWER_NOT_GRANTEE"
+          ]
+        }
+      ],
+      "data_source": "API_ONLY",
+      "sensitivity_behavior": {
+        "classes": [
+          "C5"
+        ],
+        "metadata_implies_content": false,
+        "c4_default_visible": false,
+        "placeholder_content_free": true
+      },
+      "scope_note": "Explicit reason, scope, temporary nature, audit and post-event review; no silent elevation; reviewer differs from grantee."
+    },
+    {
+      "surface_id": "UX-DELETION",
+      "title": "Governed removal requests",
+      "category": "PRIVILEGED_ACTION",
+      "parent_surface_id": "UX-HOME",
+      "objects": [
+        "DeletionRequest",
+        "GovernedRemoval"
+      ],
+      "allowed_roles": [
+        "USER",
+        "ADMINISTRATOR"
+      ],
+      "resource_authorization_required": true,
+      "content_permission_required": "NONE",
+      "role_alone_sufficient": false,
+      "api_operations": [
+        "createDeletionRequest",
+        "listDeletionRequests",
+        "getDeletionRequest",
+        "authorizeDeletionRequest",
+        "rejectDeletionRequest"
+      ],
+      "operation_access": [
+        {
+          "operation_id": "createDeletionRequest",
+          "roles": [
+            "USER"
+          ],
+          "resource_authorization": "DELETION_SCOPE_OWNER",
+          "sensitive_content_permission": "NONE",
+          "break_glass_roles": [],
+          "sensitivity": "C2",
+          "caller_constraints": []
+        },
+        {
+          "operation_id": "listDeletionRequests",
+          "roles": [
+            "USER",
+            "ADMINISTRATOR"
+          ],
+          "resource_authorization": "DELETION_SCOPE_OWNER_OR_PLATFORM_ADMIN",
+          "sensitive_content_permission": "NONE",
+          "break_glass_roles": [],
+          "sensitivity": "C2",
+          "caller_constraints": []
+        },
+        {
+          "operation_id": "getDeletionRequest",
+          "roles": [
+            "USER",
+            "ADMINISTRATOR"
+          ],
+          "resource_authorization": "DELETION_SCOPE_OWNER_OR_PLATFORM_ADMIN",
+          "sensitive_content_permission": "NONE",
+          "break_glass_roles": [],
+          "sensitivity": "C2",
+          "caller_constraints": []
+        },
+        {
+          "operation_id": "authorizeDeletionRequest",
+          "roles": [
+            "ADMINISTRATOR"
+          ],
+          "resource_authorization": "PLATFORM_ADMIN",
+          "sensitive_content_permission": "NONE",
+          "break_glass_roles": [],
+          "sensitivity": "C2",
+          "caller_constraints": []
+        },
+        {
+          "operation_id": "rejectDeletionRequest",
+          "roles": [
+            "ADMINISTRATOR"
+          ],
+          "resource_authorization": "PLATFORM_ADMIN",
+          "sensitive_content_permission": "NONE",
+          "break_glass_roles": [],
+          "sensitivity": "C2",
+          "caller_constraints": []
+        }
+      ],
+      "data_source": "API_ONLY",
+      "sensitivity_behavior": {
+        "classes": [
+          "C2"
+        ],
+        "metadata_implies_content": false,
+        "c4_default_visible": false,
+        "placeholder_content_free": true
+      },
+      "scope_note": "Owner request and administrator decision are different actions; no optimistic completion or numeric retention."
+    },
+    {
+      "surface_id": "UX-ACCESS-GRANTS",
+      "title": "Case access administration",
+      "category": "AUDIT_ADMIN",
+      "parent_surface_id": "UX-CASE",
+      "objects": [
+        "CaseAccessGrant"
+      ],
+      "allowed_roles": [
+        "USER",
+        "ADMINISTRATOR"
+      ],
+      "resource_authorization_required": true,
+      "content_permission_required": "NONE",
+      "role_alone_sufficient": false,
+      "api_operations": [
+        "listCaseAccessGrants",
+        "revokeCaseAccessGrant"
+      ],
+      "operation_access": [
+        {
+          "operation_id": "listCaseAccessGrants",
+          "roles": [
+            "USER",
+            "ADMINISTRATOR"
+          ],
+          "resource_authorization": "CASE_OWNER_OR_PLATFORM_ADMIN",
+          "sensitive_content_permission": "NONE",
+          "break_glass_roles": [],
+          "sensitivity": "C5",
+          "caller_constraints": []
+        },
+        {
+          "operation_id": "revokeCaseAccessGrant",
+          "roles": [
+            "ADMINISTRATOR"
+          ],
+          "resource_authorization": "PLATFORM_ADMIN",
+          "sensitive_content_permission": "NONE",
+          "break_glass_roles": [],
+          "sensitivity": "C5",
+          "caller_constraints": []
+        }
+      ],
+      "data_source": "API_ONLY",
+      "sensitivity_behavior": {
+        "classes": [
+          "C5"
+        ],
+        "metadata_implies_content": false,
+        "c4_default_visible": false,
+        "placeholder_content_free": true
+      },
+      "scope_note": "Content-free grants; owner may list, administrator may revoke; direct authorized entry does not grant parent case access."
+    },
+    {
+      "surface_id": "UX-ACCOUNT",
+      "title": "Account / role context",
+      "category": "RESOURCE_DETAIL",
+      "parent_surface_id": "UX-HOME",
+      "objects": [
+        "Principal"
+      ],
+      "allowed_roles": [
+        "USER",
+        "ANALYST",
+        "KNOWLEDGE_EDITOR",
+        "KNOWLEDGE_APPROVER",
+        "ADMINISTRATOR"
+      ],
+      "resource_authorization_required": true,
+      "content_permission_required": "NONE",
+      "role_alone_sufficient": false,
+      "api_operations": [
+        "getMe"
+      ],
+      "operation_access": [
+        {
+          "operation_id": "getMe",
+          "roles": [
+            "USER",
+            "ANALYST",
+            "KNOWLEDGE_EDITOR",
+            "KNOWLEDGE_APPROVER",
+            "ADMINISTRATOR"
+          ],
+          "resource_authorization": "SELF",
+          "sensitive_content_permission": "NONE",
+          "break_glass_roles": [],
+          "sensitivity": "C5",
+          "caller_constraints": []
+        }
+      ],
+      "data_source": "API_ONLY",
+      "sensitivity_behavior": {
+        "classes": [
+          "C5"
+        ],
+        "metadata_implies_content": false,
+        "c4_default_visible": false,
+        "placeholder_content_free": true
+      },
+      "scope_note": "Authenticated self summary only; no credential, role-editing or account-directory operation."
+    },
+    {
+      "surface_id": "UX-KNOWLEDGE",
+      "title": "Knowledge provenance / history",
+      "category": "SUPPORTING_CONTEXT",
+      "parent_surface_id": "UX-HOME",
+      "objects": [
+        "KnowledgeBundle",
+        "KnowledgeActivation",
+        "History"
+      ],
+      "allowed_roles": [
+        "ANALYST",
+        "KNOWLEDGE_EDITOR",
+        "KNOWLEDGE_APPROVER",
+        "ADMINISTRATOR"
+      ],
+      "resource_authorization_required": true,
+      "content_permission_required": "NONE",
+      "role_alone_sufficient": false,
+      "api_operations": [
+        "getActiveKnowledge",
+        "getKnowledgeBundle",
+        "listKnowledgeActivations"
+      ],
+      "operation_access": [
+        {
+          "operation_id": "getActiveKnowledge",
+          "roles": [
+            "ANALYST",
+            "KNOWLEDGE_EDITOR",
+            "KNOWLEDGE_APPROVER",
+            "ADMINISTRATOR"
+          ],
+          "resource_authorization": "KNOWLEDGE_READ",
+          "sensitive_content_permission": "NONE",
+          "break_glass_roles": [],
+          "sensitivity": "C1",
+          "caller_constraints": []
+        },
+        {
+          "operation_id": "getKnowledgeBundle",
+          "roles": [
+            "ANALYST",
+            "KNOWLEDGE_EDITOR",
+            "KNOWLEDGE_APPROVER",
+            "ADMINISTRATOR"
+          ],
+          "resource_authorization": "KNOWLEDGE_READ",
+          "sensitive_content_permission": "NONE",
+          "break_glass_roles": [],
+          "sensitivity": "C1",
+          "caller_constraints": []
+        },
+        {
+          "operation_id": "listKnowledgeActivations",
+          "roles": [
+            "KNOWLEDGE_EDITOR",
+            "KNOWLEDGE_APPROVER",
+            "ADMINISTRATOR"
+          ],
+          "resource_authorization": "KNOWLEDGE_READ",
+          "sensitive_content_permission": "NONE",
+          "break_glass_roles": [],
+          "sensitivity": "C2",
+          "caller_constraints": []
+        }
+      ],
+      "data_source": "API_ONLY",
+      "sensitivity_behavior": {
+        "classes": [
+          "C1",
+          "C2"
+        ],
+        "metadata_implies_content": false,
+        "c4_default_visible": false,
+        "placeholder_content_free": true
+      },
+      "scope_note": "Read-only permitted bundle identities and activation history; per-operation roles apply; no rule-body editing."
+    }
+  ],
+  "navigation": {
+    "basis": "USER_TASK",
+    "authorization_inherited_from_parent": false,
+    "ordinary_users_see_admin_navigation": false,
+    "entries": [
+      {
+        "label": "Cases",
+        "surface_id": "UX-CASES",
+        "placement": "PRIMARY"
+      },
+      {
+        "label": "Review queue",
+        "surface_id": "UX-REVIEW-QUEUE",
+        "placement": "PRIMARY"
+      },
+      {
+        "label": "Reports / history",
+        "surface_id": "UX-REPORTS",
+        "placement": "CASE_CONTEXT"
+      },
+      {
+        "label": "Audit / accountability",
+        "surface_id": "UX-AUDIT",
+        "placement": "AUTHORIZED_ONLY"
+      },
+      {
+        "label": "Knowledge provenance",
+        "surface_id": "UX-KNOWLEDGE",
+        "placement": "AUTHORIZED_ONLY"
+      },
+      {
+        "label": "Account",
+        "surface_id": "UX-ACCOUNT",
+        "placement": "SELF"
+      }
+    ],
+    "case_regions": [
+      "Overview",
+      "Submissions",
+      "Evidence",
+      "Evaluations",
+      "Adjudication / review history",
+      "Reports",
+      "Activity",
+      "External supporting context"
+    ]
+  },
+  "authorization": {
+    "backend_authoritative": true,
+    "hidden_ui_security_control": false,
+    "deny_by_default": true,
+    "role_and_resource": true,
+    "content_separate": true,
+    "administrator_content_by_role": false,
+    "analyst_creates_break_glass": false,
+    "self_assignment": "ASSIGNEE_NOT_CALLER",
+    "dual_role_exemption": false,
+    "c4_rationale_permission": "ASSIGNED_ANALYST_WITH_CONTENT_PERMISSION",
+    "field_visibility": {
+      "raw_evidence_content": {
+        "USER": "OWN_CASE",
+        "ANALYST": "IF_GRANTED_CONTENT",
+        "KNOWLEDGE_EDITOR": "HIDDEN",
+        "KNOWLEDGE_APPROVER": "HIDDEN",
+        "ADMINISTRATOR": "BREAK_GLASS_ONLY"
+      },
+      "evidence_metadata": {
+        "USER": "OWN_CASE",
+        "ANALYST": "ASSIGNED",
+        "KNOWLEDGE_EDITOR": "HIDDEN",
+        "KNOWLEDGE_APPROVER": "HIDDEN",
+        "ADMINISTRATOR": "HIDDEN"
+      },
+      "normalized_sensitive_content": {
+        "USER": "HIDDEN",
+        "ANALYST": "HIDDEN",
+        "KNOWLEDGE_EDITOR": "HIDDEN",
+        "KNOWLEDGE_APPROVER": "HIDDEN",
+        "ADMINISTRATOR": "HIDDEN"
+      },
+      "governed_observations": {
+        "USER": "HIDDEN",
+        "ANALYST": "IF_GRANTED_CONTENT",
+        "KNOWLEDGE_EDITOR": "HIDDEN",
+        "KNOWLEDGE_APPROVER": "HIDDEN",
+        "ADMINISTRATOR": "HIDDEN"
+      },
+      "result_decision_axes": {
+        "USER": "OWN_CASE",
+        "ANALYST": "ASSIGNED",
+        "KNOWLEDGE_EDITOR": "HIDDEN",
+        "KNOWLEDGE_APPROVER": "HIDDEN",
+        "ADMINISTRATOR": "HIDDEN"
+      },
+      "result_explanation_evidence_basis": {
+        "USER": "OWN_CASE",
+        "ANALYST": "IF_GRANTED_CONTENT",
+        "KNOWLEDGE_EDITOR": "HIDDEN",
+        "KNOWLEDGE_APPROVER": "HIDDEN",
+        "ADMINISTRATOR": "HIDDEN"
+      },
+      "per_rule_results": {
+        "USER": "HIDDEN",
+        "ANALYST": "IF_GRANTED_CONTENT",
+        "KNOWLEDGE_EDITOR": "HIDDEN",
+        "KNOWLEDGE_APPROVER": "HIDDEN",
+        "ADMINISTRATOR": "HIDDEN"
+      },
+      "knowledge_bundle_identity": {
+        "USER": "IN_OWN_RESULT_PROVENANCE",
+        "ANALYST": "VISIBLE",
+        "KNOWLEDGE_EDITOR": "VISIBLE",
+        "KNOWLEDGE_APPROVER": "VISIBLE",
+        "ADMINISTRATOR": "VISIBLE"
+      },
+      "provider_details": {
+        "USER": "HIDDEN",
+        "ANALYST": "NORMALIZED_ONLY",
+        "KNOWLEDGE_EDITOR": "HIDDEN",
+        "KNOWLEDGE_APPROVER": "HIDDEN",
+        "ADMINISTRATOR": "HIDDEN"
+      },
+      "adjudication_rationale": {
+        "USER": "HIDDEN",
+        "ANALYST": "IF_GRANTED_CONTENT",
+        "KNOWLEDGE_EDITOR": "HIDDEN",
+        "KNOWLEDGE_APPROVER": "HIDDEN",
+        "ADMINISTRATOR": "HIDDEN"
+      },
+      "audit_metadata": {
+        "USER": "HIDDEN",
+        "ANALYST": "HIDDEN",
+        "KNOWLEDGE_EDITOR": "HIDDEN",
+        "KNOWLEDGE_APPROVER": "HIDDEN",
+        "ADMINISTRATOR": "VISIBLE"
+      },
+      "principal_information": {
+        "USER": "SELF",
+        "ANALYST": "SELF",
+        "KNOWLEDGE_EDITOR": "SELF",
+        "KNOWLEDGE_APPROVER": "SELF",
+        "ADMINISTRATOR": "VISIBLE_NO_CREDENTIALS"
+      },
+      "secrets_and_keys": {
+        "USER": "HIDDEN",
+        "ANALYST": "HIDDEN",
+        "KNOWLEDGE_EDITOR": "HIDDEN",
+        "KNOWLEDGE_APPROVER": "HIDDEN",
+        "ADMINISTRATOR": "HIDDEN"
+      }
+    },
+    "break_glass": {
+      "explicit_intent": true,
+      "reason_required": true,
+      "scope_visible": true,
+      "temporary_visible": true,
+      "audit_visible": true,
+      "post_event_review": true,
+      "review_constraint": "REVIEWER_NOT_GRANTEE",
+      "silent_elevation": false
+    }
+  },
+  "semantics": {
+    "result_immutable": true,
+    "result_actions": [
+      "READ"
+    ],
+    "adjudication_separate": true,
+    "adjudication_overwrites_result": false,
+    "governed_input_editable": false,
+    "governed_input_equals_raw_evidence": false,
+    "case_aggregate_verdict": false,
+    "replay": {
+      "meaning": "EXACT_HISTORICAL_VERIFICATION",
+      "calls_ai": false,
+      "calls_provider": false,
+      "uses_latest": false,
+      "creates_evaluation": false,
+      "replaces_result": false,
+      "missing_material": "REPLAY_UNAVAILABLE"
+    },
+    "reanalysis": {
+      "meaning": "NEW_EVALUATION_CURRENT_GOVERNED_CONDITIONS",
+      "creates_new_evaluation": true,
+      "creates_new_governed_artifact": true,
+      "overwrites_history": false
+    },
+    "report": {
+      "pinned_sources": true,
+      "missing_material": "REPORT_REGENERATION_UNAVAILABLE",
+      "uses_latest": false,
+      "reconstructs_deleted_content": false,
+      "automatic_transmission": false
+    }
+  },
+  "presentation_states": [
+    {
+      "state_id": "LOADING",
+      "kind": "PRESENTATION_ONLY",
+      "api_error_codes": [],
+      "meaning": "Waiting for an authorized response; no provisional verdict.",
+      "implies_safe": false
+    },
+    {
+      "state_id": "EMPTY",
+      "kind": "PRESENTATION_ONLY",
+      "api_error_codes": [],
+      "meaning": "Nothing is available for this surface/query; no safety inference.",
+      "implies_safe": false
+    },
+    {
+      "state_id": "READY",
+      "kind": "PRESENTATION_ONLY",
+      "api_error_codes": [],
+      "meaning": "Authorized representation is available; readiness is not a verdict.",
+      "implies_safe": false
+    },
+    {
+      "state_id": "ACTION_PENDING",
+      "kind": "PRESENTATION_ONLY",
+      "api_error_codes": [
+        "IDEMPOTENCY_IN_PROGRESS"
+      ],
+      "meaning": "Accepted or executing work; no completion claim.",
+      "implies_safe": false
+    },
+    {
+      "state_id": "ACTION_FAILED",
+      "kind": "PRESENTATION_ONLY",
+      "api_error_codes": [
+        "INVALID_REQUEST"
+      ],
+      "meaning": "Action did not complete; preserve safe field errors without values.",
+      "implies_safe": false
+    },
+    {
+      "state_id": "AUTHENTICATION_REQUIRED",
+      "kind": "PRESENTATION_ONLY",
+      "api_error_codes": [
+        "UNAUTHENTICATED"
+      ],
+      "meaning": "Authentication boundary required.",
+      "implies_safe": false
+    },
+    {
+      "state_id": "ACCESS_DENIED",
+      "kind": "PRESENTATION_ONLY",
+      "api_error_codes": [
+        "FORBIDDEN"
+      ],
+      "meaning": "Operation refused; no protected content or invented reason.",
+      "implies_safe": false
+    },
+    {
+      "state_id": "CONTENT_PERMISSION_REQUIRED",
+      "kind": "PRESENTATION_ONLY",
+      "api_error_codes": [
+        "FORBIDDEN"
+      ],
+      "meaning": "Use only when authorized metadata establishes the separate content-permission restriction; otherwise ACCESS_DENIED.",
+      "implies_safe": false
+    },
+    {
+      "state_id": "NOT_FOUND_OR_NOT_VISIBLE",
+      "kind": "PRESENTATION_ONLY",
+      "api_error_codes": [
+        "NOT_FOUND"
+      ],
+      "meaning": "Preserve existence masking; do not disclose whether a hidden resource exists.",
+      "implies_safe": false
+    },
+    {
+      "state_id": "PRECONDITION_REQUIRED",
+      "kind": "PRESENTATION_ONLY",
+      "api_error_codes": [
+        "PRECONDITION_REQUIRED"
+      ],
+      "meaning": "Required concurrency precondition absent.",
+      "implies_safe": false
+    },
+    {
+      "state_id": "STALE_STATE",
+      "kind": "PRESENTATION_ONLY",
+      "api_error_codes": [
+        "PRECONDITION_FAILED"
+      ],
+      "meaning": "State changed; refresh permitted state; never silently overwrite.",
+      "implies_safe": false
+    },
+    {
+      "state_id": "CONFLICT",
+      "kind": "PRESENTATION_ONLY",
+      "api_error_codes": [
+        "CONFLICT",
+        "STATE_CONFLICT",
+        "IDEMPOTENCY_KEY_REUSED"
+      ],
+      "meaning": "Material conflict; distinguish safe backend code; do not resubmit blindly.",
+      "implies_safe": false
+    },
+    {
+      "state_id": "REMOVED_UNDER_GOVERNANCE",
+      "kind": "PRESENTATION_ONLY",
+      "api_error_codes": [
+        "REMOVED_UNDER_GOVERNANCE"
+      ],
+      "meaning": "Governed-unavailability state; 410 is distinct from ordinary 404 or empty; never recreate content.",
+      "implies_safe": false
+    },
+    {
+      "state_id": "TEMPORARILY_UNAVAILABLE",
+      "kind": "PRESENTATION_ONLY",
+      "api_error_codes": [
+        "DEPENDENCY_UNAVAILABLE"
+      ],
+      "meaning": "Dependency unavailable; no safety or completion inference.",
+      "implies_safe": false
+    },
+    {
+      "state_id": "UNSUPPORTED_INPUT",
+      "kind": "PRESENTATION_ONLY",
+      "api_error_codes": [
+        "UNSUPPORTED_MEDIA_TYPE"
+      ],
+      "meaning": "Unsupported capability, never benign; a completed UNSUPPORTED classification remains a result, not a transport failure.",
+      "implies_safe": false
+    },
+    {
+      "state_id": "REPLAY_UNAVAILABLE",
+      "kind": "PRESENTATION_ONLY",
+      "api_error_codes": [
+        "REPLAY_UNAVAILABLE"
+      ],
+      "meaning": "Required historical material unavailable; never latest substitution; separate permitted re-analysis may create a new Evaluation.",
+      "implies_safe": false
+    },
+    {
+      "state_id": "REPORT_REGENERATION_UNAVAILABLE",
+      "kind": "PRESENTATION_ONLY",
+      "api_error_codes": [
+        "REPORT_REGENERATION_UNAVAILABLE"
+      ],
+      "meaning": "Required pinned report source unavailable; never regenerate from latest.",
+      "implies_safe": false
+    },
+    {
+      "state_id": "INTEGRITY_ERROR",
+      "kind": "PRESENTATION_ONLY",
+      "api_error_codes": [
+        "INTEGRITY_FAILURE"
+      ],
+      "meaning": "Withhold unverified content; no result or safety inference.",
+      "implies_safe": false
+    },
+    {
+      "state_id": "SERVER_ERROR",
+      "kind": "PRESENTATION_ONLY",
+      "api_error_codes": [
+        "INTERNAL_ERROR"
+      ],
+      "meaning": "Safe server failure; distinct from integrity failure.",
+      "implies_safe": false
+    },
+    {
+      "state_id": "RATE_LIMITED",
+      "kind": "PRESENTATION_ONLY",
+      "api_error_codes": [
+        "RATE_LIMITED"
+      ],
+      "meaning": "Admission control; respect governed retry guidance; no invented countdown.",
+      "implies_safe": false
+    },
+    {
+      "state_id": "INPUT_LIMIT_EXCEEDED",
+      "kind": "PRESENTATION_ONLY",
+      "api_error_codes": [
+        "PAYLOAD_TOO_LARGE"
+      ],
+      "meaning": "Configured input bound exceeded; no invented limit value.",
+      "implies_safe": false
+    }
+  ],
+  "result_guardrails": {
+    "authority": "PHASE_3",
+    "categorical_axes": {
+      "classification": [
+        "NO_SCAM_PATTERN",
+        "INSUFFICIENT_EVIDENCE",
+        "SCAM_PATTERN_SUSPECTED",
+        "SCAM_PATTERN_DETECTED",
+        "UNSUPPORTED",
+        "ERROR"
+      ],
+      "decision_severity": [
+        "NONE",
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "CRITICAL"
+      ],
+      "matched_evidence_strength": [
+        "NONE",
+        "WEAK",
+        "MODERATE",
+        "STRONG"
+      ],
+      "risk_level": [
+        "NONE",
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "CRITICAL"
+      ],
+      "detection_confidence": [
+        "NOT_APPLICABLE",
+        "LOW",
+        "MEDIUM",
+        "HIGH"
+      ]
+    },
+    "probability_allowed": false,
+    "arbitrary_score_allowed": false,
+    "classification_meanings": {
+      "NO_SCAM_PATTERN": "NO_GOVERNED_PATTERN_MATCHED_NOT_SAFETY",
+      "INSUFFICIENT_EVIDENCE": "INSUFFICIENT_BASIS_NOT_SAFETY",
+      "UNSUPPORTED": "CANNOT_EVALUATE_NOT_SAFETY",
+      "ERROR": "ERROR_NOT_SAFETY",
+      "SCAM_PATTERN_SUSPECTED": "UNCERTAINTY_VISIBLE",
+      "SCAM_PATTERN_DETECTED": "NOT_LEGAL_GUILT"
+    },
+    "explanation_requirements": [
+      "OBSERVATIONS",
+      "GOVERNED_RULE_CONTRIBUTIONS",
+      "NEGATIVE_MITIGATING_INDICATORS",
+      "UNCERTAINTY",
+      "PROVENANCE",
+      "NEXT_ACTIONS"
+    ],
+    "provenance_distinctions": [
+      "USER_PROVIDED_MATERIAL",
+      "RETAINED_EVIDENCE",
+      "SYSTEM_DERIVED_OBSERVATIONS",
+      "AI_DERIVED_GOVERNED_OBSERVATIONS",
+      "EXTERNAL_PROVIDER_ASSERTIONS",
+      "DETERMINISTIC_RESULT",
+      "HUMAN_ADJUDICATION"
+    ]
+  },
+  "ai_guardrails": {
+    "direct_verdict": false,
+    "direct_override": false,
+    "bypass_rules": false,
+    "indirect_influence": "VALIDATED_GOVERNED_OBSERVATIONS_MAY_AFFECT_DETERMINISTIC_OUTPUT",
+    "never_influences_result": false,
+    "default_enabled": false
+  },
+  "enrichment_guardrails": {
+    "authority": "SUPPORTING_ADVISORY",
+    "primary_verdict": false,
+    "consumed_in_governed_artifact": false,
+    "provider_attribution_required": true,
+    "attribution_fields": [
+      "provider_category",
+      "observed_at"
+    ],
+    "api_view_fields": [
+      "enrichment_id",
+      "provider_category",
+      "status",
+      "reputation_result",
+      "observed_at",
+      "advisory"
+    ],
+    "outcome_meanings": {
+      "CLEAN": "PROVIDER_ASSERTION_NOT_TRUSTLENS_SAFETY",
+      "NOT_FOUND": "NO_PROVIDER_ENTRY_NOT_SAFETY",
+      "UNAVAILABLE": "PROVIDER_UNAVAILABLE_NOT_SAFETY"
+    },
+    "unsupported_outcome_detail": "NOT_FOUND and UNAVAILABLE are integration outcomes; current EnrichmentView exposes status and reputation_result only. Do not invent lookup_outcome or provider_ref response fields."
+  },
+  "unsupported_language": {
+    "benign_inference": false,
+    "classification": "UNSUPPORTED",
+    "detail_owner": "P7-WP6"
+  },
+  "accessibility": {
+    "keyboard_operable": true,
+    "logical_focus_order": true,
+    "visible_focus": true,
+    "semantic_headings_regions": true,
+    "colour_only_meaning": false,
+    "textual_status_equivalents": true,
+    "error_summary_field_association": true,
+    "screen_reader_control_labels": true,
+    "dynamic_announcements": true,
+    "mandatory_animation": false,
+    "certification_claim": false
+  },
+  "responsive": {
+    "capable": true,
+    "breakpoint_values": "NOT YET SPECIFIED",
+    "permission_parity": true,
+    "narrow_layout_exposes_hidden_content": false
+  },
+  "interaction": {
+    "destructive": {
+      "explicit_action": true,
+      "affected_resource_visible": true,
+      "consequence_visible": true,
+      "confirmation_where_appropriate": true,
+      "server_confirmed_outcome": true,
+      "optimistic_completion": false
+    },
+    "concurrency": {
+      "stale_visible": true,
+      "silent_overwrite": false,
+      "missing_precondition_distinct": true
+    },
+    "idempotency": {
+      "user_concept": "SAFE_RETRY",
+      "key_exposed": false,
+      "key_is_authorization": false
+    },
+    "asynchronous": {
+      "accepted_is_complete": false,
+      "pending_implies_safe": false,
+      "poll_accepted_resources": true,
+      "invented_progress_percentage": false
+    }
+  },
+  "exposure": {
+    "raw_provider_bodies": false,
+    "credentials_secrets": false,
+    "connector_topology": false,
+    "internal_hosts_ips": false,
+    "evidence_store_locators": false,
+    "raw_evidence_without_permission": false,
+    "c4_without_permission": false,
+    "execution_fence_tokens": false,
+    "idempotency_key_material": false,
+    "audit_equals_activity": false
+  },
+  "carryovers": {
+    "G-09": {
+      "status": "OPEN",
+      "owner": "Phase 10 (testing/evaluation; QA Lead) with Sponsor for any corpus access",
+      "reason": "No labelled real-world evaluation corpus."
+    },
+    "OI-05": {
+      "status": "OPEN",
+      "owner": "Sponsor + legal/governance",
+      "reason": "Retention and permitted residual metadata remain governed decisions; no numeric duration."
+    },
+    "ASM-002": {
+      "status": "UNCONFIRMED / PROVISIONAL",
+      "owner": "Sponsor / Programme",
+      "reason": "No tenancy authority; tenancy-sensitive implementation blocked as recorded by DATA-001-WP2."
+    },
+    "P6-WP7-LOW-1": {
+      "status": "OPEN / NON-BLOCKING",
+      "owner": "next governed Phase-6 snapshot revision / Programme governance",
+      "reason": "Four contract JSON Schemas are not included in the canonical 19-artifact hash snapshot; not fixed by P7-WP1."
+    }
+  },
+  "tenancy": {
+    "ux_enabled": false,
+    "organization_switcher_authority": false
+  },
+  "retention": {
+    "duration": "NOT YET SPECIFIED",
+    "numeric_duration_invented": false
+  },
+  "handoffs": [
+    {
+      "work_package": "P7-WP2",
+      "status": "NOT STARTED",
+      "owner": "Product / Intake UX",
+      "scope": [
+        "Submission flow",
+        "Evidence capture",
+        "Upload interaction",
+        "Evidence metadata preview",
+        "Submission progress",
+        "Capture errors",
+        "Supported consent/instruction copy"
+      ]
+    },
+    {
+      "work_package": "P7-WP3",
+      "status": "NOT STARTED",
+      "owner": "Product / Result UX",
+      "scope": [
+        "DetectionResult presentation",
+        "Classification labels",
+        "Risk/severity/confidence",
+        "Matched and indeterminate rules",
+        "Negative indicators",
+        "Uncertainty",
+        "Recommended actions",
+        "Explanation hierarchy"
+      ]
+    },
+    {
+      "work_package": "P7-WP4",
+      "status": "NOT STARTED",
+      "owner": "Product / Security UX",
+      "scope": [
+        "Evidence review",
+        "Content permission",
+        "Review queue",
+        "Assignment",
+        "Break-glass",
+        "Adjudication",
+        "C4 rationale",
+        "Audit access"
+      ]
+    },
+    {
+      "work_package": "P7-WP5",
+      "status": "NOT STARTED",
+      "owner": "Product / Reporting UX",
+      "scope": [
+        "Reports",
+        "Replay",
+        "Re-analysis",
+        "Governed deletion",
+        "410 removed",
+        "Replay unavailable",
+        "Report regeneration unavailable",
+        "Historical comparison"
+      ]
+    },
+    {
+      "work_package": "P7-WP6",
+      "status": "NOT STARTED",
+      "owner": "Product / Accessibility UX",
+      "scope": [
+        "Accessibility patterns",
+        "Unsupported language",
+        "Responsive behavior",
+        "External enrichment",
+        "Provider attribution",
+        "CLEAN / NOT_FOUND / UNAVAILABLE interpretation"
+      ]
+    },
+    {
+      "work_package": "P7-WP7",
+      "status": "NOT STARTED",
+      "owner": "Programme / Independent Reviewer",
+      "scope": [
+        "Integrated Phase-7 closure"
+      ]
+    }
+  ],
+  "claims": {
+    "frontend_implemented": false,
+    "api_implemented": false,
+    "production_ready": false,
+    "accessibility_compliant": false,
+    "detection_effectiveness": false,
+    "independently_reviewed": true,
+    "approved": true,
+    "later_wp_complete": false
+  },
+  "open_design_decisions": [
+    {
+      "decision": "Browser session / CSRF profile; accepted OIDC boundary unchanged",
+      "owner": "Phase 7 / Security Architect before browser implementation",
+      "status": "DEFERRED"
+    },
+    {
+      "decision": "User data export lacks an accepted API operation; no UX data-export surface",
+      "owner": "P7-WP5 / API owner; later governed API revision",
+      "status": "DEFERRED"
+    },
+    {
+      "decision": "Administrator assignment target and If-Match acquisition; no queue-read or principal-directory capability for administrator-only callers",
+      "owner": "P7-WP4 / API owner; resolve before detailed assignment workflow",
+      "status": "DEFERRED"
+    },
+    {
+      "decision": "Report format and source-pinned comparison",
+      "owner": "P7-WP5 / Reporting",
+      "status": "DEFERRED"
+    },
+    {
+      "decision": "Provider identity and detailed outcome attribution beyond current EnrichmentView",
+      "owner": "P7-WP6 / API owner; governed API revision if needed",
+      "status": "DEFERRED"
+    },
+    {
+      "decision": "Detailed intake, result, review and accessibility interactions",
+      "owner": "P7-WP2 through P7-WP6 owners",
+      "status": "DEFERRED"
+    },
+    {
+      "decision": "Breakpoints and responsive behavior",
+      "owner": "P7-WP6 / Accessibility UX",
+      "status": "DEFERRED"
+    }
+  ],
+  "evaluation_error_presentation": {
+    "error_code": "EVALUATION_NOT_COMPLETED",
+    "state_source_operation": "getEvaluation",
+    "state_source_schema": "EvaluationResponse",
+    "error_code_alone_sufficient": false,
+    "rules": [
+      {
+        "evaluation_state": "QUEUED",
+        "result_availability": "NOT_YET_AVAILABLE",
+        "presentation_state": "ACTION_PENDING"
+      },
+      {
+        "evaluation_state": "RUNNING",
+        "result_availability": "NOT_YET_AVAILABLE",
+        "presentation_state": "ACTION_PENDING"
+      },
+      {
+        "evaluation_state": "FAILED",
+        "result_availability": "NOT_PRODUCED",
+        "presentation_state": "ACTION_FAILED"
+      }
+    ],
+    "unresolved_context": "DO_NOT_INFER_PENDING_OR_FAILURE"
+  }
+}
