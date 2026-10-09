@@ -5,8 +5,8 @@
   "work_package": "P7-WP2",
   "baseline": "d16ee7a8fd65a0428a0cde7cc1dceb7bd166d528",
   "lifecycle": {
-    "state": "APPROVED",
-    "status": "P7-WP2 SUBMISSION INTAKE APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING",
+    "state": "CLOSED",
+    "status": "P7-WP2 SUBMISSION INTAKE CLOSED",
     "decision_vocabulary": [
       "APPROVE",
       "REQUEST_CHANGES"
@@ -94,7 +94,25 @@
       "record_reference": "GATE-027 §7",
       "reviewer_role": "Independent reviewer"
     },
-    "merge_evidence": null,
+    "merge_evidence": {
+      "repository": "nishanth-cryptos/TrustLens",
+      "pr_number": 35,
+      "pr_head_commit": "8eb1e3f8743adfd4b20ac674a8b3d525461496f0",
+      "merge_commit": "4567b9b0e7fc9be847ce0b1567ef6ef1ad77c51d",
+      "base_commit": "d16ee7a8fd65a0428a0cde7cc1dceb7bd166d528",
+      "remote_ci": {
+        "workflow": "knowledge-validation",
+        "checks": [
+          "Knowledge validation suite",
+          "Quality-gate self-test (gate must bite)"
+        ],
+        "conclusion": "success",
+        "pr_head_run_id": 37932022803,
+        "merge_commit_run_id": 37934882890
+      },
+      "verification": "INDEPENDENT_PROGRAMME_VERIFICATION",
+      "verification_reference": "GATE-027 §8"
+    },
     "static_verification_limit": "The offline validator checks structure, exact vocabulary, cross-record consistency and plausibility only; reviewer identity, PR, merge commit and CI runs must be independently verified against GitHub. CLOSED additionally requires the merge evidence to equal the independently verified record pinned in the validator by the governed post-merge step; until then CLOSED fails closed."
   },
   "engine_version": "1.0.0",
