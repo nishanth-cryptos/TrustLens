@@ -4,7 +4,7 @@
 | --- | --- |
 | Document ID | GATE-027 |
 | Version | 0.1 |
-| Status | P7-WP2 SUBMISSION INTAKE APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING |
+| Status | P7-WP2 SUBMISSION INTAKE CLOSED |
 | Phase / work package | Phase 7 — UX, Evidence & Reporting Design / P7-WP2 |
 | Owner role | Product / Intake UX |
 | Branch | phase7-wp2-submission-intake |
@@ -17,9 +17,10 @@
 ## 1. Gate reservation and boundary
 
 The builder confirmed GATE-027 and UX-002 were unused at the baseline. Following four review/correction rounds, the final
-independent review (§7) returned **APPROVE**; P7-WP2 is **APPROVED following independent review — remote CI + merge
-pending**. It is not merged and not CLOSED: CLOSED requires the verified PR merge and remote-CI evidence pinned by the
-governed post-merge step. P7-WP3 and later work packages are not started. This gate adds no API capability, persisted
+independent review (§7) returned **APPROVE**. PR #35 then merged with both required CI jobs successful on the PR-head and
+merge-commit runs, and the governed post-merge step (§8) recorded **P7-WP2 SUBMISSION INTAKE CLOSED**. Independent design
+approval (§7) and post-merge closure (§8) are separate records; no further review round was created for the closure.
+P7-WP3 and later work packages are not started. This gate adds no API capability, persisted
 concept, frontend or runtime.
 
 ## 2. Acceptance criteria
@@ -43,7 +44,7 @@ concept, frontend or runtime.
 | 15 | Lifecycle evidence exact and consistent; no premature approval or closure | UXI-06, UXI-59, UXI-60 | MET (builder) |
 | 16 | Validator, negative mutations and CI self-test defect bite | `validate_ux_intake.py`; fixtures; `ci_selftest.py` | MET (builder) |
 | 17 | Independent review | §6 rounds 1–4 REQUEST_CHANGES; §7 round 5 final review APPROVE (0/0/0/2/2) | **MET** |
-| 18 | Remote CI + merge | — | **PENDING** |
+| 18 | Remote CI + merge | §8 — PR #35 merged as `4567b9b`; runs 37932022803 (PR head) and 37934882890 (merge commit) success | **MET** |
 
 ## 3. Validation evidence (local builder)
 
@@ -60,9 +61,8 @@ accessibility-conformance or detection-effectiveness claim.
 
 ## 5. Decision
 
-**P7-WP2 SUBMISSION INTAKE APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING.** Recommendation: proceed to the P7-WP2 commit and PR. After the PR merges with successful remote CI, the governed
-post-merge step may pin the verified merge evidence and record P7-WP2 as CLOSED. Not merged, not closed; P7-WP3 not
-started.
+**P7-WP2 SUBMISSION INTAKE CLOSED.** P7-WP2 is closed as a design and contract deliverable: independently approved (§7) and merged with successful
+remote CI (§8). This is not an implemented intake application. P7-WP3 is not started.
 
 ## 6. Independent review record
 
@@ -162,3 +162,23 @@ UXI-69, UXI-74, UXI-77).
 | Carried (OPEN, non-blocking) | LOW-1 (P7-WP2 builder); LOW-2 (programme governance); INFO-1 (roadmap owner); INFO-2 (programme governance) |
 | Provenance | Independent review result supplied to the builder by the programme. No reviewer identity, external review URL, signed artifact, commit, PR or CI run is recorded here because none was supplied. |
 | Lifecycle effect | CANDIDATE → **APPROVED**; merge evidence absent, so CLOSED remains unavailable (fails closed) |
+
+## 8. Post-merge closure record
+
+| Item | Value |
+| --- | --- |
+| Repository | `nishanth-cryptos/TrustLens` |
+| PR | #35 — https://github.com/nishanth-cryptos/TrustLens/pull/35 — MERGED into `main` from `phase7-wp2-submission-intake` |
+| Original baseline | `d16ee7a8fd65a0428a0cde7cc1dceb7bd166d528` (P7-WP1 merge, PR #34) |
+| PR-head commit | `8eb1e3f8743adfd4b20ac674a8b3d525461496f0` |
+| Merge commit | `4567b9b0e7fc9be847ce0b1567ef6ef1ad77c51d` (merged 2026-10-09T13:09:42Z) |
+| Workflow | `knowledge-validation` (`.github/workflows/knowledge-validation.yml`) |
+| PR-head run | 37932022803 — event `pull_request`, head `8eb1e3f…`, completed / success — https://github.com/nishanth-cryptos/TrustLens/actions/runs/37932022803 |
+| Merge-commit run | 37934882890 (run number 68) — event `push`, branch `main`, head `4567b9b…`, completed / success — https://github.com/nishanth-cryptos/TrustLens/actions/runs/37934882890 |
+| Required jobs (both runs) | "Knowledge validation suite" — success; "Quality-gate self-test (gate must bite)" — success |
+| Closure rests on | Independent approval round 5 (§7); no later approval round exists |
+| Evidence source | Independent programme verification through the connected GitHub repository. Local git confirms the merge commit's parents (`d16ee7a…`, `8eb1e3f…`) and that `origin/main` equals `4567b9b…`; the builder's own GitHub API re-check was rate-limited and is not claimed |
+| Offline boundary | The validator pins this record (VERIFIED_MERGE_EVIDENCE) and requires the contract's merge evidence to match it exactly, with the workflow name taken from the repository's own workflow file; it cannot authenticate GitHub and does not contact it |
+| Workflow-name correction | The validator previously compared against "Knowledge validation"; GitHub's workflow name is `knowledge-validation` (the workflow file's `name:`). The check now derives the expected name from that file — still exact, not relaxed |
+| Lifecycle effect | APPROVED → **P7-WP2 SUBMISSION INTAKE CLOSED** |
+| Not implied | No production frontend, backend runtime, SQL migration or user-facing intake application exists; P7-WP3 not started |

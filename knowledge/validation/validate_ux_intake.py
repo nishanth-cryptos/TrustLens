@@ -732,10 +732,26 @@ UNSAFE_CLAIM = re.compile(r"evaluation (is |was )?(complete|completed|finished)|
 REPOSITORY = "nishanth-cryptos/TrustLens"
 BASELINE_PR = 34                      # P7-WP1 merge (PR #34) is the baseline; a P7-WP2 PR must be later
 RUN_ID_FLOOR = 37182107516            # recorded Phase-6 closure merge-commit run (PR #32); later runs are greater
-# Independently verified P7-WP2 merge record (Phase-6 P6C-05 precedent). It stays None until the governed post-merge
-# closure step pins values verified against GitHub (PR, head, merge commit, both CI runs). While None, CLOSED fails
-# closed: contract-recorded merge evidence alone — however plausible — never establishes closure.
-VERIFIED_MERGE_EVIDENCE = None
+# Independently verified P7-WP2 merge record (Phase-6 P6C-05 precedent), pinned by the governed post-merge closure step
+# from programme-verified GitHub evidence (PR #35, PR-head run 37932022803, merge-commit run 37934882890; GATE-027 §8).
+# Contract-recorded merge evidence that differs in any field never establishes closure. Offline validation cannot
+# authenticate GitHub; it checks exact agreement with this pinned, independently verified record.
+VERIFIED_MERGE_EVIDENCE = {
+    "repository": "nishanth-cryptos/TrustLens",
+    "pr_number": 35,
+    "pr_head_commit": "8eb1e3f8743adfd4b20ac674a8b3d525461496f0",
+    "merge_commit": "4567b9b0e7fc9be847ce0b1567ef6ef1ad77c51d",
+    "base_commit": "d16ee7a8fd65a0428a0cde7cc1dceb7bd166d528",
+    "remote_ci": {"workflow": "knowledge-validation",
+                  "checks": ["Knowledge validation suite", "Quality-gate self-test (gate must bite)"],
+                  "conclusion": "success", "pr_head_run_id": 37932022803, "merge_commit_run_id": 37934882890},
+    "verification": "INDEPENDENT_PROGRAMME_VERIFICATION",
+    "verification_reference": "GATE-027 §8",
+}
+# The independent approval that PR #35 merged (round 5, GATE-027 §7). CLOSED must rest on exactly this approval; review
+# rounds recorded after the merge cannot manufacture a different approval for the closed state.
+VERIFIED_CLOSURE_APPROVAL = {"round": 5, "decision": "APPROVE", "record_reference": "GATE-027 §7", "reviewer_role": "Independent reviewer"}
+WORKFLOW_FILE = ".github/workflows/knowledge-validation.yml"
 CI_CHECKS = ["Knowledge validation suite", "Quality-gate self-test (gate must bite)"]
 DECISIONS = {"APPROVE", "REQUEST_CHANGES"}
 FINDING_DISPOSITIONS = {"CORRECTED_PENDING_TARGETED_REREVIEW", "OPEN_CARRIED", "OPEN_INFORMATIONAL", "CLOSED_BY_REREVIEW"}
@@ -950,6 +966,7 @@ def load_inputs():
         api=read_json("contracts/api/api-v1.json"), openapi=read_json("contracts/api/openapi-v1.json"),
         persistence=read_json("contracts/postgresql/schema-v1.json"), foundation=read_json("contracts/ux/ux-foundation-v1.json"),
         operations=read_json("contracts/operations/operational-v1.json"), wp2_doc=read_text(WP2_DOC),
+        workflow=read_text(WORKFLOW_FILE),
         data_doc=read_text("docs/06-contracts/DATA-001-data-domain-lifecycle-contract.md"),
         adr0014=read_text("adr/ADR-0014-language-and-script-strategy.md"), engine=read_text("knowledge/runtime/engine.py"),
         snapshot=snapshot, hashes={p: hashlib.sha256((ROOT / p).read_bytes()).hexdigest() for p in hashed},
@@ -993,6 +1010,10 @@ def validate(ctx):
                 and all(isinstance(h["counts"][k], int) and h["counts"][k] >= 0 for k in ("BLOCKER", "HIGH", "MEDIUM", "LOW", "INFO"))
                 and (h["decision"] != "APPROVE" or all(h["counts"][k] == 0 for k in ("BLOCKER", "HIGH", "MEDIUM"))))
 
+    def workflow_name():
+        m = re.search(r"^name:\s*(\S+)\s*$", ctx["workflow"], re.M)
+        return m.group(1) if m else None
+
     def merge_evidence_ok(me):
         ci = me["remote_ci"]
         ref = re.fullmatch(r"GATE-027 §(\d+)", str(me.get("verification_reference")))
@@ -1001,7 +1022,7 @@ def validate(ctx):
         return (me["repository"] == REPOSITORY and me["base_commit"] == BASELINE
                 and isinstance(me["pr_number"], int) and not isinstance(me["pr_number"], bool) and me["pr_number"] > BASELINE_PR
                 and plausible_sha(me["pr_head_commit"], BASELINE) and plausible_sha(me["merge_commit"], BASELINE, me["pr_head_commit"])
-                and ci["workflow"] == "Knowledge validation" and ci["checks"] == CI_CHECKS and ci["conclusion"] == "success"
+                and ci["workflow"] == workflow_name() and ci["checks"] == CI_CHECKS and ci["conclusion"] == "success"
                 and all(isinstance(ci[k], int) and not isinstance(ci[k], bool) and ci[k] > RUN_ID_FLOOR
                         for k in ("pr_head_run_id", "merge_commit_run_id"))
                 and ci["merge_commit_run_id"] > ci["pr_head_run_id"]
@@ -1024,7 +1045,8 @@ def validate(ctx):
             return False
         if st == "APPROVED":
             return lc["merge_evidence"] is None
-        return lc["merge_evidence"] is not None and merge_evidence_ok(lc["merge_evidence"])
+        return (lc["merge_evidence"] is not None and merge_evidence_ok(lc["merge_evidence"])
+                and lc["approval"] == VERIFIED_CLOSURE_APPROVAL and hist[-1]["round"] == VERIFIED_CLOSURE_APPROVAL["round"])
 
     def phase6_api_pinned():
         pins = {a["path"]: a["sha256"] for a in ctx["snapshot"]["snapshot"]["artifacts"]}
@@ -1936,7 +1958,7 @@ def validate(ctx):
 
 
 TARGETS = {"contract", "schema", "doc", "gate", "api", "openapi", "persistence", "foundation", "adr0014", "engine",
-           "hashes", "runtime_files", "snapshot", "operations", "wp2_doc"}
+           "hashes", "runtime_files", "snapshot", "operations", "wp2_doc", "workflow"}
 
 
 def mutate(ctx, fixture):

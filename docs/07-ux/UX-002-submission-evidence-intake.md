@@ -4,7 +4,7 @@
 | --- | --- |
 | Document ID | UX-002 |
 | Version | 0.1 |
-| Status | P7-WP2 SUBMISSION INTAKE APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING |
+| Status | P7-WP2 SUBMISSION INTAKE CLOSED |
 | Phase | Phase 7 — UX, Evidence & Reporting Design |
 | Work package | P7-WP2 |
 | Owner role | Product / Intake UX |
@@ -18,7 +18,7 @@
 
 ## 1. Authority and scope
 
-UX-002 is the P7-WP2 UX contract, **approved following independent review** (remote CI and merge pending), for submitting suspicious material and preserving it as evidence. It
+UX-002 is the P7-WP2 UX contract, **approved following independent review and CLOSED after merge** (PR #35; GATE-027 §8), for submitting suspicious material and preserving it as evidence. It
 consumes, and changes nothing in, the closed Phase-6 contracts (PHASE-6-CLOSURE: PHASE 6 CLOSED), the accepted API
 catalog and OpenAPI encoding (exactly the bytes pinned by the Phase-6 snapshot), DATA-001 / DATA-001-WP2, ADR-0014 and
 the P7-WP1 foundation UX-001. It adds no endpoint, API field, HTTP status, error code, persisted concept, frontend,
@@ -31,13 +31,15 @@ checks are not independent review, usability testing, accessibility evaluation o
 
 ### Review history and lifecycle
 
-P7-WP2 is **APPROVED following independent review — remote CI + merge pending**; it is not CLOSED. The structured lifecycle in the machine contract is authoritative: approval requires an
+P7-WP2 is **CLOSED**: independently approved in round 5 (GATE-027 §7) and closed after PR #35 merged with both required CI jobs successful (GATE-027 §8). The structured lifecycle in the machine contract is authoritative: approval requires an
 exact `APPROVE` decision in the review history with BLOCKER/HIGH/MEDIUM 0 and a resolvable GATE-027 record; CLOSED
 additionally requires structured merge evidence (repository, base, PR, PR head, merge commit, both required CI jobs with
 run identifiers) that equals the independently verified record pinned in the validator by the governed post-merge step
 (the Phase-6 P6C-05 precedent); until that record exists, CLOSED fails closed. The offline validator checks structure,
 exact vocabulary, consistency and plausibility only — the truth of reviewer identity, PR, merge and CI runs must be
-independently verified against GitHub. No merge or CI result is claimed here. Round 2 (targeted re-review)
+independently verified against GitHub. The recorded merge evidence (PR #35, PR-head run 37932022803, merge-commit run
+37934882890) was verified by the programme and is pinned in the validator; the offline validator checks exact agreement
+with that pin and does not contact GitHub. Round 2 (targeted re-review)
 closed MEDIUM-1 and requested changes for three further MEDIUM findings (reconciliation, PROCESSING action eligibility,
 freshness/availability). Round 3 kept MEDIUM-1 closed and requested changes for the same three areas (identifier
 identity in reconciliation, readiness-witness binding and recovery prose, internal-lifecycle derivation and ordering);
