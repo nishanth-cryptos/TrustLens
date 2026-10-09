@@ -241,6 +241,20 @@ def d_ux_role_only_evidence_content(root: Path):
     return p, orig
 
 
+def d_ux_intake_finalized_is_evaluated(root: Path):
+    p = root / "contracts" / "ux" / "ux-intake-v1.json"
+    orig = p.read_bytes()
+    d = load(p)
+    state = next((s for s in d.get("upload_state_presentation", []) if s.get("api_upload_state") == "FINALIZED"), None)
+    if state is None or state.get("implies_evaluated") is not False:
+        raise RuntimeError("ci_selftest could not find the P7-WP2 FINALIZED upload-state presentation (renamed?)")
+    # P7-WP2-only defect: preserved (FINALIZED) evidence is presented as a completed evaluation. No other validator reads
+    # the intake contract and no accepted API / UX-001 artifact changes, so only the P7-WP2 gate (UXI-23) can bite.
+    state["implies_evaluated"] = True
+    dump(p, d)
+    return p, orig
+
+
 DEFECTS = [
     ("unknown indicator reference", d_unknown_indicator, "validate_rules.py"),
     ("invalid taxonomy ID", d_invalid_taxonomy, "validate_rules.py"),
@@ -257,6 +271,7 @@ DEFECTS = [
     ("case_record monotonic mutation revision removed (P6-WP6)", d_case_revision_removed, "validate_operational_contract.py"),
     ("pinned Phase-6 closure artifact digest corrupted (P6-WP7)", d_closure_digest_corrupted, "validate_phase6_closure.py"),
     ("evidence-content UX uses role-only access (P7-WP1)", d_ux_role_only_evidence_content, "validate_ux_foundation.py"),
+    ("FINALIZED evidence presented as a completed evaluation (P7-WP2)", d_ux_intake_finalized_is_evaluated, "validate_ux_intake.py"),
 ]
 
 

@@ -38,7 +38,8 @@ Order (dependency-aware, see ORDER below):
   Phase-6 external-enrichment integration contract (P6-WP5: static integration-contract validation) →
   Phase-6 operational / replay / persistence-follow-up contract (P6-WP6: static operational-contract validation) →
   Phase-6 integrated closure (P6-WP7: pinned-artifact snapshot + cross-contract closure validation) →
-  Phase-7 UX foundation (P7-WP1: conceptual surfaces + permission and presentation invariants)
+  Phase-7 UX foundation (P7-WP1: conceptual surfaces + permission and presentation invariants) →
+  Phase-7 submission and evidence intake (P7-WP2: intake journey, API traceability and safety invariants)
 
 Usage:
   python knowledge/validation/run_all.py             # human-readable; runs all; non-zero on any failure
@@ -120,6 +121,8 @@ ROOT = Path(__file__).resolve().parents[2]
 #  29 the Phase-6 P6-WP7 closure gate runs last of all: it recomputes the SHA-256 of every pinned canonical Phase-6 artifact
 #     against contracts/phase6/phase6-closure-v1.json and cross-checks the integrated final state of the contracts that
 #     checks 24-28 have just validated (merge evidence, invariants, open items, claim boundary, Phase-7 handoff). Static only.
+#  31 the Phase-7 P7-WP2 intake gate runs after the UX foundation (check 30) because it consumes UX-001's presentation
+#     states, surfaces and P7-WP2 handoff scope, plus the closed Phase-6 API catalog / OpenAPI. Static only.
 ORDER = [
     ("knowledge/validation/manual_evidence_check.py", "durable-truth: evidence integrity + automated-status preservation"),
     ("knowledge/validation/phase1_consistency_check.py", "Phase-1 counts consistent across manifest / taxonomy / matrix / corpus"),
@@ -151,6 +154,7 @@ ORDER = [
     ("knowledge/validation/validate_operational_contract.py", "Phase-6 P6-WP6 OPS-001 operational contract: durable API idempotency (scoped key digest, atomic claim, no response cache, finite window), monotonic mutation revisions on every If-Match aggregate, INT-001 enrichment persistence, enrichment/provider-policy/audit-read audit events, content-free tombstones, verified cross-store deletion, restore anti-resurrection, no-AI/no-provider/no-latest replay, provider-policy identity, listEvaluationEnrichments activation parity, runtime-parameter registry; offline scenarios; negative mutations must bite"),
     ("knowledge/validation/validate_phase6_closure.py", "Phase-6 P6-WP7 integrated closure: schema-valid closure manifest; P6-WP1..WP6 merge evidence (PRs #26-#31, exact merge SHAs, successor-baseline citations, recorded remote CI); SHA-256 snapshot of the canonical contract surface recomputed from exact bytes (drift fails); DATA/PostgreSQL coverage, API/OpenAPI 53/53 parity, enrichment activation, immutable DetectionResult, no invented decision fields, advisory enrichment, exact replay, deletion/restore, contract-level carryovers, ADR-0012/0011 Accepted, G-09/OI-05 OPEN, ASM-002 provisional, Phase 1 PARTIAL, no tenant/numeric invention, claim boundary, Phase-7 handoff; negative mutations must bite"),
     ("knowledge/validation/validate_ux_foundation.py", "Phase-7 P7-WP1 UX foundation: closed offline schema, accepted role/resource/content permissions, API-traced conceptual surfaces, immutable results, separate adjudication/replay/re-analysis, safe presentation semantics, accessibility foundations, owned handoffs and negative mutations; no frontend implementation"),
+    ("knowledge/validation/validate_ux_intake.py", "Phase-7 P7-WP2 submission and evidence intake: closed offline schema; scope equals the UX-001 P7-WP2 handoff; initiate -> raw-byte PUT -> finalize -> separate evaluation request with exact API/OpenAPI parity; every accepted error mapped to a UX-001 state with retryability-consistent recovery; upload/submission/evaluation states never imply evaluated or safe; metadata vs content boundary; server-authoritative identity; no invented limits, consent, score or verdict; lifecycle-aware status; negative mutations must bite"),
 ]
 
 # Network-capable modules a validator must never import — the offline guarantee (WP7 STEP 7).
