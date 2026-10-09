@@ -1,0 +1,3566 @@
+{
+  "contract_id": "UX-002",
+  "contract_version": "0.1",
+  "phase": "Phase 7 — UX, Evidence & Reporting Design",
+  "work_package": "P7-WP2",
+  "baseline": "d16ee7a8fd65a0428a0cde7cc1dceb7bd166d528",
+  "lifecycle": {
+    "state": "APPROVED",
+    "status": "P7-WP2 SUBMISSION INTAKE APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING",
+    "decision_vocabulary": [
+      "APPROVE",
+      "REQUEST_CHANGES"
+    ],
+    "review_history": [
+      {
+        "round": 1,
+        "kind": "INITIAL_INDEPENDENT_REVIEW",
+        "decision": "REQUEST_CHANGES",
+        "counts": {
+          "BLOCKER": 0,
+          "HIGH": 0,
+          "MEDIUM": 4,
+          "LOW": 2,
+          "INFO": 2
+        },
+        "reviewer_role": "Independent reviewer",
+        "record_reference": "GATE-027 §6",
+        "evidence_source": "Independent review result supplied to the builder by the programme"
+      },
+      {
+        "round": 2,
+        "kind": "TARGETED_INDEPENDENT_REREVIEW",
+        "decision": "REQUEST_CHANGES",
+        "counts": {
+          "BLOCKER": 0,
+          "HIGH": 0,
+          "MEDIUM": 3,
+          "LOW": 2,
+          "INFO": 2
+        },
+        "reviewer_role": "Independent reviewer",
+        "record_reference": "GATE-027 §6",
+        "evidence_source": "Independent review result supplied to the builder by the programme"
+      },
+      {
+        "round": 3,
+        "kind": "TARGETED_INDEPENDENT_REREVIEW",
+        "decision": "REQUEST_CHANGES",
+        "counts": {
+          "BLOCKER": 0,
+          "HIGH": 0,
+          "MEDIUM": 3,
+          "LOW": 2,
+          "INFO": 2
+        },
+        "reviewer_role": "Independent reviewer",
+        "record_reference": "GATE-027 §6",
+        "evidence_source": "Independent review result supplied to the builder by the programme"
+      },
+      {
+        "round": 4,
+        "kind": "TARGETED_INDEPENDENT_REREVIEW",
+        "decision": "REQUEST_CHANGES",
+        "counts": {
+          "BLOCKER": 0,
+          "HIGH": 0,
+          "MEDIUM": 1,
+          "LOW": 2,
+          "INFO": 2
+        },
+        "reviewer_role": "Independent reviewer",
+        "record_reference": "GATE-027 §6",
+        "evidence_source": "Independent review result supplied to the builder by the programme"
+      },
+      {
+        "round": 5,
+        "kind": "FINAL_INDEPENDENT_REVIEW",
+        "decision": "APPROVE",
+        "counts": {
+          "BLOCKER": 0,
+          "HIGH": 0,
+          "MEDIUM": 0,
+          "LOW": 2,
+          "INFO": 2
+        },
+        "reviewer_role": "Independent reviewer",
+        "record_reference": "GATE-027 §7",
+        "evidence_source": "Independent review result supplied to the builder by the programme"
+      }
+    ],
+    "approval": {
+      "round": 5,
+      "decision": "APPROVE",
+      "record_reference": "GATE-027 §7",
+      "reviewer_role": "Independent reviewer"
+    },
+    "merge_evidence": null,
+    "static_verification_limit": "The offline validator checks structure, exact vocabulary, cross-record consistency and plausibility only; reviewer identity, PR, merge commit and CI runs must be independently verified against GitHub. CLOSED additionally requires the merge evidence to equal the independently verified record pinned in the validator by the governed post-merge step; until then CLOSED fails closed."
+  },
+  "engine_version": "1.0.0",
+  "foundation": {
+    "document": "docs/07-ux/UX-001-experience-foundation-information-architecture.md",
+    "contract": "contracts/ux/ux-foundation-v1.json",
+    "gate": "GATE-026",
+    "foundation_handoff_scope": [
+      "Submission flow",
+      "Evidence capture",
+      "Upload interaction",
+      "Evidence metadata preview",
+      "Submission progress",
+      "Capture errors",
+      "Supported consent/instruction copy"
+    ],
+    "foundation_modified": false
+  },
+  "scope": {
+    "owned": [
+      "Submission flow",
+      "Evidence capture",
+      "Upload interaction",
+      "Evidence metadata preview",
+      "Submission progress",
+      "Capture errors",
+      "Supported consent/instruction copy"
+    ],
+    "deferred": [
+      {
+        "item": "Evidence-content viewing, content-permission flows and evidence review",
+        "owner": "P7-WP4"
+      },
+      {
+        "item": "DetectionResult presentation, classification labels, explanation and uncertainty",
+        "owner": "P7-WP3"
+      },
+      {
+        "item": "Re-analysis, retry-after-failure, user correction, replay and governed deletion of evidence",
+        "owner": "P7-WP5"
+      },
+      {
+        "item": "Detailed accessibility patterns, responsive breakpoints and the unsupported-language experience",
+        "owner": "P7-WP6"
+      },
+      {
+        "item": "External-enrichment presentation",
+        "owner": "P7-WP6"
+      }
+    ],
+    "scope_differences": [
+      "Evidence content access is limited to the metadata/content boundary statement; content viewing is P7-WP4 (UX-001 handoff).",
+      "Evaluation is covered only as the explicit initial analysis request and pending/terminal status hand-off; result presentation is P7-WP3.",
+      "Retry-after-failure, re-analysis and correction requests (predecessor_evaluation_id, createCorrection) are P7-WP5.",
+      "Consent capture has no accepted API field; only supported instruction requirements are specified.",
+      "roadmap.md lists only UX-001 / REPORT-001 for Phase 7; the accepted UX-001 work-package decomposition governs."
+    ]
+  },
+  "domain_separation": {
+    "concepts": [
+      {
+        "concept": "Case",
+        "data_object": "Case",
+        "meaning": "Container and access scope; created empty; no verdict."
+      },
+      {
+        "concept": "Submission",
+        "data_object": "Submission",
+        "meaning": "One act of presenting material; categorical metadata only; not evidence, not an evaluation."
+      },
+      {
+        "concept": "EvidenceItem",
+        "data_object": "EvidenceItem",
+        "meaning": "One original artifact with server-computed SHA-256 and custody metadata; bytes immutable once stored."
+      },
+      {
+        "concept": "EvidenceDerivative",
+        "data_object": "EvidenceDerivative",
+        "meaning": "Server-produced transform with exact lineage; not created, uploaded or shown by intake."
+      },
+      {
+        "concept": "Evaluation",
+        "data_object": "Evaluation",
+        "meaning": "One governed analysis execution requested separately after evidence is finalized."
+      }
+    ],
+    "submission_is_evidence": false,
+    "upload_success_is_evaluation": false,
+    "finalized_evidence_is_evaluated": false,
+    "evaluation_accepted_is_result": false,
+    "submission_processed_is_result": false,
+    "derivative_created_by_client": false,
+    "derivative_api_surface": false,
+    "case_level_verdict": false,
+    "evaluations_per_envelope": "ONE_PER_GOVERNED_INPUT_ENVELOPE"
+  },
+  "materials": [
+    {
+      "material_id": "MESSAGE_TEXT",
+      "artifact_kind": "TEXT_BODY",
+      "declared_input_types": [
+        "TEXT",
+        "SMS",
+        "CHAT_MESSAGE"
+      ],
+      "media_type": "text/plain; charset=utf-8",
+      "availability": "MVP",
+      "offered": true,
+      "fetched_or_executed": false
+    },
+    {
+      "material_id": "URL",
+      "artifact_kind": "URL",
+      "declared_input_types": [
+        "URL"
+      ],
+      "media_type": "text/uri-list",
+      "availability": "MVP",
+      "offered": true,
+      "fetched_or_executed": false
+    },
+    {
+      "material_id": "EMAIL_SOURCE",
+      "artifact_kind": "EMAIL_SOURCE",
+      "declared_input_types": [
+        "EMAIL"
+      ],
+      "media_type": "ACCEPTED_TYPE_CONFIGURATION_NOT_YET_SPECIFIED",
+      "availability": "MVP",
+      "offered": true,
+      "fetched_or_executed": false
+    },
+    {
+      "material_id": "USER_CONTEXT",
+      "artifact_kind": "OTHER",
+      "declared_input_types": [],
+      "media_type": "application/vnd.trustlens.user-context+json",
+      "availability": "MVP",
+      "offered": true,
+      "fetched_or_executed": false
+    },
+    {
+      "material_id": "SCREENSHOT_IMAGE",
+      "artifact_kind": "IMAGE",
+      "declared_input_types": [],
+      "media_type": "ACCEPTED_TYPE_CONFIGURATION_NOT_YET_SPECIFIED",
+      "availability": "POST_MVP",
+      "offered": false,
+      "fetched_or_executed": false
+    },
+    {
+      "material_id": "DOCUMENT",
+      "artifact_kind": "DOCUMENT",
+      "declared_input_types": [],
+      "media_type": "ACCEPTED_TYPE_CONFIGURATION_NOT_YET_SPECIFIED",
+      "availability": "FUTURE",
+      "offered": false,
+      "fetched_or_executed": false
+    }
+  ],
+  "surfaces": [
+    {
+      "surface_id": "UX-INTAKE-COMPOSE",
+      "title": "Submission composer",
+      "category": "RESOURCE_WORKSPACE",
+      "parent_surface_id": "UX-CASE",
+      "api_operations": [
+        "createSubmission"
+      ],
+      "data_source": "API_ONLY",
+      "content_permission_required": "NONE",
+      "resource_authorization_required": true,
+      "role_alone_sufficient": false
+    },
+    {
+      "surface_id": "UX-INTAKE-EVIDENCE",
+      "title": "Evidence capture and upload",
+      "category": "RESOURCE_DETAIL",
+      "parent_surface_id": "UX-INTAKE-COMPOSE",
+      "api_operations": [
+        "createEvidenceUpload",
+        "putEvidenceContent",
+        "finalizeEvidence",
+        "getEvidenceMetadata"
+      ],
+      "data_source": "API_ONLY",
+      "content_permission_required": "UPLOAD_OWN_CONTENT_ONLY",
+      "resource_authorization_required": true,
+      "role_alone_sufficient": false
+    },
+    {
+      "surface_id": "UX-INTAKE-PROGRESS",
+      "title": "Submission progress and analysis request",
+      "category": "RESOURCE_DETAIL",
+      "parent_surface_id": "UX-INTAKE-COMPOSE",
+      "api_operations": [
+        "getSubmission",
+        "listEvidence",
+        "createEvaluations",
+        "getEvaluation"
+      ],
+      "data_source": "API_ONLY",
+      "content_permission_required": "NONE",
+      "resource_authorization_required": true,
+      "role_alone_sufficient": false
+    }
+  ],
+  "journey": [
+    {
+      "step_id": "INT-S01",
+      "user_action": "Start or choose a case",
+      "surface_id": "UX-CASES",
+      "operation_id": "createCase",
+      "method": "POST",
+      "path": "/api/v1/cases",
+      "success_status": 201,
+      "mode": "SYNC",
+      "idempotency": "REQUIRED",
+      "roles": [
+        "USER"
+      ],
+      "resource_authorization": "SELF",
+      "sensitive_content_permission": "NONE",
+      "sensitivity": "C2",
+      "request_schema": "CaseCreateRequest",
+      "response_schema": "CaseResponse",
+      "success_outcome": "A new empty case exists (or an existing permitted case is chosen through listCases / getCase).",
+      "completion_claim": "NONE",
+      "errors": [
+        {
+          "error_code": "DEPENDENCY_UNAVAILABLE",
+          "http_status": 503,
+          "retryability": "RETRYABLE",
+          "presentation_state": "TEMPORARILY_UNAVAILABLE",
+          "recovery": "RETRY_SAME_REQUEST",
+          "idempotency_key_handling": "SAME_KEY_SAME_REQUEST"
+        },
+        {
+          "error_code": "IDEMPOTENCY_IN_PROGRESS",
+          "http_status": 409,
+          "retryability": "RETRYABLE",
+          "presentation_state": "ACTION_PENDING",
+          "recovery": "WAIT_THEN_RETRY_SAME_REQUEST",
+          "idempotency_key_handling": "SAME_KEY_SAME_REQUEST"
+        },
+        {
+          "error_code": "IDEMPOTENCY_KEY_REUSED",
+          "http_status": 409,
+          "retryability": "RETRY_WITH_CHANGES",
+          "presentation_state": "CONFLICT",
+          "recovery": "REFRESH_AUTHORITATIVE_STATE",
+          "idempotency_key_handling": "NO_RESUBMISSION"
+        },
+        {
+          "error_code": "INTERNAL_ERROR",
+          "http_status": 500,
+          "retryability": "RETRYABLE",
+          "presentation_state": "SERVER_ERROR",
+          "recovery": "RETRY_SAME_REQUEST",
+          "idempotency_key_handling": "SAME_KEY_SAME_REQUEST"
+        },
+        {
+          "error_code": "INVALID_REQUEST",
+          "http_status": 400,
+          "retryability": "RETRY_WITH_CHANGES",
+          "presentation_state": "ACTION_FAILED",
+          "recovery": "CORRECT_INPUT_AS_NEW_ATTEMPT",
+          "idempotency_key_handling": "NEW_KEY_CORRECTED_REQUEST"
+        },
+        {
+          "error_code": "RATE_LIMITED",
+          "http_status": 429,
+          "retryability": "RETRYABLE",
+          "presentation_state": "RATE_LIMITED",
+          "recovery": "WAIT_THEN_RETRY_SAME_REQUEST",
+          "idempotency_key_handling": "SAME_KEY_SAME_REQUEST"
+        },
+        {
+          "error_code": "UNAUTHENTICATED",
+          "http_status": 401,
+          "retryability": "RETRY_WITH_CHANGES",
+          "presentation_state": "AUTHENTICATION_REQUIRED",
+          "recovery": "REAUTHENTICATE_SAME_PRINCIPAL_THEN_RETRY_SAME_REQUEST",
+          "idempotency_key_handling": "SAME_KEY_SAME_REQUEST"
+        }
+      ],
+      "success_presentation": {
+        "rule": "RENDER_RETURNED_AUTHORITATIVE_STATE",
+        "response_schema": "CaseResponse",
+        "state_field": "state",
+        "collection_field": null,
+        "state_table": "case_state_presentation",
+        "state_vocabulary": "api_case_state",
+        "companion_field": null,
+        "expected_initial_state_informational": "OPEN",
+        "http_success_implies_expected_state": false,
+        "missing_or_unrecognised_state": "STATE_UNKNOWN_RECONCILE",
+        "companion_required": false,
+        "inconsistent_combination": null
+      }
+    },
+    {
+      "step_id": "INT-S02",
+      "user_action": "Declare the submission (categorical metadata only)",
+      "surface_id": "UX-INTAKE-COMPOSE",
+      "operation_id": "createSubmission",
+      "method": "POST",
+      "path": "/api/v1/cases/{case_id}/submissions",
+      "success_status": 201,
+      "mode": "SYNC",
+      "idempotency": "REQUIRED",
+      "roles": [
+        "USER"
+      ],
+      "resource_authorization": "CASE_OWNER",
+      "sensitive_content_permission": "NONE",
+      "sensitivity": "C2",
+      "request_schema": "SubmissionCreateRequest",
+      "response_schema": "SubmissionResponse",
+      "success_outcome": "A submission identity exists; no content has been sent yet.",
+      "completion_claim": "NONE",
+      "errors": [
+        {
+          "error_code": "DEPENDENCY_UNAVAILABLE",
+          "http_status": 503,
+          "retryability": "RETRYABLE",
+          "presentation_state": "TEMPORARILY_UNAVAILABLE",
+          "recovery": "RETRY_SAME_REQUEST",
+          "idempotency_key_handling": "SAME_KEY_SAME_REQUEST"
+        },
+        {
+          "error_code": "FORBIDDEN",
+          "http_status": 403,
+          "retryability": "NOT_RETRYABLE",
+          "presentation_state": "ACCESS_DENIED",
+          "recovery": "STOP_NO_BLIND_RETRY",
+          "idempotency_key_handling": "NO_RESUBMISSION"
+        },
+        {
+          "error_code": "IDEMPOTENCY_IN_PROGRESS",
+          "http_status": 409,
+          "retryability": "RETRYABLE",
+          "presentation_state": "ACTION_PENDING",
+          "recovery": "WAIT_THEN_RETRY_SAME_REQUEST",
+          "idempotency_key_handling": "SAME_KEY_SAME_REQUEST"
+        },
+        {
+          "error_code": "IDEMPOTENCY_KEY_REUSED",
+          "http_status": 409,
+          "retryability": "RETRY_WITH_CHANGES",
+          "presentation_state": "CONFLICT",
+          "recovery": "REFRESH_AUTHORITATIVE_STATE",
+          "idempotency_key_handling": "NO_RESUBMISSION"
+        },
+        {
+          "error_code": "INTERNAL_ERROR",
+          "http_status": 500,
+          "retryability": "RETRYABLE",
+          "presentation_state": "SERVER_ERROR",
+          "recovery": "RETRY_SAME_REQUEST",
+          "idempotency_key_handling": "SAME_KEY_SAME_REQUEST"
+        },
+        {
+          "error_code": "INVALID_REQUEST",
+          "http_status": 400,
+          "retryability": "RETRY_WITH_CHANGES",
+          "presentation_state": "ACTION_FAILED",
+          "recovery": "CORRECT_INPUT_AS_NEW_ATTEMPT",
+          "idempotency_key_handling": "NEW_KEY_CORRECTED_REQUEST"
+        },
+        {
+          "error_code": "NOT_FOUND",
+          "http_status": 404,
+          "retryability": "NOT_RETRYABLE",
+          "presentation_state": "NOT_FOUND_OR_NOT_VISIBLE",
+          "recovery": "STOP_NO_BLIND_RETRY",
+          "idempotency_key_handling": "NO_RESUBMISSION"
+        },
+        {
+          "error_code": "RATE_LIMITED",
+          "http_status": 429,
+          "retryability": "RETRYABLE",
+          "presentation_state": "RATE_LIMITED",
+          "recovery": "WAIT_THEN_RETRY_SAME_REQUEST",
+          "idempotency_key_handling": "SAME_KEY_SAME_REQUEST"
+        },
+        {
+          "error_code": "STATE_CONFLICT",
+          "http_status": 409,
+          "retryability": "NOT_RETRYABLE",
+          "presentation_state": "CONFLICT",
+          "recovery": "REFRESH_AUTHORITATIVE_STATE",
+          "idempotency_key_handling": "NO_RESUBMISSION"
+        },
+        {
+          "error_code": "UNAUTHENTICATED",
+          "http_status": 401,
+          "retryability": "RETRY_WITH_CHANGES",
+          "presentation_state": "AUTHENTICATION_REQUIRED",
+          "recovery": "REAUTHENTICATE_SAME_PRINCIPAL_THEN_RETRY_SAME_REQUEST",
+          "idempotency_key_handling": "SAME_KEY_SAME_REQUEST"
+        }
+      ],
+      "success_presentation": {
+        "rule": "RENDER_RETURNED_AUTHORITATIVE_STATE",
+        "response_schema": "SubmissionResponse",
+        "state_field": "state",
+        "collection_field": null,
+        "state_table": "submission_state_presentation",
+        "state_vocabulary": "api_submission_state",
+        "companion_field": null,
+        "expected_initial_state_informational": "RECEIVING",
+        "http_success_implies_expected_state": false,
+        "missing_or_unrecognised_state": "STATE_UNKNOWN_RECONCILE",
+        "companion_required": false,
+        "inconsistent_combination": null
+      }
+    },
+    {
+      "step_id": "INT-S03",
+      "user_action": "Initiate one evidence item per material",
+      "surface_id": "UX-INTAKE-EVIDENCE",
+      "operation_id": "createEvidenceUpload",
+      "method": "POST",
+      "path": "/api/v1/submissions/{submission_id}/evidence",
+      "success_status": 201,
+      "mode": "SYNC",
+      "idempotency": "REQUIRED",
+      "roles": [
+        "USER"
+      ],
+      "resource_authorization": "CASE_OWNER",
+      "sensitive_content_permission": "NONE",
+      "sensitivity": "C2",
+      "request_schema": "EvidenceUploadCreateRequest",
+      "response_schema": "EvidenceMetadataResponse",
+      "success_outcome": "Server-created evidence item awaiting content.",
+      "completion_claim": "NONE",
+      "errors": [
+        {
+          "error_code": "DEPENDENCY_UNAVAILABLE",
+          "http_status": 503,
+          "retryability": "RETRYABLE",
+          "presentation_state": "TEMPORARILY_UNAVAILABLE",
+          "recovery": "RETRY_SAME_REQUEST",
+          "idempotency_key_handling": "SAME_KEY_SAME_REQUEST"
+        },
+        {
+          "error_code": "FORBIDDEN",
+          "http_status": 403,
+          "retryability": "NOT_RETRYABLE",
+          "presentation_state": "ACCESS_DENIED",
+          "recovery": "STOP_NO_BLIND_RETRY",
+          "idempotency_key_handling": "NO_RESUBMISSION"
+        },
+        {
+          "error_code": "IDEMPOTENCY_IN_PROGRESS",
+          "http_status": 409,
+          "retryability": "RETRYABLE",
+          "presentation_state": "ACTION_PENDING",
+          "recovery": "WAIT_THEN_RETRY_SAME_REQUEST",
+          "idempotency_key_handling": "SAME_KEY_SAME_REQUEST"
+        },
+        {
+          "error_code": "IDEMPOTENCY_KEY_REUSED",
+          "http_status": 409,
+          "retryability": "RETRY_WITH_CHANGES",
+          "presentation_state": "CONFLICT",
+          "recovery": "REFRESH_AUTHORITATIVE_STATE",
+          "idempotency_key_handling": "NO_RESUBMISSION"
+        },
+        {
+          "error_code": "INTERNAL_ERROR",
+          "http_status": 500,
+          "retryability": "RETRYABLE",
+          "presentation_state": "SERVER_ERROR",
+          "recovery": "RETRY_SAME_REQUEST",
+          "idempotency_key_handling": "SAME_KEY_SAME_REQUEST"
+        },
+        {
+          "error_code": "INVALID_REQUEST",
+          "http_status": 400,
+          "retryability": "RETRY_WITH_CHANGES",
+          "presentation_state": "ACTION_FAILED",
+          "recovery": "CORRECT_INPUT_AS_NEW_ATTEMPT",
+          "idempotency_key_handling": "NEW_KEY_CORRECTED_REQUEST"
+        },
+        {
+          "error_code": "NOT_FOUND",
+          "http_status": 404,
+          "retryability": "NOT_RETRYABLE",
+          "presentation_state": "NOT_FOUND_OR_NOT_VISIBLE",
+          "recovery": "STOP_NO_BLIND_RETRY",
+          "idempotency_key_handling": "NO_RESUBMISSION"
+        },
+        {
+          "error_code": "PAYLOAD_TOO_LARGE",
+          "http_status": 413,
+          "retryability": "RETRY_WITH_CHANGES",
+          "presentation_state": "INPUT_LIMIT_EXCEEDED",
+          "recovery": "CORRECT_INPUT_AS_NEW_ATTEMPT",
+          "idempotency_key_handling": "NEW_KEY_CORRECTED_REQUEST"
+        },
+        {
+          "error_code": "RATE_LIMITED",
+          "http_status": 429,
+          "retryability": "RETRYABLE",
+          "presentation_state": "RATE_LIMITED",
+          "recovery": "WAIT_THEN_RETRY_SAME_REQUEST",
+          "idempotency_key_handling": "SAME_KEY_SAME_REQUEST"
+        },
+        {
+          "error_code": "STATE_CONFLICT",
+          "http_status": 409,
+          "retryability": "NOT_RETRYABLE",
+          "presentation_state": "CONFLICT",
+          "recovery": "REFRESH_AUTHORITATIVE_STATE",
+          "idempotency_key_handling": "NO_RESUBMISSION"
+        },
+        {
+          "error_code": "UNAUTHENTICATED",
+          "http_status": 401,
+          "retryability": "RETRY_WITH_CHANGES",
+          "presentation_state": "AUTHENTICATION_REQUIRED",
+          "recovery": "REAUTHENTICATE_SAME_PRINCIPAL_THEN_RETRY_SAME_REQUEST",
+          "idempotency_key_handling": "SAME_KEY_SAME_REQUEST"
+        },
+        {
+          "error_code": "UNSUPPORTED_MEDIA_TYPE",
+          "http_status": 415,
+          "retryability": "RETRY_WITH_CHANGES",
+          "presentation_state": "UNSUPPORTED_INPUT",
+          "recovery": "CORRECT_INPUT_AS_NEW_ATTEMPT",
+          "idempotency_key_handling": "NEW_KEY_CORRECTED_REQUEST"
+        }
+      ],
+      "success_presentation": {
+        "rule": "RENDER_RETURNED_AUTHORITATIVE_STATE",
+        "response_schema": "EvidenceMetadataResponse",
+        "state_field": "upload_state",
+        "collection_field": null,
+        "state_table": "upload_state_presentation",
+        "state_vocabulary": "api_upload_state",
+        "companion_field": null,
+        "expected_initial_state_informational": "AWAITING_CONTENT",
+        "http_success_implies_expected_state": false,
+        "missing_or_unrecognised_state": "STATE_UNKNOWN_RECONCILE",
+        "companion_required": false,
+        "inconsistent_combination": null
+      }
+    },
+    {
+      "step_id": "INT-S04",
+      "user_action": "Send the exact bytes of that item",
+      "surface_id": "UX-INTAKE-EVIDENCE",
+      "operation_id": "putEvidenceContent",
+      "method": "PUT",
+      "path": "/api/v1/evidence/{evidence_id}/content",
+      "success_status": 200,
+      "mode": "SYNC",
+      "idempotency": "NATURALLY_IDEMPOTENT",
+      "roles": [
+        "USER"
+      ],
+      "resource_authorization": "CASE_OWNER",
+      "sensitive_content_permission": "EVIDENCE_CONTENT",
+      "sensitivity": "C3",
+      "request_schema": "EvidenceContentUpload",
+      "response_schema": "EvidenceMetadataResponse",
+      "success_outcome": "Bytes received and hashed by the server; not yet verified durable.",
+      "completion_claim": "NONE",
+      "errors": [
+        {
+          "error_code": "DEPENDENCY_UNAVAILABLE",
+          "http_status": 503,
+          "retryability": "RETRYABLE",
+          "presentation_state": "TEMPORARILY_UNAVAILABLE",
+          "recovery": "RETRY_SAME_REQUEST",
+          "idempotency_key_handling": "NOT_APPLICABLE"
+        },
+        {
+          "error_code": "FORBIDDEN",
+          "http_status": 403,
+          "retryability": "NOT_RETRYABLE",
+          "presentation_state": "ACCESS_DENIED",
+          "recovery": "STOP_NO_BLIND_RETRY",
+          "idempotency_key_handling": "NOT_APPLICABLE"
+        },
+        {
+          "error_code": "INTEGRITY_FAILURE",
+          "http_status": 500,
+          "retryability": "NOT_RETRYABLE",
+          "presentation_state": "INTEGRITY_ERROR",
+          "recovery": "START_NEW_EVIDENCE_ITEM",
+          "idempotency_key_handling": "NOT_APPLICABLE"
+        },
+        {
+          "error_code": "INTERNAL_ERROR",
+          "http_status": 500,
+          "retryability": "RETRYABLE",
+          "presentation_state": "SERVER_ERROR",
+          "recovery": "RETRY_SAME_REQUEST",
+          "idempotency_key_handling": "NOT_APPLICABLE"
+        },
+        {
+          "error_code": "INVALID_REQUEST",
+          "http_status": 400,
+          "retryability": "RETRY_WITH_CHANGES",
+          "presentation_state": "ACTION_FAILED",
+          "recovery": "CORRECT_INPUT_AS_NEW_ATTEMPT",
+          "idempotency_key_handling": "NOT_APPLICABLE"
+        },
+        {
+          "error_code": "NOT_FOUND",
+          "http_status": 404,
+          "retryability": "NOT_RETRYABLE",
+          "presentation_state": "NOT_FOUND_OR_NOT_VISIBLE",
+          "recovery": "STOP_NO_BLIND_RETRY",
+          "idempotency_key_handling": "NOT_APPLICABLE"
+        },
+        {
+          "error_code": "PAYLOAD_TOO_LARGE",
+          "http_status": 413,
+          "retryability": "RETRY_WITH_CHANGES",
+          "presentation_state": "INPUT_LIMIT_EXCEEDED",
+          "recovery": "CORRECT_INPUT_AS_NEW_ATTEMPT",
+          "idempotency_key_handling": "NOT_APPLICABLE"
+        },
+        {
+          "error_code": "RATE_LIMITED",
+          "http_status": 429,
+          "retryability": "RETRYABLE",
+          "presentation_state": "RATE_LIMITED",
+          "recovery": "WAIT_THEN_RETRY_SAME_REQUEST",
+          "idempotency_key_handling": "NOT_APPLICABLE"
+        },
+        {
+          "error_code": "STATE_CONFLICT",
+          "http_status": 409,
+          "retryability": "NOT_RETRYABLE",
+          "presentation_state": "CONFLICT",
+          "recovery": "START_NEW_EVIDENCE_ITEM",
+          "idempotency_key_handling": "NOT_APPLICABLE"
+        },
+        {
+          "error_code": "UNAUTHENTICATED",
+          "http_status": 401,
+          "retryability": "RETRY_WITH_CHANGES",
+          "presentation_state": "AUTHENTICATION_REQUIRED",
+          "recovery": "REAUTHENTICATE_SAME_PRINCIPAL_THEN_RETRY_SAME_REQUEST",
+          "idempotency_key_handling": "NOT_APPLICABLE"
+        },
+        {
+          "error_code": "UNSUPPORTED_MEDIA_TYPE",
+          "http_status": 415,
+          "retryability": "RETRY_WITH_CHANGES",
+          "presentation_state": "UNSUPPORTED_INPUT",
+          "recovery": "CORRECT_INPUT_AS_NEW_ATTEMPT",
+          "idempotency_key_handling": "NOT_APPLICABLE"
+        }
+      ],
+      "success_presentation": {
+        "rule": "RENDER_RETURNED_AUTHORITATIVE_STATE",
+        "response_schema": "EvidenceMetadataResponse",
+        "state_field": "upload_state",
+        "collection_field": null,
+        "state_table": "upload_state_presentation",
+        "state_vocabulary": "api_upload_state",
+        "companion_field": null,
+        "expected_initial_state_informational": "PROCESSING",
+        "http_success_implies_expected_state": false,
+        "missing_or_unrecognised_state": "STATE_UNKNOWN_RECONCILE",
+        "companion_required": false,
+        "inconsistent_combination": null
+      }
+    },
+    {
+      "step_id": "INT-S05",
+      "user_action": "Request server verification and finalization",
+      "surface_id": "UX-INTAKE-EVIDENCE",
+      "operation_id": "finalizeEvidence",
+      "method": "POST",
+      "path": "/api/v1/evidence/{evidence_id}/finalize",
+      "success_status": 202,
+      "mode": "ASYNC",
+      "idempotency": "REQUIRED",
+      "roles": [
+        "USER"
+      ],
+      "resource_authorization": "CASE_OWNER",
+      "sensitive_content_permission": "NONE",
+      "sensitivity": "C2",
+      "request_schema": "EvidenceFinalizeRequest",
+      "response_schema": "EvidenceMetadataResponse",
+      "success_outcome": "Verification accepted (202); FINALIZED only when the server reports it.",
+      "completion_claim": "NONE",
+      "errors": [
+        {
+          "error_code": "DEPENDENCY_UNAVAILABLE",
+          "http_status": 503,
+          "retryability": "RETRYABLE",
+          "presentation_state": "TEMPORARILY_UNAVAILABLE",
+          "recovery": "RETRY_SAME_REQUEST",
+          "idempotency_key_handling": "SAME_KEY_SAME_REQUEST"
+        },
+        {
+          "error_code": "FORBIDDEN",
+          "http_status": 403,
+          "retryability": "NOT_RETRYABLE",
+          "presentation_state": "ACCESS_DENIED",
+          "recovery": "STOP_NO_BLIND_RETRY",
+          "idempotency_key_handling": "NO_RESUBMISSION"
+        },
+        {
+          "error_code": "IDEMPOTENCY_IN_PROGRESS",
+          "http_status": 409,
+          "retryability": "RETRYABLE",
+          "presentation_state": "ACTION_PENDING",
+          "recovery": "WAIT_THEN_RETRY_SAME_REQUEST",
+          "idempotency_key_handling": "SAME_KEY_SAME_REQUEST"
+        },
+        {
+          "error_code": "IDEMPOTENCY_KEY_REUSED",
+          "http_status": 409,
+          "retryability": "RETRY_WITH_CHANGES",
+          "presentation_state": "CONFLICT",
+          "recovery": "REFRESH_AUTHORITATIVE_STATE",
+          "idempotency_key_handling": "NO_RESUBMISSION"
+        },
+        {
+          "error_code": "INTEGRITY_FAILURE",
+          "http_status": 500,
+          "retryability": "NOT_RETRYABLE",
+          "presentation_state": "INTEGRITY_ERROR",
+          "recovery": "START_NEW_EVIDENCE_ITEM",
+          "idempotency_key_handling": "NO_RESUBMISSION"
+        },
+        {
+          "error_code": "INTERNAL_ERROR",
+          "http_status": 500,
+          "retryability": "RETRYABLE",
+          "presentation_state": "SERVER_ERROR",
+          "recovery": "RETRY_SAME_REQUEST",
+          "idempotency_key_handling": "SAME_KEY_SAME_REQUEST"
+        },
+        {
+          "error_code": "INVALID_REQUEST",
+          "http_status": 400,
+          "retryability": "RETRY_WITH_CHANGES",
+          "presentation_state": "ACTION_FAILED",
+          "recovery": "CORRECT_INPUT_AS_NEW_ATTEMPT",
+          "idempotency_key_handling": "NEW_KEY_CORRECTED_REQUEST"
+        },
+        {
+          "error_code": "NOT_FOUND",
+          "http_status": 404,
+          "retryability": "NOT_RETRYABLE",
+          "presentation_state": "NOT_FOUND_OR_NOT_VISIBLE",
+          "recovery": "STOP_NO_BLIND_RETRY",
+          "idempotency_key_handling": "NO_RESUBMISSION"
+        },
+        {
+          "error_code": "RATE_LIMITED",
+          "http_status": 429,
+          "retryability": "RETRYABLE",
+          "presentation_state": "RATE_LIMITED",
+          "recovery": "WAIT_THEN_RETRY_SAME_REQUEST",
+          "idempotency_key_handling": "SAME_KEY_SAME_REQUEST"
+        },
+        {
+          "error_code": "STATE_CONFLICT",
+          "http_status": 409,
+          "retryability": "NOT_RETRYABLE",
+          "presentation_state": "CONFLICT",
+          "recovery": "REFRESH_AUTHORITATIVE_STATE",
+          "idempotency_key_handling": "NO_RESUBMISSION"
+        },
+        {
+          "error_code": "UNAUTHENTICATED",
+          "http_status": 401,
+          "retryability": "RETRY_WITH_CHANGES",
+          "presentation_state": "AUTHENTICATION_REQUIRED",
+          "recovery": "REAUTHENTICATE_SAME_PRINCIPAL_THEN_RETRY_SAME_REQUEST",
+          "idempotency_key_handling": "SAME_KEY_SAME_REQUEST"
+        }
+      ],
+      "success_presentation": {
+        "rule": "RENDER_RETURNED_AUTHORITATIVE_STATE",
+        "response_schema": "EvidenceMetadataResponse",
+        "state_field": "upload_state",
+        "collection_field": null,
+        "state_table": "upload_state_presentation",
+        "state_vocabulary": "api_upload_state",
+        "companion_field": null,
+        "expected_initial_state_informational": "FINALIZED",
+        "http_success_implies_expected_state": false,
+        "missing_or_unrecognised_state": "STATE_UNKNOWN_RECONCILE",
+        "companion_required": false,
+        "inconsistent_combination": null
+      }
+    },
+    {
+      "step_id": "INT-S06",
+      "user_action": "Confirm authoritative evidence state",
+      "surface_id": "UX-INTAKE-EVIDENCE",
+      "operation_id": "getEvidenceMetadata",
+      "method": "GET",
+      "path": "/api/v1/evidence/{evidence_id}",
+      "success_status": 200,
+      "mode": "SYNC",
+      "idempotency": "NOT_APPLICABLE",
+      "roles": [
+        "USER",
+        "ANALYST"
+      ],
+      "resource_authorization": "CASE_ACCESS",
+      "sensitive_content_permission": "NONE",
+      "sensitivity": "C2",
+      "request_schema": null,
+      "response_schema": "EvidenceMetadataResponse",
+      "success_outcome": "Authoritative upload_state and metadata (no bytes) for one item.",
+      "completion_claim": "NONE",
+      "errors": [
+        {
+          "error_code": "DEPENDENCY_UNAVAILABLE",
+          "http_status": 503,
+          "retryability": "RETRYABLE",
+          "presentation_state": "TEMPORARILY_UNAVAILABLE",
+          "recovery": "RETRY_SAME_REQUEST",
+          "idempotency_key_handling": "NOT_APPLICABLE"
+        },
+        {
+          "error_code": "FORBIDDEN",
+          "http_status": 403,
+          "retryability": "NOT_RETRYABLE",
+          "presentation_state": "ACCESS_DENIED",
+          "recovery": "STOP_NO_BLIND_RETRY",
+          "idempotency_key_handling": "NOT_APPLICABLE"
+        },
+        {
+          "error_code": "INTERNAL_ERROR",
+          "http_status": 500,
+          "retryability": "RETRYABLE",
+          "presentation_state": "SERVER_ERROR",
+          "recovery": "RETRY_SAME_REQUEST",
+          "idempotency_key_handling": "NOT_APPLICABLE"
+        },
+        {
+          "error_code": "INVALID_REQUEST",
+          "http_status": 400,
+          "retryability": "RETRY_WITH_CHANGES",
+          "presentation_state": "ACTION_FAILED",
+          "recovery": "CORRECT_INPUT_AS_NEW_ATTEMPT",
+          "idempotency_key_handling": "NOT_APPLICABLE"
+        },
+        {
+          "error_code": "NOT_FOUND",
+          "http_status": 404,
+          "retryability": "NOT_RETRYABLE",
+          "presentation_state": "NOT_FOUND_OR_NOT_VISIBLE",
+          "recovery": "STOP_NO_BLIND_RETRY",
+          "idempotency_key_handling": "NOT_APPLICABLE"
+        },
+        {
+          "error_code": "RATE_LIMITED",
+          "http_status": 429,
+          "retryability": "RETRYABLE",
+          "presentation_state": "RATE_LIMITED",
+          "recovery": "WAIT_THEN_RETRY_SAME_REQUEST",
+          "idempotency_key_handling": "NOT_APPLICABLE"
+        },
+        {
+          "error_code": "UNAUTHENTICATED",
+          "http_status": 401,
+          "retryability": "RETRY_WITH_CHANGES",
+          "presentation_state": "AUTHENTICATION_REQUIRED",
+          "recovery": "REAUTHENTICATE_SAME_PRINCIPAL_THEN_RETRY_SAME_REQUEST",
+          "idempotency_key_handling": "NOT_APPLICABLE"
+        }
+      ],
+      "success_presentation": {
+        "rule": "RENDER_RETURNED_AUTHORITATIVE_STATE",
+        "response_schema": "EvidenceMetadataResponse",
+        "state_field": "upload_state",
+        "collection_field": null,
+        "state_table": "upload_state_presentation",
+        "state_vocabulary": "api_upload_state",
+        "companion_field": null,
+        "expected_initial_state_informational": null,
+        "http_success_implies_expected_state": false,
+        "missing_or_unrecognised_state": "STATE_UNKNOWN_RECONCILE",
+        "companion_required": false,
+        "inconsistent_combination": null
+      }
+    },
+    {
+      "step_id": "INT-S07",
+      "user_action": "Review the submission's evidence metadata",
+      "surface_id": "UX-INTAKE-PROGRESS",
+      "operation_id": "listEvidence",
+      "method": "GET",
+      "path": "/api/v1/submissions/{submission_id}/evidence",
+      "success_status": 200,
+      "mode": "SYNC",
+      "idempotency": "NOT_APPLICABLE",
+      "roles": [
+        "USER",
+        "ANALYST"
+      ],
+      "resource_authorization": "CASE_ACCESS",
+      "sensitive_content_permission": "NONE",
+      "sensitivity": "C2",
+      "request_schema": null,
+      "response_schema": "EvidenceListResponse",
+      "success_outcome": "Metadata-only list of the submission's evidence items.",
+      "completion_claim": "NONE",
+      "errors": [
+        {
+          "error_code": "DEPENDENCY_UNAVAILABLE",
+          "http_status": 503,
+          "retryability": "RETRYABLE",
+          "presentation_state": "TEMPORARILY_UNAVAILABLE",
+          "recovery": "RETRY_SAME_REQUEST",
+          "idempotency_key_handling": "NOT_APPLICABLE"
+        },
+        {
+          "error_code": "FORBIDDEN",
+          "http_status": 403,
+          "retryability": "NOT_RETRYABLE",
+          "presentation_state": "ACCESS_DENIED",
+          "recovery": "STOP_NO_BLIND_RETRY",
+          "idempotency_key_handling": "NOT_APPLICABLE"
+        },
+        {
+          "error_code": "INTERNAL_ERROR",
+          "http_status": 500,
+          "retryability": "RETRYABLE",
+          "presentation_state": "SERVER_ERROR",
+          "recovery": "RETRY_SAME_REQUEST",
+          "idempotency_key_handling": "NOT_APPLICABLE"
+        },
+        {
+          "error_code": "INVALID_REQUEST",
+          "http_status": 400,
+          "retryability": "RETRY_WITH_CHANGES",
+          "presentation_state": "ACTION_FAILED",
+          "recovery": "CORRECT_INPUT_AS_NEW_ATTEMPT",
+          "idempotency_key_handling": "NOT_APPLICABLE"
+        },
+        {
+          "error_code": "NOT_FOUND",
+          "http_status": 404,
+          "retryability": "NOT_RETRYABLE",
+          "presentation_state": "NOT_FOUND_OR_NOT_VISIBLE",
+          "recovery": "STOP_NO_BLIND_RETRY",
+          "idempotency_key_handling": "NOT_APPLICABLE"
+        },
+        {
+          "error_code": "RATE_LIMITED",
+          "http_status": 429,
+          "retryability": "RETRYABLE",
+          "presentation_state": "RATE_LIMITED",
+          "recovery": "WAIT_THEN_RETRY_SAME_REQUEST",
+          "idempotency_key_handling": "NOT_APPLICABLE"
+        },
+        {
+          "error_code": "UNAUTHENTICATED",
+          "http_status": 401,
+          "retryability": "RETRY_WITH_CHANGES",
+          "presentation_state": "AUTHENTICATION_REQUIRED",
+          "recovery": "REAUTHENTICATE_SAME_PRINCIPAL_THEN_RETRY_SAME_REQUEST",
+          "idempotency_key_handling": "NOT_APPLICABLE"
+        }
+      ],
+      "success_presentation": {
+        "rule": "RENDER_RETURNED_AUTHORITATIVE_STATE",
+        "response_schema": "EvidenceListResponse",
+        "state_field": "upload_state",
+        "collection_field": "items",
+        "state_table": "upload_state_presentation",
+        "state_vocabulary": "api_upload_state",
+        "companion_field": null,
+        "expected_initial_state_informational": null,
+        "http_success_implies_expected_state": false,
+        "missing_or_unrecognised_state": "STATE_UNKNOWN_RECONCILE",
+        "companion_required": false,
+        "inconsistent_combination": null
+      }
+    },
+    {
+      "step_id": "INT-S08",
+      "user_action": "Confirm submission state",
+      "surface_id": "UX-INTAKE-PROGRESS",
+      "operation_id": "getSubmission",
+      "method": "GET",
+      "path": "/api/v1/submissions/{submission_id}",
+      "success_status": 200,
+      "mode": "SYNC",
+      "idempotency": "NOT_APPLICABLE",
+      "roles": [
+        "USER",
+        "ANALYST"
+      ],
+      "resource_authorization": "CASE_ACCESS",
+      "sensitive_content_permission": "NONE",
+      "sensitivity": "C2",
+      "request_schema": null,
+      "response_schema": "SubmissionResponse",
+      "success_outcome": "Authoritative submission state; never an analysis outcome.",
+      "completion_claim": "NONE",
+      "errors": [
+        {
+          "error_code": "DEPENDENCY_UNAVAILABLE",
+          "http_status": 503,
+          "retryability": "RETRYABLE",
+          "presentation_state": "TEMPORARILY_UNAVAILABLE",
+          "recovery": "RETRY_SAME_REQUEST",
+          "idempotency_key_handling": "NOT_APPLICABLE"
+        },
+        {
+          "error_code": "FORBIDDEN",
+          "http_status": 403,
+          "retryability": "NOT_RETRYABLE",
+          "presentation_state": "ACCESS_DENIED",
+          "recovery": "STOP_NO_BLIND_RETRY",
+          "idempotency_key_handling": "NOT_APPLICABLE"
+        },
+        {
+          "error_code": "INTERNAL_ERROR",
+          "http_status": 500,
+          "retryability": "RETRYABLE",
+          "presentation_state": "SERVER_ERROR",
+          "recovery": "RETRY_SAME_REQUEST",
+          "idempotency_key_handling": "NOT_APPLICABLE"
+        },
+        {
+          "error_code": "INVALID_REQUEST",
+          "http_status": 400,
+          "retryability": "RETRY_WITH_CHANGES",
+          "presentation_state": "ACTION_FAILED",
+          "recovery": "CORRECT_INPUT_AS_NEW_ATTEMPT",
+          "idempotency_key_handling": "NOT_APPLICABLE"
+        },
+        {
+          "error_code": "NOT_FOUND",
+          "http_status": 404,
+          "retryability": "NOT_RETRYABLE",
+          "presentation_state": "NOT_FOUND_OR_NOT_VISIBLE",
+          "recovery": "STOP_NO_BLIND_RETRY",
+          "idempotency_key_handling": "NOT_APPLICABLE"
+        },
+        {
+          "error_code": "RATE_LIMITED",
+          "http_status": 429,
+          "retryability": "RETRYABLE",
+          "presentation_state": "RATE_LIMITED",
+          "recovery": "WAIT_THEN_RETRY_SAME_REQUEST",
+          "idempotency_key_handling": "NOT_APPLICABLE"
+        },
+        {
+          "error_code": "UNAUTHENTICATED",
+          "http_status": 401,
+          "retryability": "RETRY_WITH_CHANGES",
+          "presentation_state": "AUTHENTICATION_REQUIRED",
+          "recovery": "REAUTHENTICATE_SAME_PRINCIPAL_THEN_RETRY_SAME_REQUEST",
+          "idempotency_key_handling": "NOT_APPLICABLE"
+        }
+      ],
+      "success_presentation": {
+        "rule": "RENDER_RETURNED_AUTHORITATIVE_STATE",
+        "response_schema": "SubmissionResponse",
+        "state_field": "state",
+        "collection_field": null,
+        "state_table": "submission_state_presentation",
+        "state_vocabulary": "api_submission_state",
+        "companion_field": null,
+        "expected_initial_state_informational": null,
+        "http_success_implies_expected_state": false,
+        "missing_or_unrecognised_state": "STATE_UNKNOWN_RECONCILE",
+        "companion_required": false,
+        "inconsistent_combination": null
+      }
+    },
+    {
+      "step_id": "INT-S09",
+      "user_action": "Request analysis as a separate explicit action",
+      "surface_id": "UX-INTAKE-PROGRESS",
+      "operation_id": "createEvaluations",
+      "method": "POST",
+      "path": "/api/v1/submissions/{submission_id}/evaluations",
+      "success_status": 202,
+      "mode": "ASYNC",
+      "idempotency": "REQUIRED",
+      "roles": [
+        "USER",
+        "ANALYST"
+      ],
+      "resource_authorization": "CASE_ACCESS",
+      "sensitive_content_permission": "NONE",
+      "sensitivity": "C2",
+      "request_schema": "EvaluationCreateRequest",
+      "response_schema": "EvaluationBatchAcceptedResponse",
+      "success_outcome": "Evaluation(s) accepted (202) and pending; no result exists yet.",
+      "completion_claim": "NONE",
+      "errors": [
+        {
+          "error_code": "DEPENDENCY_UNAVAILABLE",
+          "http_status": 503,
+          "retryability": "RETRYABLE",
+          "presentation_state": "TEMPORARILY_UNAVAILABLE",
+          "recovery": "RETRY_SAME_REQUEST",
+          "idempotency_key_handling": "SAME_KEY_SAME_REQUEST"
+        },
+        {
+          "error_code": "FORBIDDEN",
+          "http_status": 403,
+          "retryability": "NOT_RETRYABLE",
+          "presentation_state": "ACCESS_DENIED",
+          "recovery": "STOP_NO_BLIND_RETRY",
+          "idempotency_key_handling": "NO_RESUBMISSION"
+        },
+        {
+          "error_code": "IDEMPOTENCY_IN_PROGRESS",
+          "http_status": 409,
+          "retryability": "RETRYABLE",
+          "presentation_state": "ACTION_PENDING",
+          "recovery": "WAIT_THEN_RETRY_SAME_REQUEST",
+          "idempotency_key_handling": "SAME_KEY_SAME_REQUEST"
+        },
+        {
+          "error_code": "IDEMPOTENCY_KEY_REUSED",
+          "http_status": 409,
+          "retryability": "RETRY_WITH_CHANGES",
+          "presentation_state": "CONFLICT",
+          "recovery": "REFRESH_AUTHORITATIVE_STATE",
+          "idempotency_key_handling": "NO_RESUBMISSION"
+        },
+        {
+          "error_code": "INTERNAL_ERROR",
+          "http_status": 500,
+          "retryability": "RETRYABLE",
+          "presentation_state": "SERVER_ERROR",
+          "recovery": "RETRY_SAME_REQUEST",
+          "idempotency_key_handling": "SAME_KEY_SAME_REQUEST"
+        },
+        {
+          "error_code": "INVALID_REQUEST",
+          "http_status": 400,
+          "retryability": "RETRY_WITH_CHANGES",
+          "presentation_state": "ACTION_FAILED",
+          "recovery": "CORRECT_INPUT_AS_NEW_ATTEMPT",
+          "idempotency_key_handling": "NEW_KEY_CORRECTED_REQUEST"
+        },
+        {
+          "error_code": "NOT_FOUND",
+          "http_status": 404,
+          "retryability": "NOT_RETRYABLE",
+          "presentation_state": "NOT_FOUND_OR_NOT_VISIBLE",
+          "recovery": "STOP_NO_BLIND_RETRY",
+          "idempotency_key_handling": "NO_RESUBMISSION"
+        },
+        {
+          "error_code": "RATE_LIMITED",
+          "http_status": 429,
+          "retryability": "RETRYABLE",
+          "presentation_state": "RATE_LIMITED",
+          "recovery": "WAIT_THEN_RETRY_SAME_REQUEST",
+          "idempotency_key_handling": "SAME_KEY_SAME_REQUEST"
+        },
+        {
+          "error_code": "STATE_CONFLICT",
+          "http_status": 409,
+          "retryability": "NOT_RETRYABLE",
+          "presentation_state": "CONFLICT",
+          "recovery": "REFRESH_AUTHORITATIVE_STATE",
+          "idempotency_key_handling": "NO_RESUBMISSION"
+        },
+        {
+          "error_code": "UNAUTHENTICATED",
+          "http_status": 401,
+          "retryability": "RETRY_WITH_CHANGES",
+          "presentation_state": "AUTHENTICATION_REQUIRED",
+          "recovery": "REAUTHENTICATE_SAME_PRINCIPAL_THEN_RETRY_SAME_REQUEST",
+          "idempotency_key_handling": "SAME_KEY_SAME_REQUEST"
+        }
+      ],
+      "success_presentation": {
+        "rule": "RENDER_RETURNED_AUTHORITATIVE_STATE",
+        "response_schema": "EvaluationBatchAcceptedResponse",
+        "state_field": "state",
+        "collection_field": "evaluations",
+        "state_table": "evaluation_status_presentation",
+        "state_vocabulary": "api_evaluation_state",
+        "companion_field": "result_availability",
+        "expected_initial_state_informational": "QUEUED",
+        "http_success_implies_expected_state": false,
+        "missing_or_unrecognised_state": "STATE_UNKNOWN_RECONCILE",
+        "companion_required": true,
+        "inconsistent_combination": "STATE_CONFLICT_RECONCILE"
+      }
+    },
+    {
+      "step_id": "INT-S10",
+      "user_action": "Observe analysis status until terminal",
+      "surface_id": "UX-INTAKE-PROGRESS",
+      "operation_id": "getEvaluation",
+      "method": "GET",
+      "path": "/api/v1/evaluations/{evaluation_id}",
+      "success_status": 200,
+      "mode": "SYNC",
+      "idempotency": "NOT_APPLICABLE",
+      "roles": [
+        "USER",
+        "ANALYST"
+      ],
+      "resource_authorization": "CASE_ACCESS",
+      "sensitive_content_permission": "NONE",
+      "sensitivity": "C2",
+      "request_schema": null,
+      "response_schema": "EvaluationResponse",
+      "success_outcome": "Authoritative evaluation state; a completed result is presented only by P7-WP3 surfaces.",
+      "completion_claim": "EVALUATION_STATE_ONLY",
+      "errors": [
+        {
+          "error_code": "DEPENDENCY_UNAVAILABLE",
+          "http_status": 503,
+          "retryability": "RETRYABLE",
+          "presentation_state": "TEMPORARILY_UNAVAILABLE",
+          "recovery": "RETRY_SAME_REQUEST",
+          "idempotency_key_handling": "NOT_APPLICABLE"
+        },
+        {
+          "error_code": "FORBIDDEN",
+          "http_status": 403,
+          "retryability": "NOT_RETRYABLE",
+          "presentation_state": "ACCESS_DENIED",
+          "recovery": "STOP_NO_BLIND_RETRY",
+          "idempotency_key_handling": "NOT_APPLICABLE"
+        },
+        {
+          "error_code": "INTERNAL_ERROR",
+          "http_status": 500,
+          "retryability": "RETRYABLE",
+          "presentation_state": "SERVER_ERROR",
+          "recovery": "RETRY_SAME_REQUEST",
+          "idempotency_key_handling": "NOT_APPLICABLE"
+        },
+        {
+          "error_code": "INVALID_REQUEST",
+          "http_status": 400,
+          "retryability": "RETRY_WITH_CHANGES",
+          "presentation_state": "ACTION_FAILED",
+          "recovery": "CORRECT_INPUT_AS_NEW_ATTEMPT",
+          "idempotency_key_handling": "NOT_APPLICABLE"
+        },
+        {
+          "error_code": "NOT_FOUND",
+          "http_status": 404,
+          "retryability": "NOT_RETRYABLE",
+          "presentation_state": "NOT_FOUND_OR_NOT_VISIBLE",
+          "recovery": "STOP_NO_BLIND_RETRY",
+          "idempotency_key_handling": "NOT_APPLICABLE"
+        },
+        {
+          "error_code": "RATE_LIMITED",
+          "http_status": 429,
+          "retryability": "RETRYABLE",
+          "presentation_state": "RATE_LIMITED",
+          "recovery": "WAIT_THEN_RETRY_SAME_REQUEST",
+          "idempotency_key_handling": "NOT_APPLICABLE"
+        },
+        {
+          "error_code": "UNAUTHENTICATED",
+          "http_status": 401,
+          "retryability": "RETRY_WITH_CHANGES",
+          "presentation_state": "AUTHENTICATION_REQUIRED",
+          "recovery": "REAUTHENTICATE_SAME_PRINCIPAL_THEN_RETRY_SAME_REQUEST",
+          "idempotency_key_handling": "NOT_APPLICABLE"
+        }
+      ],
+      "success_presentation": {
+        "rule": "RENDER_RETURNED_AUTHORITATIVE_STATE",
+        "response_schema": "EvaluationResponse",
+        "state_field": "state",
+        "collection_field": null,
+        "state_table": "evaluation_status_presentation",
+        "state_vocabulary": "api_evaluation_state",
+        "companion_field": "result_availability",
+        "expected_initial_state_informational": null,
+        "http_success_implies_expected_state": false,
+        "missing_or_unrecognised_state": "STATE_UNKNOWN_RECONCILE",
+        "companion_required": true,
+        "inconsistent_combination": "STATE_CONFLICT_RECONCILE"
+      }
+    }
+  ],
+  "sequence_rules": {
+    "evidence_order": [
+      "createEvidenceUpload",
+      "putEvidenceContent",
+      "finalizeEvidence"
+    ],
+    "analysis_request_requires": "ALL_SUBMISSION_EVIDENCE_FINALIZED_AS_REPORTED_BY_SERVER",
+    "client_gate_is_security_control": false,
+    "backend_rejects_out_of_order": "STATE_CONFLICT",
+    "analysis_is_separate_explicit_action": true,
+    "automatic_analysis_after_upload": false,
+    "multiple_items_per_submission": true,
+    "user_context_is_evidence_item": true,
+    "submission_json_carries_content": false
+  },
+  "upload_state_presentation": [
+    {
+      "api_upload_state": "AWAITING_CONTENT",
+      "state_id": "EVIDENCE_AWAITING_CONTENT",
+      "kind": "PRESENTATION_ONLY",
+      "meaning": "Not finalized. The server has not reported stored bytes. No analysis outcome, verdict or safety is implied.",
+      "covers_internal_states": [
+        "RECEIVED"
+      ],
+      "proves_bytes_received": false,
+      "proves_integrity_verified": false,
+      "finalized": false,
+      "implies_safe": false,
+      "implies_evaluated": false,
+      "terminal_for_intake": false,
+      "claims": [
+        "NOT_FINAL",
+        "NO_STORED_BYTES_REPORTED",
+        "NO_OUTCOME_IMPLIED"
+      ]
+    },
+    {
+      "api_upload_state": "PROCESSING",
+      "state_id": "EVIDENCE_PROCESSING_NOT_FINALIZED",
+      "kind": "PRESENTATION_ONLY",
+      "meaning": "Not finalized. Not proof that bytes were received or verified. The server may still be storing, verifying or retrying. No analysis outcome, verdict or safety is implied.",
+      "covers_internal_states": [
+        "CONTENT_PENDING",
+        "CONTENT_STORED",
+        "INTEGRITY_VERIFIED",
+        "FAILED_RETRYABLE"
+      ],
+      "proves_bytes_received": false,
+      "proves_integrity_verified": false,
+      "finalized": false,
+      "implies_safe": false,
+      "implies_evaluated": false,
+      "terminal_for_intake": false,
+      "claims": [
+        "NOT_FINAL",
+        "RECEIPT_NOT_PROVEN",
+        "MAY_BE_STORING_OR_RETRYING",
+        "NO_OUTCOME_IMPLIED"
+      ]
+    },
+    {
+      "api_upload_state": "FINALIZED",
+      "state_id": "EVIDENCE_FINALIZED",
+      "kind": "PRESENTATION_ONLY",
+      "meaning": "Bytes durably stored and digest-verified by the server. Evidence is preserved, not analysed. No analysis outcome, verdict or safety is implied.",
+      "covers_internal_states": [
+        "FINALIZED"
+      ],
+      "proves_bytes_received": true,
+      "proves_integrity_verified": true,
+      "finalized": true,
+      "implies_safe": false,
+      "implies_evaluated": false,
+      "terminal_for_intake": true,
+      "claims": [
+        "BYTES_STORED_VERIFIED",
+        "PRESERVED_NOT_ANALYSED",
+        "NO_OUTCOME_IMPLIED"
+      ]
+    },
+    {
+      "api_upload_state": "REJECTED",
+      "state_id": "EVIDENCE_REJECTED",
+      "kind": "PRESENTATION_ONLY",
+      "meaning": "Not usable; the client cannot resume it, and server reconciliation may still change its state. No analysis outcome, verdict or safety is implied.",
+      "covers_internal_states": [
+        "FAILED_TERMINAL",
+        "ORPHAN_DETECTED",
+        "INTEGRITY_FAILED",
+        "QUARANTINED"
+      ],
+      "proves_bytes_received": false,
+      "proves_integrity_verified": false,
+      "finalized": false,
+      "implies_safe": false,
+      "implies_evaluated": false,
+      "terminal_for_intake": true,
+      "claims": [
+        "REJECTED_NEW_ITEM_NEEDED",
+        "NO_OUTCOME_IMPLIED"
+      ]
+    },
+    {
+      "api_upload_state": "DELETION_PENDING",
+      "state_id": "EVIDENCE_REMOVAL_PENDING",
+      "kind": "PRESENTATION_ONLY",
+      "meaning": "Governed removal is in progress; content is not shown. No analysis outcome, verdict or safety is implied.",
+      "covers_internal_states": [
+        "DELETION_PENDING"
+      ],
+      "proves_bytes_received": false,
+      "proves_integrity_verified": false,
+      "finalized": false,
+      "implies_safe": false,
+      "implies_evaluated": false,
+      "terminal_for_intake": true,
+      "claims": [
+        "GOVERNED_REMOVAL_PENDING",
+        "NO_OUTCOME_IMPLIED"
+      ]
+    },
+    {
+      "api_upload_state": "DELETED",
+      "state_id": "EVIDENCE_REMOVED",
+      "kind": "PRESENTATION_ONLY",
+      "meaning": "Removed under governance; never reconstructed or previewed. No analysis outcome, verdict or safety is implied.",
+      "covers_internal_states": [
+        "DELETED"
+      ],
+      "proves_bytes_received": false,
+      "proves_integrity_verified": false,
+      "finalized": false,
+      "implies_safe": false,
+      "implies_evaluated": false,
+      "terminal_for_intake": true,
+      "claims": [
+        "REMOVED_NOT_RECONSTRUCTED",
+        "NO_OUTCOME_IMPLIED"
+      ]
+    }
+  ],
+  "submission_state_presentation": [
+    {
+      "api_submission_state": "RECEIVING",
+      "state_id": "SUBMISSION_RECEIVING",
+      "kind": "PRESENTATION_ONLY",
+      "meaning": "Submission open for evidence intake. No analysis outcome, verdict or safety is implied.",
+      "implies_safe": false,
+      "implies_evaluated": false,
+      "terminal_for_intake": false,
+      "claims": [
+        "SUBMISSION_OPEN_FOR_INTAKE",
+        "NO_OUTCOME_IMPLIED"
+      ]
+    },
+    {
+      "api_submission_state": "RECEIVED",
+      "state_id": "SUBMISSION_RECEIVED",
+      "kind": "PRESENTATION_ONLY",
+      "meaning": "Evidence intake recorded by the server. Analysis is a separate request. No analysis outcome, verdict or safety is implied.",
+      "implies_safe": false,
+      "implies_evaluated": false,
+      "terminal_for_intake": false,
+      "claims": [
+        "INTAKE_RECORDED",
+        "ANALYSIS_SEPARATE",
+        "NO_OUTCOME_IMPLIED"
+      ]
+    },
+    {
+      "api_submission_state": "PROCESSING",
+      "state_id": "SUBMISSION_PROCESSING",
+      "kind": "PRESENTATION_ONLY",
+      "meaning": "Server-side processing recorded. No analysis outcome, verdict or safety is implied.",
+      "implies_safe": false,
+      "implies_evaluated": false,
+      "terminal_for_intake": false,
+      "claims": [
+        "SERVER_PROCESSING_RECORDED",
+        "NO_OUTCOME_IMPLIED"
+      ]
+    },
+    {
+      "api_submission_state": "PROCESSED",
+      "state_id": "SUBMISSION_PROCESSED",
+      "kind": "PRESENTATION_ONLY",
+      "meaning": "Server-side processing recorded as finished. No analysis outcome, verdict or safety is implied.",
+      "implies_safe": false,
+      "implies_evaluated": false,
+      "terminal_for_intake": true,
+      "claims": [
+        "SERVER_PROCESSING_FINISHED",
+        "NO_OUTCOME_IMPLIED"
+      ]
+    },
+    {
+      "api_submission_state": "PARTIALLY_FAILED",
+      "state_id": "SUBMISSION_PARTIALLY_FAILED",
+      "kind": "PRESENTATION_ONLY",
+      "meaning": "Some processing failed; items that are not finalized are shown. No analysis outcome, verdict or safety is implied.",
+      "implies_safe": false,
+      "implies_evaluated": false,
+      "terminal_for_intake": true,
+      "claims": [
+        "SOME_PROCESSING_FAILED",
+        "NO_OUTCOME_IMPLIED"
+      ]
+    },
+    {
+      "api_submission_state": "FAILED",
+      "state_id": "SUBMISSION_FAILED",
+      "kind": "PRESENTATION_ONLY",
+      "meaning": "Processing failed. No analysis outcome, verdict or safety is implied.",
+      "implies_safe": false,
+      "implies_evaluated": false,
+      "terminal_for_intake": true,
+      "claims": [
+        "PROCESSING_FAILED",
+        "NO_OUTCOME_IMPLIED"
+      ]
+    }
+  ],
+  "evaluation_status_presentation": [
+    {
+      "api_evaluation_state": "QUEUED",
+      "result_availability": "NOT_YET_AVAILABLE",
+      "presentation_state": "ACTION_PENDING",
+      "implies_safe": false,
+      "result_shown_by_intake": false
+    },
+    {
+      "api_evaluation_state": "RUNNING",
+      "result_availability": "NOT_YET_AVAILABLE",
+      "presentation_state": "ACTION_PENDING",
+      "implies_safe": false,
+      "result_shown_by_intake": false
+    },
+    {
+      "api_evaluation_state": "COMPLETED",
+      "result_availability": "AVAILABLE",
+      "presentation_state": "READY",
+      "implies_safe": false,
+      "result_shown_by_intake": false
+    },
+    {
+      "api_evaluation_state": "COMPLETED",
+      "result_availability": "REMOVED_UNDER_GOVERNANCE",
+      "presentation_state": "REMOVED_UNDER_GOVERNANCE",
+      "implies_safe": false,
+      "result_shown_by_intake": false
+    },
+    {
+      "api_evaluation_state": "FAILED",
+      "result_availability": "NOT_PRODUCED",
+      "presentation_state": "ACTION_FAILED",
+      "implies_safe": false,
+      "result_shown_by_intake": false
+    }
+  ],
+  "intake_presentation_states": [
+    {
+      "state_id": "DRAFT_NOT_SENT",
+      "kind": "PRESENTATION_ONLY",
+      "meaning": "Material exists only on the user's device; nothing has been submitted.",
+      "implies_safe": false,
+      "implies_evaluated": false,
+      "terminal_for_intake": false
+    },
+    {
+      "state_id": "TRANSFER_IN_PROGRESS",
+      "kind": "PRESENTATION_ONLY",
+      "meaning": "Bytes are being sent; sending is not storage, verification or analysis.",
+      "implies_safe": false,
+      "implies_evaluated": false,
+      "terminal_for_intake": false
+    },
+    {
+      "state_id": "RECEIPT_UNKNOWN",
+      "kind": "PRESENTATION_ONLY",
+      "meaning": "A transfer was interrupted before a response; whether the server stored the bytes is unknown until metadata is re-read.",
+      "implies_safe": false,
+      "implies_evaluated": false,
+      "terminal_for_intake": false
+    },
+    {
+      "state_id": "OUTCOME_UNKNOWN",
+      "kind": "PRESENTATION_ONLY",
+      "meaning": "Whether a command was accepted cannot be established from the original outcome or a permitted authoritative read; no blind resubmission.",
+      "implies_safe": false,
+      "implies_evaluated": false,
+      "terminal_for_intake": false
+    },
+    {
+      "state_id": "STATE_UNKNOWN_RECONCILE",
+      "kind": "PRESENTATION_ONLY",
+      "meaning": "The response omitted or used an unrecognised lifecycle value; re-read authoritative state; no optimistic state is shown.",
+      "implies_safe": false,
+      "implies_evaluated": false,
+      "terminal_for_intake": false
+    },
+    {
+      "state_id": "ANALYSIS_NOT_REQUESTED",
+      "kind": "PRESENTATION_ONLY",
+      "meaning": "Evidence is preserved but no analysis has been requested.",
+      "implies_safe": false,
+      "implies_evaluated": false,
+      "terminal_for_intake": false
+    },
+    {
+      "state_id": "STATE_CONFLICT_RECONCILE",
+      "kind": "PRESENTATION_ONLY",
+      "meaning": "A fresh or unordered server state contradicts an earlier observation in a way the lifecycle cannot explain; neither state is shown as confirmed; re-read and reconcile.",
+      "implies_safe": false,
+      "implies_evaluated": false,
+      "terminal_for_intake": false
+    }
+  ],
+  "progress": {
+    "transfer_indicator": "INDETERMINATE_OR_CLIENT_MEASURED_BYTES_SENT_ONLY",
+    "server_processing_percentage": false,
+    "evaluation_percentage": false,
+    "polling_interval": "NOT YET SPECIFIED",
+    "eta_or_sla": false,
+    "announce_state_changes": true,
+    "completion_only_from_authoritative_state": true
+  },
+  "retry_and_idempotency": {
+    "idempotency_key_user_visible": false,
+    "same_logical_attempt_reuses_key": true,
+    "new_logical_attempt_new_key": true,
+    "key_is_authorization": false,
+    "key_reused_with_different_request": "CONFLICT_REFRESH_NO_BLIND_RETRY",
+    "in_progress": "ACTION_PENDING_WAIT_SAME_KEY",
+    "put_identical_bytes": "NO_OP_SAME_STATE_ONLY_AFTER_CONTENT_EXISTS",
+    "put_different_bytes": "STATE_CONFLICT_START_NEW_EVIDENCE_ITEM",
+    "automatic_retry_of_not_retryable": false,
+    "retry_limit_or_backoff_values": "NOT YET SPECIFIED",
+    "recovery_vocabulary": [
+      "RETRY_SAME_REQUEST",
+      "WAIT_THEN_RETRY_SAME_REQUEST",
+      "REAUTHENTICATE_SAME_PRINCIPAL_THEN_RETRY_SAME_REQUEST",
+      "CORRECT_INPUT_AS_NEW_ATTEMPT",
+      "REFRESH_AUTHORITATIVE_STATE",
+      "START_NEW_EVIDENCE_ITEM",
+      "STOP_NO_BLIND_RETRY"
+    ],
+    "recovery_by_retryability": {
+      "RETRYABLE": [
+        "RETRY_SAME_REQUEST",
+        "WAIT_THEN_RETRY_SAME_REQUEST"
+      ],
+      "RETRY_WITH_CHANGES": [
+        "REAUTHENTICATE_SAME_PRINCIPAL_THEN_RETRY_SAME_REQUEST",
+        "CORRECT_INPUT_AS_NEW_ATTEMPT",
+        "REFRESH_AUTHORITATIVE_STATE"
+      ],
+      "NOT_RETRYABLE": [
+        "STOP_NO_BLIND_RETRY",
+        "REFRESH_AUTHORITATIVE_STATE",
+        "START_NEW_EVIDENCE_ITEM"
+      ]
+    },
+    "key_handling_vocabulary": [
+      "SAME_KEY_SAME_REQUEST",
+      "NEW_KEY_CORRECTED_REQUEST",
+      "NO_RESUBMISSION",
+      "NOT_APPLICABLE"
+    ],
+    "key_handling_by_recovery": {
+      "RETRY_SAME_REQUEST": "SAME_KEY_SAME_REQUEST",
+      "WAIT_THEN_RETRY_SAME_REQUEST": "SAME_KEY_SAME_REQUEST",
+      "REAUTHENTICATE_SAME_PRINCIPAL_THEN_RETRY_SAME_REQUEST": "SAME_KEY_SAME_REQUEST",
+      "CORRECT_INPUT_AS_NEW_ATTEMPT": "NEW_KEY_CORRECTED_REQUEST",
+      "REFRESH_AUTHORITATIVE_STATE": "NO_RESUBMISSION",
+      "START_NEW_EVIDENCE_ITEM": "NO_RESUBMISSION",
+      "STOP_NO_BLIND_RETRY": "NO_RESUBMISSION"
+    },
+    "request_identity": {
+      "key_scope": [
+        "principal",
+        "operation_id",
+        "target_resource"
+      ],
+      "authorization_and_request_identity_separate": true,
+      "credential_renewal_changes_request_identity": false,
+      "same_principal_reauthentication": "RETRY_SAME_KEY_SAME_SEMANTIC_REQUEST",
+      "different_principal": "STOP_ORIGINAL_ATTEMPT_NEW_REQUEST_ONLY_BY_EXPLICIT_USER_DECISION",
+      "semantic_request_preserved_on_retry": true
+    },
+    "active_window": {
+      "source": "OPS-001 IDEMPOTENCY_ACTIVE_WINDOW",
+      "bound": "FINITE",
+      "value": "NOT YET SPECIFIED",
+      "server_set": true
+    },
+    "original_outcome_guarantee": "ONLY_WITHIN_GOVERNED_ACTIVE_WINDOW",
+    "after_window_expiry": "SERVER_TREATS_KEY_AS_NEW_REQUEST_CLIENT_RECONCILES_BEFORE_ANY_RESUBMISSION"
+  },
+  "interruption_recovery": {
+    "source_of_truth": [
+      "getEvidenceMetadata",
+      "listEvidence",
+      "getSubmission",
+      "getEvaluation"
+    ],
+    "by_upload_state": [
+      {
+        "api_upload_state": "AWAITING_CONTENT",
+        "readiness_evidence": "ANY",
+        "action": "RESEND_SAME_ORIGINAL_BYTES",
+        "may_request_finalization": false,
+        "resend_bytes": "ORIGINAL_BYTES",
+        "new_item": "NO",
+        "presents_as_finalized": false,
+        "requires_reconciliation_first": true,
+        "reason": "The first PUT is allowed while AWAITING_CONTENT."
+      },
+      {
+        "api_upload_state": "PROCESSING",
+        "readiness_evidence": "PUT_SUCCESS_OBSERVED",
+        "action": "REQUEST_FINALIZATION_AFTER_OBSERVED_PUT_SUCCESS",
+        "may_request_finalization": true,
+        "resend_bytes": "NOT_OFFERED",
+        "new_item": "NO",
+        "presents_as_finalized": false,
+        "requires_reconciliation_first": true,
+        "reason": "This client observed its own successful PUT for this item and attempt."
+      },
+      {
+        "api_upload_state": "PROCESSING",
+        "readiness_evidence": "NONE",
+        "action": "RECHECK_STATE_FINALIZATION_UNAVAILABLE",
+        "may_request_finalization": false,
+        "resend_bytes": "NOT_OFFERED",
+        "new_item": "EXPLICIT_USER_DECISION_ONLY",
+        "presents_as_finalized": false,
+        "requires_reconciliation_first": true,
+        "reason": "PROCESSING may be CONTENT_PENDING or FAILED_RETRYABLE; readiness is unobservable."
+      },
+      {
+        "api_upload_state": "FINALIZED",
+        "readiness_evidence": "ANY",
+        "action": "NONE_ALREADY_PRESERVED",
+        "may_request_finalization": false,
+        "resend_bytes": "NOT_OFFERED",
+        "new_item": "NO",
+        "presents_as_finalized": true,
+        "requires_reconciliation_first": true,
+        "reason": "The server reported FINALIZED; evidence is preserved, not analysed."
+      },
+      {
+        "api_upload_state": "REJECTED",
+        "readiness_evidence": "ANY",
+        "action": "START_NEW_EVIDENCE_ITEM",
+        "may_request_finalization": false,
+        "resend_bytes": "NOT_OFFERED",
+        "new_item": "EXPLICIT_USER_DECISION_ONLY",
+        "presents_as_finalized": false,
+        "requires_reconciliation_first": true,
+        "reason": "A new item is an explicit user decision; the original may still be reconciled by the server (possible duplicate)."
+      },
+      {
+        "api_upload_state": "DELETION_PENDING",
+        "readiness_evidence": "ANY",
+        "action": "NONE_GOVERNED_REMOVAL",
+        "may_request_finalization": false,
+        "resend_bytes": "NOT_OFFERED",
+        "new_item": "NO",
+        "presents_as_finalized": false,
+        "requires_reconciliation_first": true,
+        "reason": "Governed removal; no re-upload."
+      },
+      {
+        "api_upload_state": "DELETED",
+        "readiness_evidence": "ANY",
+        "action": "NONE_GOVERNED_REMOVAL",
+        "may_request_finalization": false,
+        "resend_bytes": "NOT_OFFERED",
+        "new_item": "NO",
+        "presents_as_finalized": false,
+        "requires_reconciliation_first": true,
+        "reason": "Governed removal; no re-upload."
+      }
+    ],
+    "assume_completion_after_interruption": false,
+    "download_content_to_resume": false,
+    "resumable_partial_transfer": false,
+    "server_persists_local_draft": false,
+    "local_draft_persistence": "NOT_SPECIFIED_NO_SENSITIVE_LOCAL_STORAGE_BY_DEFAULT",
+    "cancel_meaning": "STOP_LOCAL_TRANSFER_ONLY",
+    "cancel_removes_server_item": false,
+    "removal_path": "GOVERNED_DELETION_REQUEST_P7_WP5",
+    "metadata_unavailable": "OUTCOME_UNKNOWN"
+  },
+  "duplicates": {
+    "same_key_same_request": "ORIGINAL_OUTCOME_RETURNED_WITHIN_ACTIVE_WINDOW",
+    "deliberate_resubmission": "NEW_SUBMISSION_AND_NEW_EVIDENCE_ITEMS",
+    "global_digest_deduplication": false,
+    "already_analysed_claim_from_digest": false,
+    "client_declared_sha256": "ADVISORY_ONLY_SERVER_DIGEST_AUTHORITATIVE",
+    "client_computes_authoritative_digest": false
+  },
+  "visibility": {
+    "metadata_preview_fields": [
+      "evidence_id",
+      "submission_id",
+      "artifact_kind",
+      "upload_state",
+      "content_sha256",
+      "byte_length",
+      "declared_media_type",
+      "verified_media_type",
+      "display_filename",
+      "ingested_at",
+      "finalized_at",
+      "content_link"
+    ],
+    "metadata_preview_includes_bytes": false,
+    "storage_locator_shown": false,
+    "content_link_implies_permission": false,
+    "display_filename": "UNTRUSTED_ESCAPED_TEXT_NEVER_PATH_OR_MARKUP",
+    "local_unsent_echo": "USER_OWN_UNSENT_INPUT_ONLY",
+    "post_upload_content_display": "ONLY_VIA_getEvidenceContent_WITH_CONTENT_PERMISSION_P7_WP4",
+    "viewer_access_hint_is_authorization": false,
+    "fetch_content_to_hide_it": false,
+    "submitted_url_rendered_as_link": false,
+    "submitted_url_fetched_previewed_or_unfurled": false,
+    "narrow_layout_exposes_more": false
+  },
+  "authorization": {
+    "backend_authoritative": true,
+    "hidden_ui_security_control": false,
+    "server_authoritative_identifiers": true,
+    "client_fabricated_identifiers": false,
+    "owner_from_authenticated_principal": true,
+    "client_sets_owner_or_actor": false,
+    "case_owner_only_intake_commands": [
+      "createSubmission",
+      "createEvidenceUpload",
+      "putEvidenceContent",
+      "finalizeEvidence"
+    ],
+    "administrator_intake_by_role": false,
+    "not_found_masking_preserved": true,
+    "error_values_echoed": false,
+    "error_detail_exposes_internals": false
+  },
+  "input_validation": {
+    "client_checks_advisory_only": true,
+    "numeric_size_limit": "NOT YET SPECIFIED",
+    "accepted_media_types": "NOT YET SPECIFIED",
+    "limits_discoverable_via_api": false,
+    "invent_limit_values": false,
+    "media_validated_by_server_beyond_extension": true,
+    "declared_metadata_untrusted": true,
+    "language_gating_on_client": false
+  },
+  "instructions": [
+    {
+      "requirement_id": "INTAKE_IS_NOT_A_VERDICT",
+      "statement": "Uploading and preserving evidence is not an analysis result and never means safe."
+    },
+    {
+      "requirement_id": "ANALYSIS_IS_SEPARATE",
+      "statement": "Analysis is requested as a separate step and its result is presented separately."
+    },
+    {
+      "requirement_id": "URL_NOT_VISITED",
+      "statement": "A submitted URL is treated as text evidence; TrustLens does not open, fetch or preview it."
+    },
+    {
+      "requirement_id": "ENGLISH_DETECTION_SCOPE",
+      "statement": "Current detection scope is English (ADR-0014); other languages are not evaluated as safe."
+    },
+    {
+      "requirement_id": "ORIGINAL_PRESERVED",
+      "statement": "The original material is preserved unmodified; corrections never edit it."
+    },
+    {
+      "requirement_id": "SENSITIVE_MATERIAL_HANDLING",
+      "statement": "Submitted material is sensitive evidence; visibility follows permissions."
+    },
+    {
+      "requirement_id": "NO_RETENTION_PERIOD_STATED",
+      "statement": "Retention wording stays policy-neutral; no period is stated while OI-05 is open."
+    }
+  ],
+  "consent": {
+    "api_field_exists": false,
+    "consent_capture_designed": false,
+    "owner": "Sponsor + legal/governance with API owner (governed API revision if required)"
+  },
+  "analysis_request": {
+    "operation_id": "createEvaluations",
+    "default_request_fields": [],
+    "analysis_mode_selector_offered": false,
+    "predecessor_or_reason_fields_used": false,
+    "client_sets_decision_or_provenance_fields": false,
+    "ai_presentation": "AI_MAY_CONTRIBUTE_VALIDATED_GOVERNED_OBSERVATIONS_ONLY_DEFAULT_OFF"
+  },
+  "result_guardrails": {
+    "intake_shows_result": false,
+    "client_score_or_probability": false,
+    "client_verdict": false,
+    "upload_success_shown_as_safe": false,
+    "empty_evidence_list_implies_safe": false,
+    "detection_result_mutable": false
+  },
+  "accessibility": {
+    "keyboard_operable_capture": true,
+    "non_drag_drop_alternative": true,
+    "labelled_controls": true,
+    "error_summary_with_field_association": true,
+    "focus_to_error_summary": true,
+    "status_changes_announced": true,
+    "textual_status_equivalents": true,
+    "colour_only_meaning": false,
+    "time_limit_imposed": false,
+    "hover_only_interaction": false,
+    "certification_claim": false
+  },
+  "mobile": {
+    "platform_file_picker_only": true,
+    "camera_capture_offered": false,
+    "permission_parity_across_form_factors": true,
+    "breakpoint_values": "NOT YET SPECIFIED",
+    "backgrounding_interruption_uses_recovery_rules": true
+  },
+  "non_goals": [
+    "No frontend, React, CSS, routes, FastAPI, SQL/migrations or external network integration.",
+    "No new endpoint, API field, HTTP status, error code or persisted concept.",
+    "No evidence-content viewer, review or permission flow (P7-WP4).",
+    "No result, classification, explanation or recommended-action presentation (P7-WP3).",
+    "No re-analysis, correction, replay, report or deletion flow (P7-WP5).",
+    "No screenshot/image or document capture (Post-MVP / future).",
+    "No consent capture without an accepted API field.",
+    "No client-side scoring, probability, verdict, deduplication or language gating."
+  ],
+  "open_decisions": [
+    {
+      "decision": "Accepted media types and size limit are configuration with no discovery operation; how users learn limits before upload",
+      "owner": "API owner / Phase 9 configuration (governed API revision if a discovery operation is needed)",
+      "status": "DEFERRED"
+    },
+    {
+      "decision": "Consent / acknowledgement capture has no accepted API field",
+      "owner": "Sponsor + legal/governance with API owner",
+      "status": "DEFERRED"
+    },
+    {
+      "decision": "Email source accepted media type(s)",
+      "owner": "API owner / Phase 9 configuration",
+      "status": "DEFERRED"
+    },
+    {
+      "decision": "Whether intake offers an AI-assisted analysis_mode choice",
+      "owner": "Programme / P7-WP3 with AI governance",
+      "status": "DEFERRED"
+    },
+    {
+      "decision": "Local draft persistence on the device (sensitive content at rest in the browser)",
+      "owner": "Security Architect / Phase 9",
+      "status": "DEFERRED"
+    },
+    {
+      "decision": "Abandoned AWAITING_CONTENT items: user-visible cleanup path beyond governed deletion",
+      "owner": "P7-WP5 / API owner",
+      "status": "DEFERRED"
+    },
+    {
+      "decision": "Polling cadence, retry limits and backoff values",
+      "owner": "Phase 9 implementation profile (OPS-001 parameters)",
+      "status": "DEFERRED"
+    },
+    {
+      "decision": "Dedicated artifact_kind for user context (currently OTHER + vendor media type)",
+      "owner": "Next DATA-001-WP2 vocabulary revision (API-001 §41 #3)",
+      "status": "DEFERRED"
+    },
+    {
+      "decision": "No accepted API field distinguishes PROCESSING sub-states (CONTENT_PENDING / FAILED_RETRYABLE): re-PUT and finalize behaviour after an interrupted PUT, or a readiness indicator, needs API-owner clarification; until then finalization is unavailable without an observed successful PUT",
+      "owner": "API owner (governed API revision if required)",
+      "status": "DEFERRED"
+    }
+  ],
+  "carryovers": {
+    "G-09": {
+      "status": "OPEN",
+      "owner": "Phase 10 (testing/evaluation; QA Lead) with Sponsor for any corpus access"
+    },
+    "OI-05": {
+      "status": "OPEN",
+      "owner": "Sponsor + legal/governance"
+    },
+    "ASM-002": {
+      "status": "UNCONFIRMED / PROVISIONAL",
+      "owner": "Sponsor / Programme"
+    },
+    "P6-WP7-LOW-1": {
+      "status": "OPEN / NON-BLOCKING",
+      "owner": "Next governed Phase-6 snapshot revision / Programme governance"
+    }
+  },
+  "tenancy": {
+    "tenant_fields": false,
+    "tenant_selector": false
+  },
+  "retention": {
+    "duration": "NOT YET SPECIFIED",
+    "numeric_duration_invented": false
+  },
+  "claims": {
+    "frontend_implemented": false,
+    "api_implemented": false,
+    "production_ready": false,
+    "accessibility_compliant": false,
+    "detection_effectiveness": false,
+    "usability_tested": false,
+    "later_wp_started": false
+  },
+  "review_findings": [
+    {
+      "id": "MEDIUM-1",
+      "severity": "MEDIUM",
+      "summary": "Unsupported approval/closure evidence accepted (substring APPROVE, arbitrary PR integer, generic 40-hex SHA)",
+      "disposition": "CLOSED_BY_REREVIEW",
+      "owner": "P7-WP2 builder",
+      "round": 1,
+      "closed_in_round": 2
+    },
+    {
+      "id": "MEDIUM-2",
+      "severity": "MEDIUM",
+      "summary": "Unsafe reauthentication/retry identity model and unqualified duplicate-outcome guarantee; no unknown-outcome state",
+      "disposition": "CLOSED_BY_REREVIEW",
+      "owner": "P7-WP2 builder",
+      "round": 1,
+      "closed_in_round": 4
+    },
+    {
+      "id": "MEDIUM-3",
+      "severity": "MEDIUM",
+      "summary": "PROCESSING presented as bytes received/verifying although it also covers CONTENT_PENDING and FAILED_RETRYABLE",
+      "disposition": "CLOSED_BY_REREVIEW",
+      "owner": "P7-WP2 builder",
+      "round": 1,
+      "closed_in_round": 4
+    },
+    {
+      "id": "MEDIUM-4",
+      "severity": "MEDIUM",
+      "summary": "Fixed success presentation states override returned authoritative lifecycle fields",
+      "disposition": "CLOSED_BY_REREVIEW",
+      "owner": "P7-WP2 builder",
+      "round": 1,
+      "closed_in_round": 5
+    },
+    {
+      "id": "LOW-1",
+      "severity": "LOW",
+      "summary": "UXI-51 checks only five of the eight owned decisions; NEG-UXI-081 description says 'media list' but the mutation invents a size limit",
+      "disposition": "OPEN_CARRIED",
+      "owner": "P7-WP2 builder (next P7-WP2 revision)",
+      "round": 1,
+      "closed_in_round": null
+    },
+    {
+      "id": "LOW-2",
+      "severity": "LOW",
+      "summary": "Stale P7-WP1 closure wording (UX-001 / GATE-026 / UXF-01..02 still pending) and P7-WP2 dependency on that foundation",
+      "disposition": "OPEN_CARRIED",
+      "owner": "Programme governance (P7-WP1 post-merge closure correction)",
+      "round": 1,
+      "closed_in_round": null
+    },
+    {
+      "id": "INFO-1",
+      "severity": "INFO",
+      "summary": "roadmap.md Phase-7 decomposition is stale",
+      "disposition": "OPEN_INFORMATIONAL",
+      "owner": "Programme / roadmap owner",
+      "round": 1,
+      "closed_in_round": null
+    },
+    {
+      "id": "INFO-2",
+      "severity": "INFO",
+      "summary": "Insignificant owner capitalisation difference for P6-WP7-LOW-1 between UX-001 and the Phase-6 manifest",
+      "disposition": "OPEN_INFORMATIONAL",
+      "owner": "Programme governance",
+      "round": 1,
+      "closed_in_round": null
+    },
+    {
+      "id": "R2-MEDIUM-2",
+      "severity": "MEDIUM",
+      "summary": "Reconciliation reads accepted getEvidenceContent / getActiveKnowledge and an empty read list (not bound to resource, caller or content semantics)",
+      "disposition": "CLOSED_BY_REREVIEW",
+      "owner": "P7-WP2 builder",
+      "round": 2,
+      "closed_in_round": 4
+    },
+    {
+      "id": "R2-MEDIUM-3",
+      "severity": "MEDIUM",
+      "summary": "Finalization granted from the collapsed PROCESSING label; recovery action prose (ASSUME_FINALIZED) and display meaning not bound to semantics",
+      "disposition": "CLOSED_BY_REREVIEW",
+      "owner": "P7-WP2 builder",
+      "round": 2,
+      "closed_in_round": 4
+    },
+    {
+      "id": "R2-MEDIUM-4",
+      "severity": "MEDIUM",
+      "summary": "Missing result_availability defaulted to READY; cached FINALIZED overrode fresh contradictory metadata",
+      "disposition": "CLOSED_BY_REREVIEW",
+      "owner": "P7-WP2 builder",
+      "round": 2,
+      "closed_in_round": 5
+    },
+    {
+      "id": "R2-LOW-1",
+      "severity": "LOW",
+      "summary": "Round 2 re-confirms LOW-1 (eight-decision coverage; NEG-UXI-081 description)",
+      "disposition": "OPEN_CARRIED",
+      "owner": "P7-WP2 builder (next P7-WP2 revision)",
+      "round": 2,
+      "closed_in_round": null
+    },
+    {
+      "id": "R2-LOW-2",
+      "severity": "LOW",
+      "summary": "Round 2 re-confirms LOW-2 (P7-WP1 closure bookkeeping)",
+      "disposition": "OPEN_CARRIED",
+      "owner": "Programme governance (separate P7-WP1 lifecycle correction)",
+      "round": 2,
+      "closed_in_round": null
+    },
+    {
+      "id": "R2-INFO-1",
+      "severity": "INFO",
+      "summary": "Round 2 re-confirms INFO-1 (stale roadmap decomposition)",
+      "disposition": "OPEN_INFORMATIONAL",
+      "owner": "Programme / roadmap owner",
+      "round": 2,
+      "closed_in_round": null
+    },
+    {
+      "id": "R2-INFO-2",
+      "severity": "INFO",
+      "summary": "Round 2 re-confirms INFO-2 (owner capitalisation)",
+      "disposition": "OPEN_INFORMATIONAL",
+      "owner": "Programme governance",
+      "round": 2,
+      "closed_in_round": null
+    },
+    {
+      "id": "R3-MEDIUM-2",
+      "severity": "MEDIUM",
+      "summary": "Identifier provenance not identity-checked (case_id accepted as submission_id); essential submission filter removable",
+      "disposition": "CLOSED_BY_REREVIEW",
+      "owner": "P7-WP2 builder",
+      "round": 3,
+      "closed_in_round": 4
+    },
+    {
+      "id": "R3-MEDIUM-3",
+      "severity": "MEDIUM",
+      "summary": "PUT-success witness not bound to the evidence item and upload attempt; recovery reason prose unbound",
+      "disposition": "CLOSED_BY_REREVIEW",
+      "owner": "P7-WP2 builder",
+      "round": 3,
+      "closed_in_round": 4
+    },
+    {
+      "id": "R3-MEDIUM-4",
+      "severity": "MEDIUM",
+      "summary": "Public lifecycle not derived from the accepted internal machine (ORPHAN_DETECTED -> FINALIZED); staleness from send order despite overlap; ambiguous unordered pair forced to one state",
+      "disposition": "CLOSED_BY_REREVIEW",
+      "owner": "P7-WP2 builder",
+      "round": 3,
+      "closed_in_round": 5
+    },
+    {
+      "id": "R3-LOW-1",
+      "severity": "LOW",
+      "summary": "Round 3 re-confirms LOW-1 (eight-decision coverage; NEG-UXI-081 description)",
+      "disposition": "OPEN_CARRIED",
+      "owner": "P7-WP2 builder (next P7-WP2 revision)",
+      "round": 3,
+      "closed_in_round": null
+    },
+    {
+      "id": "R3-LOW-2",
+      "severity": "LOW",
+      "summary": "Round 3 re-confirms LOW-2 (P7-WP1 closure bookkeeping)",
+      "disposition": "OPEN_CARRIED",
+      "owner": "Programme governance (separate P7-WP1 lifecycle correction)",
+      "round": 3,
+      "closed_in_round": null
+    },
+    {
+      "id": "R3-INFO-1",
+      "severity": "INFO",
+      "summary": "Round 3 re-confirms INFO-1 (stale roadmap decomposition)",
+      "disposition": "OPEN_INFORMATIONAL",
+      "owner": "Programme / roadmap owner",
+      "round": 3,
+      "closed_in_round": null
+    },
+    {
+      "id": "R3-INFO-2",
+      "severity": "INFO",
+      "summary": "Round 3 re-confirms INFO-2 (owner capitalisation)",
+      "disposition": "OPEN_INFORMATIONAL",
+      "owner": "Programme governance",
+      "round": 3,
+      "closed_in_round": null
+    },
+    {
+      "id": "R4-MEDIUM-4",
+      "severity": "MEDIUM",
+      "summary": "Overlapping exchanges labelled FRESH kept their label (only KNOWN_STALE was normalized), so REJECTED/FINALIZED pairs gained unsupported server-order certainty",
+      "disposition": "CLOSED_BY_REREVIEW",
+      "owner": "P7-WP2 builder",
+      "round": 4,
+      "closed_in_round": 5
+    },
+    {
+      "id": "R4-LOW-1",
+      "severity": "LOW",
+      "summary": "Round 4 re-confirms LOW-1 (eight-decision coverage; NEG-UXI-081 description)",
+      "disposition": "OPEN_CARRIED",
+      "owner": "P7-WP2 builder (next P7-WP2 revision)",
+      "round": 4,
+      "closed_in_round": null
+    },
+    {
+      "id": "R4-LOW-2",
+      "severity": "LOW",
+      "summary": "Round 4 re-confirms LOW-2 (P7-WP1 closure bookkeeping)",
+      "disposition": "OPEN_CARRIED",
+      "owner": "Programme governance (separate P7-WP1 lifecycle correction)",
+      "round": 4,
+      "closed_in_round": null
+    },
+    {
+      "id": "R4-INFO-1",
+      "severity": "INFO",
+      "summary": "Round 4 re-confirms INFO-1 (stale roadmap decomposition)",
+      "disposition": "OPEN_INFORMATIONAL",
+      "owner": "Programme / roadmap owner",
+      "round": 4,
+      "closed_in_round": null
+    },
+    {
+      "id": "R4-INFO-2",
+      "severity": "INFO",
+      "summary": "Round 4 re-confirms INFO-2 (owner capitalisation)",
+      "disposition": "OPEN_INFORMATIONAL",
+      "owner": "Programme governance",
+      "round": 4,
+      "closed_in_round": null
+    },
+    {
+      "id": "R5-LOW-1",
+      "severity": "LOW",
+      "summary": "Final review re-confirms LOW-1 (eight-decision coverage; NEG-UXI-081 description)",
+      "disposition": "OPEN_CARRIED",
+      "owner": "P7-WP2 builder (next P7-WP2 revision)",
+      "round": 5,
+      "closed_in_round": null
+    },
+    {
+      "id": "R5-LOW-2",
+      "severity": "LOW",
+      "summary": "Final review re-confirms LOW-2 (stale P7-WP1 closure bookkeeping)",
+      "disposition": "OPEN_CARRIED",
+      "owner": "Programme governance (separate P7-WP1 lifecycle correction)",
+      "round": 5,
+      "closed_in_round": null
+    },
+    {
+      "id": "R5-INFO-1",
+      "severity": "INFO",
+      "summary": "Final review re-confirms INFO-1 (stale Phase-7 roadmap decomposition)",
+      "disposition": "OPEN_INFORMATIONAL",
+      "owner": "Programme / roadmap owner",
+      "round": 5,
+      "closed_in_round": null
+    },
+    {
+      "id": "R5-INFO-2",
+      "severity": "INFO",
+      "summary": "Final review re-confirms INFO-2 (owner capitalisation difference)",
+      "disposition": "OPEN_INFORMATIONAL",
+      "owner": "Programme governance",
+      "round": 5,
+      "closed_in_round": null
+    }
+  ],
+  "transfer_vs_server": {
+    "local_transfer_states": [
+      "NOT_STARTED",
+      "SENDING",
+      "SEND_COMPLETED_RESPONSE_RECEIVED",
+      "INTERRUPTED_RESPONSE_UNKNOWN"
+    ],
+    "local_transfer_upgrades_server_state": false,
+    "server_state_source": "upload_state of the latest EvidenceMetadataResponse",
+    "interrupted_transfer_presentation": "RECEIPT_UNKNOWN",
+    "reconcile_with": "getEvidenceMetadata",
+    "finalization_or_completion_shown_without_reconciliation": false,
+    "local_progress_proves_receipt": false,
+    "local_progress_proves_verification": false
+  },
+  "case_state_presentation": [
+    {
+      "api_case_state": "OPEN",
+      "state_id": "CASE_OPEN",
+      "kind": "PRESENTATION_ONLY",
+      "meaning": "Case open; it may already contain submissions and evaluations; no verdict.",
+      "implies_safe": false,
+      "implies_evaluated": false,
+      "implies_no_prior_analysis": false,
+      "terminal_for_intake": false
+    },
+    {
+      "api_case_state": "UNDER_REVIEW",
+      "state_id": "CASE_UNDER_REVIEW",
+      "kind": "PRESENTATION_ONLY",
+      "meaning": "Case under analyst review; prior analysis exists or may exist; no verdict.",
+      "implies_safe": false,
+      "implies_evaluated": false,
+      "implies_no_prior_analysis": false,
+      "terminal_for_intake": false
+    },
+    {
+      "api_case_state": "CLOSED",
+      "state_id": "CASE_CLOSED",
+      "kind": "PRESENTATION_ONLY",
+      "meaning": "Case closed; reopen is a separate governed command; no verdict.",
+      "implies_safe": false,
+      "implies_evaluated": false,
+      "implies_no_prior_analysis": false,
+      "terminal_for_intake": true
+    },
+    {
+      "api_case_state": "DELETION_PENDING",
+      "state_id": "CASE_REMOVAL_PENDING",
+      "kind": "PRESENTATION_ONLY",
+      "meaning": "Governed removal in progress; no intake.",
+      "implies_safe": false,
+      "implies_evaluated": false,
+      "implies_no_prior_analysis": false,
+      "terminal_for_intake": true
+    },
+    {
+      "api_case_state": "DELETED",
+      "state_id": "CASE_REMOVED",
+      "kind": "PRESENTATION_ONLY",
+      "meaning": "Removed under governance; never reconstructed.",
+      "implies_safe": false,
+      "implies_evaluated": false,
+      "implies_no_prior_analysis": false,
+      "terminal_for_intake": true
+    }
+  ],
+  "state_precedence": {
+    "authoritative_fields_take_precedence": true,
+    "optimistic_local_state_overrides_server": false,
+    "http_success_implies_expected_state": false,
+    "accepted_202_implies_pending": false,
+    "retry_path_may_regress_display": false,
+    "server_client_disagreement": "SERVER_STATE_WINS",
+    "missing_or_unrecognised_state": "STATE_UNKNOWN_RECONCILE",
+    "existing_case_prior_analysis": {
+      "assumed_absent": false,
+      "discovered_via": [
+        "listCaseEvaluations"
+      ],
+      "case_read": "getCase"
+    },
+    "completed_evaluation_handoff": "P7-WP3_RESULT_SURFACE",
+    "ordering_evidence": "NON_OVERLAPPING_EXCHANGES_AND_EXPLICIT_RECONCILIATION_READS_ONLY",
+    "server_timestamps_or_revisions_used": false,
+    "known_stale_response": "KEEP_LATER_TRUSTED_OBSERVATION_IF_LIFECYCLE_CONSISTENT_ELSE_STATE_CONFLICT_RECONCILE",
+    "fresh_response_reachable_from_observation": "SHOW_FRESH_STATE",
+    "fresh_response_not_reachable": "STATE_CONFLICT_RECONCILE",
+    "unordered_responses": "LIFECYCLE_ORDER_IF_EXACTLY_ONE_DIRECTION_REACHABLE_ELSE_STATE_CONFLICT_RECONCILE",
+    "conflict_presented_as_success": false,
+    "missing_companion": "STATE_UNKNOWN_RECONCILE",
+    "companion_defaulted": false,
+    "send_order_alone_establishes_staleness": false,
+    "overlapping_exchanges": "TREATED_AS_UNORDERED",
+    "public_reachability": "EXISTS_INTERNAL_PATH_BETWEEN_COVERED_INTERNAL_STATES",
+    "freshness_normalization": {
+      "rule": "OVERLAPPING_EXCHANGES_ARE_UNORDERED_WHATEVER_THE_CLIENT_LABEL",
+      "overlap_normalizes_labels": [
+        "FRESH",
+        "KNOWN_STALE"
+      ],
+      "normalized_to": "UNORDERED",
+      "client_labels_are_authoritative_ordering": false,
+      "authoritative_ordering_evidence": "NONE_IN_ACCEPTED_API",
+      "possible_transition_is_proof_of_occurrence": false
+    }
+  },
+  "unknown_outcome": {
+    "trigger": "COMMAND_SENT_RESPONSE_NOT_RECEIVED",
+    "steps": [
+      "RETRY_SAME_KEY_SAME_REQUEST_IF_STILL_HELD_IN_MEMORY",
+      "RECONCILE_WITH_PERMITTED_AUTHORITATIVE_READS",
+      "STOP_IN_OUTCOME_UNKNOWN"
+    ],
+    "assume_resource_id_received": false,
+    "ambiguous_candidates": "PRESENT_PERMITTED_CANDIDATES_NO_AUTOMATIC_BINDING",
+    "new_key_blind_resubmission": false,
+    "terminal_presentation_state": "OUTCOME_UNKNOWN",
+    "new_lookup_api": false,
+    "local_persistence_guarantee": false,
+    "user_initiated_new_request_after_unknown": "EXPLICIT_DECISION_NEW_KEY_WARNED_POSSIBLE_DUPLICATE",
+    "reconciliation_bindings": [
+      {
+        "command": "createCase",
+        "reconciled_resource": "Case",
+        "read": "listCases",
+        "read_method": "GET",
+        "read_path": "/api/v1/cases",
+        "read_response_schema": "CaseListResponse",
+        "read_target_resource": "Case",
+        "read_roles": [
+          "USER",
+          "ANALYST"
+        ],
+        "read_resource_authorization": "CASE_ACCESS",
+        "read_content_permission": "NONE",
+        "identity": "UNSCOPED_CANDIDATES",
+        "identity_establishable": false,
+        "identifiers": [],
+        "filters": [],
+        "outcomes": {
+          "zero": "OUTCOME_UNKNOWN",
+          "one": "OUTCOME_UNKNOWN_CANDIDATE_SHOWN_NO_BINDING",
+          "many": "OUTCOME_UNKNOWN_CANDIDATES_SHOWN_NO_BINDING"
+        },
+        "automatic_candidate_binding": false,
+        "when_unusable": "STOP_IN_OUTCOME_UNKNOWN"
+      },
+      {
+        "command": "createSubmission",
+        "reconciled_resource": "Submission",
+        "read": "listSubmissions",
+        "read_method": "GET",
+        "read_path": "/api/v1/cases/{case_id}/submissions",
+        "read_response_schema": "SubmissionListResponse",
+        "read_target_resource": "Submission",
+        "read_roles": [
+          "USER",
+          "ANALYST"
+        ],
+        "read_resource_authorization": "CASE_ACCESS",
+        "read_content_permission": "NONE",
+        "identity": "PARENT_SCOPED_CANDIDATES",
+        "identity_establishable": false,
+        "identifiers": [
+          {
+            "name": "case_id",
+            "role": "PARENT_SCOPE",
+            "canonical_resource": "Case",
+            "source": "ORIGINAL_COMMAND_PATH",
+            "prior_operation": null,
+            "prior_field": null
+          }
+        ],
+        "filters": [],
+        "outcomes": {
+          "zero": "OUTCOME_UNKNOWN",
+          "one": "OUTCOME_UNKNOWN_CANDIDATE_SHOWN_NO_BINDING",
+          "many": "OUTCOME_UNKNOWN_CANDIDATES_SHOWN_NO_BINDING"
+        },
+        "automatic_candidate_binding": false,
+        "when_unusable": "STOP_IN_OUTCOME_UNKNOWN"
+      },
+      {
+        "command": "createEvidenceUpload",
+        "reconciled_resource": "EvidenceItem",
+        "read": "listEvidence",
+        "read_method": "GET",
+        "read_path": "/api/v1/submissions/{submission_id}/evidence",
+        "read_response_schema": "EvidenceListResponse",
+        "read_target_resource": "EvidenceItem",
+        "read_roles": [
+          "USER",
+          "ANALYST"
+        ],
+        "read_resource_authorization": "CASE_ACCESS",
+        "read_content_permission": "NONE",
+        "identity": "PARENT_SCOPED_CANDIDATES",
+        "identity_establishable": false,
+        "identifiers": [
+          {
+            "name": "submission_id",
+            "role": "PARENT_SCOPE",
+            "canonical_resource": "Submission",
+            "source": "ORIGINAL_COMMAND_PATH",
+            "prior_operation": null,
+            "prior_field": null
+          }
+        ],
+        "filters": [],
+        "outcomes": {
+          "zero": "OUTCOME_UNKNOWN",
+          "one": "OUTCOME_UNKNOWN_CANDIDATE_SHOWN_NO_BINDING",
+          "many": "OUTCOME_UNKNOWN_CANDIDATES_SHOWN_NO_BINDING"
+        },
+        "automatic_candidate_binding": false,
+        "when_unusable": "STOP_IN_OUTCOME_UNKNOWN"
+      },
+      {
+        "command": "putEvidenceContent",
+        "reconciled_resource": "EvidenceItem",
+        "read": "getEvidenceMetadata",
+        "read_method": "GET",
+        "read_path": "/api/v1/evidence/{evidence_id}",
+        "read_response_schema": "EvidenceMetadataResponse",
+        "read_target_resource": "EvidenceItem",
+        "read_roles": [
+          "USER",
+          "ANALYST"
+        ],
+        "read_resource_authorization": "CASE_ACCESS",
+        "read_content_permission": "NONE",
+        "identity": "EXACT_TARGET",
+        "identity_establishable": true,
+        "identifiers": [
+          {
+            "name": "evidence_id",
+            "role": "TARGET",
+            "canonical_resource": "EvidenceItem",
+            "source": "ORIGINAL_COMMAND_PATH",
+            "prior_operation": null,
+            "prior_field": null
+          }
+        ],
+        "filters": [],
+        "outcomes": {
+          "found": "RENDER_RETURNED_AUTHORITATIVE_STATE",
+          "not_found_or_denied": "OUTCOME_UNKNOWN"
+        },
+        "automatic_candidate_binding": false,
+        "when_unusable": "STOP_IN_OUTCOME_UNKNOWN"
+      },
+      {
+        "command": "finalizeEvidence",
+        "reconciled_resource": "EvidenceItem",
+        "read": "getEvidenceMetadata",
+        "read_method": "GET",
+        "read_path": "/api/v1/evidence/{evidence_id}",
+        "read_response_schema": "EvidenceMetadataResponse",
+        "read_target_resource": "EvidenceItem",
+        "read_roles": [
+          "USER",
+          "ANALYST"
+        ],
+        "read_resource_authorization": "CASE_ACCESS",
+        "read_content_permission": "NONE",
+        "identity": "EXACT_TARGET",
+        "identity_establishable": true,
+        "identifiers": [
+          {
+            "name": "evidence_id",
+            "role": "TARGET",
+            "canonical_resource": "EvidenceItem",
+            "source": "ORIGINAL_COMMAND_PATH",
+            "prior_operation": null,
+            "prior_field": null
+          }
+        ],
+        "filters": [],
+        "outcomes": {
+          "found": "RENDER_RETURNED_AUTHORITATIVE_STATE",
+          "not_found_or_denied": "OUTCOME_UNKNOWN"
+        },
+        "automatic_candidate_binding": false,
+        "when_unusable": "STOP_IN_OUTCOME_UNKNOWN"
+      },
+      {
+        "command": "createEvaluations",
+        "reconciled_resource": "Evaluation",
+        "read": "listCaseEvaluations",
+        "read_method": "GET",
+        "read_path": "/api/v1/cases/{case_id}/evaluations",
+        "read_response_schema": "EvaluationListResponse",
+        "read_target_resource": "Evaluation",
+        "read_roles": [
+          "USER",
+          "ANALYST"
+        ],
+        "read_resource_authorization": "CASE_ACCESS",
+        "read_content_permission": "NONE",
+        "identity": "PARENT_SCOPED_CANDIDATES",
+        "identity_establishable": false,
+        "identifiers": [
+          {
+            "name": "case_id",
+            "role": "PARENT_SCOPE",
+            "canonical_resource": "Case",
+            "source": "PRIOR_AUTHORITATIVE_RESPONSE",
+            "prior_operation": "getSubmission",
+            "prior_field": "case_id"
+          }
+        ],
+        "filters": [
+          {
+            "name": "submission_id",
+            "role": "COMMAND_SCOPE",
+            "canonical_resource": "Submission",
+            "source": "ORIGINAL_COMMAND_PATH",
+            "required": true
+          }
+        ],
+        "outcomes": {
+          "zero": "OUTCOME_UNKNOWN",
+          "one": "OUTCOME_UNKNOWN_CANDIDATE_SHOWN_NO_BINDING",
+          "many": "OUTCOME_UNKNOWN_CANDIDATES_SHOWN_NO_BINDING"
+        },
+        "automatic_candidate_binding": false,
+        "when_unusable": "STOP_IN_OUTCOME_UNKNOWN"
+      }
+    ],
+    "stop_conditions": [
+      {
+        "condition": "REQUIRED_IDENTIFIER_NOT_HELD",
+        "outcome": "OUTCOME_UNKNOWN"
+      },
+      {
+        "condition": "RECONCILIATION_READ_FAILED_OR_DENIED",
+        "outcome": "OUTCOME_UNKNOWN"
+      },
+      {
+        "condition": "NO_UNAMBIGUOUS_MATCH",
+        "outcome": "OUTCOME_UNKNOWN"
+      }
+    ],
+    "identifier_from_lost_response": false
+  },
+  "scenarios": [
+    {
+      "id": "SC-01",
+      "name": "identical PUT retry returns FINALIZED after PROCESSING was shown",
+      "operation_id": "putEvidenceContent",
+      "response_state": "FINALIZED",
+      "companion": null,
+      "companion_present": false,
+      "observed_state": "PROCESSING",
+      "observed_companion": null,
+      "provenance": "FRESH",
+      "local_transfer": null,
+      "internal_state": null,
+      "expect_bytes_received": null,
+      "reconciled": null,
+      "expected": "EVIDENCE_FINALIZED",
+      "exchanges_overlap": false
+    },
+    {
+      "id": "SC-02",
+      "name": "202 batch already reports COMPLETED/AVAILABLE",
+      "operation_id": "createEvaluations",
+      "response_state": "COMPLETED",
+      "companion": "AVAILABLE",
+      "companion_present": true,
+      "observed_state": null,
+      "observed_companion": null,
+      "provenance": null,
+      "local_transfer": null,
+      "internal_state": null,
+      "expect_bytes_received": null,
+      "reconciled": null,
+      "expected": "READY",
+      "exchanges_overlap": false
+    },
+    {
+      "id": "SC-03",
+      "name": "202 batch already reports FAILED/NOT_PRODUCED",
+      "operation_id": "createEvaluations",
+      "response_state": "FAILED",
+      "companion": "NOT_PRODUCED",
+      "companion_present": true,
+      "observed_state": null,
+      "observed_companion": null,
+      "provenance": null,
+      "local_transfer": null,
+      "internal_state": null,
+      "expect_bytes_received": null,
+      "reconciled": null,
+      "expected": "ACTION_FAILED",
+      "exchanges_overlap": false
+    },
+    {
+      "id": "SC-04",
+      "name": "existing case under review (prior evaluations exist)",
+      "operation_id": "createCase",
+      "response_state": "UNDER_REVIEW",
+      "companion": null,
+      "companion_present": false,
+      "observed_state": null,
+      "observed_companion": null,
+      "provenance": null,
+      "local_transfer": null,
+      "internal_state": null,
+      "expect_bytes_received": null,
+      "reconciled": null,
+      "expected": "CASE_UNDER_REVIEW",
+      "exchanges_overlap": false
+    },
+    {
+      "id": "SC-05",
+      "name": "repeated finalize returns advanced FINALIZED",
+      "operation_id": "finalizeEvidence",
+      "response_state": "FINALIZED",
+      "companion": null,
+      "companion_present": false,
+      "observed_state": "PROCESSING",
+      "observed_companion": null,
+      "provenance": "FRESH",
+      "local_transfer": null,
+      "internal_state": null,
+      "expect_bytes_received": null,
+      "reconciled": null,
+      "expected": "EVIDENCE_FINALIZED",
+      "exchanges_overlap": false
+    },
+    {
+      "id": "SC-06",
+      "name": "client believes sent; server reports AWAITING_CONTENT",
+      "operation_id": "getEvidenceMetadata",
+      "response_state": "AWAITING_CONTENT",
+      "companion": null,
+      "companion_present": false,
+      "observed_state": null,
+      "observed_companion": null,
+      "provenance": null,
+      "local_transfer": "SEND_COMPLETED_RESPONSE_RECEIVED",
+      "internal_state": null,
+      "expect_bytes_received": null,
+      "reconciled": null,
+      "expected": "EVIDENCE_AWAITING_CONTENT",
+      "exchanges_overlap": false
+    },
+    {
+      "id": "SC-07",
+      "name": "response omits the lifecycle field",
+      "operation_id": "putEvidenceContent",
+      "response_state": null,
+      "companion": null,
+      "companion_present": false,
+      "observed_state": null,
+      "observed_companion": null,
+      "provenance": null,
+      "local_transfer": null,
+      "internal_state": null,
+      "expect_bytes_received": null,
+      "reconciled": null,
+      "expected": "STATE_UNKNOWN_RECONCILE",
+      "exchanges_overlap": false
+    },
+    {
+      "id": "SC-08",
+      "name": "submission response has an unrecognised lifecycle value",
+      "operation_id": "getSubmission",
+      "response_state": "ARCHIVED_FUTURE_VALUE",
+      "companion": null,
+      "companion_present": false,
+      "observed_state": null,
+      "observed_companion": null,
+      "provenance": null,
+      "local_transfer": null,
+      "internal_state": null,
+      "expect_bytes_received": null,
+      "reconciled": null,
+      "expected": "STATE_UNKNOWN_RECONCILE",
+      "exchanges_overlap": false
+    },
+    {
+      "id": "SC-09",
+      "name": "known-stale PROCESSING response after a trusted FINALIZED observation",
+      "operation_id": "putEvidenceContent",
+      "response_state": "PROCESSING",
+      "companion": null,
+      "companion_present": false,
+      "observed_state": "FINALIZED",
+      "observed_companion": null,
+      "provenance": "KNOWN_STALE",
+      "local_transfer": null,
+      "internal_state": null,
+      "expect_bytes_received": null,
+      "reconciled": null,
+      "expected": "EVIDENCE_FINALIZED",
+      "exchanges_overlap": false
+    },
+    {
+      "id": "SC-10",
+      "name": "PROCESSING covering CONTENT_PENDING is not receipt",
+      "operation_id": "getEvidenceMetadata",
+      "response_state": "PROCESSING",
+      "companion": null,
+      "companion_present": false,
+      "observed_state": null,
+      "observed_companion": null,
+      "provenance": null,
+      "local_transfer": null,
+      "internal_state": "CONTENT_PENDING",
+      "expect_bytes_received": false,
+      "reconciled": null,
+      "expected": "EVIDENCE_PROCESSING_NOT_FINALIZED",
+      "exchanges_overlap": false
+    },
+    {
+      "id": "SC-11",
+      "name": "PROCESSING covering FAILED_RETRYABLE is not receipt or verification",
+      "operation_id": "getEvidenceMetadata",
+      "response_state": "PROCESSING",
+      "companion": null,
+      "companion_present": false,
+      "observed_state": null,
+      "observed_companion": null,
+      "provenance": null,
+      "local_transfer": null,
+      "internal_state": "FAILED_RETRYABLE",
+      "expect_bytes_received": false,
+      "reconciled": null,
+      "expected": "EVIDENCE_PROCESSING_NOT_FINALIZED",
+      "exchanges_overlap": false
+    },
+    {
+      "id": "SC-12",
+      "name": "interrupted PUT without response",
+      "operation_id": "putEvidenceContent",
+      "response_state": null,
+      "companion": null,
+      "companion_present": false,
+      "observed_state": null,
+      "observed_companion": null,
+      "provenance": null,
+      "local_transfer": "INTERRUPTED_RESPONSE_UNKNOWN",
+      "internal_state": null,
+      "expect_bytes_received": null,
+      "reconciled": null,
+      "expected": "RECEIPT_UNKNOWN",
+      "exchanges_overlap": false
+    },
+    {
+      "id": "SC-13",
+      "name": "interrupted createSubmission, reconciliation inconclusive",
+      "operation_id": "createSubmission",
+      "response_state": null,
+      "companion": null,
+      "companion_present": false,
+      "observed_state": null,
+      "observed_companion": null,
+      "provenance": null,
+      "local_transfer": "INTERRUPTED_RESPONSE_UNKNOWN",
+      "internal_state": null,
+      "expect_bytes_received": null,
+      "reconciled": false,
+      "expected": "OUTCOME_UNKNOWN",
+      "exchanges_overlap": false
+    },
+    {
+      "id": "SC-14",
+      "name": "fresh DELETION_PENDING after FINALIZED",
+      "operation_id": "getEvidenceMetadata",
+      "response_state": "DELETION_PENDING",
+      "companion": null,
+      "companion_present": false,
+      "observed_state": "FINALIZED",
+      "observed_companion": null,
+      "provenance": "FRESH",
+      "local_transfer": null,
+      "internal_state": null,
+      "expect_bytes_received": null,
+      "reconciled": null,
+      "expected": "EVIDENCE_REMOVAL_PENDING",
+      "exchanges_overlap": false
+    },
+    {
+      "id": "SC-15",
+      "name": "202 batch reports QUEUED",
+      "operation_id": "createEvaluations",
+      "response_state": "QUEUED",
+      "companion": "NOT_YET_AVAILABLE",
+      "companion_present": true,
+      "observed_state": null,
+      "observed_companion": null,
+      "provenance": null,
+      "local_transfer": null,
+      "internal_state": null,
+      "expect_bytes_received": null,
+      "reconciled": null,
+      "expected": "ACTION_PENDING",
+      "exchanges_overlap": false
+    },
+    {
+      "id": "SC-16",
+      "name": "COMPLETED with null result_availability",
+      "operation_id": "getEvaluation",
+      "response_state": "COMPLETED",
+      "companion": null,
+      "companion_present": true,
+      "observed_state": null,
+      "observed_companion": null,
+      "provenance": null,
+      "local_transfer": null,
+      "internal_state": null,
+      "expect_bytes_received": null,
+      "reconciled": null,
+      "expected": "STATE_UNKNOWN_RECONCILE",
+      "exchanges_overlap": false
+    },
+    {
+      "id": "SC-17",
+      "name": "COMPLETED with result_availability missing",
+      "operation_id": "getEvaluation",
+      "response_state": "COMPLETED",
+      "companion": null,
+      "companion_present": false,
+      "observed_state": null,
+      "observed_companion": null,
+      "provenance": null,
+      "local_transfer": null,
+      "internal_state": null,
+      "expect_bytes_received": null,
+      "reconciled": null,
+      "expected": "STATE_UNKNOWN_RECONCILE",
+      "exchanges_overlap": false
+    },
+    {
+      "id": "SC-18",
+      "name": "COMPLETED with an unknown result_availability value",
+      "operation_id": "getEvaluation",
+      "response_state": "COMPLETED",
+      "companion": "MAYBE_LATER",
+      "companion_present": true,
+      "observed_state": null,
+      "observed_companion": null,
+      "provenance": null,
+      "local_transfer": null,
+      "internal_state": null,
+      "expect_bytes_received": null,
+      "reconciled": null,
+      "expected": "STATE_UNKNOWN_RECONCILE",
+      "exchanges_overlap": false
+    },
+    {
+      "id": "SC-19",
+      "name": "cached FINALIZED then fresh PROCESSING",
+      "operation_id": "getEvidenceMetadata",
+      "response_state": "PROCESSING",
+      "companion": null,
+      "companion_present": false,
+      "observed_state": "FINALIZED",
+      "observed_companion": null,
+      "provenance": "FRESH",
+      "local_transfer": null,
+      "internal_state": null,
+      "expect_bytes_received": null,
+      "reconciled": null,
+      "expected": "STATE_CONFLICT_RECONCILE",
+      "exchanges_overlap": false
+    },
+    {
+      "id": "SC-20",
+      "name": "cached FINALIZED then fresh AWAITING_CONTENT",
+      "operation_id": "getEvidenceMetadata",
+      "response_state": "AWAITING_CONTENT",
+      "companion": null,
+      "companion_present": false,
+      "observed_state": "FINALIZED",
+      "observed_companion": null,
+      "provenance": "FRESH",
+      "local_transfer": null,
+      "internal_state": null,
+      "expect_bytes_received": null,
+      "reconciled": null,
+      "expected": "STATE_CONFLICT_RECONCILE",
+      "exchanges_overlap": false
+    },
+    {
+      "id": "SC-21",
+      "name": "unordered COMPLETED/AVAILABLE versus FAILED/NOT_PRODUCED",
+      "operation_id": "getEvaluation",
+      "response_state": "FAILED",
+      "companion": "NOT_PRODUCED",
+      "companion_present": true,
+      "observed_state": "COMPLETED",
+      "observed_companion": "AVAILABLE",
+      "provenance": "UNORDERED",
+      "local_transfer": null,
+      "internal_state": null,
+      "expect_bytes_received": null,
+      "reconciled": null,
+      "expected": "STATE_CONFLICT_RECONCILE",
+      "exchanges_overlap": false
+    },
+    {
+      "id": "SC-22",
+      "name": "fresh REJECTED after FINALIZED (later integrity failure)",
+      "operation_id": "getEvidenceMetadata",
+      "response_state": "REJECTED",
+      "companion": null,
+      "companion_present": false,
+      "observed_state": "FINALIZED",
+      "observed_companion": null,
+      "provenance": "FRESH",
+      "local_transfer": null,
+      "internal_state": null,
+      "expect_bytes_received": null,
+      "reconciled": null,
+      "expected": "EVIDENCE_REJECTED",
+      "exchanges_overlap": false
+    },
+    {
+      "id": "SC-23",
+      "name": "fresh DELETED after FINALIZED",
+      "operation_id": "getEvidenceMetadata",
+      "response_state": "DELETED",
+      "companion": null,
+      "companion_present": false,
+      "observed_state": "FINALIZED",
+      "observed_companion": null,
+      "provenance": "FRESH",
+      "local_transfer": null,
+      "internal_state": null,
+      "expect_bytes_received": null,
+      "reconciled": null,
+      "expected": "EVIDENCE_REMOVED",
+      "exchanges_overlap": false
+    },
+    {
+      "id": "SC-24",
+      "name": "valid terminal evaluation response",
+      "operation_id": "getEvaluation",
+      "response_state": "FAILED",
+      "companion": "NOT_PRODUCED",
+      "companion_present": true,
+      "observed_state": "RUNNING",
+      "observed_companion": "NOT_YET_AVAILABLE",
+      "provenance": "FRESH",
+      "local_transfer": null,
+      "internal_state": null,
+      "expect_bytes_received": null,
+      "reconciled": null,
+      "expected": "ACTION_FAILED",
+      "exchanges_overlap": false
+    },
+    {
+      "id": "SC-25",
+      "name": "evidence response with an unrecognised lifecycle value",
+      "operation_id": "getEvidenceMetadata",
+      "response_state": "QUARANTINED_PUBLIC_FUTURE",
+      "companion": null,
+      "companion_present": false,
+      "observed_state": null,
+      "observed_companion": null,
+      "provenance": null,
+      "local_transfer": null,
+      "internal_state": null,
+      "expect_bytes_received": null,
+      "reconciled": null,
+      "expected": "STATE_UNKNOWN_RECONCILE",
+      "exchanges_overlap": false
+    },
+    {
+      "id": "SC-26",
+      "name": "evaluation response missing its state component",
+      "operation_id": "getEvaluation",
+      "response_state": null,
+      "companion": "AVAILABLE",
+      "companion_present": true,
+      "observed_state": null,
+      "observed_companion": null,
+      "provenance": null,
+      "local_transfer": null,
+      "internal_state": null,
+      "expect_bytes_received": null,
+      "reconciled": null,
+      "expected": "STATE_UNKNOWN_RECONCILE",
+      "exchanges_overlap": false
+    },
+    {
+      "id": "SC-27",
+      "name": "COMPLETED with NOT_PRODUCED (inconsistent combination)",
+      "operation_id": "getEvaluation",
+      "response_state": "COMPLETED",
+      "companion": "NOT_PRODUCED",
+      "companion_present": true,
+      "observed_state": null,
+      "observed_companion": null,
+      "provenance": null,
+      "local_transfer": null,
+      "internal_state": null,
+      "expect_bytes_received": null,
+      "reconciled": null,
+      "expected": "STATE_CONFLICT_RECONCILE",
+      "exchanges_overlap": false
+    },
+    {
+      "id": "SC-28",
+      "name": "known-stale REJECTED after a trusted PROCESSING observation (lifecycle-inconsistent)",
+      "operation_id": "getEvidenceMetadata",
+      "response_state": "REJECTED",
+      "companion": null,
+      "companion_present": false,
+      "observed_state": "PROCESSING",
+      "observed_companion": null,
+      "provenance": "KNOWN_STALE",
+      "local_transfer": null,
+      "internal_state": null,
+      "expect_bytes_received": null,
+      "reconciled": null,
+      "expected": "STATE_CONFLICT_RECONCILE",
+      "exchanges_overlap": false
+    },
+    {
+      "id": "SC-29",
+      "name": "fresh FINALIZED after REJECTED (ORPHAN_DETECTED reconciled to FINALIZED)",
+      "operation_id": "getEvidenceMetadata",
+      "response_state": "FINALIZED",
+      "companion": null,
+      "companion_present": false,
+      "observed_state": "REJECTED",
+      "observed_companion": null,
+      "provenance": "FRESH",
+      "local_transfer": null,
+      "internal_state": null,
+      "expect_bytes_received": null,
+      "reconciled": null,
+      "expected": "EVIDENCE_FINALIZED",
+      "exchanges_overlap": false
+    },
+    {
+      "id": "SC-30",
+      "name": "send-order 'stale' FINALIZED after REJECTED with overlapping requests",
+      "operation_id": "getEvidenceMetadata",
+      "response_state": "FINALIZED",
+      "companion": null,
+      "companion_present": false,
+      "observed_state": "REJECTED",
+      "observed_companion": null,
+      "provenance": "KNOWN_STALE",
+      "local_transfer": null,
+      "internal_state": null,
+      "expect_bytes_received": null,
+      "reconciled": null,
+      "expected": "STATE_CONFLICT_RECONCILE",
+      "exchanges_overlap": true
+    },
+    {
+      "id": "SC-31",
+      "name": "unordered REJECTED versus FINALIZED (both directions reachable)",
+      "operation_id": "getEvidenceMetadata",
+      "response_state": "FINALIZED",
+      "companion": null,
+      "companion_present": false,
+      "observed_state": "REJECTED",
+      "observed_companion": null,
+      "provenance": "UNORDERED",
+      "local_transfer": null,
+      "internal_state": null,
+      "expect_bytes_received": null,
+      "reconciled": null,
+      "expected": "STATE_CONFLICT_RECONCILE",
+      "exchanges_overlap": false
+    },
+    {
+      "id": "SC-32",
+      "name": "overlapping send-order 'stale' PROCESSING after FINALIZED (lifecycle order still unambiguous)",
+      "operation_id": "getEvidenceMetadata",
+      "response_state": "PROCESSING",
+      "companion": null,
+      "companion_present": false,
+      "observed_state": "FINALIZED",
+      "observed_companion": null,
+      "provenance": "KNOWN_STALE",
+      "local_transfer": null,
+      "internal_state": null,
+      "expect_bytes_received": null,
+      "reconciled": null,
+      "expected": "EVIDENCE_FINALIZED",
+      "exchanges_overlap": true
+    },
+    {
+      "id": "SC-33",
+      "name": "overlapping FRESH FINALIZED after REJECTED",
+      "operation_id": "getEvidenceMetadata",
+      "response_state": "FINALIZED",
+      "companion": null,
+      "companion_present": false,
+      "observed_state": "REJECTED",
+      "observed_companion": null,
+      "provenance": "FRESH",
+      "local_transfer": null,
+      "internal_state": null,
+      "expect_bytes_received": null,
+      "reconciled": null,
+      "expected": "STATE_CONFLICT_RECONCILE",
+      "exchanges_overlap": true
+    },
+    {
+      "id": "SC-34",
+      "name": "overlapping FRESH REJECTED after FINALIZED",
+      "operation_id": "getEvidenceMetadata",
+      "response_state": "REJECTED",
+      "companion": null,
+      "companion_present": false,
+      "observed_state": "FINALIZED",
+      "observed_companion": null,
+      "provenance": "FRESH",
+      "local_transfer": null,
+      "internal_state": null,
+      "expect_bytes_received": null,
+      "reconciled": null,
+      "expected": "STATE_CONFLICT_RECONCILE",
+      "exchanges_overlap": true
+    },
+    {
+      "id": "SC-35",
+      "name": "overlapping KNOWN_STALE REJECTED after FINALIZED",
+      "operation_id": "getEvidenceMetadata",
+      "response_state": "REJECTED",
+      "companion": null,
+      "companion_present": false,
+      "observed_state": "FINALIZED",
+      "observed_companion": null,
+      "provenance": "KNOWN_STALE",
+      "local_transfer": null,
+      "internal_state": null,
+      "expect_bytes_received": null,
+      "reconciled": null,
+      "expected": "STATE_CONFLICT_RECONCILE",
+      "exchanges_overlap": true
+    },
+    {
+      "id": "SC-36",
+      "name": "overlapping FRESH FINALIZED after PROCESSING (lifecycle admits one direction only)",
+      "operation_id": "getEvidenceMetadata",
+      "response_state": "FINALIZED",
+      "companion": null,
+      "companion_present": false,
+      "observed_state": "PROCESSING",
+      "observed_companion": null,
+      "provenance": "FRESH",
+      "local_transfer": null,
+      "internal_state": null,
+      "expect_bytes_received": null,
+      "reconciled": null,
+      "expected": "EVIDENCE_FINALIZED",
+      "exchanges_overlap": true
+    },
+    {
+      "id": "SC-37",
+      "name": "overlapping FRESH DELETION_PENDING after FINALIZED (governed deletion, one direction)",
+      "operation_id": "getEvidenceMetadata",
+      "response_state": "DELETION_PENDING",
+      "companion": null,
+      "companion_present": false,
+      "observed_state": "FINALIZED",
+      "observed_companion": null,
+      "provenance": "FRESH",
+      "local_transfer": null,
+      "internal_state": null,
+      "expect_bytes_received": null,
+      "reconciled": null,
+      "expected": "EVIDENCE_REMOVAL_PENDING",
+      "exchanges_overlap": true
+    }
+  ],
+  "recovery_action_semantics": {
+    "RESEND_SAME_ORIGINAL_BYTES": {
+      "may_request_finalization": false,
+      "resend_bytes": "ORIGINAL_BYTES",
+      "new_item": "NO",
+      "presents_as_finalized": false
+    },
+    "REQUEST_FINALIZATION_AFTER_OBSERVED_PUT_SUCCESS": {
+      "may_request_finalization": true,
+      "resend_bytes": "NOT_OFFERED",
+      "new_item": "NO",
+      "presents_as_finalized": false
+    },
+    "RECHECK_STATE_FINALIZATION_UNAVAILABLE": {
+      "may_request_finalization": false,
+      "resend_bytes": "NOT_OFFERED",
+      "new_item": "EXPLICIT_USER_DECISION_ONLY",
+      "presents_as_finalized": false
+    },
+    "NONE_ALREADY_PRESERVED": {
+      "may_request_finalization": false,
+      "resend_bytes": "NOT_OFFERED",
+      "new_item": "NO",
+      "presents_as_finalized": true
+    },
+    "START_NEW_EVIDENCE_ITEM": {
+      "may_request_finalization": false,
+      "resend_bytes": "NOT_OFFERED",
+      "new_item": "EXPLICIT_USER_DECISION_ONLY",
+      "presents_as_finalized": false
+    },
+    "NONE_GOVERNED_REMOVAL": {
+      "may_request_finalization": false,
+      "resend_bytes": "NOT_OFFERED",
+      "new_item": "NO",
+      "presents_as_finalized": false
+    }
+  },
+  "readiness_evidence": {
+    "values": [
+      "PUT_SUCCESS_OBSERVED",
+      "NONE"
+    ],
+    "PUT_SUCCESS_OBSERVED": {
+      "operation_id": "putEvidenceContent",
+      "success_status": 200,
+      "response_schema": "EvidenceMetadataResponse",
+      "meaning": "This client received the successful putEvidenceContent response for this evidence item and this exact upload attempt.",
+      "bound_to_evidence_id": "SAME_EVIDENCE_ID_AS_FINALIZE_PATH",
+      "bound_to_attempt": "SAME_SEMANTIC_UPLOAD_ATTEMPT",
+      "attempt_identity_fields": [
+        "evidence_id",
+        "content_sha256"
+      ],
+      "attempt_identity_rule": "Response evidence_id equals the item to finalize and response content_sha256 equals the digest of the exact bytes this client sent in this attempt.",
+      "reusable_across_items": false,
+      "reusable_across_attempts": false,
+      "persisted_beyond_attempt": false
+    },
+    "presentation_label_sufficient": false,
+    "rereading_processing_establishes_readiness": false,
+    "api_field_distinguishing_processing_substates": false
+  },
+  "reput_semantics": {
+    "first_put_allowed_state": "AWAITING_CONTENT",
+    "guaranteed_no_op_condition": "IDENTICAL_BYTES_AFTER_CONTENT_EXISTS",
+    "different_bytes_after_content_exists": "STATE_CONFLICT",
+    "processing_substates_without_stored_bytes": [
+      "CONTENT_PENDING",
+      "FAILED_RETRYABLE"
+    ],
+    "offered_in_processing_without_put_success": false,
+    "universally_safe": false
+  },
+  "semantic_claims": {
+    "NOT_FINAL": "Not finalized.",
+    "NO_STORED_BYTES_REPORTED": "The server has not reported stored bytes.",
+    "RECEIPT_NOT_PROVEN": "Not proof that bytes were received or verified.",
+    "MAY_BE_STORING_OR_RETRYING": "The server may still be storing, verifying or retrying.",
+    "BYTES_STORED_VERIFIED": "Bytes durably stored and digest-verified by the server.",
+    "PRESERVED_NOT_ANALYSED": "Evidence is preserved, not analysed.",
+    "REJECTED_NEW_ITEM_NEEDED": "Not usable; the client cannot resume it, and server reconciliation may still change its state.",
+    "GOVERNED_REMOVAL_PENDING": "Governed removal is in progress; content is not shown.",
+    "REMOVED_NOT_RECONSTRUCTED": "Removed under governance; never reconstructed or previewed.",
+    "SUBMISSION_OPEN_FOR_INTAKE": "Submission open for evidence intake.",
+    "INTAKE_RECORDED": "Evidence intake recorded by the server.",
+    "ANALYSIS_SEPARATE": "Analysis is a separate request.",
+    "SERVER_PROCESSING_RECORDED": "Server-side processing recorded.",
+    "SERVER_PROCESSING_FINISHED": "Server-side processing recorded as finished.",
+    "SOME_PROCESSING_FAILED": "Some processing failed; items that are not finalized are shown.",
+    "PROCESSING_FAILED": "Processing failed.",
+    "NO_OUTCOME_IMPLIED": "No analysis outcome, verdict or safety is implied."
+  },
+  "lifecycle_transitions": {
+    "evaluation": {
+      "QUEUED|NOT_YET_AVAILABLE": [
+        "RUNNING|NOT_YET_AVAILABLE",
+        "FAILED|NOT_PRODUCED"
+      ],
+      "RUNNING|NOT_YET_AVAILABLE": [
+        "COMPLETED|AVAILABLE",
+        "FAILED|NOT_PRODUCED"
+      ],
+      "COMPLETED|AVAILABLE": [
+        "COMPLETED|REMOVED_UNDER_GOVERNANCE"
+      ],
+      "COMPLETED|REMOVED_UNDER_GOVERNANCE": [],
+      "FAILED|NOT_PRODUCED": []
+    },
+    "sources": [
+      "DATA-001-WP2 §11 cross-store state machine (incl. ORPHAN_DETECTED -> FINALIZED, FINALIZED -> INTEGRITY_FAILED)",
+      "api_upload_state.maps_from (internal -> public projection)",
+      "API-001 §13.1 / api_result_availability vocabulary note (evaluation)"
+    ],
+    "upload_internal_source": "DATA-001-WP2 §11 cross-store state machine (parsed by the validator) projected through api_upload_state.maps_from"
+  },
+  "finalization_scenarios": [
+    {
+      "id": "FE-01",
+      "name": "witness for the same item and attempt",
+      "witness": {
+        "evidence_id": "A",
+        "content_sha256": "D1"
+      },
+      "target": {
+        "evidence_id": "A",
+        "sent_digest": "D1"
+      },
+      "upload_state": "PROCESSING",
+      "expected_finalization_allowed": true
+    },
+    {
+      "id": "FE-02",
+      "name": "witness for item A reused to finalize item B",
+      "witness": {
+        "evidence_id": "A",
+        "content_sha256": "D1"
+      },
+      "target": {
+        "evidence_id": "B",
+        "sent_digest": "D1"
+      },
+      "upload_state": "PROCESSING",
+      "expected_finalization_allowed": false
+    },
+    {
+      "id": "FE-03",
+      "name": "witness from a different upload attempt (different bytes)",
+      "witness": {
+        "evidence_id": "A",
+        "content_sha256": "D0"
+      },
+      "target": {
+        "evidence_id": "A",
+        "sent_digest": "D1"
+      },
+      "upload_state": "PROCESSING",
+      "expected_finalization_allowed": false
+    },
+    {
+      "id": "FE-04",
+      "name": "no witness (interrupted PUT)",
+      "witness": null,
+      "target": {
+        "evidence_id": "A",
+        "sent_digest": "D1"
+      },
+      "upload_state": "PROCESSING",
+      "expected_finalization_allowed": false
+    },
+    {
+      "id": "FE-05",
+      "name": "valid witness but the server already reports FINALIZED",
+      "witness": {
+        "evidence_id": "A",
+        "content_sha256": "D1"
+      },
+      "target": {
+        "evidence_id": "A",
+        "sent_digest": "D1"
+      },
+      "upload_state": "FINALIZED",
+      "expected_finalization_allowed": false
+    }
+  ],
+  "recovery_reasons": {
+    "AWAITING_CONTENT|ANY": "The first PUT is allowed while AWAITING_CONTENT.",
+    "PROCESSING|PUT_SUCCESS_OBSERVED": "This client observed its own successful PUT for this item and attempt.",
+    "PROCESSING|NONE": "PROCESSING may be CONTENT_PENDING or FAILED_RETRYABLE; readiness is unobservable.",
+    "FINALIZED|ANY": "The server reported FINALIZED; evidence is preserved, not analysed.",
+    "REJECTED|ANY": "A new item is an explicit user decision; the original may still be reconciled by the server (possible duplicate).",
+    "DELETION_PENDING|ANY": "Governed removal; no re-upload.",
+    "DELETED|ANY": "Governed removal; no re-upload."
+  }
+}
