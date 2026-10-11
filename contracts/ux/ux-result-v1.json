@@ -5,8 +5,8 @@
   "work_package": "P7-WP3",
   "baseline": "47f57d1d8f2b9f2ddedb2b438bc40ac3f32e4a70",
   "lifecycle": {
-    "state": "APPROVED",
-    "status": "P7-WP3 RESULT PRESENTATION APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING",
+    "state": "CLOSED",
+    "status": "P7-WP3 RESULT PRESENTATION CLOSED",
     "decision_vocabulary": [
       "APPROVE",
       "REQUEST_CHANGES"
@@ -139,7 +139,25 @@
       "record_reference": "GATE-028 §6",
       "reviewer_role": "Independent reviewer"
     },
-    "merge_evidence": null
+    "merge_evidence": {
+      "repository": "nishanth-cryptos/TrustLens",
+      "pr_number": 37,
+      "pr_head_commit": "b4c457257f4b7880d30f35fc98350d745e59ffa2",
+      "merge_commit": "8d9b71a3d9fbd864d7b373e3bd4c541348a44349",
+      "base_commit": "47f57d1d8f2b9f2ddedb2b438bc40ac3f32e4a70",
+      "remote_ci": {
+        "workflow": "knowledge-validation",
+        "checks": [
+          "Knowledge validation suite",
+          "Quality-gate self-test (gate must bite)"
+        ],
+        "conclusion": "success",
+        "pr_head_run_id": 38116825962,
+        "merge_commit_run_id": 38118409062
+      },
+      "verification": "INDEPENDENT_PROGRAMME_VERIFICATION",
+      "verification_reference": "GATE-028 §8"
+    }
   },
   "engine_version": "1.0.0",
   "foundation": {

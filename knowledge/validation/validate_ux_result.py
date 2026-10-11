@@ -4810,10 +4810,25 @@ DISPLAY_TEXT = [['explanation_hierarchy[].title', 'A', 'What TrustLens concluded
 REPOSITORY = "nishanth-cryptos/TrustLens"
 BASELINE_PR = 36                      # P7-WP2 closure merge (PR #36) is the baseline; a P7-WP3 PR must be later
 RUN_ID_FLOOR = 37957767407            # recorded PR #36 merge-commit run (knowledge-validation run 70); later runs are greater
-# No P7-WP3 merge has been independently verified. A governed post-merge step must pin the verified record here before
-# CLOSED can pass; until then CLOSED fails closed.
-VERIFIED_MERGE_EVIDENCE = None
-VERIFIED_CLOSURE_APPROVAL = None
+# Independently verified P7-WP3 merge record (P7-WP2 / Phase-6 P6C-05 precedent), pinned by the governed post-merge closure
+# step from programme-verified GitHub evidence (PR #37, PR-head run 38116825962, merge-commit run 38118409062; GATE-028 §8).
+# Contract-recorded merge evidence that differs in any field never establishes closure. Offline validation cannot
+# authenticate GitHub; it checks exact agreement with this pinned, independently verified record.
+VERIFIED_MERGE_EVIDENCE = {
+    "repository": "nishanth-cryptos/TrustLens",
+    "pr_number": 37,
+    "pr_head_commit": "b4c457257f4b7880d30f35fc98350d745e59ffa2",
+    "merge_commit": "8d9b71a3d9fbd864d7b373e3bd4c541348a44349",
+    "base_commit": "47f57d1d8f2b9f2ddedb2b438bc40ac3f32e4a70",
+    "remote_ci": {"workflow": "knowledge-validation",
+                  "checks": ["Knowledge validation suite", "Quality-gate self-test (gate must bite)"],
+                  "conclusion": "success", "pr_head_run_id": 38116825962, "merge_commit_run_id": 38118409062},
+    "verification": "INDEPENDENT_PROGRAMME_VERIFICATION",
+    "verification_reference": "GATE-028 §8",
+}
+# The independent approval that PR #37 merged (round 8, GATE-028 §6). CLOSED must rest on exactly this approval; review
+# rounds recorded after the merge cannot manufacture a different approval for the closed state.
+VERIFIED_CLOSURE_APPROVAL = {"round": 8, "decision": "APPROVE", "record_reference": "GATE-028 §6", "reviewer_role": "Independent reviewer"}
 WORKFLOW_FILE = ".github/workflows/knowledge-validation.yml"
 CI_CHECKS = ["Knowledge validation suite", "Quality-gate self-test (gate must bite)"]
 DECISIONS = {"APPROVE", "REQUEST_CHANGES"}

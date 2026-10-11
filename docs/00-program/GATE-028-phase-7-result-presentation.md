@@ -4,7 +4,7 @@
 | --- | --- |
 | Document ID | GATE-028 |
 | Version | 0.1 |
-| Status | P7-WP3 RESULT PRESENTATION APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING |
+| Status | P7-WP3 RESULT PRESENTATION CLOSED |
 | Phase / work package | Phase 7 — UX, Evidence & Reporting Design / P7-WP3 |
 | Owner role | Product / Result UX |
 | Branch | phase7-wp3-result-presentation |
@@ -20,10 +20,11 @@ The builder confirmed that GATE-028 and UX-003 were unused at the baseline. It a
 merge (`47f57d1…`) had successful post-merge CI on both required jobs before starting.
 
 The first independent review and six targeted re-reviews returned REQUEST_CHANGES (§6). After the builder's targeted
-corrections, the final independent review (round 8, §6) returned **APPROVE**. P7-WP3 is **APPROVED following independent
-review — remote CI + merge pending**. It is not merged and not CLOSED: CLOSED requires the PR merge and remote-CI
-evidence pinned by the governed post-merge step. P7-WP4 and later work packages are not started. The gate adds
-no API capability, persisted concept, frontend or runtime.
+corrections, the final independent review (round 8, §6) returned **APPROVE**. PR #37 then merged with both required CI
+jobs successful on the PR-head and merge-commit runs, and the governed post-merge step (§8) recorded **P7-WP3 RESULT
+PRESENTATION CLOSED**. Independent design approval (§6, round 8) and post-merge closure (§8) are separate records; no
+further review round was created for the closure. P7-WP4 and later work packages are not started. The gate adds no API
+capability, persisted concept, frontend or runtime.
 
 ## 2. Acceptance criteria
 
@@ -46,7 +47,7 @@ no API capability, persisted concept, frontend or runtime.
 | 15 | Carried items unchanged; open decisions owned; no unsupported claims | UX-003 §15–§16; UXR-49…UXR-58 | MET (builder) |
 | 16 | Validator, negative mutations and CI self-test defect bite | `validate_ux_result.py`; fixtures; `ci_selftest.py` | MET (builder) |
 | 17 | Independent review | §6 round 1 REQUEST_CHANGES (0/1/5/0/0); round 2 REQUEST_CHANGES (0/0/3/1/1); round 3 REQUEST_CHANGES (0/0/1/1/1); round 4 REQUEST_CHANGES (0/0/1/1/1); round 5 REQUEST_CHANGES (0/0/1/1/1); round 6 REQUEST_CHANGES (0/0/2/1/1); round 7 REQUEST_CHANGES (0/0/2/2/1); round 8 final review APPROVE (0/0/0/1/1) | **MET** |
-| 18 | Remote CI + merge | Not yet performed | **PENDING** |
+| 18 | Remote CI + merge | §8 — PR #37 merged as `8d9b71a`; runs 38116825962 (PR head) and 38118409062 (merge commit) success | **MET** |
 | 19 | Rendering bound to the actual caller; unauthorized or mismatched payloads withheld; announcements leak nothing (HIGH-1) | UX-003 §12, §15; UXR-69, UXR-70, UXR-75 | CLOSED (round 2) |
 | 20 | Builder self-review and false provenance never approve; review references resolve to the Markdown-bounded section holding the record, excluding fenced and commented content (MEDIUM-1, MEDIUM-1-R2, R3-MEDIUM-1, R4-MEDIUM-1, R5-MEDIUM-1, R6-MEDIUM-1, R6-MEDIUM-2, R7-MEDIUM-1, R7-MEDIUM-2) | UX-003 §1; UXR-06, UXR-67, UXR-76 | CLOSED (round 8) |
 | 21 | Only an observed SUCCESS response renders (MEDIUM-2) | UX-003 §3; UXR-68, UXR-75 | CLOSED (round 2) |
@@ -86,10 +87,9 @@ accessibility-conformance or detection-effectiveness claim.
 
 ## 5. Decision
 
-**P7-WP3 RESULT PRESENTATION APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING.** Recommendation:
-proceed to the authorized P7-WP3 commit and PR. After the PR merges with successful remote CI, the governed post-merge
-step may pin the merge evidence and record P7-WP3 as CLOSED. Not merged, not closed and not an implemented result
-experience; P7-WP4 is not started.
+**P7-WP3 RESULT PRESENTATION CLOSED.** P7-WP3 is closed as a design and contract deliverable: independently approved
+(§6, round 8) and merged with successful remote CI (§8). This is not an implemented result experience. P7-WP4 is not
+started.
 
 ## 6. Independent review record
 
@@ -213,3 +213,23 @@ merge evidence is absent, so CLOSED remains unavailable (fails closed).
 | R8-LOW-1 | 8 | LOW | Round 8 re-confirms R2-LOW-1: clause detection in the supplemental wording classifier is heuristic (non-blocking; exact governed-text binding remains primary) | OPEN_CARRIED | — | P7-WP3 builder |
 | R8-INFO-1 | 8 | INFO | Round 8 re-confirms R2-INFO-1: Phase-3 result.py matched_rule_ids counts any MATCHED entry while aggregation excludes SUPPRESSION rules | OPEN_INFORMATIONAL | — | Detection owner (Phase-3 governance) |
 <!-- UXR:findings:END -->
+
+## 8. Post-merge closure record
+
+| Item | Value |
+| --- | --- |
+| Repository | `nishanth-cryptos/TrustLens` |
+| PR | #37 — https://github.com/nishanth-cryptos/TrustLens/pull/37 — merged into `main` from `phase7-wp3-result-presentation` |
+| Original baseline | `47f57d1d8f2b9f2ddedb2b438bc40ac3f32e4a70` (P7-WP2 closure merge, PR #36) |
+| PR-head commit | `b4c457257f4b7880d30f35fc98350d745e59ffa2` |
+| Merge commit | `8d9b71a3d9fbd864d7b373e3bd4c541348a44349` (merged 2026-10-11T06:32:41Z) |
+| Workflow | `knowledge-validation` (`.github/workflows/knowledge-validation.yml`) |
+| PR-head run | 38116825962 (run number 72) — event `pull_request`, head `b4c4572…`, completed / success — https://github.com/nishanth-cryptos/TrustLens/actions/runs/38116825962 |
+| Merge-commit run | 38118409062 (run number 73) — event `push`, branch `main`, head `8d9b71a…`, completed / success — https://github.com/nishanth-cryptos/TrustLens/actions/runs/38118409062 |
+| Required jobs (both runs) | "Knowledge validation suite" — success; "Quality-gate self-test (gate must bite)" — success |
+| PR commits | `26446d0` (approved P7-WP3 package) and `b4c4572` (narrow `ci_selftest.py` timeout fix, after the approved commit's self-test job exceeded the former 300 s subprocess limit) |
+| Closure rests on | Independent approval round 8 (§6); no later approval round exists |
+| Evidence source | Programme-supplied GitHub evidence, re-checked by the builder. Local git confirms `origin/main` contains merge commit `8d9b71a…` with parents `47f57d1…` and `b4c4572…`. The GitHub API confirmed PR #37 merged (head `b4c4572…`, merge commit `8d9b71a…`), run 38116825962 completed / success with both jobs on `b4c4572…`, and run 38118409062 (run number 73, event `push`, branch `main`) completed / success with both jobs on `8d9b71a…` |
+| Offline boundary | The validator pins this record (VERIFIED_MERGE_EVIDENCE) and requires the contract's merge evidence to match it exactly, with the workflow name taken from the repository's own workflow file; it cannot authenticate GitHub and does not contact it |
+| Lifecycle effect | APPROVED → **P7-WP3 RESULT PRESENTATION CLOSED** |
+| Not implied | No production frontend, backend runtime or user-facing result experience exists; P7-WP4 not started |

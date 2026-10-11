@@ -4,7 +4,7 @@
 | --- | --- |
 | Document ID | UX-003 |
 | Version | 0.1 |
-| Status | P7-WP3 RESULT PRESENTATION APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING |
+| Status | P7-WP3 RESULT PRESENTATION CLOSED |
 | Phase | Phase 7 — UX, Evidence & Reporting Design |
 | Work package | P7-WP3 |
 | Owner role | Product / Result UX |
@@ -26,7 +26,8 @@ and 5 returned REQUEST_CHANGES with the same counts on the review-table structur
 returned REQUEST_CHANGES (BLOCKER 0 / HIGH 0 / MEDIUM 2 / LOW 1 / INFO 1) on table recognition and container context,
 and round 7 returned REQUEST_CHANGES (BLOCKER 0 / HIGH 0 / MEDIUM 2 / LOW 2 / INFO 1) on native-GFM precedence and list
 containers. After the builder's correction, the final independent review (round 8) returned APPROVE (BLOCKER 0 / HIGH 0 /
-MEDIUM 0 / LOW 1 / INFO 1); the contract is approved, with remote CI and merge pending. It consumes, and changes nothing in:
+MEDIUM 0 / LOW 1 / INFO 1), and the contract was CLOSED after PR #37 merged (GATE-028 §8). It consumes, and changes nothing
+in:
 
 - the closed Phase-6 contracts (PHASE-6-CLOSURE: PHASE 6 CLOSED);
 - the accepted API catalog and OpenAPI encoding (exactly the bytes pinned by the Phase-6 snapshot);
@@ -96,14 +97,15 @@ open decisions (§16):
 
 ### Review history and lifecycle
 
-P7-WP3 is **APPROVED following independent review — remote CI + merge pending**. Rounds 1 to 7 (GATE-028 §6) returned
+P7-WP3 is **CLOSED**: independently approved in round 8 (GATE-028 §6) and closed after PR #37 merged with both required
+CI jobs successful (GATE-028 §8). Rounds 1 to 7 (GATE-028 §6) returned
 REQUEST_CHANGES, and round 8 (GATE-028 §6) returned APPROVE. HIGH-1, MEDIUM-2, MEDIUM-4 and MEDIUM-5 were closed in round
 2; MEDIUM-3, MEDIUM-3-R2 and R2-MEDIUM-1 were closed in round 3. The review-governance findings (MEDIUM-1, MEDIUM-1-R2,
 R3-MEDIUM-1, R4-MEDIUM-1, R5-MEDIUM-1) and the round-6/7 findings (R6- and R7-MEDIUM-1/2) were closed in round 8. The
 carried LOW (clause-detection heuristic, P7-WP3) and INFO (Phase-3 matched-rule counting, Detection owner) stay open and
-non-blocking. CLOSED needs PR merge and remote-CI evidence pinned by the
-governed post-merge step; none exists yet. Approval and closure are
-fail-closed:
+non-blocking. The recorded merge evidence (PR #37, PR-head run 38116825962, merge-commit run 38118409062) is pinned in
+the validator; the offline validator checks exact agreement with that pin and does not contact GitHub. Approval and
+closure are fail-closed:
 
 - **Independence:** a review record counts only when its kind is an independent review kind, its reviewer role is an
   independent reviewer role distinct from the P7-WP3 builder, its evidence source is the permitted programme-supplied
@@ -826,7 +828,8 @@ claim.
 No tenant_id, tenant selector or organization switcher is introduced, and no numeric retention duration is invented.
 G-09 means no labelled real-world evaluation corpus, so there is no accuracy or effectiveness claim. There is no
 frontend or API implementation and no production-readiness or usability-testing claim. The round-8 independent approval
-(GATE-028 §6) covers this contract only and is not a merge or a closure.
+(GATE-028 §6) and the post-merge closure (GATE-028 §8) cover this design contract only; no result experience is
+implemented.
 `ENGINE_VERSION = 1.0.0` remains unchanged. P7-WP4 is not started.
 
 ## 16. Open decisions
