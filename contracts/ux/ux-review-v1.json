@@ -1,0 +1,2754 @@
+{
+  "contract_id": "UX-004",
+  "contract_version": "0.1.0",
+  "phase": "Phase 7 — UX, Evidence & Reporting Design",
+  "work_package": "P7-WP4",
+  "baseline": "e58dac6bff63a8cb79512338919af6d15db958c1",
+  "lifecycle": {
+    "state": "APPROVED",
+    "status": "P7-WP4 EVIDENCE REVIEW AND SECURITY UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING",
+    "decision_vocabulary": [
+      "APPROVE",
+      "REQUEST_CHANGES"
+    ],
+    "review_history": [
+      {
+        "round": 1,
+        "kind": "INITIAL_INDEPENDENT_REVIEW",
+        "decision": "REQUEST_CHANGES",
+        "counts": {
+          "BLOCKER": 0,
+          "HIGH": 1,
+          "MEDIUM": 3,
+          "LOW": 0,
+          "INFO": 0
+        },
+        "reviewer_role": "Independent reviewer",
+        "record_reference": "GATE-029 §7",
+        "evidence_source": "Independent review result supplied to the builder by the programme"
+      },
+      {
+        "round": 2,
+        "kind": "TARGETED_INDEPENDENT_REREVIEW",
+        "decision": "REQUEST_CHANGES",
+        "counts": {
+          "BLOCKER": 0,
+          "HIGH": 0,
+          "MEDIUM": 2,
+          "LOW": 0,
+          "INFO": 0
+        },
+        "reviewer_role": "Independent reviewer",
+        "record_reference": "GATE-029 §7",
+        "evidence_source": "Independent review result supplied to the builder by the programme"
+      },
+      {
+        "round": 3,
+        "kind": "TARGETED_INDEPENDENT_REREVIEW",
+        "decision": "REQUEST_CHANGES",
+        "counts": {
+          "BLOCKER": 0,
+          "HIGH": 0,
+          "MEDIUM": 1,
+          "LOW": 0,
+          "INFO": 0
+        },
+        "reviewer_role": "Independent reviewer",
+        "record_reference": "GATE-029 §7",
+        "evidence_source": "Independent review result supplied to the builder by the programme"
+      },
+      {
+        "round": 4,
+        "kind": "TARGETED_INDEPENDENT_REREVIEW",
+        "decision": "APPROVE",
+        "counts": {
+          "BLOCKER": 0,
+          "HIGH": 0,
+          "MEDIUM": 0,
+          "LOW": 0,
+          "INFO": 0
+        },
+        "reviewer_role": "Independent reviewer",
+        "record_reference": "GATE-029 §7",
+        "evidence_source": "Independent review result supplied to the builder by the programme"
+      }
+    ],
+    "approval": {
+      "round": 4,
+      "decision": "APPROVE",
+      "record_reference": "GATE-029 §7",
+      "reviewer_role": "Independent reviewer"
+    },
+    "merge_evidence": null
+  },
+  "engine_version": "1.0.0",
+  "foundation": {
+    "foundation_contract": "UX-001",
+    "foundation_gate": "GATE-026",
+    "foundation_handoff_scope": [
+      "Evidence review",
+      "Content permission",
+      "Review queue",
+      "Assignment",
+      "Break-glass",
+      "Adjudication",
+      "C4 rationale",
+      "Audit access"
+    ],
+    "intake_contract": "UX-002",
+    "intake_gate": "GATE-027",
+    "result_contract": "UX-003",
+    "result_gate": "GATE-028",
+    "predecessors_modified": false
+  },
+  "scope": {
+    "owned": [
+      "Evidence review",
+      "Content permission",
+      "Review queue",
+      "Assignment",
+      "Break-glass",
+      "Adjudication",
+      "C4 rationale",
+      "Audit access"
+    ],
+    "request_mapping": [
+      {
+        "request_item": "Evidence content viewing",
+        "handoff_item": "Evidence review"
+      },
+      {
+        "request_item": "Content permissions",
+        "handoff_item": "Content permission"
+      },
+      {
+        "request_item": "Analyst review queue",
+        "handoff_item": "Review queue"
+      },
+      {
+        "request_item": "Assignment workflows",
+        "handoff_item": "Assignment"
+      },
+      {
+        "request_item": "Administrator break-glass evidence access",
+        "handoff_item": "Break-glass"
+      },
+      {
+        "request_item": "Human adjudication, separate from the immutable DetectionResult",
+        "handoff_item": "Adjudication"
+      },
+      {
+        "request_item": "C4 rationale visibility and protection",
+        "handoff_item": "C4 rationale"
+      },
+      {
+        "request_item": "Audit visibility and access consequences",
+        "handoff_item": "Audit access"
+      }
+    ],
+    "deferred": [
+      {
+        "item": "Reports, replay, re-analysis, user correction and governed deletion workflows",
+        "owner": "P7-WP5"
+      },
+      {
+        "item": "Detailed accessibility and responsive patterns for review surfaces",
+        "owner": "P7-WP6"
+      },
+      {
+        "item": "Frontend, API and runtime implementation",
+        "owner": "Phase 9"
+      }
+    ],
+    "scope_differences": [
+      "Evidence content is delivered only as an application-mediated attachment download; no inline viewer is designed because the accepted EvidenceContentDownload is an attachment with Cache-Control: no-store.",
+      "Case access-grant listing and revocation (UX-ACCESS-GRANTS) are included under Content permission because they are the only accepted way to see and withdraw content permission.",
+      "Assignment target and ETag discovery for administrators has no accepted API capability; the assignment command is designed, discovery is an owned deferred decision."
+    ]
+  },
+  "surfaces": [
+    {
+      "surface_id": "UX-EVIDENCE-CONTENT",
+      "handoff_items": [
+        "Evidence review",
+        "Content permission"
+      ],
+      "operations": [
+        "getEvidenceContent"
+      ],
+      "allowed_roles": [
+        "USER",
+        "ANALYST"
+      ],
+      "role_alone_sufficient": false
+    },
+    {
+      "surface_id": "UX-ACCESS-GRANTS",
+      "handoff_items": [
+        "Content permission"
+      ],
+      "operations": [
+        "listCaseAccessGrants",
+        "revokeCaseAccessGrant"
+      ],
+      "allowed_roles": [
+        "USER",
+        "ADMINISTRATOR"
+      ],
+      "role_alone_sufficient": false
+    },
+    {
+      "surface_id": "UX-REVIEW-QUEUE",
+      "handoff_items": [
+        "Review queue"
+      ],
+      "operations": [
+        "listReviewQueue"
+      ],
+      "allowed_roles": [
+        "ANALYST"
+      ],
+      "role_alone_sufficient": false
+    },
+    {
+      "surface_id": "UX-ASSIGNMENT",
+      "handoff_items": [
+        "Assignment"
+      ],
+      "operations": [
+        "assignReview"
+      ],
+      "allowed_roles": [
+        "ADMINISTRATOR"
+      ],
+      "role_alone_sufficient": false
+    },
+    {
+      "surface_id": "UX-BREAK-GLASS",
+      "handoff_items": [
+        "Break-glass"
+      ],
+      "operations": [
+        "createBreakGlassGrant",
+        "getBreakGlassGrant",
+        "endBreakGlassGrant",
+        "reviewBreakGlassGrant"
+      ],
+      "allowed_roles": [
+        "ADMINISTRATOR"
+      ],
+      "role_alone_sufficient": false
+    },
+    {
+      "surface_id": "UX-ADJUDICATION",
+      "handoff_items": [
+        "Adjudication",
+        "C4 rationale"
+      ],
+      "operations": [
+        "listAdjudications",
+        "getAdjudication",
+        "createAdjudication"
+      ],
+      "allowed_roles": [
+        "USER",
+        "ANALYST"
+      ],
+      "role_alone_sufficient": false
+    },
+    {
+      "surface_id": "UX-AUDIT",
+      "handoff_items": [
+        "Audit access"
+      ],
+      "operations": [
+        "listAuditEvents"
+      ],
+      "allowed_roles": [
+        "ADMINISTRATOR"
+      ],
+      "role_alone_sufficient": false
+    }
+  ],
+  "operations": [
+    {
+      "operation_id": "getEvidenceContent",
+      "surface_id": "UX-EVIDENCE-CONTENT",
+      "method": "GET",
+      "path": "/api/v1/evidence/{evidence_id}/content",
+      "roles": [
+        "USER",
+        "ANALYST"
+      ],
+      "resource_authorization": "CASE_EVIDENCE_CONTENT",
+      "sensitive_content_permission": "EVIDENCE_CONTENT",
+      "break_glass_roles": [
+        "ADMINISTRATOR"
+      ],
+      "request_schema": null,
+      "response_schema": "EvidenceContentDownload",
+      "success_status": 200,
+      "idempotency": "NOT_APPLICABLE",
+      "audit": "REQUIRED",
+      "audit_event": "EVIDENCE_ACCESSED",
+      "sensitivity": "C3",
+      "concurrency": "NONE",
+      "caller_constraints": [],
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "INTEGRITY_FAILURE",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "NOT_FOUND",
+        "RATE_LIMITED",
+        "REMOVED_UNDER_GOVERNANCE",
+        "STATE_CONFLICT",
+        "UNAUTHENTICATED"
+      ],
+      "audit_notice_shown": true
+    },
+    {
+      "operation_id": "listCaseAccessGrants",
+      "surface_id": "UX-ACCESS-GRANTS",
+      "method": "GET",
+      "path": "/api/v1/cases/{case_id}/access-grants",
+      "roles": [
+        "USER",
+        "ADMINISTRATOR"
+      ],
+      "resource_authorization": "CASE_OWNER_OR_PLATFORM_ADMIN",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": null,
+      "response_schema": "CaseAccessGrantListResponse",
+      "success_status": 200,
+      "idempotency": "NOT_APPLICABLE",
+      "audit": "NOT_REQUIRED",
+      "audit_event": null,
+      "sensitivity": "C5",
+      "concurrency": "NONE",
+      "caller_constraints": [],
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "NOT_FOUND",
+        "RATE_LIMITED",
+        "UNAUTHENTICATED"
+      ],
+      "audit_notice_shown": false
+    },
+    {
+      "operation_id": "revokeCaseAccessGrant",
+      "surface_id": "UX-ACCESS-GRANTS",
+      "method": "POST",
+      "path": "/api/v1/access-grants/{grant_id}/revoke",
+      "roles": [
+        "ADMINISTRATOR"
+      ],
+      "resource_authorization": "PLATFORM_ADMIN",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": "ReasonCommandRequest",
+      "response_schema": "CaseAccessGrantResponse",
+      "success_status": 200,
+      "idempotency": "REQUIRED",
+      "audit": "REQUIRED",
+      "audit_event": "CASE_ACCESS_REVOKED",
+      "sensitivity": "C5",
+      "concurrency": "NONE",
+      "caller_constraints": [],
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "IDEMPOTENCY_IN_PROGRESS",
+        "IDEMPOTENCY_KEY_REUSED",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "NOT_FOUND",
+        "RATE_LIMITED",
+        "STATE_CONFLICT",
+        "UNAUTHENTICATED"
+      ],
+      "audit_notice_shown": true
+    },
+    {
+      "operation_id": "listReviewQueue",
+      "surface_id": "UX-REVIEW-QUEUE",
+      "method": "GET",
+      "path": "/api/v1/review-queue",
+      "roles": [
+        "ANALYST"
+      ],
+      "resource_authorization": "REVIEW_QUEUE",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": null,
+      "response_schema": "ReviewQueueResponse",
+      "success_status": 200,
+      "idempotency": "NOT_APPLICABLE",
+      "audit": "NOT_REQUIRED",
+      "audit_event": null,
+      "sensitivity": "C2",
+      "concurrency": "NONE",
+      "caller_constraints": [],
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "RATE_LIMITED",
+        "UNAUTHENTICATED"
+      ],
+      "audit_notice_shown": false
+    },
+    {
+      "operation_id": "assignReview",
+      "surface_id": "UX-ASSIGNMENT",
+      "method": "POST",
+      "path": "/api/v1/review-queue/{review_item_id}/assignment",
+      "roles": [
+        "ADMINISTRATOR"
+      ],
+      "resource_authorization": "PLATFORM_ADMIN",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": "ReviewAssignmentRequest",
+      "response_schema": "ReviewItemResponse",
+      "success_status": 200,
+      "idempotency": "REQUIRED",
+      "audit": "REQUIRED",
+      "audit_event": "CASE_ACCESS_GRANTED",
+      "sensitivity": "C2",
+      "concurrency": "IF_MATCH_REQUIRED",
+      "caller_constraints": [
+        "ASSIGNEE_NOT_CALLER"
+      ],
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "IDEMPOTENCY_IN_PROGRESS",
+        "IDEMPOTENCY_KEY_REUSED",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "NOT_FOUND",
+        "PRECONDITION_FAILED",
+        "PRECONDITION_REQUIRED",
+        "RATE_LIMITED",
+        "STATE_CONFLICT",
+        "UNAUTHENTICATED"
+      ],
+      "audit_notice_shown": true
+    },
+    {
+      "operation_id": "createBreakGlassGrant",
+      "surface_id": "UX-BREAK-GLASS",
+      "method": "POST",
+      "path": "/api/v1/break-glass-grants",
+      "roles": [
+        "ADMINISTRATOR"
+      ],
+      "resource_authorization": "BREAK_GLASS_SELF",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": "BreakGlassCreateRequest",
+      "response_schema": "BreakGlassGrantResponse",
+      "success_status": 201,
+      "idempotency": "REQUIRED",
+      "audit": "REQUIRED",
+      "audit_event": "BREAK_GLASS_ACTIVATED",
+      "sensitivity": "C5",
+      "concurrency": "NONE",
+      "caller_constraints": [],
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "IDEMPOTENCY_IN_PROGRESS",
+        "IDEMPOTENCY_KEY_REUSED",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "NOT_FOUND",
+        "RATE_LIMITED",
+        "UNAUTHENTICATED"
+      ],
+      "audit_notice_shown": true
+    },
+    {
+      "operation_id": "getBreakGlassGrant",
+      "surface_id": "UX-BREAK-GLASS",
+      "method": "GET",
+      "path": "/api/v1/break-glass-grants/{break_glass_grant_id}",
+      "roles": [
+        "ADMINISTRATOR"
+      ],
+      "resource_authorization": "BREAK_GLASS_GRANTEE_OR_PLATFORM_ADMIN",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": null,
+      "response_schema": "BreakGlassGrantResponse",
+      "success_status": 200,
+      "idempotency": "NOT_APPLICABLE",
+      "audit": "NOT_REQUIRED",
+      "audit_event": null,
+      "sensitivity": "C5",
+      "concurrency": "NONE",
+      "caller_constraints": [],
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "INTERNAL_ERROR",
+        "NOT_FOUND",
+        "RATE_LIMITED",
+        "UNAUTHENTICATED"
+      ],
+      "audit_notice_shown": false
+    },
+    {
+      "operation_id": "endBreakGlassGrant",
+      "surface_id": "UX-BREAK-GLASS",
+      "method": "POST",
+      "path": "/api/v1/break-glass-grants/{break_glass_grant_id}/end",
+      "roles": [
+        "ADMINISTRATOR"
+      ],
+      "resource_authorization": "BREAK_GLASS_GRANTEE",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": "EmptyCommandRequest",
+      "response_schema": "BreakGlassGrantResponse",
+      "success_status": 200,
+      "idempotency": "REQUIRED",
+      "audit": "REQUIRED",
+      "audit_event": "BREAK_GLASS_EXPIRED",
+      "sensitivity": "C5",
+      "concurrency": "NONE",
+      "caller_constraints": [],
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "IDEMPOTENCY_IN_PROGRESS",
+        "IDEMPOTENCY_KEY_REUSED",
+        "INTERNAL_ERROR",
+        "NOT_FOUND",
+        "RATE_LIMITED",
+        "STATE_CONFLICT",
+        "UNAUTHENTICATED"
+      ],
+      "audit_notice_shown": true
+    },
+    {
+      "operation_id": "reviewBreakGlassGrant",
+      "surface_id": "UX-BREAK-GLASS",
+      "method": "POST",
+      "path": "/api/v1/break-glass-grants/{break_glass_grant_id}/review",
+      "roles": [
+        "ADMINISTRATOR"
+      ],
+      "resource_authorization": "BREAK_GLASS_REVIEWER",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": "BreakGlassReviewRequest",
+      "response_schema": "BreakGlassGrantResponse",
+      "success_status": 200,
+      "idempotency": "REQUIRED",
+      "audit": "REQUIRED",
+      "audit_event": "BREAK_GLASS_REVIEWED",
+      "sensitivity": "C5",
+      "concurrency": "NONE",
+      "caller_constraints": [
+        "REVIEWER_NOT_GRANTEE"
+      ],
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "IDEMPOTENCY_IN_PROGRESS",
+        "IDEMPOTENCY_KEY_REUSED",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "NOT_FOUND",
+        "RATE_LIMITED",
+        "STATE_CONFLICT",
+        "UNAUTHENTICATED"
+      ],
+      "audit_notice_shown": true
+    },
+    {
+      "operation_id": "listAdjudications",
+      "surface_id": "UX-ADJUDICATION",
+      "method": "GET",
+      "path": "/api/v1/evaluations/{evaluation_id}/adjudications",
+      "roles": [
+        "USER",
+        "ANALYST"
+      ],
+      "resource_authorization": "CASE_ACCESS",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": null,
+      "response_schema": "AdjudicationListResponse",
+      "success_status": 200,
+      "idempotency": "NOT_APPLICABLE",
+      "audit": "REQUIRED",
+      "audit_event": "EVIDENCE_ACCESSED",
+      "sensitivity": "C4",
+      "concurrency": "NONE",
+      "caller_constraints": [],
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "NOT_FOUND",
+        "RATE_LIMITED",
+        "UNAUTHENTICATED"
+      ],
+      "audit_notice_shown": true
+    },
+    {
+      "operation_id": "getAdjudication",
+      "surface_id": "UX-ADJUDICATION",
+      "method": "GET",
+      "path": "/api/v1/adjudications/{adjudication_id}",
+      "roles": [
+        "USER",
+        "ANALYST"
+      ],
+      "resource_authorization": "CASE_ACCESS",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": null,
+      "response_schema": "AdjudicationResponse",
+      "success_status": 200,
+      "idempotency": "NOT_APPLICABLE",
+      "audit": "REQUIRED",
+      "audit_event": "EVIDENCE_ACCESSED",
+      "sensitivity": "C4",
+      "concurrency": "NONE",
+      "caller_constraints": [],
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "NOT_FOUND",
+        "RATE_LIMITED",
+        "UNAUTHENTICATED"
+      ],
+      "audit_notice_shown": true
+    },
+    {
+      "operation_id": "createAdjudication",
+      "surface_id": "UX-ADJUDICATION",
+      "method": "POST",
+      "path": "/api/v1/evaluations/{evaluation_id}/adjudications",
+      "roles": [
+        "ANALYST"
+      ],
+      "resource_authorization": "CASE_ASSIGNED_ANALYST",
+      "sensitive_content_permission": "DERIVED_CONTENT",
+      "break_glass_roles": [],
+      "request_schema": "AdjudicationCreateRequest",
+      "response_schema": "AdjudicationResponse",
+      "success_status": 201,
+      "idempotency": "REQUIRED",
+      "audit": "REQUIRED",
+      "audit_event": "ANALYST_ADJUDICATION",
+      "sensitivity": "C4",
+      "concurrency": "NONE",
+      "caller_constraints": [],
+      "errors": [
+        "CONFLICT",
+        "DEPENDENCY_UNAVAILABLE",
+        "EVALUATION_NOT_COMPLETED",
+        "FORBIDDEN",
+        "IDEMPOTENCY_IN_PROGRESS",
+        "IDEMPOTENCY_KEY_REUSED",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "NOT_FOUND",
+        "RATE_LIMITED",
+        "REMOVED_UNDER_GOVERNANCE",
+        "UNAUTHENTICATED"
+      ],
+      "audit_notice_shown": true
+    },
+    {
+      "operation_id": "listAuditEvents",
+      "surface_id": "UX-AUDIT",
+      "method": "GET",
+      "path": "/api/v1/audit-events",
+      "roles": [
+        "ADMINISTRATOR"
+      ],
+      "resource_authorization": "AUDIT_READ",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": null,
+      "response_schema": "AuditEventListResponse",
+      "success_status": 200,
+      "idempotency": "NOT_APPLICABLE",
+      "audit": "REQUIRED",
+      "audit_event": "AUDIT_LOG_ACCESSED",
+      "sensitivity": "C6",
+      "concurrency": "NONE",
+      "caller_constraints": [],
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "RATE_LIMITED",
+        "UNAUTHENTICATED"
+      ],
+      "audit_notice_shown": true
+    }
+  ],
+  "supporting_operations": [
+    {
+      "operation_id": "getCase",
+      "use": "viewer_access.relationship and viewer_access.can_view_evidence_content establish the caller's own case relationship and content permission before any content control is offered",
+      "owner_surface": "UX-CASE"
+    },
+    {
+      "operation_id": "getDetectionResult",
+      "use": "result_digest of the exact result being adjudicated (AdjudicationCreateRequest.adjudicated_result_digest)",
+      "owner_surface": "UX-RESULT"
+    },
+    {
+      "operation_id": "getMe",
+      "use": "roles of the signed-in principal for navigation only; never an authorization decision",
+      "owner_surface": "UX-ACCOUNT"
+    }
+  ],
+  "recovery_vocabulary": [
+    {
+      "recovery": "RETRY_SAME_REQUEST",
+      "retryability": [
+        "RETRYABLE"
+      ],
+      "meaning": "Repeat the same read, or resend the same command with the same idempotency key."
+    },
+    {
+      "recovery": "WAIT_THEN_RETRY_SAME_REQUEST",
+      "retryability": [
+        "RETRYABLE"
+      ],
+      "meaning": "Repeat later, honouring any returned Retry-After; no countdown is invented."
+    },
+    {
+      "recovery": "WAIT_FOR_PENDING_COMMAND",
+      "retryability": [
+        "RETRYABLE"
+      ],
+      "meaning": "The same command is still being processed; wait and resend it unchanged with the same key."
+    },
+    {
+      "recovery": "REFRESH_EVALUATION_STATUS",
+      "retryability": [
+        "RETRYABLE"
+      ],
+      "meaning": "Read the authoritative Evaluation state before choosing a presentation."
+    },
+    {
+      "recovery": "CORRECT_REQUEST",
+      "retryability": [
+        "RETRY_WITH_CHANGES"
+      ],
+      "meaning": "Correct the request before any new attempt; field values are not echoed."
+    },
+    {
+      "recovery": "REAUTHENTICATE_THEN_RETRY",
+      "retryability": [
+        "RETRY_WITH_CHANGES"
+      ],
+      "meaning": "Re-establish authentication, then repeat."
+    },
+    {
+      "recovery": "REFRESH_THEN_DECIDE",
+      "retryability": [
+        "RETRY_WITH_CHANGES"
+      ],
+      "meaning": "Reload the current state and its ETag, show what changed, and let the person decide again; never overwrite silently."
+    },
+    {
+      "recovery": "REVIEW_THEN_NEW_COMMAND",
+      "retryability": [
+        "RETRY_WITH_CHANGES"
+      ],
+      "meaning": "The key was used for a different command; review the intended action and submit it as a new command."
+    },
+    {
+      "recovery": "STOP_NO_RETRY",
+      "retryability": [
+        "NOT_RETRYABLE"
+      ],
+      "meaning": "Do not retry; show the governed state only."
+    }
+  ],
+  "error_presentation": [
+    {
+      "error_code": "CONFLICT",
+      "http_status": 409,
+      "retryability": "NOT_RETRYABLE",
+      "presentation_state": "CONFLICT",
+      "recovery": "STOP_NO_RETRY",
+      "implies_safe": false,
+      "content_shown": false,
+      "alternate_presentation_state": null,
+      "alternate_condition": null
+    },
+    {
+      "error_code": "DEPENDENCY_UNAVAILABLE",
+      "http_status": 503,
+      "retryability": "RETRYABLE",
+      "presentation_state": "TEMPORARILY_UNAVAILABLE",
+      "recovery": "WAIT_THEN_RETRY_SAME_REQUEST",
+      "implies_safe": false,
+      "content_shown": false,
+      "alternate_presentation_state": null,
+      "alternate_condition": null
+    },
+    {
+      "error_code": "EVALUATION_NOT_COMPLETED",
+      "http_status": 409,
+      "retryability": "RETRYABLE",
+      "presentation_state": "CONDITIONAL_ON_EVALUATION_STATE",
+      "recovery": "REFRESH_EVALUATION_STATUS",
+      "implies_safe": false,
+      "content_shown": false,
+      "alternate_presentation_state": null,
+      "alternate_condition": null
+    },
+    {
+      "error_code": "FORBIDDEN",
+      "http_status": 403,
+      "retryability": "NOT_RETRYABLE",
+      "presentation_state": "ACCESS_DENIED",
+      "recovery": "STOP_NO_RETRY",
+      "implies_safe": false,
+      "content_shown": false,
+      "alternate_presentation_state": "CONTENT_PERMISSION_REQUIRED",
+      "alternate_condition": "Only on getEvidenceContent, and only when getCase viewer_access already establishes a visible case with can_view_evidence_content=false; otherwise ACCESS_DENIED"
+    },
+    {
+      "error_code": "IDEMPOTENCY_IN_PROGRESS",
+      "http_status": 409,
+      "retryability": "RETRYABLE",
+      "presentation_state": "ACTION_PENDING",
+      "recovery": "WAIT_FOR_PENDING_COMMAND",
+      "implies_safe": false,
+      "content_shown": false,
+      "alternate_presentation_state": null,
+      "alternate_condition": null
+    },
+    {
+      "error_code": "IDEMPOTENCY_KEY_REUSED",
+      "http_status": 409,
+      "retryability": "RETRY_WITH_CHANGES",
+      "presentation_state": "CONFLICT",
+      "recovery": "REVIEW_THEN_NEW_COMMAND",
+      "implies_safe": false,
+      "content_shown": false,
+      "alternate_presentation_state": null,
+      "alternate_condition": null
+    },
+    {
+      "error_code": "INTEGRITY_FAILURE",
+      "http_status": 500,
+      "retryability": "NOT_RETRYABLE",
+      "presentation_state": "INTEGRITY_ERROR",
+      "recovery": "STOP_NO_RETRY",
+      "implies_safe": false,
+      "content_shown": false,
+      "alternate_presentation_state": null,
+      "alternate_condition": null
+    },
+    {
+      "error_code": "INTERNAL_ERROR",
+      "http_status": 500,
+      "retryability": "RETRYABLE",
+      "presentation_state": "SERVER_ERROR",
+      "recovery": "RETRY_SAME_REQUEST",
+      "implies_safe": false,
+      "content_shown": false,
+      "alternate_presentation_state": null,
+      "alternate_condition": null
+    },
+    {
+      "error_code": "INVALID_REQUEST",
+      "http_status": 400,
+      "retryability": "RETRY_WITH_CHANGES",
+      "presentation_state": "ACTION_FAILED",
+      "recovery": "CORRECT_REQUEST",
+      "implies_safe": false,
+      "content_shown": false,
+      "alternate_presentation_state": null,
+      "alternate_condition": null
+    },
+    {
+      "error_code": "NOT_FOUND",
+      "http_status": 404,
+      "retryability": "NOT_RETRYABLE",
+      "presentation_state": "NOT_FOUND_OR_NOT_VISIBLE",
+      "recovery": "STOP_NO_RETRY",
+      "implies_safe": false,
+      "content_shown": false,
+      "alternate_presentation_state": null,
+      "alternate_condition": null
+    },
+    {
+      "error_code": "PRECONDITION_FAILED",
+      "http_status": 412,
+      "retryability": "RETRY_WITH_CHANGES",
+      "presentation_state": "STALE_STATE",
+      "recovery": "REFRESH_THEN_DECIDE",
+      "implies_safe": false,
+      "content_shown": false,
+      "alternate_presentation_state": null,
+      "alternate_condition": null
+    },
+    {
+      "error_code": "PRECONDITION_REQUIRED",
+      "http_status": 428,
+      "retryability": "RETRY_WITH_CHANGES",
+      "presentation_state": "PRECONDITION_REQUIRED",
+      "recovery": "REFRESH_THEN_DECIDE",
+      "implies_safe": false,
+      "content_shown": false,
+      "alternate_presentation_state": null,
+      "alternate_condition": null
+    },
+    {
+      "error_code": "RATE_LIMITED",
+      "http_status": 429,
+      "retryability": "RETRYABLE",
+      "presentation_state": "RATE_LIMITED",
+      "recovery": "WAIT_THEN_RETRY_SAME_REQUEST",
+      "implies_safe": false,
+      "content_shown": false,
+      "alternate_presentation_state": null,
+      "alternate_condition": null
+    },
+    {
+      "error_code": "REMOVED_UNDER_GOVERNANCE",
+      "http_status": 410,
+      "retryability": "NOT_RETRYABLE",
+      "presentation_state": "REMOVED_UNDER_GOVERNANCE",
+      "recovery": "STOP_NO_RETRY",
+      "implies_safe": false,
+      "content_shown": false,
+      "alternate_presentation_state": null,
+      "alternate_condition": null
+    },
+    {
+      "error_code": "STATE_CONFLICT",
+      "http_status": 409,
+      "retryability": "NOT_RETRYABLE",
+      "presentation_state": "CONFLICT",
+      "recovery": "STOP_NO_RETRY",
+      "implies_safe": false,
+      "content_shown": false,
+      "alternate_presentation_state": null,
+      "alternate_condition": null
+    },
+    {
+      "error_code": "UNAUTHENTICATED",
+      "http_status": 401,
+      "retryability": "RETRY_WITH_CHANGES",
+      "presentation_state": "AUTHENTICATION_REQUIRED",
+      "recovery": "REAUTHENTICATE_THEN_RETRY",
+      "implies_safe": false,
+      "content_shown": false,
+      "alternate_presentation_state": null,
+      "alternate_condition": null
+    }
+  ],
+  "evaluation_not_completed": {
+    "state_source_operation": "getEvaluation",
+    "error_code_alone_sufficient": false,
+    "rules": [
+      {
+        "evaluation_state": "QUEUED",
+        "result_availability": "NOT_YET_AVAILABLE",
+        "presentation_state": "ACTION_PENDING"
+      },
+      {
+        "evaluation_state": "RUNNING",
+        "result_availability": "NOT_YET_AVAILABLE",
+        "presentation_state": "ACTION_PENDING"
+      },
+      {
+        "evaluation_state": "FAILED",
+        "result_availability": "NOT_PRODUCED",
+        "presentation_state": "ACTION_FAILED"
+      }
+    ],
+    "unresolved_context": "DO_NOT_INFER_PENDING_OR_FAILURE"
+  },
+  "content_permission": {
+    "authority": "BACKEND",
+    "content_operation": "getEvidenceContent",
+    "permission_signal": {
+      "operation": "getCase",
+      "relationship_field": "viewer_access.relationship",
+      "permission_field": "viewer_access.can_view_evidence_content"
+    },
+    "metadata_implies_content": false,
+    "hidden_ui_is_security_control": false,
+    "client_authorization_decision": false,
+    "delivery": {
+      "mode": "ATTACHMENT_DOWNLOAD",
+      "inline_rendering": false,
+      "preview_or_thumbnail": false,
+      "client_cache": false,
+      "filename": "SERVER_GENERATED",
+      "media_type": "SERVER_VERIFIED",
+      "content_in_notifications": false
+    },
+    "pre_access_notice": {
+      "shown": true,
+      "audit_event": "EVIDENCE_ACCESSED",
+      "text": "Downloading the original evidence is recorded in the audit log."
+    },
+    "rows": [
+      {
+        "principal_role": "USER",
+        "relationship": "OWNER",
+        "permits_evidence_content": true,
+        "content_action": "DOWNLOAD_OFFERED"
+      },
+      {
+        "principal_role": "USER",
+        "relationship": "NONE",
+        "permits_evidence_content": false,
+        "content_action": "NOT_VISIBLE"
+      },
+      {
+        "principal_role": "ANALYST",
+        "relationship": "ASSIGNED_ANALYST",
+        "permits_evidence_content": true,
+        "content_action": "DOWNLOAD_OFFERED"
+      },
+      {
+        "principal_role": "ANALYST",
+        "relationship": "ASSIGNED_ANALYST",
+        "permits_evidence_content": false,
+        "content_action": "CONTENT_PERMISSION_REQUIRED"
+      },
+      {
+        "principal_role": "ANALYST",
+        "relationship": "NONE",
+        "permits_evidence_content": false,
+        "content_action": "NOT_VISIBLE"
+      },
+      {
+        "principal_role": "KNOWLEDGE_EDITOR",
+        "relationship": "NONE",
+        "permits_evidence_content": false,
+        "content_action": "NOT_OFFERED"
+      },
+      {
+        "principal_role": "KNOWLEDGE_APPROVER",
+        "relationship": "NONE",
+        "permits_evidence_content": false,
+        "content_action": "NOT_OFFERED"
+      },
+      {
+        "principal_role": "ADMINISTRATOR",
+        "relationship": "NONE",
+        "permits_evidence_content": false,
+        "content_action": "BREAK_GLASS_ONLY"
+      },
+      {
+        "principal_role": "ADMINISTRATOR",
+        "relationship": "BREAK_GLASS",
+        "permits_evidence_content": true,
+        "content_action": "DOWNLOAD_OFFERED"
+      }
+    ],
+    "content_actions": {
+      "DOWNLOAD_OFFERED": "An explicit download control is offered after the audit notice; the backend still decides.",
+      "CONTENT_PERMISSION_REQUIRED": "The case is visible but content permission was not granted; no download control and no request.",
+      "NOT_VISIBLE": "The case is not visible to this person; existence is not disclosed.",
+      "NOT_OFFERED": "This role has no evidence surface.",
+      "BREAK_GLASS_ONLY": "No content by role; content is reachable only through the caller's own active, scoped break-glass grant covering the item."
+    }
+  },
+  "review_queue": {
+    "operation": "listReviewQueue",
+    "roles": [
+      "ANALYST"
+    ],
+    "content_free": true,
+    "displayed_fields": [
+      "review_item_id",
+      "evaluation_id",
+      "case_id",
+      "state",
+      "routing_basis",
+      "assigned_analyst_id",
+      "queued_at"
+    ],
+    "concurrency_field_displayed": false,
+    "filters": [
+      "state",
+      "assigned_to_me",
+      "queued_from",
+      "queued_to"
+    ],
+    "sort": "queued_at asc, id asc",
+    "pagination": "CURSOR",
+    "tenancy_status": "PROVISIONAL_BLOCKED_ON_ASM_002",
+    "entry_grants_access": false,
+    "opens_case_via": "getCase",
+    "evidence_content_in_queue": false,
+    "rationale_in_queue": false,
+    "result_axes_in_queue": false,
+    "aggregate_counters": false,
+    "state_labels": [
+      {
+        "state": "NOT_ROUTED",
+        "label": "Not routed",
+        "meaning": "Not in human review."
+      },
+      {
+        "state": "QUEUED",
+        "label": "Waiting for review",
+        "meaning": "Routed for human review and not yet in review."
+      },
+      {
+        "state": "IN_REVIEW",
+        "label": "In review",
+        "meaning": "An assigned analyst is reviewing this evaluation."
+      },
+      {
+        "state": "ADJUDICATED",
+        "label": "Adjudicated",
+        "meaning": "A human adjudication has been recorded; the system result is unchanged."
+      },
+      {
+        "state": "WITHDRAWN",
+        "label": "Withdrawn",
+        "meaning": "No longer in human review."
+      }
+    ],
+    "routing_basis_labels": [
+      {
+        "basis": "INSUFFICIENT_EVIDENCE",
+        "label": "Not enough evidence",
+        "meaning": "The result had insufficient basis for a governed pattern."
+      },
+      {
+        "basis": "UNSUPPORTED",
+        "label": "Not supported",
+        "meaning": "The input could not be evaluated."
+      },
+      {
+        "basis": "ERROR",
+        "label": "Evaluation error",
+        "meaning": "The evaluation reported an error."
+      },
+      {
+        "basis": "DEGRADED",
+        "label": "Degraded evaluation",
+        "meaning": "The evaluation ran with reduced capability."
+      },
+      {
+        "basis": "INDETERMINATE_RULE",
+        "label": "Indeterminate rule",
+        "meaning": "At least one governed rule could not be decided."
+      },
+      {
+        "basis": "SEEK_HUMAN_REVIEW_ACTION",
+        "label": "Human review recommended",
+        "meaning": "The governed action policy recommends human review."
+      }
+    ]
+  },
+  "assignment": {
+    "operation": "assignReview",
+    "roles": [
+      "ADMINISTRATOR"
+    ],
+    "caller_constraint": "ASSIGNEE_NOT_CALLER",
+    "dual_role_exemption": false,
+    "analyst_self_assignment": false,
+    "administrator_gains_content": false,
+    "request_fields": [
+      "analyst_principal_id",
+      "permits_evidence_content",
+      "reason_code"
+    ],
+    "content_permission_choice": {
+      "explicit": true,
+      "default_selected": null,
+      "consequence_visible": true
+    },
+    "precondition": {
+      "header": "If-Match",
+      "source_field": "ReviewItemResponse.etag",
+      "stale_presentation": "STALE_STATE"
+    },
+    "idempotency": {
+      "user_concept": "SAFE_RETRY",
+      "key_exposed": false
+    },
+    "target_discovery": "BLOCKED_NO_ACCEPTED_API_CAPABILITY",
+    "principal_directory": false,
+    "outcome_from_server": true
+  },
+  "break_glass": {
+    "creator_roles": [
+      "ADMINISTRATOR"
+    ],
+    "analyst_can_create": false,
+    "separate_entry": true,
+    "request_flag_elevation": false,
+    "scope_kinds": [
+      "CASE_EVIDENCE",
+      "EVIDENCE_ITEM"
+    ],
+    "evidence_id_required_for": [
+      "EVIDENCE_ITEM"
+    ],
+    "reason_required": true,
+    "reason_must_not_contain_evidence": true,
+    "duration": {
+      "set_by": "SERVER",
+      "value": "NOT YET SPECIFIED",
+      "client_selectable": false,
+      "display": "SERVER_EXPIRES_AT_ONLY",
+      "invented_countdown": false
+    },
+    "pre_activation_notice": {
+      "shown": true,
+      "items": [
+        "SCOPE",
+        "REASON_RECORDED",
+        "TEMPORARY",
+        "AUDITED",
+        "SIGNALLED",
+        "MANDATORY_REVIEW_BY_DIFFERENT_ADMINISTRATOR"
+      ]
+    },
+    "active_indicator": {
+      "persistent": true,
+      "fields": [
+        "scope_kind",
+        "case_id",
+        "evidence_id",
+        "started_at",
+        "expires_at"
+      ],
+      "end_early_action": "endBreakGlassGrant"
+    },
+    "coverage_decided_by": "BACKEND",
+    "caller_bound": true,
+    "coverage_requires": [
+      "CALLER_IS_GRANTEE",
+      "GRANT_ACTIVE",
+      "CASE_IN_SCOPE",
+      "ITEM_IN_SCOPE_FOR_EVIDENCE_ITEM"
+    ],
+    "inherited_by_other_administrators": false,
+    "standing_privilege": false,
+    "silent_elevation": false,
+    "rationale_access": false,
+    "result_detail_access": false,
+    "review": {
+      "operation": "reviewBreakGlassGrant",
+      "constraint": "REVIEWER_NOT_GRANTEE",
+      "outcomes": [
+        "REVIEWED_APPROPRIATE",
+        "REVIEWED_INAPPROPRIATE"
+      ],
+      "review_states": [
+        "REVIEW_PENDING",
+        "REVIEWED_APPROPRIATE",
+        "REVIEWED_INAPPROPRIATE"
+      ],
+      "note_must_not_contain_evidence": true,
+      "discovery": "AUDIT_EVENTS_THEN_GET_GRANT"
+    },
+    "operations": [
+      "createBreakGlassGrant",
+      "getBreakGlassGrant",
+      "endBreakGlassGrant",
+      "reviewBreakGlassGrant"
+    ]
+  },
+  "adjudication": {
+    "separate_record": true,
+    "overwrites_result": false,
+    "replaces_classification": false,
+    "merged_with_result": false,
+    "provenance_type": "HUMAN_ADJUDICATION",
+    "append_only": true,
+    "supersession": "RELATIONSHIP_NOT_EDIT",
+    "create": {
+      "operation": "createAdjudication",
+      "roles": [
+        "ANALYST"
+      ],
+      "resource_authorization": "CASE_ASSIGNED_ANALYST",
+      "fields": [
+        "adjudicated_result_digest",
+        "outcome",
+        "rationale",
+        "supersedes_adjudication_id"
+      ],
+      "digest_source": "DetectionResultResponse.result_digest",
+      "actor_and_time": "SERVER",
+      "digest_mismatch_state": "CONFLICT"
+    },
+    "read_operations": [
+      "listAdjudications",
+      "getAdjudication"
+    ],
+    "outcome_labels": [
+      {
+        "outcome": "AGREES_WITH_RESULT",
+        "label": "Analyst agrees with the system result",
+        "meaning": "A human reviewer agreed with this exact result. The result itself is unchanged."
+      },
+      {
+        "outcome": "DISAGREES_WITH_RESULT",
+        "label": "Analyst disagrees with the system result",
+        "meaning": "A human reviewer disagreed with this exact result. The result itself is unchanged."
+      },
+      {
+        "outcome": "UNABLE_TO_ADJUDICATE",
+        "label": "Analyst could not adjudicate",
+        "meaning": "A human reviewer could not reach a view on this exact result."
+      }
+    ]
+  },
+  "c4_rationale": {
+    "sensitivity": "C4",
+    "may_quote_evidence": true,
+    "visible_rule": "ASSIGNED_ANALYST_WITH_CONTENT_PERMISSION",
+    "assignment_alone_sufficient": false,
+    "administrator_by_role": false,
+    "knowledge_roles": false,
+    "break_glass_reveals": false,
+    "owner_sees": [
+      "outcome",
+      "adjudicated_at"
+    ],
+    "restricted_text": "The rationale is restricted to an assigned analyst with content permission.",
+    "absence_is_not_emptiness": true,
+    "read_audited": true,
+    "read_audit_event": "EVIDENCE_ACCESSED",
+    "author_notice": "This rationale may quote evidence. Only an assigned analyst with content permission can read it.",
+    "in_notifications": false,
+    "in_queue": false,
+    "in_audit": false,
+    "rows": [
+      {
+        "principal_role": "USER",
+        "relationship": "OWNER",
+        "permits_evidence_content": true,
+        "outcome_visible": true,
+        "rationale_visible": false
+      },
+      {
+        "principal_role": "ANALYST",
+        "relationship": "ASSIGNED_ANALYST",
+        "permits_evidence_content": true,
+        "outcome_visible": true,
+        "rationale_visible": true
+      },
+      {
+        "principal_role": "ANALYST",
+        "relationship": "ASSIGNED_ANALYST",
+        "permits_evidence_content": false,
+        "outcome_visible": true,
+        "rationale_visible": false
+      },
+      {
+        "principal_role": "ANALYST",
+        "relationship": "NONE",
+        "permits_evidence_content": false,
+        "outcome_visible": false,
+        "rationale_visible": false
+      },
+      {
+        "principal_role": "KNOWLEDGE_EDITOR",
+        "relationship": "NONE",
+        "permits_evidence_content": false,
+        "outcome_visible": false,
+        "rationale_visible": false
+      },
+      {
+        "principal_role": "KNOWLEDGE_APPROVER",
+        "relationship": "NONE",
+        "permits_evidence_content": false,
+        "outcome_visible": false,
+        "rationale_visible": false
+      },
+      {
+        "principal_role": "ADMINISTRATOR",
+        "relationship": "NONE",
+        "permits_evidence_content": false,
+        "outcome_visible": false,
+        "rationale_visible": false
+      },
+      {
+        "principal_role": "ADMINISTRATOR",
+        "relationship": "BREAK_GLASS",
+        "permits_evidence_content": true,
+        "outcome_visible": false,
+        "rationale_visible": false
+      }
+    ]
+  },
+  "audit": {
+    "operation": "listAuditEvents",
+    "roles": [
+      "ADMINISTRATOR"
+    ],
+    "content_free": true,
+    "displayed_fields": [
+      "event_id",
+      "event_type",
+      "occurred_at",
+      "actor_id",
+      "actor_kind",
+      "outcome",
+      "target_kind",
+      "target_id",
+      "case_id",
+      "correlation_id",
+      "chain_sequence",
+      "event_hash"
+    ],
+    "filters": [
+      "case_id",
+      "event_type",
+      "target_kind",
+      "target_id",
+      "occurred_from",
+      "occurred_to"
+    ],
+    "sort": "chain_sequence asc",
+    "pagination": "CURSOR",
+    "read_is_audited": true,
+    "read_audit_event": "AUDIT_LOG_ACCESSED",
+    "pre_read_notice": "Reading the audit log is itself recorded in the audit log.",
+    "equals_activity_feed": false,
+    "user_or_analyst_audit_view": false,
+    "integrity_fields_are_verdict": false
+  },
+  "access_consequences": [
+    {
+      "operation_id": "getEvidenceContent",
+      "audit": "REQUIRED",
+      "audit_event": "EVIDENCE_ACCESSED",
+      "notice_shown": true
+    },
+    {
+      "operation_id": "listCaseAccessGrants",
+      "audit": "NOT_REQUIRED",
+      "audit_event": null,
+      "notice_shown": false
+    },
+    {
+      "operation_id": "revokeCaseAccessGrant",
+      "audit": "REQUIRED",
+      "audit_event": "CASE_ACCESS_REVOKED",
+      "notice_shown": true
+    },
+    {
+      "operation_id": "listReviewQueue",
+      "audit": "NOT_REQUIRED",
+      "audit_event": null,
+      "notice_shown": false
+    },
+    {
+      "operation_id": "assignReview",
+      "audit": "REQUIRED",
+      "audit_event": "CASE_ACCESS_GRANTED",
+      "notice_shown": true
+    },
+    {
+      "operation_id": "createBreakGlassGrant",
+      "audit": "REQUIRED",
+      "audit_event": "BREAK_GLASS_ACTIVATED",
+      "notice_shown": true
+    },
+    {
+      "operation_id": "getBreakGlassGrant",
+      "audit": "NOT_REQUIRED",
+      "audit_event": null,
+      "notice_shown": false
+    },
+    {
+      "operation_id": "endBreakGlassGrant",
+      "audit": "REQUIRED",
+      "audit_event": "BREAK_GLASS_EXPIRED",
+      "notice_shown": true
+    },
+    {
+      "operation_id": "reviewBreakGlassGrant",
+      "audit": "REQUIRED",
+      "audit_event": "BREAK_GLASS_REVIEWED",
+      "notice_shown": true
+    },
+    {
+      "operation_id": "listAdjudications",
+      "audit": "REQUIRED",
+      "audit_event": "EVIDENCE_ACCESSED",
+      "notice_shown": true
+    },
+    {
+      "operation_id": "getAdjudication",
+      "audit": "REQUIRED",
+      "audit_event": "EVIDENCE_ACCESSED",
+      "notice_shown": true
+    },
+    {
+      "operation_id": "createAdjudication",
+      "audit": "REQUIRED",
+      "audit_event": "ANALYST_ADJUDICATION",
+      "notice_shown": true
+    },
+    {
+      "operation_id": "listAuditEvents",
+      "audit": "REQUIRED",
+      "audit_event": "AUDIT_LOG_ACCESSED",
+      "notice_shown": true
+    }
+  ],
+  "announcements": [
+    {
+      "state": "CONTENT_PERMISSION_REQUIRED",
+      "text": "You do not have permission to view this evidence content.",
+      "announced_fields": [],
+      "visible_fields": [],
+      "field_source_operation": null
+    },
+    {
+      "state": "NOT_FOUND_OR_NOT_VISIBLE",
+      "text": "Nothing is available here.",
+      "announced_fields": [],
+      "visible_fields": [],
+      "field_source_operation": null
+    },
+    {
+      "state": "ACCESS_DENIED",
+      "text": "This action is not available to you.",
+      "announced_fields": [],
+      "visible_fields": [],
+      "field_source_operation": null
+    },
+    {
+      "state": "RATIONALE_RESTRICTED",
+      "text": "The rationale is restricted.",
+      "announced_fields": [
+        "outcome",
+        "adjudicated_at"
+      ],
+      "visible_fields": [
+        "outcome",
+        "adjudicated_at"
+      ],
+      "field_source_operation": "getAdjudication"
+    },
+    {
+      "state": "BREAK_GLASS_ACTIVE",
+      "text": "Break-glass access is active and recorded until the time shown.",
+      "announced_fields": [
+        "scope_kind",
+        "expires_at"
+      ],
+      "visible_fields": [
+        "scope_kind",
+        "case_id",
+        "evidence_id",
+        "started_at",
+        "expires_at"
+      ],
+      "field_source_operation": "getBreakGlassGrant"
+    }
+  ],
+  "notifications": {
+    "evidence_content": false,
+    "rationale": false,
+    "break_glass_reason": false,
+    "review_note": false
+  },
+  "access_grants": {
+    "list_operation": "listCaseAccessGrants",
+    "revoke_operation": "revokeCaseAccessGrant",
+    "displayed_fields": [
+      "grant_id",
+      "case_id",
+      "principal_id",
+      "grant_kind",
+      "permits_case_metadata",
+      "permits_evidence_content",
+      "effective_from",
+      "revoked_at"
+    ],
+    "principal_display": "OPAQUE_PRINCIPAL_ID",
+    "revoke_reason_required": true,
+    "parent_case_access_from_entry": false
+  },
+  "guardrails": {
+    "administrator_content_by_role": false,
+    "analyst_creates_break_glass": false,
+    "self_assignment": false,
+    "dual_role_exemption": false,
+    "hidden_ui_security_control": false,
+    "client_authorization_decision": false,
+    "silent_break_glass": false,
+    "standing_break_glass": false,
+    "adjudication_edits_result": false,
+    "adjudication_replaces_classification": false,
+    "rationale_without_permission": false,
+    "evidence_inline_render": false,
+    "content_in_queue": false,
+    "invented_api_operation": false,
+    "invented_persisted_field": false,
+    "invented_permission_grant": false,
+    "invented_retention_rule": false
+  },
+  "exposure": {
+    "raw_provider_bodies": false,
+    "credentials_secrets": false,
+    "connector_topology": false,
+    "internal_hosts_ips": false,
+    "evidence_store_locators": false,
+    "raw_evidence_without_permission": false,
+    "c4_without_permission": false,
+    "execution_fence_tokens": false,
+    "idempotency_key_material": false,
+    "audit_equals_activity": false
+  },
+  "open_decisions": [
+    {
+      "decision": "Administrator assignment target and If-Match acquisition: no administrator queue-read or principal-directory capability exists, so the assignment command can only act on a review item reference, ETag and analyst identifier supplied through an accepted channel",
+      "owner": "API owner (governed API revision), carried from UX-001",
+      "status": "DEFERRED"
+    },
+    {
+      "decision": "A CASE_EVIDENCE break-glass grant has no accepted evidence-listing operation for administrators (listEvidence and getCase are USER/ANALYST only); evidence identifiers are reachable only from content-free audit metadata",
+      "owner": "API owner with Security Architect",
+      "status": "DEFERRED"
+    },
+    {
+      "decision": "No operation lists break-glass grants awaiting review; reviewers find grants through listAuditEvents (BREAK_GLASS_ACTIVATED) and then getBreakGlassGrant",
+      "owner": "API owner with Security Architect",
+      "status": "DEFERRED"
+    },
+    {
+      "decision": "reason_code on assignment and access-grant revocation has no governed vocabulary",
+      "owner": "API owner (governed vocabulary)",
+      "status": "DEFERRED"
+    },
+    {
+      "decision": "Principals appear as opaque identifiers; no principal display-name capability exists for queues, grants or audit",
+      "owner": "API owner with Product / Security UX",
+      "status": "DEFERRED"
+    },
+    {
+      "decision": "An assigned analyst without permits_evidence_content may author a C4 rationale that the same analyst cannot read back; confirm the intended authoring rule",
+      "owner": "API owner with Security Architect",
+      "status": "DEFERRED"
+    },
+    {
+      "decision": "Break-glass duration is server-set and NOT YET SPECIFIED; the UX shows only the server's expires_at",
+      "owner": "Security Architect / P5-WP5 implementation",
+      "status": "DEFERRED"
+    },
+    {
+      "decision": "Final user-facing copy, translation and plain-language review of review and security labels",
+      "owner": "Product / Security UX with Phase 9",
+      "status": "DEFERRED"
+    },
+    {
+      "decision": "Detailed accessible and responsive layout of review and security surfaces",
+      "owner": "P7-WP6 / Accessibility UX",
+      "status": "DEFERRED"
+    }
+  ],
+  "carryovers": {
+    "G-09": {
+      "status": "OPEN",
+      "owner": "Phase 10 (testing/evaluation; QA Lead) with Sponsor for any corpus access"
+    },
+    "OI-05": {
+      "status": "OPEN",
+      "owner": "Sponsor + legal/governance"
+    },
+    "ASM-002": {
+      "status": "UNCONFIRMED / PROVISIONAL",
+      "owner": "Sponsor / Programme"
+    },
+    "P6-WP7-LOW-1": {
+      "status": "OPEN / NON-BLOCKING",
+      "owner": "Next governed Phase-6 snapshot revision / Programme governance"
+    }
+  },
+  "tenancy": {
+    "ux_enabled": false,
+    "organization_switcher_authority": false,
+    "review_queue_scope": "PROVISIONAL_BLOCKED_ON_ASM_002"
+  },
+  "retention": {
+    "duration": "NOT YET SPECIFIED",
+    "numeric_duration_invented": false,
+    "break_glass_duration": "NOT YET SPECIFIED"
+  },
+  "non_goals": [
+    "No frontend, API or runtime implementation.",
+    "No new API operation, persisted field, permission grant, role or retention rule.",
+    "No inline evidence viewer, preview or thumbnail.",
+    "No analyst-requested or analyst-approved break-glass workflow (a future, separately reviewed workflow).",
+    "No reports, replay, re-analysis, correction or deletion workflow (P7-WP5)."
+  ],
+  "claims": {
+    "frontend_implemented": false,
+    "api_implemented": false,
+    "production_ready": false,
+    "accessibility_compliant": false,
+    "usability_tested": false,
+    "security_tested": false,
+    "independently_reviewed": true,
+    "approved": true,
+    "later_wp_started": false
+  },
+  "review_findings": [
+    {
+      "id": "HIGH-1",
+      "severity": "HIGH",
+      "summary": "Break-glass evidence access was not caller-bound: a different administrator inherited the grantee's authorization in the decision procedure",
+      "disposition": "CLOSED_BY_REREVIEW",
+      "owner": "P7-WP4 builder",
+      "round": 1,
+      "closed_in_round": 2
+    },
+    {
+      "id": "MEDIUM-1",
+      "severity": "MEDIUM",
+      "summary": "Security-sensitive display copy was not bound to governed meaning: existence disclosure, leaked rationale detail and adjudication-replaces-result wording passed",
+      "disposition": "CLOSED_BY_REREVIEW",
+      "owner": "P7-WP4 builder",
+      "round": 1,
+      "closed_in_round": 3
+    },
+    {
+      "id": "MEDIUM-2",
+      "severity": "MEDIUM",
+      "summary": "A contradictory second security matrix could coexist with the accepted projection in UX-004",
+      "disposition": "CLOSED_BY_REREVIEW",
+      "owner": "P7-WP4 builder",
+      "round": 1,
+      "closed_in_round": 4
+    },
+    {
+      "id": "MEDIUM-3",
+      "severity": "MEDIUM",
+      "summary": "APPROVED or CLOSED was accepted with claims.independently_reviewed = false",
+      "disposition": "CLOSED_BY_REREVIEW",
+      "owner": "P7-WP4 builder",
+      "round": 1,
+      "closed_in_round": 2
+    },
+    {
+      "id": "R2-MEDIUM-1",
+      "severity": "MEDIUM",
+      "summary": "Re-raised MEDIUM-1: an accessible announcement for a masked (not found or not visible) resource could carry adjudication outcome and time; announcement fields were checked only against a global allowlist",
+      "disposition": "CLOSED_BY_REREVIEW",
+      "owner": "P7-WP4 builder",
+      "round": 2,
+      "closed_in_round": 3
+    },
+    {
+      "id": "R2-MEDIUM-2",
+      "severity": "MEDIUM",
+      "summary": "Re-raised MEDIUM-2: a contradictory security table written without outer pipes (valid GFM) evaded the projection-integrity check",
+      "disposition": "CLOSED_BY_REREVIEW",
+      "owner": "P7-WP4 builder",
+      "round": 2,
+      "closed_in_round": 4
+    },
+    {
+      "id": "R3-MEDIUM-2",
+      "severity": "MEDIUM",
+      "summary": "Re-raised MEDIUM-2: the projection-integrity check rejected harmless explanatory tables that merely mentioned a role name such as ADMINISTRATOR",
+      "disposition": "CLOSED_BY_REREVIEW",
+      "owner": "P7-WP4 builder",
+      "round": 3,
+      "closed_in_round": 4
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "RV-01",
+      "title": "Owner downloads own evidence",
+      "action": "DOWNLOAD_EVIDENCE",
+      "context": {
+        "principal_role": "USER",
+        "relationship": "OWNER",
+        "permits_evidence_content": true,
+        "additional_roles": [],
+        "is_break_glass_grantee": false,
+        "break_glass_active": false,
+        "break_glass_scope_kind": null,
+        "break_glass_case_in_scope": false,
+        "break_glass_item_in_scope": false,
+        "break_glass_covers_item": false,
+        "assignee_is_caller": false
+      },
+      "expected": {
+        "control_offered": true,
+        "request_issued": true,
+        "presentation_state": "READY",
+        "content_delivery": "ATTACHMENT",
+        "rationale_shown": false,
+        "audit_notice": true
+      }
+    },
+    {
+      "id": "RV-02",
+      "title": "Assigned analyst with content permission downloads evidence",
+      "action": "DOWNLOAD_EVIDENCE",
+      "context": {
+        "principal_role": "ANALYST",
+        "relationship": "ASSIGNED_ANALYST",
+        "permits_evidence_content": true,
+        "additional_roles": [],
+        "is_break_glass_grantee": false,
+        "break_glass_active": false,
+        "break_glass_scope_kind": null,
+        "break_glass_case_in_scope": false,
+        "break_glass_item_in_scope": false,
+        "break_glass_covers_item": false,
+        "assignee_is_caller": false
+      },
+      "expected": {
+        "control_offered": true,
+        "request_issued": true,
+        "presentation_state": "READY",
+        "content_delivery": "ATTACHMENT",
+        "rationale_shown": false,
+        "audit_notice": true
+      }
+    },
+    {
+      "id": "RV-03",
+      "title": "Assigned analyst without content permission",
+      "action": "DOWNLOAD_EVIDENCE",
+      "context": {
+        "principal_role": "ANALYST",
+        "relationship": "ASSIGNED_ANALYST",
+        "permits_evidence_content": false,
+        "additional_roles": [],
+        "is_break_glass_grantee": false,
+        "break_glass_active": false,
+        "break_glass_scope_kind": null,
+        "break_glass_case_in_scope": false,
+        "break_glass_item_in_scope": false,
+        "break_glass_covers_item": false,
+        "assignee_is_caller": false
+      },
+      "expected": {
+        "control_offered": false,
+        "request_issued": false,
+        "presentation_state": "CONTENT_PERMISSION_REQUIRED",
+        "content_delivery": "NONE",
+        "rationale_shown": false,
+        "audit_notice": false
+      }
+    },
+    {
+      "id": "RV-04",
+      "title": "Analyst without case visibility",
+      "action": "DOWNLOAD_EVIDENCE",
+      "context": {
+        "principal_role": "ANALYST",
+        "relationship": "NONE",
+        "permits_evidence_content": false,
+        "additional_roles": [],
+        "is_break_glass_grantee": false,
+        "break_glass_active": false,
+        "break_glass_scope_kind": null,
+        "break_glass_case_in_scope": false,
+        "break_glass_item_in_scope": false,
+        "break_glass_covers_item": false,
+        "assignee_is_caller": false
+      },
+      "expected": {
+        "control_offered": false,
+        "request_issued": false,
+        "presentation_state": "NOT_FOUND_OR_NOT_VISIBLE",
+        "content_delivery": "NONE",
+        "rationale_shown": false,
+        "audit_notice": false
+      }
+    },
+    {
+      "id": "RV-05",
+      "title": "Administrator without break-glass",
+      "action": "DOWNLOAD_EVIDENCE",
+      "context": {
+        "principal_role": "ADMINISTRATOR",
+        "relationship": "NONE",
+        "permits_evidence_content": false,
+        "additional_roles": [],
+        "is_break_glass_grantee": false,
+        "break_glass_active": false,
+        "break_glass_scope_kind": null,
+        "break_glass_case_in_scope": false,
+        "break_glass_item_in_scope": false,
+        "break_glass_covers_item": false,
+        "assignee_is_caller": false
+      },
+      "expected": {
+        "control_offered": false,
+        "request_issued": false,
+        "presentation_state": "ACCESS_DENIED",
+        "content_delivery": "NONE",
+        "rationale_shown": false,
+        "audit_notice": false
+      }
+    },
+    {
+      "id": "RV-06",
+      "title": "Administrator with an active break-glass grant covering the item",
+      "action": "DOWNLOAD_EVIDENCE",
+      "context": {
+        "principal_role": "ADMINISTRATOR",
+        "relationship": "BREAK_GLASS",
+        "permits_evidence_content": true,
+        "additional_roles": [],
+        "is_break_glass_grantee": true,
+        "break_glass_active": true,
+        "break_glass_scope_kind": "CASE_EVIDENCE",
+        "break_glass_case_in_scope": true,
+        "break_glass_item_in_scope": true,
+        "break_glass_covers_item": true,
+        "assignee_is_caller": false
+      },
+      "expected": {
+        "control_offered": true,
+        "request_issued": true,
+        "presentation_state": "READY",
+        "content_delivery": "ATTACHMENT",
+        "rationale_shown": false,
+        "audit_notice": true
+      }
+    },
+    {
+      "id": "RV-07",
+      "title": "Grantee's evidence-item grant covers a different evidence item",
+      "action": "DOWNLOAD_EVIDENCE",
+      "context": {
+        "principal_role": "ADMINISTRATOR",
+        "relationship": "BREAK_GLASS",
+        "permits_evidence_content": true,
+        "additional_roles": [],
+        "is_break_glass_grantee": true,
+        "break_glass_active": true,
+        "break_glass_scope_kind": "EVIDENCE_ITEM",
+        "break_glass_case_in_scope": true,
+        "break_glass_item_in_scope": false,
+        "break_glass_covers_item": false,
+        "assignee_is_caller": false
+      },
+      "expected": {
+        "control_offered": false,
+        "request_issued": false,
+        "presentation_state": "ACCESS_DENIED",
+        "content_delivery": "NONE",
+        "rationale_shown": false,
+        "audit_notice": false
+      }
+    },
+    {
+      "id": "RV-08",
+      "title": "Knowledge editor",
+      "action": "DOWNLOAD_EVIDENCE",
+      "context": {
+        "principal_role": "KNOWLEDGE_EDITOR",
+        "relationship": "NONE",
+        "permits_evidence_content": false,
+        "additional_roles": [],
+        "is_break_glass_grantee": false,
+        "break_glass_active": false,
+        "break_glass_scope_kind": null,
+        "break_glass_case_in_scope": false,
+        "break_glass_item_in_scope": false,
+        "break_glass_covers_item": false,
+        "assignee_is_caller": false
+      },
+      "expected": {
+        "control_offered": false,
+        "request_issued": false,
+        "presentation_state": "ACCESS_DENIED",
+        "content_delivery": "NONE",
+        "rationale_shown": false,
+        "audit_notice": false
+      }
+    },
+    {
+      "id": "RV-09",
+      "title": "Owner reads adjudications: outcome only",
+      "action": "READ_ADJUDICATION",
+      "context": {
+        "principal_role": "USER",
+        "relationship": "OWNER",
+        "permits_evidence_content": true,
+        "additional_roles": [],
+        "is_break_glass_grantee": false,
+        "break_glass_active": false,
+        "break_glass_scope_kind": null,
+        "break_glass_case_in_scope": false,
+        "break_glass_item_in_scope": false,
+        "break_glass_covers_item": false,
+        "assignee_is_caller": false
+      },
+      "expected": {
+        "control_offered": true,
+        "request_issued": true,
+        "presentation_state": "READY",
+        "content_delivery": "NONE",
+        "rationale_shown": false,
+        "audit_notice": true
+      }
+    },
+    {
+      "id": "RV-10",
+      "title": "Assigned analyst with content permission reads the rationale",
+      "action": "READ_ADJUDICATION",
+      "context": {
+        "principal_role": "ANALYST",
+        "relationship": "ASSIGNED_ANALYST",
+        "permits_evidence_content": true,
+        "additional_roles": [],
+        "is_break_glass_grantee": false,
+        "break_glass_active": false,
+        "break_glass_scope_kind": null,
+        "break_glass_case_in_scope": false,
+        "break_glass_item_in_scope": false,
+        "break_glass_covers_item": false,
+        "assignee_is_caller": false
+      },
+      "expected": {
+        "control_offered": true,
+        "request_issued": true,
+        "presentation_state": "READY",
+        "content_delivery": "NONE",
+        "rationale_shown": true,
+        "audit_notice": true
+      }
+    },
+    {
+      "id": "RV-11",
+      "title": "Assigned analyst without content permission: outcome only",
+      "action": "READ_ADJUDICATION",
+      "context": {
+        "principal_role": "ANALYST",
+        "relationship": "ASSIGNED_ANALYST",
+        "permits_evidence_content": false,
+        "additional_roles": [],
+        "is_break_glass_grantee": false,
+        "break_glass_active": false,
+        "break_glass_scope_kind": null,
+        "break_glass_case_in_scope": false,
+        "break_glass_item_in_scope": false,
+        "break_glass_covers_item": false,
+        "assignee_is_caller": false
+      },
+      "expected": {
+        "control_offered": true,
+        "request_issued": true,
+        "presentation_state": "READY",
+        "content_delivery": "NONE",
+        "rationale_shown": false,
+        "audit_notice": true
+      }
+    },
+    {
+      "id": "RV-12",
+      "title": "Administrator with break-glass cannot read adjudications",
+      "action": "READ_ADJUDICATION",
+      "context": {
+        "principal_role": "ADMINISTRATOR",
+        "relationship": "BREAK_GLASS",
+        "permits_evidence_content": true,
+        "additional_roles": [],
+        "is_break_glass_grantee": true,
+        "break_glass_active": true,
+        "break_glass_scope_kind": "CASE_EVIDENCE",
+        "break_glass_case_in_scope": true,
+        "break_glass_item_in_scope": true,
+        "break_glass_covers_item": true,
+        "assignee_is_caller": false
+      },
+      "expected": {
+        "control_offered": false,
+        "request_issued": false,
+        "presentation_state": "ACCESS_DENIED",
+        "content_delivery": "NONE",
+        "rationale_shown": false,
+        "audit_notice": false
+      }
+    },
+    {
+      "id": "RV-13",
+      "title": "Assigned analyst records an adjudication",
+      "action": "CREATE_ADJUDICATION",
+      "context": {
+        "principal_role": "ANALYST",
+        "relationship": "ASSIGNED_ANALYST",
+        "permits_evidence_content": false,
+        "additional_roles": [],
+        "is_break_glass_grantee": false,
+        "break_glass_active": false,
+        "break_glass_scope_kind": null,
+        "break_glass_case_in_scope": false,
+        "break_glass_item_in_scope": false,
+        "break_glass_covers_item": false,
+        "assignee_is_caller": false
+      },
+      "expected": {
+        "control_offered": true,
+        "request_issued": true,
+        "presentation_state": "READY",
+        "content_delivery": "NONE",
+        "rationale_shown": false,
+        "audit_notice": true
+      }
+    },
+    {
+      "id": "RV-14",
+      "title": "Owner cannot adjudicate",
+      "action": "CREATE_ADJUDICATION",
+      "context": {
+        "principal_role": "USER",
+        "relationship": "OWNER",
+        "permits_evidence_content": true,
+        "additional_roles": [],
+        "is_break_glass_grantee": false,
+        "break_glass_active": false,
+        "break_glass_scope_kind": null,
+        "break_glass_case_in_scope": false,
+        "break_glass_item_in_scope": false,
+        "break_glass_covers_item": false,
+        "assignee_is_caller": false
+      },
+      "expected": {
+        "control_offered": false,
+        "request_issued": false,
+        "presentation_state": "ACCESS_DENIED",
+        "content_delivery": "NONE",
+        "rationale_shown": false,
+        "audit_notice": false
+      }
+    },
+    {
+      "id": "RV-15",
+      "title": "Analyst opens the review queue",
+      "action": "VIEW_QUEUE",
+      "context": {
+        "principal_role": "ANALYST",
+        "relationship": "NONE",
+        "permits_evidence_content": false,
+        "additional_roles": [],
+        "is_break_glass_grantee": false,
+        "break_glass_active": false,
+        "break_glass_scope_kind": null,
+        "break_glass_case_in_scope": false,
+        "break_glass_item_in_scope": false,
+        "break_glass_covers_item": false,
+        "assignee_is_caller": false
+      },
+      "expected": {
+        "control_offered": true,
+        "request_issued": true,
+        "presentation_state": "READY",
+        "content_delivery": "NONE",
+        "rationale_shown": false,
+        "audit_notice": false
+      }
+    },
+    {
+      "id": "RV-16",
+      "title": "Administrator has no queue read",
+      "action": "VIEW_QUEUE",
+      "context": {
+        "principal_role": "ADMINISTRATOR",
+        "relationship": "NONE",
+        "permits_evidence_content": false,
+        "additional_roles": [],
+        "is_break_glass_grantee": false,
+        "break_glass_active": false,
+        "break_glass_scope_kind": null,
+        "break_glass_case_in_scope": false,
+        "break_glass_item_in_scope": false,
+        "break_glass_covers_item": false,
+        "assignee_is_caller": false
+      },
+      "expected": {
+        "control_offered": false,
+        "request_issued": false,
+        "presentation_state": "ACCESS_DENIED",
+        "content_delivery": "NONE",
+        "rationale_shown": false,
+        "audit_notice": false
+      }
+    },
+    {
+      "id": "RV-17",
+      "title": "Administrator assigns another analyst",
+      "action": "ASSIGN_REVIEW",
+      "context": {
+        "principal_role": "ADMINISTRATOR",
+        "relationship": "NONE",
+        "permits_evidence_content": false,
+        "additional_roles": [],
+        "is_break_glass_grantee": false,
+        "break_glass_active": false,
+        "break_glass_scope_kind": null,
+        "break_glass_case_in_scope": false,
+        "break_glass_item_in_scope": false,
+        "break_glass_covers_item": false,
+        "assignee_is_caller": false
+      },
+      "expected": {
+        "control_offered": true,
+        "request_issued": true,
+        "presentation_state": "READY",
+        "content_delivery": "NONE",
+        "rationale_shown": false,
+        "audit_notice": true
+      }
+    },
+    {
+      "id": "RV-18",
+      "title": "Administrator holding ANALYST cannot assign self",
+      "action": "ASSIGN_REVIEW",
+      "context": {
+        "principal_role": "ADMINISTRATOR",
+        "relationship": "NONE",
+        "permits_evidence_content": false,
+        "additional_roles": [],
+        "is_break_glass_grantee": false,
+        "break_glass_active": false,
+        "break_glass_scope_kind": null,
+        "break_glass_case_in_scope": false,
+        "break_glass_item_in_scope": false,
+        "break_glass_covers_item": false,
+        "assignee_is_caller": true
+      },
+      "expected": {
+        "control_offered": false,
+        "request_issued": false,
+        "presentation_state": "ACCESS_DENIED",
+        "content_delivery": "NONE",
+        "rationale_shown": false,
+        "audit_notice": false
+      }
+    },
+    {
+      "id": "RV-19",
+      "title": "Analyst has no assignment command",
+      "action": "ASSIGN_REVIEW",
+      "context": {
+        "principal_role": "ANALYST",
+        "relationship": "NONE",
+        "permits_evidence_content": false,
+        "additional_roles": [],
+        "is_break_glass_grantee": false,
+        "break_glass_active": false,
+        "break_glass_scope_kind": null,
+        "break_glass_case_in_scope": false,
+        "break_glass_item_in_scope": false,
+        "break_glass_covers_item": false,
+        "assignee_is_caller": false
+      },
+      "expected": {
+        "control_offered": false,
+        "request_issued": false,
+        "presentation_state": "ACCESS_DENIED",
+        "content_delivery": "NONE",
+        "rationale_shown": false,
+        "audit_notice": false
+      }
+    },
+    {
+      "id": "RV-20",
+      "title": "Administrator activates break-glass",
+      "action": "CREATE_BREAK_GLASS",
+      "context": {
+        "principal_role": "ADMINISTRATOR",
+        "relationship": "NONE",
+        "permits_evidence_content": false,
+        "additional_roles": [],
+        "is_break_glass_grantee": false,
+        "break_glass_active": false,
+        "break_glass_scope_kind": null,
+        "break_glass_case_in_scope": false,
+        "break_glass_item_in_scope": false,
+        "break_glass_covers_item": false,
+        "assignee_is_caller": false
+      },
+      "expected": {
+        "control_offered": true,
+        "request_issued": true,
+        "presentation_state": "READY",
+        "content_delivery": "NONE",
+        "rationale_shown": false,
+        "audit_notice": true
+      }
+    },
+    {
+      "id": "RV-21",
+      "title": "Analyst cannot create break-glass",
+      "action": "CREATE_BREAK_GLASS",
+      "context": {
+        "principal_role": "ANALYST",
+        "relationship": "ASSIGNED_ANALYST",
+        "permits_evidence_content": false,
+        "additional_roles": [],
+        "is_break_glass_grantee": false,
+        "break_glass_active": false,
+        "break_glass_scope_kind": null,
+        "break_glass_case_in_scope": false,
+        "break_glass_item_in_scope": false,
+        "break_glass_covers_item": false,
+        "assignee_is_caller": false
+      },
+      "expected": {
+        "control_offered": false,
+        "request_issued": false,
+        "presentation_state": "ACCESS_DENIED",
+        "content_delivery": "NONE",
+        "rationale_shown": false,
+        "audit_notice": false
+      }
+    },
+    {
+      "id": "RV-22",
+      "title": "Grantee ends break-glass early",
+      "action": "END_BREAK_GLASS",
+      "context": {
+        "principal_role": "ADMINISTRATOR",
+        "relationship": "BREAK_GLASS",
+        "permits_evidence_content": true,
+        "additional_roles": [],
+        "is_break_glass_grantee": true,
+        "break_glass_active": true,
+        "break_glass_scope_kind": "CASE_EVIDENCE",
+        "break_glass_case_in_scope": true,
+        "break_glass_item_in_scope": true,
+        "break_glass_covers_item": true,
+        "assignee_is_caller": false
+      },
+      "expected": {
+        "control_offered": true,
+        "request_issued": true,
+        "presentation_state": "READY",
+        "content_delivery": "NONE",
+        "rationale_shown": false,
+        "audit_notice": true
+      }
+    },
+    {
+      "id": "RV-23",
+      "title": "Different administrator cannot end another grantee's grant",
+      "action": "END_BREAK_GLASS",
+      "context": {
+        "principal_role": "ADMINISTRATOR",
+        "relationship": "NONE",
+        "permits_evidence_content": false,
+        "additional_roles": [],
+        "is_break_glass_grantee": false,
+        "break_glass_active": false,
+        "break_glass_scope_kind": null,
+        "break_glass_case_in_scope": false,
+        "break_glass_item_in_scope": false,
+        "break_glass_covers_item": false,
+        "assignee_is_caller": false
+      },
+      "expected": {
+        "control_offered": false,
+        "request_issued": false,
+        "presentation_state": "ACCESS_DENIED",
+        "content_delivery": "NONE",
+        "rationale_shown": false,
+        "audit_notice": false
+      }
+    },
+    {
+      "id": "RV-24",
+      "title": "Different administrator reviews the grant",
+      "action": "REVIEW_BREAK_GLASS",
+      "context": {
+        "principal_role": "ADMINISTRATOR",
+        "relationship": "NONE",
+        "permits_evidence_content": false,
+        "additional_roles": [],
+        "is_break_glass_grantee": false,
+        "break_glass_active": false,
+        "break_glass_scope_kind": null,
+        "break_glass_case_in_scope": false,
+        "break_glass_item_in_scope": false,
+        "break_glass_covers_item": false,
+        "assignee_is_caller": false
+      },
+      "expected": {
+        "control_offered": true,
+        "request_issued": true,
+        "presentation_state": "READY",
+        "content_delivery": "NONE",
+        "rationale_shown": false,
+        "audit_notice": true
+      }
+    },
+    {
+      "id": "RV-25",
+      "title": "Grantee cannot review own grant",
+      "action": "REVIEW_BREAK_GLASS",
+      "context": {
+        "principal_role": "ADMINISTRATOR",
+        "relationship": "BREAK_GLASS",
+        "permits_evidence_content": true,
+        "additional_roles": [],
+        "is_break_glass_grantee": true,
+        "break_glass_active": true,
+        "break_glass_scope_kind": "CASE_EVIDENCE",
+        "break_glass_case_in_scope": true,
+        "break_glass_item_in_scope": true,
+        "break_glass_covers_item": true,
+        "assignee_is_caller": false
+      },
+      "expected": {
+        "control_offered": false,
+        "request_issued": false,
+        "presentation_state": "ACCESS_DENIED",
+        "content_delivery": "NONE",
+        "rationale_shown": false,
+        "audit_notice": false
+      }
+    },
+    {
+      "id": "RV-26",
+      "title": "Administrator reads the audit log",
+      "action": "VIEW_AUDIT",
+      "context": {
+        "principal_role": "ADMINISTRATOR",
+        "relationship": "NONE",
+        "permits_evidence_content": false,
+        "additional_roles": [],
+        "is_break_glass_grantee": false,
+        "break_glass_active": false,
+        "break_glass_scope_kind": null,
+        "break_glass_case_in_scope": false,
+        "break_glass_item_in_scope": false,
+        "break_glass_covers_item": false,
+        "assignee_is_caller": false
+      },
+      "expected": {
+        "control_offered": true,
+        "request_issued": true,
+        "presentation_state": "READY",
+        "content_delivery": "NONE",
+        "rationale_shown": false,
+        "audit_notice": true
+      }
+    },
+    {
+      "id": "RV-27",
+      "title": "Analyst has no audit view",
+      "action": "VIEW_AUDIT",
+      "context": {
+        "principal_role": "ANALYST",
+        "relationship": "ASSIGNED_ANALYST",
+        "permits_evidence_content": true,
+        "additional_roles": [],
+        "is_break_glass_grantee": false,
+        "break_glass_active": false,
+        "break_glass_scope_kind": null,
+        "break_glass_case_in_scope": false,
+        "break_glass_item_in_scope": false,
+        "break_glass_covers_item": false,
+        "assignee_is_caller": false
+      },
+      "expected": {
+        "control_offered": false,
+        "request_issued": false,
+        "presentation_state": "ACCESS_DENIED",
+        "content_delivery": "NONE",
+        "rationale_shown": false,
+        "audit_notice": false
+      }
+    },
+    {
+      "id": "RV-28",
+      "title": "Owner lists who can access the case",
+      "action": "LIST_GRANTS",
+      "context": {
+        "principal_role": "USER",
+        "relationship": "OWNER",
+        "permits_evidence_content": true,
+        "additional_roles": [],
+        "is_break_glass_grantee": false,
+        "break_glass_active": false,
+        "break_glass_scope_kind": null,
+        "break_glass_case_in_scope": false,
+        "break_glass_item_in_scope": false,
+        "break_glass_covers_item": false,
+        "assignee_is_caller": false
+      },
+      "expected": {
+        "control_offered": true,
+        "request_issued": true,
+        "presentation_state": "READY",
+        "content_delivery": "NONE",
+        "rationale_shown": false,
+        "audit_notice": false
+      }
+    },
+    {
+      "id": "RV-29",
+      "title": "Analyst cannot list grants",
+      "action": "LIST_GRANTS",
+      "context": {
+        "principal_role": "ANALYST",
+        "relationship": "ASSIGNED_ANALYST",
+        "permits_evidence_content": true,
+        "additional_roles": [],
+        "is_break_glass_grantee": false,
+        "break_glass_active": false,
+        "break_glass_scope_kind": null,
+        "break_glass_case_in_scope": false,
+        "break_glass_item_in_scope": false,
+        "break_glass_covers_item": false,
+        "assignee_is_caller": false
+      },
+      "expected": {
+        "control_offered": false,
+        "request_issued": false,
+        "presentation_state": "ACCESS_DENIED",
+        "content_delivery": "NONE",
+        "rationale_shown": false,
+        "audit_notice": false
+      }
+    },
+    {
+      "id": "RV-30",
+      "title": "Administrator revokes a grant",
+      "action": "REVOKE_GRANT",
+      "context": {
+        "principal_role": "ADMINISTRATOR",
+        "relationship": "NONE",
+        "permits_evidence_content": false,
+        "additional_roles": [],
+        "is_break_glass_grantee": false,
+        "break_glass_active": false,
+        "break_glass_scope_kind": null,
+        "break_glass_case_in_scope": false,
+        "break_glass_item_in_scope": false,
+        "break_glass_covers_item": false,
+        "assignee_is_caller": false
+      },
+      "expected": {
+        "control_offered": true,
+        "request_issued": true,
+        "presentation_state": "READY",
+        "content_delivery": "NONE",
+        "rationale_shown": false,
+        "audit_notice": true
+      }
+    },
+    {
+      "id": "RV-31",
+      "title": "Owner cannot revoke",
+      "action": "REVOKE_GRANT",
+      "context": {
+        "principal_role": "USER",
+        "relationship": "OWNER",
+        "permits_evidence_content": true,
+        "additional_roles": [],
+        "is_break_glass_grantee": false,
+        "break_glass_active": false,
+        "break_glass_scope_kind": null,
+        "break_glass_case_in_scope": false,
+        "break_glass_item_in_scope": false,
+        "break_glass_covers_item": false,
+        "assignee_is_caller": false
+      },
+      "expected": {
+        "control_offered": false,
+        "request_issued": false,
+        "presentation_state": "ACCESS_DENIED",
+        "content_delivery": "NONE",
+        "rationale_shown": false,
+        "audit_notice": false
+      }
+    },
+    {
+      "id": "RV-32",
+      "title": "Owner without case visibility cannot read adjudications",
+      "action": "READ_ADJUDICATION",
+      "context": {
+        "principal_role": "USER",
+        "relationship": "NONE",
+        "permits_evidence_content": false,
+        "additional_roles": [],
+        "is_break_glass_grantee": false,
+        "break_glass_active": false,
+        "break_glass_scope_kind": null,
+        "break_glass_case_in_scope": false,
+        "break_glass_item_in_scope": false,
+        "break_glass_covers_item": false,
+        "assignee_is_caller": false
+      },
+      "expected": {
+        "control_offered": false,
+        "request_issued": false,
+        "presentation_state": "NOT_FOUND_OR_NOT_VISIBLE",
+        "content_delivery": "NONE",
+        "rationale_shown": false,
+        "audit_notice": false
+      }
+    },
+    {
+      "id": "RV-33",
+      "title": "Another administrator cannot use the grantee's active grant",
+      "action": "DOWNLOAD_EVIDENCE",
+      "context": {
+        "principal_role": "ADMINISTRATOR",
+        "relationship": "NONE",
+        "permits_evidence_content": false,
+        "additional_roles": [],
+        "is_break_glass_grantee": false,
+        "break_glass_active": true,
+        "break_glass_scope_kind": "CASE_EVIDENCE",
+        "break_glass_case_in_scope": true,
+        "break_glass_item_in_scope": true,
+        "break_glass_covers_item": false,
+        "assignee_is_caller": false
+      },
+      "expected": {
+        "control_offered": false,
+        "request_issued": false,
+        "presentation_state": "ACCESS_DENIED",
+        "content_delivery": "NONE",
+        "rationale_shown": false,
+        "audit_notice": false
+      }
+    },
+    {
+      "id": "RV-34",
+      "title": "Grantee with an evidence-item grant for this item",
+      "action": "DOWNLOAD_EVIDENCE",
+      "context": {
+        "principal_role": "ADMINISTRATOR",
+        "relationship": "BREAK_GLASS",
+        "permits_evidence_content": true,
+        "additional_roles": [],
+        "is_break_glass_grantee": true,
+        "break_glass_active": true,
+        "break_glass_scope_kind": "EVIDENCE_ITEM",
+        "break_glass_case_in_scope": true,
+        "break_glass_item_in_scope": true,
+        "break_glass_covers_item": true,
+        "assignee_is_caller": false
+      },
+      "expected": {
+        "control_offered": true,
+        "request_issued": true,
+        "presentation_state": "READY",
+        "content_delivery": "ATTACHMENT",
+        "rationale_shown": false,
+        "audit_notice": true
+      }
+    },
+    {
+      "id": "RV-35",
+      "title": "Grantee whose grant has ended or expired",
+      "action": "DOWNLOAD_EVIDENCE",
+      "context": {
+        "principal_role": "ADMINISTRATOR",
+        "relationship": "NONE",
+        "permits_evidence_content": false,
+        "additional_roles": [],
+        "is_break_glass_grantee": true,
+        "break_glass_active": false,
+        "break_glass_scope_kind": "CASE_EVIDENCE",
+        "break_glass_case_in_scope": true,
+        "break_glass_item_in_scope": true,
+        "break_glass_covers_item": false,
+        "assignee_is_caller": false
+      },
+      "expected": {
+        "control_offered": false,
+        "request_issued": false,
+        "presentation_state": "ACCESS_DENIED",
+        "content_delivery": "NONE",
+        "rationale_shown": false,
+        "audit_notice": false
+      }
+    },
+    {
+      "id": "RV-36",
+      "title": "Grantee whose grant covers a different case",
+      "action": "DOWNLOAD_EVIDENCE",
+      "context": {
+        "principal_role": "ADMINISTRATOR",
+        "relationship": "NONE",
+        "permits_evidence_content": false,
+        "additional_roles": [],
+        "is_break_glass_grantee": true,
+        "break_glass_active": true,
+        "break_glass_scope_kind": "CASE_EVIDENCE",
+        "break_glass_case_in_scope": false,
+        "break_glass_item_in_scope": false,
+        "break_glass_covers_item": false,
+        "assignee_is_caller": false
+      },
+      "expected": {
+        "control_offered": false,
+        "request_issued": false,
+        "presentation_state": "ACCESS_DENIED",
+        "content_delivery": "NONE",
+        "rationale_shown": false,
+        "audit_notice": false
+      }
+    },
+    {
+      "id": "RV-37",
+      "title": "Dual-role administrator and analyst without assignment or an own grant",
+      "action": "DOWNLOAD_EVIDENCE",
+      "context": {
+        "principal_role": "ADMINISTRATOR",
+        "relationship": "NONE",
+        "permits_evidence_content": false,
+        "additional_roles": [
+          "ANALYST"
+        ],
+        "is_break_glass_grantee": false,
+        "break_glass_active": true,
+        "break_glass_scope_kind": "CASE_EVIDENCE",
+        "break_glass_case_in_scope": true,
+        "break_glass_item_in_scope": true,
+        "break_glass_covers_item": false,
+        "assignee_is_caller": false
+      },
+      "expected": {
+        "control_offered": false,
+        "request_issued": false,
+        "presentation_state": "ACCESS_DENIED",
+        "content_delivery": "NONE",
+        "rationale_shown": false,
+        "audit_notice": false
+      }
+    }
+  ]
+}

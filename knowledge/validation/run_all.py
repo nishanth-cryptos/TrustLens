@@ -40,7 +40,8 @@ Order (dependency-aware, see ORDER below):
   Phase-6 integrated closure (P6-WP7: pinned-artifact snapshot + cross-contract closure validation) →
   Phase-7 UX foundation (P7-WP1: conceptual surfaces + permission and presentation invariants) →
   Phase-7 submission and evidence intake (P7-WP2: intake journey, API traceability and safety invariants) →
-  Phase-7 result presentation (P7-WP3: DetectionResult presentation, lifecycle gating and safety invariants)
+  Phase-7 result presentation (P7-WP3: DetectionResult presentation, lifecycle gating and safety invariants) →
+  Phase-7 evidence review and security (P7-WP4: content permission, review, break-glass, adjudication and audit invariants)
 
 Usage:
   python knowledge/validation/run_all.py             # human-readable; runs all; non-zero on any failure
@@ -127,6 +128,9 @@ ROOT = Path(__file__).resolve().parents[2]
 #  32 the Phase-7 P7-WP3 result-presentation gate runs after the intake gate (check 31) because it consumes UX-001's
 #     presentation states, guardrails and P7-WP3 handoff scope, the closed UX-002 evaluation-status hand-off, the promoted
 #     Phase-3 result schemas / action policy and the closed Phase-6 API catalog / OpenAPI. Static only.
+#  33 the Phase-7 P7-WP4 evidence-review and security gate runs after the result-presentation gate (check 32) because it
+#     consumes UX-001's surfaces, field visibility and P7-WP4 handoff scope, the closed UX-002 / UX-003 contracts and the
+#     closed Phase-6 API catalog / OpenAPI. Static only.
 ORDER = [
     ("knowledge/validation/manual_evidence_check.py", "durable-truth: evidence integrity + automated-status preservation"),
     ("knowledge/validation/phase1_consistency_check.py", "Phase-1 counts consistent across manifest / taxonomy / matrix / corpus"),
@@ -160,6 +164,7 @@ ORDER = [
     ("knowledge/validation/validate_ux_foundation.py", "Phase-7 P7-WP1 UX foundation: closed offline schema, accepted role/resource/content permissions, API-traced conceptual surfaces, immutable results, separate adjudication/replay/re-analysis, safe presentation semantics, accessibility foundations, owned handoffs and negative mutations; no frontend implementation"),
     ("knowledge/validation/validate_ux_intake.py", "Phase-7 P7-WP2 submission and evidence intake: closed offline schema; scope equals the UX-001 P7-WP2 handoff; initiate -> raw-byte PUT -> finalize -> separate evaluation request with exact API/OpenAPI parity; every accepted error mapped to a UX-001 state with retryability-consistent recovery; upload/submission/evaluation states never imply evaluated or safe; metadata vs content boundary; server-authoritative identity; no invented limits, consent, score or verdict; lifecycle-aware status; negative mutations must bite"),
     ("knowledge/validation/validate_ux_result.py", "Phase-7 P7-WP3 result presentation: closed offline schema; scope equals the UX-001 P7-WP3 handoff; getDetectionResult API/OpenAPI parity; result requested and shown only after COMPLETED + AVAILABLE with UX-001 conditional EVALUATION_NOT_COMPLETED; every accepted error mapped (410 never empty); six separate categorical axes with no probability/score; classification labels never safe, benign or legal guilt; A-K explanation hierarchy with every field traced and nothing dropped; distinct rule outcomes, no false corroboration, negative indicators never safety; governed actions without invented priority/URL; STANDARD/DETAILED access derived from the API; immutable result; pinned scenarios reproduced by a reference model and an independent decision procedure; lifecycle-aware status; negative mutations must bite"),
+    ("knowledge/validation/validate_ux_review.py", "Phase-7 P7-WP4 evidence review and security: closed offline schema; scope equals the UX-001 P7-WP4 handoff; 13 operations equal the API/OpenAPI; content permission backend-authoritative and attachment-only; administrators reach content only through scoped, audited, independently reviewed break-glass; adjudication separate from the immutable result; C4 rationale only for an assigned analyst with content permission; audit content-free; scenarios re-derived by an independent decision procedure; lifecycle fail-closed"),
 ]
 
 # Network-capable modules a validator must never import — the offline guarantee (WP7 STEP 7).

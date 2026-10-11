@@ -277,6 +277,21 @@ def d_ux_result_no_scam_is_safe(root: Path):
     return p, orig
 
 
+
+def d_ux_review_admin_content_by_role(root: Path):
+    p = root / "contracts" / "ux" / "ux-review-v1.json"
+    orig = p.read_bytes()
+    d = load(p)
+    row = next((x for x in d.get("content_permission", {}).get("rows", [])
+                if x.get("principal_role") == "ADMINISTRATOR" and x.get("relationship") == "NONE"), None)
+    if row is None or row.get("content_action") != "BREAK_GLASS_ONLY":
+        raise RuntimeError("ci_selftest could not find the P7-WP4 administrator content-permission row (renamed?)")
+    # P7-WP4-only defect: an administrator is offered evidence content by role, without break-glass. No other validator
+    # reads the review contract and no accepted API / UX-001..UX-003 artifact changes, so only the P7-WP4 gate (UXV-17) bites.
+    row["content_action"] = "DOWNLOAD_OFFERED"
+    dump(p, d)
+    return p, orig
+
 DEFECTS = [
     ("unknown indicator reference", d_unknown_indicator, "validate_rules.py"),
     ("invalid taxonomy ID", d_invalid_taxonomy, "validate_rules.py"),
@@ -295,6 +310,7 @@ DEFECTS = [
     ("evidence-content UX uses role-only access (P7-WP1)", d_ux_role_only_evidence_content, "validate_ux_foundation.py"),
     ("FINALIZED evidence presented as a completed evaluation (P7-WP2)", d_ux_intake_finalized_is_evaluated, "validate_ux_intake.py"),
     ("NO_SCAM_PATTERN presented as safe (P7-WP3)", d_ux_result_no_scam_is_safe, "validate_ux_result.py"),
+    ("administrator offered evidence content by role (P7-WP4)", d_ux_review_admin_content_by_role, "validate_ux_review.py"),
 ]
 
 
