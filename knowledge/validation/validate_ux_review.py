@@ -71,7 +71,21 @@ VERIFIED_REVIEW_HISTORY: list = [
 ]
 # The independent approval of round 4 (GATE-029 §7). CLOSED additionally needs merge evidence pinned post-merge.
 VERIFIED_APPROVAL = {"round": 4, "decision": "APPROVE", "record_reference": "GATE-029 §7", "reviewer_role": "Independent reviewer"}
-VERIFIED_MERGE_EVIDENCE = None
+# The P7-WP4 merge record, pinned by the governed post-merge closure step from programme-verified GitHub evidence
+# (PR #39, PR-head run 38139502369, merge-commit run 38142036162; GATE-029 §8). Offline validation cannot authenticate
+# GitHub: CLOSED needs the contract's merge evidence to equal this record exactly.
+VERIFIED_MERGE_EVIDENCE = {
+    "repository": "nishanth-cryptos/TrustLens",
+    "pr_number": 39,
+    "pr_head_commit": "cf4ca8d37388f0f1a7e132a716e4cb776d0b38bc",
+    "merge_commit": "5f8c373d63cbf0544ddccf414020659b9fd3330a",
+    "base_commit": "e58dac6bff63a8cb79512338919af6d15db958c1",
+    "remote_ci": {"workflow": "knowledge-validation",
+                  "checks": ["Knowledge validation suite", "Quality-gate self-test (gate must bite)"],
+                  "conclusion": "success", "pr_head_run_id": 38139502369, "merge_commit_run_id": 38142036162},
+    "verification": "INDEPENDENT_PROGRAMME_VERIFICATION",
+    "verification_reference": "GATE-029 §8",
+}
 INDEPENDENT_REVIEW_KINDS = {"INITIAL_INDEPENDENT_REVIEW", "TARGETED_INDEPENDENT_REREVIEW", "FINAL_INDEPENDENT_REVIEW"}
 INDEPENDENT_REVIEWER_ROLES = {"Independent reviewer"}
 PERMITTED_EVIDENCE_SOURCES = {"Independent review result supplied to the builder by the programme"}
@@ -525,7 +539,11 @@ def validate(ctx):
             return False
         if st == "APPROVED":
             return lc["merge_evidence"] is None
-        return st == "CLOSED" and pins["merge_evidence"] is not None and lc["merge_evidence"] == pins["merge_evidence"]
+        me = lc["merge_evidence"]
+        return (st == "CLOSED" and pins["merge_evidence"] is not None and me == pins["merge_evidence"]
+                and me["base_commit"] == BASELINE and me["remote_ci"]["merge_commit_run_id"] > me["remote_ci"]["pr_head_run_id"]
+                and re.fullmatch(r"GATE-029 §(\d+)", me["verification_reference"]) is not None
+                and f"## {me['verification_reference'].split('§')[1]}. " in ctx["gate"])
 
     def freeze():
         pins = {a["path"]: a["sha256"] for a in ctx["snapshot"]["snapshot"]["artifacts"]}

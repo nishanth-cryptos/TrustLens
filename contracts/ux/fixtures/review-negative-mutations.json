@@ -3,12 +3,12 @@
   "mutations": [
     {
       "id": "NEG-UXV-001",
-      "description": "UX-004 status row claims a later state than recorded",
+      "description": "UX-004 status row claims a state other than recorded",
       "expected_check": "UXV-01",
       "target": "doc",
       "op": "replace_text",
-      "old": "| Status | P7-WP4 EVIDENCE REVIEW AND SECURITY UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING |",
-      "value": "| Status | P7-WP4 EVIDENCE REVIEW AND SECURITY UX CLOSED |"
+      "old": "| Status | P7-WP4 EVIDENCE REVIEW AND SECURITY UX CLOSED |",
+      "value": "| Status | P7-WP4 EVIDENCE REVIEW AND SECURITY UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING |"
     },
     {
       "id": "NEG-UXV-002",
@@ -21,12 +21,12 @@
     },
     {
       "id": "NEG-UXV-003",
-      "description": "GATE-029 status row claims a later state than recorded",
+      "description": "GATE-029 status row claims a state other than recorded",
       "expected_check": "UXV-02",
       "target": "gate",
       "op": "replace_text",
-      "old": "| Status | P7-WP4 EVIDENCE REVIEW AND SECURITY UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING |",
-      "value": "| Status | P7-WP4 EVIDENCE REVIEW AND SECURITY UX CLOSED |"
+      "old": "| Status | P7-WP4 EVIDENCE REVIEW AND SECURITY UX CLOSED |",
+      "value": "| Status | P7-WP4 EVIDENCE REVIEW AND SECURITY UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING |"
     },
     {
       "id": "NEG-UXV-004",
@@ -68,7 +68,7 @@
     },
     {
       "id": "NEG-UXV-008",
-      "description": "Lifecycle APPROVED without its pinned approval record",
+      "description": "Approved or closed lifecycle without its pinned approval record",
       "expected_check": "UXV-05",
       "target": "contract",
       "op": "replace",
@@ -77,12 +77,12 @@
     },
     {
       "id": "NEG-UXV-009",
-      "description": "Status string claims a later state than recorded",
+      "description": "Status string claims a state other than recorded",
       "expected_check": "UXV-05",
       "target": "contract",
       "op": "replace",
       "path": "/lifecycle/status",
-      "value": "P7-WP4 EVIDENCE REVIEW AND SECURITY UX CLOSED"
+      "value": "P7-WP4 EVIDENCE REVIEW AND SECURITY UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING"
     },
     {
       "id": "NEG-UXV-010",
@@ -1450,12 +1450,12 @@
     },
     {
       "id": "NEG-UXV-141",
-      "description": "Prose claims P7-WP4 closed ahead of the recorded lifecycle",
+      "description": "Prose claims P7-WP4 implemented beyond the recorded lifecycle",
       "expected_check": "UXV-41",
       "target": "doc",
       "op": "replace_text",
       "old": "## 16. Lifecycle and independent review\n",
-      "value": "## 16. Lifecycle and independent review\n\nP7-WP4 is closed.\n"
+      "value": "## 16. Lifecycle and independent review\n\nP7-WP4 is implemented.\n"
     },
     {
       "id": "NEG-UXV-142",
@@ -1472,7 +1472,7 @@
       "expected_check": "UXV-42",
       "target": "gate",
       "op": "replace_text",
-      "old": "**P7-WP4 EVIDENCE REVIEW AND SECURITY UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING**",
+      "old": "**P7-WP4 EVIDENCE REVIEW AND SECURITY UX CLOSED**",
       "value": "**P7-WP4 READY**"
     },
     {
@@ -8014,6 +8014,24 @@
           "value": "<!-- UXV:review_history:BEGIN -->\n| Round | Kind | Decision | BLOCKER | HIGH | MEDIUM | LOW | INFO | Reviewer role | Evidence source | Record |\n| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n| 1 | INITIAL_INDEPENDENT_REVIEW | REQUEST_CHANGES | 0 | 1 | 3 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-029 §7 |\n| 2 | TARGETED_INDEPENDENT_REREVIEW | REQUEST_CHANGES | 0 | 0 | 2 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-029 §7 |\n| 3 | TARGETED_INDEPENDENT_REREVIEW | REQUEST_CHANGES | 0 | 0 | 1 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-029 §7 |\n| 4 | TARGETED_INDEPENDENT_REREVIEW | APPROVE | 0 | 0 | 0 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-029 §7 |\n| 5 | TARGETED_INDEPENDENT_REREVIEW | APPROVE | 0 | 0 | 0 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-029 §7 |\n<!-- UXV:review_history:END -->"
         },
         {
+          "target": "doc",
+          "op": "replace_text",
+          "old": "| Status | P7-WP4 EVIDENCE REVIEW AND SECURITY UX CLOSED |",
+          "value": "| Status | P7-WP4 EVIDENCE REVIEW AND SECURITY UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING |"
+        },
+        {
+          "target": "gate",
+          "op": "replace_text",
+          "old": "| Status | P7-WP4 EVIDENCE REVIEW AND SECURITY UX CLOSED |",
+          "value": "| Status | P7-WP4 EVIDENCE REVIEW AND SECURITY UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING |"
+        },
+        {
+          "target": "gate",
+          "op": "replace_text",
+          "old": "**P7-WP4 EVIDENCE REVIEW AND SECURITY UX CLOSED**",
+          "value": "**P7-WP4 EVIDENCE REVIEW AND SECURITY UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING**"
+        },
+        {
           "target": "pins",
           "op": "replace",
           "path": "/review_history",
@@ -8251,24 +8269,6 @@
           "value": "<!-- UXV:review_history:BEGIN -->\n| Round | Kind | Decision | BLOCKER | HIGH | MEDIUM | LOW | INFO | Reviewer role | Evidence source | Record |\n| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n| 1 | INITIAL_INDEPENDENT_REVIEW | REQUEST_CHANGES | 0 | 1 | 3 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-029 §7 |\n| 2 | TARGETED_INDEPENDENT_REREVIEW | REQUEST_CHANGES | 0 | 0 | 2 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-029 §7 |\n| 3 | TARGETED_INDEPENDENT_REREVIEW | REQUEST_CHANGES | 0 | 0 | 1 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-029 §7 |\n| 4 | TARGETED_INDEPENDENT_REREVIEW | APPROVE | 0 | 0 | 0 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-029 §7 |\n| 5 | TARGETED_INDEPENDENT_REREVIEW | APPROVE | 0 | 0 | 0 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-029 §7 |\n<!-- UXV:review_history:END -->"
         },
         {
-          "target": "doc",
-          "op": "replace_text",
-          "old": "| Status | P7-WP4 EVIDENCE REVIEW AND SECURITY UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING |",
-          "value": "| Status | P7-WP4 EVIDENCE REVIEW AND SECURITY UX CLOSED |"
-        },
-        {
-          "target": "gate",
-          "op": "replace_text",
-          "old": "| Status | P7-WP4 EVIDENCE REVIEW AND SECURITY UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING |",
-          "value": "| Status | P7-WP4 EVIDENCE REVIEW AND SECURITY UX CLOSED |"
-        },
-        {
-          "target": "gate",
-          "op": "replace_text",
-          "old": "**P7-WP4 EVIDENCE REVIEW AND SECURITY UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING**",
-          "value": "**P7-WP4 EVIDENCE REVIEW AND SECURITY UX CLOSED**"
-        },
-        {
           "target": "pins",
           "op": "replace",
           "path": "/review_history",
@@ -8494,6 +8494,24 @@
           "op": "replace_text",
           "old": "<!-- UXV:review_history:BEGIN -->\n| Round | Kind | Decision | BLOCKER | HIGH | MEDIUM | LOW | INFO | Reviewer role | Evidence source | Record |\n| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n| 1 | INITIAL_INDEPENDENT_REVIEW | REQUEST_CHANGES | 0 | 1 | 3 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-029 §7 |\n| 2 | TARGETED_INDEPENDENT_REREVIEW | REQUEST_CHANGES | 0 | 0 | 2 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-029 §7 |\n| 3 | TARGETED_INDEPENDENT_REREVIEW | REQUEST_CHANGES | 0 | 0 | 1 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-029 §7 |\n| 4 | TARGETED_INDEPENDENT_REREVIEW | APPROVE | 0 | 0 | 0 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-029 §7 |\n<!-- UXV:review_history:END -->",
           "value": "<!-- UXV:review_history:BEGIN -->\n| Round | Kind | Decision | BLOCKER | HIGH | MEDIUM | LOW | INFO | Reviewer role | Evidence source | Record |\n| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n| 1 | INITIAL_INDEPENDENT_REVIEW | REQUEST_CHANGES | 0 | 1 | 3 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-029 §7 |\n| 2 | TARGETED_INDEPENDENT_REREVIEW | REQUEST_CHANGES | 0 | 0 | 2 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-029 §7 |\n| 3 | TARGETED_INDEPENDENT_REREVIEW | REQUEST_CHANGES | 0 | 0 | 1 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-029 §7 |\n| 4 | TARGETED_INDEPENDENT_REREVIEW | APPROVE | 0 | 0 | 0 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-029 §7 |\n| 5 | TARGETED_INDEPENDENT_REREVIEW | APPROVE | 0 | 0 | 0 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-029 §7 |\n<!-- UXV:review_history:END -->"
+        },
+        {
+          "target": "doc",
+          "op": "replace_text",
+          "old": "| Status | P7-WP4 EVIDENCE REVIEW AND SECURITY UX CLOSED |",
+          "value": "| Status | P7-WP4 EVIDENCE REVIEW AND SECURITY UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING |"
+        },
+        {
+          "target": "gate",
+          "op": "replace_text",
+          "old": "| Status | P7-WP4 EVIDENCE REVIEW AND SECURITY UX CLOSED |",
+          "value": "| Status | P7-WP4 EVIDENCE REVIEW AND SECURITY UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING |"
+        },
+        {
+          "target": "gate",
+          "op": "replace_text",
+          "old": "**P7-WP4 EVIDENCE REVIEW AND SECURITY UX CLOSED**",
+          "value": "**P7-WP4 EVIDENCE REVIEW AND SECURITY UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING**"
         },
         {
           "target": "pins",
@@ -8775,6 +8793,24 @@
           "value": "<!-- UXV:review_history:BEGIN -->\n| Round | Kind | Decision | BLOCKER | HIGH | MEDIUM | LOW | INFO | Reviewer role | Evidence source | Record |\n| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n| 1 | INITIAL_INDEPENDENT_REVIEW | REQUEST_CHANGES | 0 | 1 | 3 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-029 §7 |\n| 2 | TARGETED_INDEPENDENT_REREVIEW | REQUEST_CHANGES | 0 | 0 | 2 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-029 §7 |\n| 3 | TARGETED_INDEPENDENT_REREVIEW | REQUEST_CHANGES | 0 | 0 | 1 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-029 §7 |\n| 4 | TARGETED_INDEPENDENT_REREVIEW | APPROVE | 0 | 0 | 0 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-029 §7 |\n| 5 | TARGETED_INDEPENDENT_REREVIEW | APPROVE | 0 | 0 | 0 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-029 §7 |\n<!-- UXV:review_history:END -->"
         },
         {
+          "target": "doc",
+          "op": "replace_text",
+          "old": "| Status | P7-WP4 EVIDENCE REVIEW AND SECURITY UX CLOSED |",
+          "value": "| Status | P7-WP4 EVIDENCE REVIEW AND SECURITY UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING |"
+        },
+        {
+          "target": "gate",
+          "op": "replace_text",
+          "old": "| Status | P7-WP4 EVIDENCE REVIEW AND SECURITY UX CLOSED |",
+          "value": "| Status | P7-WP4 EVIDENCE REVIEW AND SECURITY UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING |"
+        },
+        {
+          "target": "gate",
+          "op": "replace_text",
+          "old": "**P7-WP4 EVIDENCE REVIEW AND SECURITY UX CLOSED**",
+          "value": "**P7-WP4 EVIDENCE REVIEW AND SECURITY UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING**"
+        },
+        {
           "target": "pins",
           "op": "replace",
           "path": "/review_history",
@@ -8994,24 +9030,6 @@
           "op": "replace_text",
           "old": "<!-- UXV:review_history:BEGIN -->\n| Round | Kind | Decision | BLOCKER | HIGH | MEDIUM | LOW | INFO | Reviewer role | Evidence source | Record |\n| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n| 1 | INITIAL_INDEPENDENT_REVIEW | REQUEST_CHANGES | 0 | 1 | 3 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-029 §7 |\n| 2 | TARGETED_INDEPENDENT_REREVIEW | REQUEST_CHANGES | 0 | 0 | 2 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-029 §7 |\n| 3 | TARGETED_INDEPENDENT_REREVIEW | REQUEST_CHANGES | 0 | 0 | 1 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-029 §7 |\n| 4 | TARGETED_INDEPENDENT_REREVIEW | APPROVE | 0 | 0 | 0 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-029 §7 |\n<!-- UXV:review_history:END -->",
           "value": "<!-- UXV:review_history:BEGIN -->\n| Round | Kind | Decision | BLOCKER | HIGH | MEDIUM | LOW | INFO | Reviewer role | Evidence source | Record |\n| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n| 1 | INITIAL_INDEPENDENT_REVIEW | REQUEST_CHANGES | 0 | 1 | 3 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-029 §7 |\n| 2 | TARGETED_INDEPENDENT_REREVIEW | REQUEST_CHANGES | 0 | 0 | 2 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-029 §7 |\n| 3 | TARGETED_INDEPENDENT_REREVIEW | REQUEST_CHANGES | 0 | 0 | 1 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-029 §7 |\n| 4 | TARGETED_INDEPENDENT_REREVIEW | APPROVE | 0 | 0 | 0 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-029 §7 |\n| 5 | TARGETED_INDEPENDENT_REREVIEW | APPROVE | 0 | 0 | 0 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-029 §7 |\n<!-- UXV:review_history:END -->"
-        },
-        {
-          "target": "doc",
-          "op": "replace_text",
-          "old": "| Status | P7-WP4 EVIDENCE REVIEW AND SECURITY UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING |",
-          "value": "| Status | P7-WP4 EVIDENCE REVIEW AND SECURITY UX CLOSED |"
-        },
-        {
-          "target": "gate",
-          "op": "replace_text",
-          "old": "| Status | P7-WP4 EVIDENCE REVIEW AND SECURITY UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING |",
-          "value": "| Status | P7-WP4 EVIDENCE REVIEW AND SECURITY UX CLOSED |"
-        },
-        {
-          "target": "gate",
-          "op": "replace_text",
-          "old": "**P7-WP4 EVIDENCE REVIEW AND SECURITY UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING**",
-          "value": "**P7-WP4 EVIDENCE REVIEW AND SECURITY UX CLOSED**"
         },
         {
           "target": "pins",
@@ -9299,8 +9317,8 @@
           "op": "replace",
           "path": "/lifecycle",
           "value": {
-            "state": "APPROVED",
-            "status": "P7-WP4 EVIDENCE REVIEW AND SECURITY UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING",
+            "state": "CLOSED",
+            "status": "P7-WP4 EVIDENCE REVIEW AND SECURITY UX CLOSED",
             "decision_vocabulary": [
               "APPROVE",
               "REQUEST_CHANGES"
@@ -9373,7 +9391,25 @@
               "record_reference": "GATE-029 §7",
               "reviewer_role": "Independent reviewer"
             },
-            "merge_evidence": null
+            "merge_evidence": {
+              "repository": "nishanth-cryptos/TrustLens",
+              "pr_number": 39,
+              "pr_head_commit": "cf4ca8d37388f0f1a7e132a716e4cb776d0b38bc",
+              "merge_commit": "5f8c373d63cbf0544ddccf414020659b9fd3330a",
+              "base_commit": "e58dac6bff63a8cb79512338919af6d15db958c1",
+              "remote_ci": {
+                "workflow": "knowledge-validation",
+                "checks": [
+                  "Knowledge validation suite",
+                  "Quality-gate self-test (gate must bite)"
+                ],
+                "conclusion": "success",
+                "pr_head_run_id": 38139502369,
+                "merge_commit_run_id": 38142036162
+              },
+              "verification": "INDEPENDENT_PROGRAMME_VERIFICATION",
+              "verification_reference": "GATE-029 §8"
+            }
           }
         },
         {
@@ -9461,8 +9497,8 @@
           "op": "replace",
           "path": "/lifecycle",
           "value": {
-            "state": "APPROVED",
-            "status": "P7-WP4 EVIDENCE REVIEW AND SECURITY UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING",
+            "state": "CLOSED",
+            "status": "P7-WP4 EVIDENCE REVIEW AND SECURITY UX CLOSED",
             "decision_vocabulary": [
               "APPROVE",
               "REQUEST_CHANGES"
@@ -9535,7 +9571,25 @@
               "record_reference": "GATE-029 §7",
               "reviewer_role": "Independent reviewer"
             },
-            "merge_evidence": null
+            "merge_evidence": {
+              "repository": "nishanth-cryptos/TrustLens",
+              "pr_number": 39,
+              "pr_head_commit": "cf4ca8d37388f0f1a7e132a716e4cb776d0b38bc",
+              "merge_commit": "5f8c373d63cbf0544ddccf414020659b9fd3330a",
+              "base_commit": "e58dac6bff63a8cb79512338919af6d15db958c1",
+              "remote_ci": {
+                "workflow": "knowledge-validation",
+                "checks": [
+                  "Knowledge validation suite",
+                  "Quality-gate self-test (gate must bite)"
+                ],
+                "conclusion": "success",
+                "pr_head_run_id": 38139502369,
+                "merge_commit_run_id": 38142036162
+              },
+              "verification": "INDEPENDENT_PROGRAMME_VERIFICATION",
+              "verification_reference": "GATE-029 §8"
+            }
           }
         },
         {
@@ -9632,8 +9686,8 @@
           "op": "replace",
           "path": "/lifecycle",
           "value": {
-            "state": "APPROVED",
-            "status": "P7-WP4 EVIDENCE REVIEW AND SECURITY UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING",
+            "state": "CLOSED",
+            "status": "P7-WP4 EVIDENCE REVIEW AND SECURITY UX CLOSED",
             "decision_vocabulary": [
               "APPROVE",
               "REQUEST_CHANGES"
@@ -9706,7 +9760,25 @@
               "record_reference": "GATE-029 §7",
               "reviewer_role": "Independent reviewer"
             },
-            "merge_evidence": null
+            "merge_evidence": {
+              "repository": "nishanth-cryptos/TrustLens",
+              "pr_number": 39,
+              "pr_head_commit": "cf4ca8d37388f0f1a7e132a716e4cb776d0b38bc",
+              "merge_commit": "5f8c373d63cbf0544ddccf414020659b9fd3330a",
+              "base_commit": "e58dac6bff63a8cb79512338919af6d15db958c1",
+              "remote_ci": {
+                "workflow": "knowledge-validation",
+                "checks": [
+                  "Knowledge validation suite",
+                  "Quality-gate self-test (gate must bite)"
+                ],
+                "conclusion": "success",
+                "pr_head_run_id": 38139502369,
+                "merge_commit_run_id": 38142036162
+              },
+              "verification": "INDEPENDENT_PROGRAMME_VERIFICATION",
+              "verification_reference": "GATE-029 §8"
+            }
           }
         },
         {
@@ -12050,6 +12122,24 @@
           "value": "<!-- UXV:review_history:BEGIN -->\n| Round | Kind | Decision | BLOCKER | HIGH | MEDIUM | LOW | INFO | Reviewer role | Evidence source | Record |\n| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n| 1 | INITIAL_INDEPENDENT_REVIEW | REQUEST_CHANGES | 0 | 1 | 3 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-029 §7 |\n| 2 | TARGETED_INDEPENDENT_REREVIEW | REQUEST_CHANGES | 0 | 0 | 2 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-029 §7 |\n| 3 | TARGETED_INDEPENDENT_REREVIEW | REQUEST_CHANGES | 0 | 0 | 1 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-029 §7 |\n| 4 | TARGETED_INDEPENDENT_REREVIEW | APPROVE | 0 | 0 | 0 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-029 §7 |\n| 5 | TARGETED_INDEPENDENT_REREVIEW | APPROVE | 0 | 0 | 0 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-029 §7 |\n<!-- UXV:review_history:END -->"
         },
         {
+          "target": "doc",
+          "op": "replace_text",
+          "old": "| Status | P7-WP4 EVIDENCE REVIEW AND SECURITY UX CLOSED |",
+          "value": "| Status | P7-WP4 EVIDENCE REVIEW AND SECURITY UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING |"
+        },
+        {
+          "target": "gate",
+          "op": "replace_text",
+          "old": "| Status | P7-WP4 EVIDENCE REVIEW AND SECURITY UX CLOSED |",
+          "value": "| Status | P7-WP4 EVIDENCE REVIEW AND SECURITY UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING |"
+        },
+        {
+          "target": "gate",
+          "op": "replace_text",
+          "old": "**P7-WP4 EVIDENCE REVIEW AND SECURITY UX CLOSED**",
+          "value": "**P7-WP4 EVIDENCE REVIEW AND SECURITY UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING**"
+        },
+        {
           "target": "pins",
           "op": "replace",
           "path": "/review_history",
@@ -12268,24 +12358,6 @@
           "op": "replace_text",
           "old": "<!-- UXV:review_history:BEGIN -->\n| Round | Kind | Decision | BLOCKER | HIGH | MEDIUM | LOW | INFO | Reviewer role | Evidence source | Record |\n| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n| 1 | INITIAL_INDEPENDENT_REVIEW | REQUEST_CHANGES | 0 | 1 | 3 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-029 §7 |\n| 2 | TARGETED_INDEPENDENT_REREVIEW | REQUEST_CHANGES | 0 | 0 | 2 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-029 §7 |\n| 3 | TARGETED_INDEPENDENT_REREVIEW | REQUEST_CHANGES | 0 | 0 | 1 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-029 §7 |\n| 4 | TARGETED_INDEPENDENT_REREVIEW | APPROVE | 0 | 0 | 0 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-029 §7 |\n<!-- UXV:review_history:END -->",
           "value": "<!-- UXV:review_history:BEGIN -->\n| Round | Kind | Decision | BLOCKER | HIGH | MEDIUM | LOW | INFO | Reviewer role | Evidence source | Record |\n| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n| 1 | INITIAL_INDEPENDENT_REVIEW | REQUEST_CHANGES | 0 | 1 | 3 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-029 §7 |\n| 2 | TARGETED_INDEPENDENT_REREVIEW | REQUEST_CHANGES | 0 | 0 | 2 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-029 §7 |\n| 3 | TARGETED_INDEPENDENT_REREVIEW | REQUEST_CHANGES | 0 | 0 | 1 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-029 §7 |\n| 4 | TARGETED_INDEPENDENT_REREVIEW | APPROVE | 0 | 0 | 0 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-029 §7 |\n| 5 | TARGETED_INDEPENDENT_REREVIEW | APPROVE | 0 | 0 | 0 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-029 §7 |\n<!-- UXV:review_history:END -->"
-        },
-        {
-          "target": "doc",
-          "op": "replace_text",
-          "old": "| Status | P7-WP4 EVIDENCE REVIEW AND SECURITY UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING |",
-          "value": "| Status | P7-WP4 EVIDENCE REVIEW AND SECURITY UX CLOSED |"
-        },
-        {
-          "target": "gate",
-          "op": "replace_text",
-          "old": "| Status | P7-WP4 EVIDENCE REVIEW AND SECURITY UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING |",
-          "value": "| Status | P7-WP4 EVIDENCE REVIEW AND SECURITY UX CLOSED |"
-        },
-        {
-          "target": "gate",
-          "op": "replace_text",
-          "old": "**P7-WP4 EVIDENCE REVIEW AND SECURITY UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING**",
-          "value": "**P7-WP4 EVIDENCE REVIEW AND SECURITY UX CLOSED**"
         },
         {
           "target": "pins",
@@ -12612,19 +12684,19 @@
         {
           "target": "doc",
           "op": "replace_text",
-          "old": "| Status | P7-WP4 EVIDENCE REVIEW AND SECURITY UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING |",
+          "old": "| Status | P7-WP4 EVIDENCE REVIEW AND SECURITY UX CLOSED |",
           "value": "| Status | P7-WP4 EVIDENCE REVIEW AND SECURITY UX CANDIDATE |"
         },
         {
           "target": "gate",
           "op": "replace_text",
-          "old": "| Status | P7-WP4 EVIDENCE REVIEW AND SECURITY UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING |",
+          "old": "| Status | P7-WP4 EVIDENCE REVIEW AND SECURITY UX CLOSED |",
           "value": "| Status | P7-WP4 EVIDENCE REVIEW AND SECURITY UX CANDIDATE |"
         },
         {
           "target": "gate",
           "op": "replace_text",
-          "old": "**P7-WP4 EVIDENCE REVIEW AND SECURITY UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING**",
+          "old": "**P7-WP4 EVIDENCE REVIEW AND SECURITY UX CLOSED**",
           "value": "**P7-WP4 EVIDENCE REVIEW AND SECURITY UX CANDIDATE**"
         },
         {

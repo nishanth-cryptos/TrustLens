@@ -4,7 +4,7 @@
 | --- | --- |
 | Document ID | UX-004 |
 | Version | 0.1 |
-| Status | P7-WP4 EVIDENCE REVIEW AND SECURITY UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING |
+| Status | P7-WP4 EVIDENCE REVIEW AND SECURITY UX CLOSED |
 | Phase / work package | Phase 7 — UX, Evidence & Reporting Design / P7-WP4 |
 | Owner role | Product / Security UX |
 | Branch | phase7-wp4-evidence-review |
@@ -17,7 +17,8 @@
 
 ## 1. Authority and scope
 
-UX-004 is the P7-WP4 UX design and contract for evidence review and security, approved following independent review. It designs how people see
+UX-004 is the P7-WP4 UX design and contract for evidence review and security, approved following independent review and
+CLOSED after merge (PR #39; GATE-029 §8). It designs how people see
 evidence content, how content permission is shown and withdrawn, how analysts work the review queue, how administrators
 assign reviews and use break-glass, how human adjudication is recorded and shown beside the immutable `DetectionResult`,
 how the C4 adjudication rationale is protected, and what audit shows. It is a design and contract package only: there is
@@ -379,6 +380,7 @@ prose here can establish approval. Round 1 (initial independent review) returned
 MEDIUM 3 / LOW 0 / INFO 0). Round 2 (targeted re-review) closed HIGH-1 and MEDIUM-3 and returned REQUEST_CHANGES
 (BLOCKER 0 / HIGH 0 / MEDIUM 2 / LOW 0 / INFO 0). Round 3 closed MEDIUM-1 and returned REQUEST_CHANGES (BLOCKER 0 /
 HIGH 0 / MEDIUM 1 / LOW 0 / INFO 0) on the security-table check. Round 4 (targeted re-review) returned APPROVE
-(BLOCKER 0 / HIGH 0 / MEDIUM 0 / LOW 0 / INFO 0) and closed every remaining finding. The lifecycle is APPROVED following
-independent review, with remote CI and merge pending; CLOSED needs merge and remote-CI evidence pinned by the governed
-post-merge step. GATE-029 §7 holds the review record.
+(BLOCKER 0 / HIGH 0 / MEDIUM 0 / LOW 0 / INFO 0) and closed every remaining finding. PR #39 then merged with both required CI
+jobs successful, and the governed post-merge step recorded the lifecycle as CLOSED; the merge evidence is pinned in the
+validator, which checks exact agreement and does not contact GitHub. GATE-029 §7 holds the review record and §8 the
+post-merge closure record.
