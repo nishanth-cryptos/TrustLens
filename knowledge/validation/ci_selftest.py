@@ -255,6 +255,20 @@ def d_ux_intake_finalized_is_evaluated(root: Path):
     return p, orig
 
 
+def d_ux_result_no_scam_is_safe(root: Path):
+    p = root / "contracts" / "ux" / "ux-result-v1.json"
+    orig = p.read_bytes()
+    d = load(p)
+    row = next((x for x in d.get("classification_presentation", []) if x.get("classification") == "NO_SCAM_PATTERN"), None)
+    if row is None or row.get("implies_safe") is not False:
+        raise RuntimeError("ci_selftest could not find the P7-WP3 NO_SCAM_PATTERN classification presentation (renamed?)")
+    # P7-WP3-only defect: an absence of governed scam patterns is presented as safety. No other validator reads the result
+    # contract and no accepted API / Phase-3 / UX-001 / UX-002 artifact changes, so only the P7-WP3 gate (UXR-23) can bite.
+    row["implies_safe"] = True
+    dump(p, d)
+    return p, orig
+
+
 DEFECTS = [
     ("unknown indicator reference", d_unknown_indicator, "validate_rules.py"),
     ("invalid taxonomy ID", d_invalid_taxonomy, "validate_rules.py"),
@@ -272,6 +286,7 @@ DEFECTS = [
     ("pinned Phase-6 closure artifact digest corrupted (P6-WP7)", d_closure_digest_corrupted, "validate_phase6_closure.py"),
     ("evidence-content UX uses role-only access (P7-WP1)", d_ux_role_only_evidence_content, "validate_ux_foundation.py"),
     ("FINALIZED evidence presented as a completed evaluation (P7-WP2)", d_ux_intake_finalized_is_evaluated, "validate_ux_intake.py"),
+    ("NO_SCAM_PATTERN presented as safe (P7-WP3)", d_ux_result_no_scam_is_safe, "validate_ux_result.py"),
 ]
 
 
