@@ -9,12 +9,20 @@ to a temporary directory, injects ONE defect at a time into the copy, runs run_a
 asserts the gate fails with the expected validator, restores the copy, and finally deletes the
 temp tree. The real repository is only ever read.
 
+Execution: the untouched baseline always runs the COMPLETE suite (every validator in run_all.ORDER
+must run and pass). Each injected defect runs `run_all.py --json --fail-fast`; the first failing
+validator must be the expected one. The only exception is a validator declared in RELATED_EARLIER for
+that defect (an earlier validator whose own scope covers the defect): then the complete suite is rerun
+and the expected validator must be recorded as FAIL. Any other first failure, an incomplete report or a
+timeout fails the self-test.
+
 Usage:  python knowledge/validation/ci_selftest.py [--verbose]
 Exit 0 = every injected defect was caught by the expected validator (the gate bites).
 """
 
 from __future__ import annotations
 
+import importlib.util
 import json
 import shutil
 import subprocess
@@ -255,6 +263,20 @@ def d_ux_intake_finalized_is_evaluated(root: Path):
     return p, orig
 
 
+def d_ux_result_no_scam_is_safe(root: Path):
+    p = root / "contracts" / "ux" / "ux-result-v1.json"
+    orig = p.read_bytes()
+    d = load(p)
+    row = next((x for x in d.get("classification_presentation", []) if x.get("classification") == "NO_SCAM_PATTERN"), None)
+    if row is None or row.get("implies_safe") is not False:
+        raise RuntimeError("ci_selftest could not find the P7-WP3 NO_SCAM_PATTERN classification presentation (renamed?)")
+    # P7-WP3-only defect: an absence of governed scam patterns is presented as safety. No other validator reads the result
+    # contract and no accepted API / Phase-3 / UX-001 / UX-002 artifact changes, so only the P7-WP3 gate (UXR-23) can bite.
+    row["implies_safe"] = True
+    dump(p, d)
+    return p, orig
+
+
 DEFECTS = [
     ("unknown indicator reference", d_unknown_indicator, "validate_rules.py"),
     ("invalid taxonomy ID", d_invalid_taxonomy, "validate_rules.py"),
@@ -272,20 +294,73 @@ DEFECTS = [
     ("pinned Phase-6 closure artifact digest corrupted (P6-WP7)", d_closure_digest_corrupted, "validate_phase6_closure.py"),
     ("evidence-content UX uses role-only access (P7-WP1)", d_ux_role_only_evidence_content, "validate_ux_foundation.py"),
     ("FINALIZED evidence presented as a completed evaluation (P7-WP2)", d_ux_intake_finalized_is_evaluated, "validate_ux_intake.py"),
+    ("NO_SCAM_PATTERN presented as safe (P7-WP3)", d_ux_result_no_scam_is_safe, "validate_ux_result.py"),
 ]
 
 
-def run_gate(root: Path):
-    """Run run_all.py --json inside the temp repo; return the parsed summary."""
-    proc = subprocess.run(
-        [sys.executable, str(root / "knowledge" / "validation" / "run_all.py"), "--json"],
-        capture_output=True, text=True, cwd=str(root), timeout=300,
-    )
+# Earlier validators (in run_all.ORDER) whose own declared scope covers a defect, so they legitimately
+# fail before the expected validator. Only these may precede it; the complete suite is then rerun and the
+# expected validator must still be recorded as FAIL. Any other earlier failure fails the self-test.
+RELATED_EARLIER = {
+    "invalid taxonomy ID": {"validate_taxonomy.py"},                           # "rule taxonomy_refs resolve"
+    "deprecated negative-indicator reference": {"validate_negative_library.py"},  # library integrity + overrides
+}
+
+# One complete run_all.py took 362.87 s on the GitHub runner (PR #37), over the former 300 s limit. 900 s
+# leaves a ~2.5x margin; a timeout is always reported as a self-test failure, never as success.
+GATE_TIMEOUT_S = 900
+
+
+def expected_validators(root: Path) -> list[str]:
+    """Validator file names in run_all.ORDER (read from the temp copy) — the complete-suite inventory."""
+    spec = importlib.util.spec_from_file_location("selftest_run_all", root / "knowledge" / "validation" / "run_all.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return [Path(rel).name for rel, _ in mod.ORDER]
+
+
+def run_gate(root: Path, fail_fast: bool = False):
+    """Run run_all.py --json (optionally --fail-fast) inside the temp repo; return (returncode, summary).
+    A timeout returns (None, {"gate": "TIMEOUT", ...}) so callers always treat it as a failure."""
+    cmd = [sys.executable, str(root / "knowledge" / "validation" / "run_all.py"), "--json"]
+    if fail_fast:
+        cmd.append("--fail-fast")
+    try:
+        proc = subprocess.run(cmd, capture_output=True, text=True, cwd=str(root), timeout=GATE_TIMEOUT_S)
+    except subprocess.TimeoutExpired:
+        return None, {"gate": "TIMEOUT", "results": [], "_raw": f"run_all.py exceeded {GATE_TIMEOUT_S} s"}
     try:
         summary = json.loads(proc.stdout)
     except json.JSONDecodeError:
         summary = {"gate": "UNPARSEABLE", "results": [], "_raw": proc.stdout + proc.stderr}
     return proc.returncode, summary
+
+
+def check_defect(work: Path, name: str, expected: str):
+    """Fail-fast run; the first failing validator must be the expected one (or a declared related earlier
+    validator, in which case the complete suite must record the expected validator as FAIL).
+    Returns (ok, detail, summary)."""
+    rc, summary = run_gate(work, fail_fast=True)
+    results = summary.get("results", [])
+    if rc is None:
+        return False, f"TIMEOUT after {GATE_TIMEOUT_S} s (fail-fast run)", summary
+    if rc == 0 or summary.get("gate") != "FAIL" or not results:
+        return False, f"gate={summary.get('gate')} rc={rc}: defect not caught", summary
+    *before, last = results
+    if last["status"] != "FAIL" or any(r["status"] != "PASS" for r in before) or summary.get("validators_failed") != 1:
+        return False, "incomplete or inconsistent fail-fast report", summary
+    first = last["validator"]
+    if first == expected:
+        return True, f"fail-fast: first failure {first}", summary
+    if first not in RELATED_EARLIER.get(name, set()):
+        return False, f"first failure {first} is not the expected {expected} nor a declared related validator", summary
+    rc, summary = run_gate(work)
+    if rc is None:
+        return False, f"TIMEOUT after {GATE_TIMEOUT_S} s (complete run after related {first})", summary
+    failed = sorted(r["validator"] for r in summary.get("results", []) if r["status"] == "FAIL")
+    if rc == 0 or summary.get("gate") != "FAIL" or expected not in failed:
+        return False, f"complete run after related {first}: gate={summary.get('gate')} caught_by={failed or 'NONE'}", summary
+    return True, f"related {first} failed first; complete run caught_by={failed}", summary
 
 
 def main() -> int:
@@ -298,31 +373,31 @@ def main() -> int:
         ignore=shutil.ignore_patterns(".git", ".venv", "__pycache__", "*.pyc", ".pytest_cache"),
     )
 
-    # sanity: the untouched copy must be green, or the test proves nothing
+    # sanity: the untouched copy must be green on the COMPLETE suite, or the test proves nothing
+    inventory = expected_validators(work)
     rc, summary = run_gate(work)
-    if rc != 0 or summary.get("gate") != "PASS":
-        print("  FAIL  baseline copy is not green — cannot prove the gate bites")
+    ran = [r["validator"] for r in summary.get("results", [])]
+    if (rc != 0 or summary.get("gate") != "PASS" or ran != inventory or summary.get("validators_run") != len(inventory)
+            or summary.get("validators_failed") != 0 or any(r["status"] != "PASS" for r in summary["results"])):
+        reason = f"TIMEOUT after {GATE_TIMEOUT_S} s" if rc is None else f"gate={summary.get('gate')} rc={rc} ran {len(ran)}/{len(inventory)}"
+        print(f"  FAIL  baseline copy is not green on the complete suite ({reason}) — cannot prove the gate bites")
         if verbose:
             print(json.dumps(summary, indent=2))
         shutil.rmtree(tmp, ignore_errors=True)
         return 1
-    print(f"  ok    baseline copy green ({summary['validators_run']} validators)\n")
+    print(f"  ok    baseline copy green ({summary['validators_run']}/{len(inventory)} validators, complete suite)\n")
 
     failures = []
     try:
         for name, inject, expected in DEFECTS:
             path, orig = inject(work)
-            rc, summary = run_gate(work)
-            path.write_bytes(orig)  # restore immediately
-
-            failed = {r["validator"] for r in summary.get("results", []) if r["status"] == "FAIL"}
-            caught = rc != 0 and summary.get("gate") == "FAIL"
-            right = expected in failed
-            ok = caught and right
+            try:
+                ok, detail, summary = check_defect(work, name, expected)
+            finally:
+                path.write_bytes(orig)  # restore immediately, even on error
             mark = "ok  " if ok else "FAIL"
             print(f"  {mark}  defect: {name}")
-            print(f"          gate={'FAIL' if caught else summary.get('gate')}  "
-                  f"expected={expected}  caught_by={sorted(failed) or 'NONE'}")
+            print(f"          expected={expected}  {detail}")
             if not ok:
                 failures.append(name)
                 if verbose:
