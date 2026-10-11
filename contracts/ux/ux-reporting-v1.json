@@ -1,0 +1,2537 @@
+{
+  "contract_id": "UX-005",
+  "contract_version": "0.1.0",
+  "phase": "Phase 7 — UX, Evidence & Reporting Design",
+  "work_package": "P7-WP5",
+  "baseline": "b5a663a6dd6343b17b7cf8dfa927c0aae4f8ebd9",
+  "lifecycle": {
+    "state": "APPROVED",
+    "status": "P7-WP5 REPORTING AND HISTORICAL WORKFLOWS UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING",
+    "decision_vocabulary": [
+      "APPROVE",
+      "REQUEST_CHANGES"
+    ],
+    "review_history": [
+      {
+        "round": 1,
+        "kind": "INITIAL_INDEPENDENT_REVIEW",
+        "decision": "REQUEST_CHANGES",
+        "counts": {
+          "BLOCKER": 0,
+          "HIGH": 0,
+          "MEDIUM": 2,
+          "LOW": 0,
+          "INFO": 0
+        },
+        "reviewer_role": "Independent reviewer",
+        "record_reference": "GATE-030 §7",
+        "evidence_source": "Independent review result supplied to the builder by the programme"
+      },
+      {
+        "round": 2,
+        "kind": "TARGETED_INDEPENDENT_REREVIEW",
+        "decision": "REQUEST_CHANGES",
+        "counts": {
+          "BLOCKER": 0,
+          "HIGH": 0,
+          "MEDIUM": 1,
+          "LOW": 0,
+          "INFO": 0
+        },
+        "reviewer_role": "Independent reviewer",
+        "record_reference": "GATE-030 §7",
+        "evidence_source": "Independent review result supplied to the builder by the programme"
+      },
+      {
+        "round": 3,
+        "kind": "TARGETED_INDEPENDENT_REREVIEW",
+        "decision": "APPROVE",
+        "counts": {
+          "BLOCKER": 0,
+          "HIGH": 0,
+          "MEDIUM": 0,
+          "LOW": 0,
+          "INFO": 0
+        },
+        "reviewer_role": "Independent reviewer",
+        "record_reference": "GATE-030 §7",
+        "evidence_source": "Independent review result supplied to the builder by the programme"
+      }
+    ],
+    "approval": {
+      "round": 3,
+      "decision": "APPROVE",
+      "record_reference": "GATE-030 §7",
+      "reviewer_role": "Independent reviewer"
+    },
+    "merge_evidence": null
+  },
+  "engine_version": "1.0.0",
+  "foundation": {
+    "foundation_contract": "UX-001",
+    "foundation_gate": "GATE-026",
+    "foundation_handoff_scope": [
+      "Reports",
+      "Replay",
+      "Re-analysis",
+      "Governed deletion",
+      "410 removed",
+      "Replay unavailable",
+      "Report regeneration unavailable",
+      "Historical comparison"
+    ],
+    "consumed_contracts": [
+      "UX-002",
+      "UX-003",
+      "UX-004"
+    ],
+    "consumed_gates": [
+      "GATE-027",
+      "GATE-028",
+      "GATE-029"
+    ],
+    "predecessors_modified": false
+  },
+  "scope": {
+    "owned": [
+      "Reports",
+      "Replay",
+      "Re-analysis",
+      "Governed deletion",
+      "410 removed",
+      "Replay unavailable",
+      "Report regeneration unavailable",
+      "Historical comparison"
+    ],
+    "request_mapping": [
+      {
+        "request_item": "Case-scoped report creation, metadata, history and authorized content retrieval",
+        "handoff_item": "Reports"
+      },
+      {
+        "request_item": "Historical replay and its verification states",
+        "handoff_item": "Replay"
+      },
+      {
+        "request_item": "Re-analysis as a new Evaluation, and user correction limited to the accepted API",
+        "handoff_item": "Re-analysis"
+      },
+      {
+        "request_item": "Governed deletion requests, administrator decisions and confirmed removal",
+        "handoff_item": "Governed deletion"
+      },
+      {
+        "request_item": "410 governed removal versus ordinary 404 not found or not visible",
+        "handoff_item": "410 removed"
+      },
+      {
+        "request_item": "Replay unavailable states",
+        "handoff_item": "Replay unavailable"
+      },
+      {
+        "request_item": "Report regeneration unavailable states",
+        "handoff_item": "Report regeneration unavailable"
+      },
+      {
+        "request_item": "Honest historical comparisons",
+        "handoff_item": "Historical comparison"
+      }
+    ],
+    "deferred": [
+      {
+        "item": "Detailed accessible and responsive layout of reporting and historical surfaces",
+        "owner": "P7-WP6"
+      },
+      {
+        "item": "Frontend, API and runtime implementation",
+        "owner": "Phase 9"
+      }
+    ],
+    "scope_differences": [
+      "User correction (createCorrection) is designed here because UX-003 deferred correction to P7-WP5; the accepted API places it on no UX-001 surface, so its placement is recorded here and UX-001 is unchanged.",
+      "Re-analysis reuses createEvaluations (owned for the initial evaluation by UX-002) only with a predecessor evaluation and a reason; UX-002 is unchanged.",
+      "Historical comparison has no accepted API capability, so the design presents separate, source-labelled records and computes no comparison."
+    ]
+  },
+  "surfaces": [
+    {
+      "surface_id": "UX-REPORTS",
+      "handoff_items": [
+        "Reports"
+      ],
+      "operations": [
+        "listReports",
+        "getReport"
+      ],
+      "allowed_roles": [
+        "USER",
+        "ANALYST"
+      ],
+      "role_alone_sufficient": false
+    },
+    {
+      "surface_id": "UX-REPORT-CONTENT",
+      "handoff_items": [
+        "Reports",
+        "Report regeneration unavailable",
+        "410 removed"
+      ],
+      "operations": [
+        "createReport",
+        "getReportContent"
+      ],
+      "allowed_roles": [
+        "USER",
+        "ANALYST"
+      ],
+      "role_alone_sufficient": false
+    },
+    {
+      "surface_id": "UX-REPLAY",
+      "handoff_items": [
+        "Replay",
+        "Replay unavailable"
+      ],
+      "operations": [
+        "createReplay",
+        "getReplay"
+      ],
+      "allowed_roles": [
+        "ANALYST",
+        "ADMINISTRATOR"
+      ],
+      "role_alone_sufficient": false
+    },
+    {
+      "surface_id": "UX-EVALUATION",
+      "handoff_items": [
+        "Re-analysis",
+        "Historical comparison"
+      ],
+      "operations": [
+        "listCaseEvaluations",
+        "getEvaluation",
+        "createEvaluations"
+      ],
+      "allowed_roles": [
+        "USER",
+        "ANALYST"
+      ],
+      "role_alone_sufficient": false
+    },
+    {
+      "surface_id": "UX-DELETION",
+      "handoff_items": [
+        "Governed deletion",
+        "410 removed"
+      ],
+      "operations": [
+        "createDeletionRequest",
+        "listDeletionRequests",
+        "getDeletionRequest",
+        "authorizeDeletionRequest",
+        "rejectDeletionRequest"
+      ],
+      "allowed_roles": [
+        "USER",
+        "ADMINISTRATOR"
+      ],
+      "role_alone_sufficient": false
+    }
+  ],
+  "operations": [
+    {
+      "operation_id": "createReport",
+      "surface_id": "UX-REPORT-CONTENT",
+      "listed_on_ux001_surface": true,
+      "method": "POST",
+      "path": "/api/v1/cases/{case_id}/reports",
+      "roles": [
+        "USER",
+        "ANALYST"
+      ],
+      "resource_authorization": "CASE_DERIVED_CONTENT",
+      "sensitive_content_permission": "DERIVED_CONTENT",
+      "break_glass_roles": [],
+      "request_schema": "ReportCreateRequest",
+      "response_schema": "ReportResponse",
+      "success_status": 202,
+      "mode": "ASYNC",
+      "idempotency": "REQUIRED",
+      "audit": "REQUIRED",
+      "audit_event": "REPORT_GENERATED",
+      "sensitivity": "C4",
+      "concurrency": "NONE",
+      "caller_constraints": [],
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "EVALUATION_NOT_COMPLETED",
+        "FORBIDDEN",
+        "IDEMPOTENCY_IN_PROGRESS",
+        "IDEMPOTENCY_KEY_REUSED",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "NOT_FOUND",
+        "RATE_LIMITED",
+        "REMOVED_UNDER_GOVERNANCE",
+        "UNAUTHENTICATED"
+      ],
+      "audit_notice_shown": true
+    },
+    {
+      "operation_id": "listReports",
+      "surface_id": "UX-REPORTS",
+      "listed_on_ux001_surface": true,
+      "method": "GET",
+      "path": "/api/v1/cases/{case_id}/reports",
+      "roles": [
+        "USER",
+        "ANALYST"
+      ],
+      "resource_authorization": "CASE_ACCESS",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": null,
+      "response_schema": "ReportListResponse",
+      "success_status": 200,
+      "mode": "SYNC",
+      "idempotency": "NOT_APPLICABLE",
+      "audit": "NOT_REQUIRED",
+      "audit_event": null,
+      "sensitivity": "C2",
+      "concurrency": "NONE",
+      "caller_constraints": [],
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "NOT_FOUND",
+        "RATE_LIMITED",
+        "UNAUTHENTICATED"
+      ],
+      "audit_notice_shown": false
+    },
+    {
+      "operation_id": "getReport",
+      "surface_id": "UX-REPORTS",
+      "listed_on_ux001_surface": true,
+      "method": "GET",
+      "path": "/api/v1/reports/{report_id}",
+      "roles": [
+        "USER",
+        "ANALYST"
+      ],
+      "resource_authorization": "CASE_ACCESS",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": null,
+      "response_schema": "ReportResponse",
+      "success_status": 200,
+      "mode": "SYNC",
+      "idempotency": "NOT_APPLICABLE",
+      "audit": "NOT_REQUIRED",
+      "audit_event": null,
+      "sensitivity": "C2",
+      "concurrency": "NONE",
+      "caller_constraints": [],
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "NOT_FOUND",
+        "RATE_LIMITED",
+        "UNAUTHENTICATED"
+      ],
+      "audit_notice_shown": false
+    },
+    {
+      "operation_id": "getReportContent",
+      "surface_id": "UX-REPORT-CONTENT",
+      "listed_on_ux001_surface": true,
+      "method": "GET",
+      "path": "/api/v1/reports/{report_id}/content",
+      "roles": [
+        "USER",
+        "ANALYST"
+      ],
+      "resource_authorization": "CASE_DERIVED_CONTENT",
+      "sensitive_content_permission": "DERIVED_CONTENT",
+      "break_glass_roles": [],
+      "request_schema": null,
+      "response_schema": "ReportContentDownload",
+      "success_status": 200,
+      "mode": "SYNC",
+      "idempotency": "NOT_APPLICABLE",
+      "audit": "REQUIRED",
+      "audit_event": "REPORT_EXPORTED",
+      "sensitivity": "C4",
+      "concurrency": "NONE",
+      "caller_constraints": [],
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "INTEGRITY_FAILURE",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "NOT_FOUND",
+        "RATE_LIMITED",
+        "REMOVED_UNDER_GOVERNANCE",
+        "REPORT_REGENERATION_UNAVAILABLE",
+        "STATE_CONFLICT",
+        "UNAUTHENTICATED"
+      ],
+      "audit_notice_shown": true
+    },
+    {
+      "operation_id": "createReplay",
+      "surface_id": "UX-REPLAY",
+      "listed_on_ux001_surface": true,
+      "method": "POST",
+      "path": "/api/v1/evaluations/{evaluation_id}/replays",
+      "roles": [
+        "ANALYST",
+        "ADMINISTRATOR"
+      ],
+      "resource_authorization": "CASE_ASSIGNED_ANALYST_OR_PLATFORM_ADMIN",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": "ReplayCreateRequest",
+      "response_schema": "ReplayResponse",
+      "success_status": 202,
+      "mode": "ASYNC",
+      "idempotency": "REQUIRED",
+      "audit": "REQUIRED",
+      "audit_event": "REPLAY_EXECUTED",
+      "sensitivity": "C2",
+      "concurrency": "NONE",
+      "caller_constraints": [],
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "EVALUATION_NOT_COMPLETED",
+        "FORBIDDEN",
+        "IDEMPOTENCY_IN_PROGRESS",
+        "IDEMPOTENCY_KEY_REUSED",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "NOT_FOUND",
+        "RATE_LIMITED",
+        "REPLAY_UNAVAILABLE",
+        "UNAUTHENTICATED"
+      ],
+      "audit_notice_shown": true
+    },
+    {
+      "operation_id": "getReplay",
+      "surface_id": "UX-REPLAY",
+      "listed_on_ux001_surface": true,
+      "method": "GET",
+      "path": "/api/v1/replays/{replay_id}",
+      "roles": [
+        "ANALYST",
+        "ADMINISTRATOR"
+      ],
+      "resource_authorization": "CASE_ASSIGNED_ANALYST_OR_PLATFORM_ADMIN",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": null,
+      "response_schema": "ReplayResponse",
+      "success_status": 200,
+      "mode": "SYNC",
+      "idempotency": "NOT_APPLICABLE",
+      "audit": "NOT_REQUIRED",
+      "audit_event": null,
+      "sensitivity": "C2",
+      "concurrency": "NONE",
+      "caller_constraints": [],
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "NOT_FOUND",
+        "RATE_LIMITED",
+        "UNAUTHENTICATED"
+      ],
+      "audit_notice_shown": false
+    },
+    {
+      "operation_id": "createEvaluations",
+      "surface_id": "UX-EVALUATION",
+      "listed_on_ux001_surface": true,
+      "method": "POST",
+      "path": "/api/v1/submissions/{submission_id}/evaluations",
+      "roles": [
+        "USER",
+        "ANALYST"
+      ],
+      "resource_authorization": "CASE_ACCESS",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": "EvaluationCreateRequest",
+      "response_schema": "EvaluationBatchAcceptedResponse",
+      "success_status": 202,
+      "mode": "ASYNC",
+      "idempotency": "REQUIRED",
+      "audit": "REQUIRED",
+      "audit_event": "EVALUATION_STARTED",
+      "sensitivity": "C2",
+      "concurrency": "NONE",
+      "caller_constraints": [],
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "IDEMPOTENCY_IN_PROGRESS",
+        "IDEMPOTENCY_KEY_REUSED",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "NOT_FOUND",
+        "RATE_LIMITED",
+        "STATE_CONFLICT",
+        "UNAUTHENTICATED"
+      ],
+      "audit_notice_shown": true
+    },
+    {
+      "operation_id": "createCorrection",
+      "surface_id": "UX-EVALUATION",
+      "listed_on_ux001_surface": false,
+      "method": "POST",
+      "path": "/api/v1/evaluations/{evaluation_id}/corrections",
+      "roles": [
+        "USER"
+      ],
+      "resource_authorization": "CASE_OWNER",
+      "sensitive_content_permission": "DERIVED_CONTENT",
+      "break_glass_roles": [],
+      "request_schema": "UserCorrectionCreateRequest",
+      "response_schema": "CorrectionAcceptedResponse",
+      "success_status": 202,
+      "mode": "ASYNC",
+      "idempotency": "REQUIRED",
+      "audit": "REQUIRED",
+      "audit_event": "USER_CORRECTION",
+      "sensitivity": "C4",
+      "concurrency": "NONE",
+      "caller_constraints": [],
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "EVALUATION_NOT_COMPLETED",
+        "FORBIDDEN",
+        "IDEMPOTENCY_IN_PROGRESS",
+        "IDEMPOTENCY_KEY_REUSED",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "NOT_FOUND",
+        "RATE_LIMITED",
+        "UNAUTHENTICATED"
+      ],
+      "audit_notice_shown": true
+    },
+    {
+      "operation_id": "createDeletionRequest",
+      "surface_id": "UX-DELETION",
+      "listed_on_ux001_surface": true,
+      "method": "POST",
+      "path": "/api/v1/deletion-requests",
+      "roles": [
+        "USER"
+      ],
+      "resource_authorization": "DELETION_SCOPE_OWNER",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": "DeletionRequestCreateRequest",
+      "response_schema": "DeletionRequestResponse",
+      "success_status": 201,
+      "mode": "SYNC",
+      "idempotency": "REQUIRED",
+      "audit": "REQUIRED",
+      "audit_event": "DELETION_REQUESTED",
+      "sensitivity": "C2",
+      "concurrency": "NONE",
+      "caller_constraints": [],
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "IDEMPOTENCY_IN_PROGRESS",
+        "IDEMPOTENCY_KEY_REUSED",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "NOT_FOUND",
+        "RATE_LIMITED",
+        "STATE_CONFLICT",
+        "UNAUTHENTICATED"
+      ],
+      "audit_notice_shown": true
+    },
+    {
+      "operation_id": "listDeletionRequests",
+      "surface_id": "UX-DELETION",
+      "listed_on_ux001_surface": true,
+      "method": "GET",
+      "path": "/api/v1/deletion-requests",
+      "roles": [
+        "USER",
+        "ADMINISTRATOR"
+      ],
+      "resource_authorization": "DELETION_SCOPE_OWNER_OR_PLATFORM_ADMIN",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": null,
+      "response_schema": "DeletionRequestListResponse",
+      "success_status": 200,
+      "mode": "SYNC",
+      "idempotency": "NOT_APPLICABLE",
+      "audit": "NOT_REQUIRED",
+      "audit_event": null,
+      "sensitivity": "C2",
+      "concurrency": "NONE",
+      "caller_constraints": [],
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "RATE_LIMITED",
+        "UNAUTHENTICATED"
+      ],
+      "audit_notice_shown": false
+    },
+    {
+      "operation_id": "getDeletionRequest",
+      "surface_id": "UX-DELETION",
+      "listed_on_ux001_surface": true,
+      "method": "GET",
+      "path": "/api/v1/deletion-requests/{deletion_request_id}",
+      "roles": [
+        "USER",
+        "ADMINISTRATOR"
+      ],
+      "resource_authorization": "DELETION_SCOPE_OWNER_OR_PLATFORM_ADMIN",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": null,
+      "response_schema": "DeletionRequestResponse",
+      "success_status": 200,
+      "mode": "SYNC",
+      "idempotency": "NOT_APPLICABLE",
+      "audit": "NOT_REQUIRED",
+      "audit_event": null,
+      "sensitivity": "C2",
+      "concurrency": "NONE",
+      "caller_constraints": [],
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "INTERNAL_ERROR",
+        "NOT_FOUND",
+        "RATE_LIMITED",
+        "UNAUTHENTICATED"
+      ],
+      "audit_notice_shown": false
+    },
+    {
+      "operation_id": "authorizeDeletionRequest",
+      "surface_id": "UX-DELETION",
+      "listed_on_ux001_surface": true,
+      "method": "POST",
+      "path": "/api/v1/deletion-requests/{deletion_request_id}/authorize",
+      "roles": [
+        "ADMINISTRATOR"
+      ],
+      "resource_authorization": "PLATFORM_ADMIN",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": "ReasonCommandRequest",
+      "response_schema": "DeletionRequestResponse",
+      "success_status": 202,
+      "mode": "ASYNC",
+      "idempotency": "REQUIRED",
+      "audit": "REQUIRED",
+      "audit_event": "RETENTION_ACTION",
+      "sensitivity": "C2",
+      "concurrency": "IF_MATCH_REQUIRED",
+      "caller_constraints": [],
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "IDEMPOTENCY_IN_PROGRESS",
+        "IDEMPOTENCY_KEY_REUSED",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "NOT_FOUND",
+        "PRECONDITION_FAILED",
+        "PRECONDITION_REQUIRED",
+        "RATE_LIMITED",
+        "STATE_CONFLICT",
+        "UNAUTHENTICATED"
+      ],
+      "audit_notice_shown": true
+    },
+    {
+      "operation_id": "rejectDeletionRequest",
+      "surface_id": "UX-DELETION",
+      "listed_on_ux001_surface": true,
+      "method": "POST",
+      "path": "/api/v1/deletion-requests/{deletion_request_id}/reject",
+      "roles": [
+        "ADMINISTRATOR"
+      ],
+      "resource_authorization": "PLATFORM_ADMIN",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": "ReasonCommandRequest",
+      "response_schema": "DeletionRequestResponse",
+      "success_status": 200,
+      "mode": "SYNC",
+      "idempotency": "REQUIRED",
+      "audit": "REQUIRED",
+      "audit_event": "RETENTION_ACTION",
+      "sensitivity": "C2",
+      "concurrency": "IF_MATCH_REQUIRED",
+      "caller_constraints": [],
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "IDEMPOTENCY_IN_PROGRESS",
+        "IDEMPOTENCY_KEY_REUSED",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "NOT_FOUND",
+        "PRECONDITION_FAILED",
+        "PRECONDITION_REQUIRED",
+        "RATE_LIMITED",
+        "STATE_CONFLICT",
+        "UNAUTHENTICATED"
+      ],
+      "audit_notice_shown": true
+    }
+  ],
+  "supporting_operations": [
+    {
+      "operation_id": "getCase",
+      "use": "viewer_access.relationship and viewer_access.can_view_evidence_content before any report-content control",
+      "owner_surface": "UX-CASE"
+    },
+    {
+      "operation_id": "getEvaluation",
+      "use": "authoritative Evaluation state, origin, predecessor and result_availability for history, re-analysis and tombstones",
+      "owner_surface": "UX-EVALUATION"
+    },
+    {
+      "operation_id": "listCaseEvaluations",
+      "use": "case-scoped evaluation history in requested order; no aggregate verdict",
+      "owner_surface": "UX-EVALUATION"
+    }
+  ],
+  "recovery_vocabulary": [
+    {
+      "recovery": "RETRY_SAME_REQUEST",
+      "retryability": [
+        "RETRYABLE"
+      ],
+      "meaning": "Repeat the same read, or resend the same command with the same idempotency key."
+    },
+    {
+      "recovery": "WAIT_THEN_RETRY_SAME_REQUEST",
+      "retryability": [
+        "RETRYABLE"
+      ],
+      "meaning": "Repeat later, honouring any returned Retry-After; no countdown is invented."
+    },
+    {
+      "recovery": "WAIT_FOR_PENDING_COMMAND",
+      "retryability": [
+        "RETRYABLE"
+      ],
+      "meaning": "The same command is still being processed; wait and resend it unchanged with the same key."
+    },
+    {
+      "recovery": "REFRESH_EVALUATION_STATUS",
+      "retryability": [
+        "RETRYABLE"
+      ],
+      "meaning": "Read the authoritative Evaluation state before choosing a presentation."
+    },
+    {
+      "recovery": "CORRECT_REQUEST",
+      "retryability": [
+        "RETRY_WITH_CHANGES"
+      ],
+      "meaning": "Correct the request before any new attempt; field values are not echoed."
+    },
+    {
+      "recovery": "REAUTHENTICATE_THEN_RETRY",
+      "retryability": [
+        "RETRY_WITH_CHANGES"
+      ],
+      "meaning": "Re-establish authentication, then repeat."
+    },
+    {
+      "recovery": "REFRESH_THEN_DECIDE",
+      "retryability": [
+        "RETRY_WITH_CHANGES"
+      ],
+      "meaning": "Reload the current state and its ETag, show what changed and let the person decide again; never overwrite silently."
+    },
+    {
+      "recovery": "REVIEW_THEN_NEW_COMMAND",
+      "retryability": [
+        "RETRY_WITH_CHANGES"
+      ],
+      "meaning": "The key was used for a different command; review the intended action and submit it as a new command."
+    },
+    {
+      "recovery": "STOP_NO_RETRY",
+      "retryability": [
+        "NOT_RETRYABLE"
+      ],
+      "meaning": "Do not retry; show the governed state only."
+    }
+  ],
+  "error_presentation": [
+    {
+      "error_code": "DEPENDENCY_UNAVAILABLE",
+      "http_status": 503,
+      "retryability": "RETRYABLE",
+      "presentation_state": "TEMPORARILY_UNAVAILABLE",
+      "recovery": "WAIT_THEN_RETRY_SAME_REQUEST",
+      "implies_safe": false,
+      "content_shown": false,
+      "alternate_presentation_state": null,
+      "alternate_condition": null
+    },
+    {
+      "error_code": "EVALUATION_NOT_COMPLETED",
+      "http_status": 409,
+      "retryability": "RETRYABLE",
+      "presentation_state": "CONDITIONAL_ON_EVALUATION_STATE",
+      "recovery": "REFRESH_EVALUATION_STATUS",
+      "implies_safe": false,
+      "content_shown": false,
+      "alternate_presentation_state": null,
+      "alternate_condition": null
+    },
+    {
+      "error_code": "FORBIDDEN",
+      "http_status": 403,
+      "retryability": "NOT_RETRYABLE",
+      "presentation_state": "ACCESS_DENIED",
+      "recovery": "STOP_NO_RETRY",
+      "implies_safe": false,
+      "content_shown": false,
+      "alternate_presentation_state": "CONTENT_PERMISSION_REQUIRED",
+      "alternate_condition": "Only on report content (createReport, getReportContent), and only when getCase viewer_access already establishes a visible case with can_view_evidence_content=false; otherwise ACCESS_DENIED"
+    },
+    {
+      "error_code": "IDEMPOTENCY_IN_PROGRESS",
+      "http_status": 409,
+      "retryability": "RETRYABLE",
+      "presentation_state": "ACTION_PENDING",
+      "recovery": "WAIT_FOR_PENDING_COMMAND",
+      "implies_safe": false,
+      "content_shown": false,
+      "alternate_presentation_state": null,
+      "alternate_condition": null
+    },
+    {
+      "error_code": "IDEMPOTENCY_KEY_REUSED",
+      "http_status": 409,
+      "retryability": "RETRY_WITH_CHANGES",
+      "presentation_state": "CONFLICT",
+      "recovery": "REVIEW_THEN_NEW_COMMAND",
+      "implies_safe": false,
+      "content_shown": false,
+      "alternate_presentation_state": null,
+      "alternate_condition": null
+    },
+    {
+      "error_code": "INTEGRITY_FAILURE",
+      "http_status": 500,
+      "retryability": "NOT_RETRYABLE",
+      "presentation_state": "INTEGRITY_ERROR",
+      "recovery": "STOP_NO_RETRY",
+      "implies_safe": false,
+      "content_shown": false,
+      "alternate_presentation_state": null,
+      "alternate_condition": null
+    },
+    {
+      "error_code": "INTERNAL_ERROR",
+      "http_status": 500,
+      "retryability": "RETRYABLE",
+      "presentation_state": "SERVER_ERROR",
+      "recovery": "RETRY_SAME_REQUEST",
+      "implies_safe": false,
+      "content_shown": false,
+      "alternate_presentation_state": null,
+      "alternate_condition": null
+    },
+    {
+      "error_code": "INVALID_REQUEST",
+      "http_status": 400,
+      "retryability": "RETRY_WITH_CHANGES",
+      "presentation_state": "ACTION_FAILED",
+      "recovery": "CORRECT_REQUEST",
+      "implies_safe": false,
+      "content_shown": false,
+      "alternate_presentation_state": null,
+      "alternate_condition": null
+    },
+    {
+      "error_code": "NOT_FOUND",
+      "http_status": 404,
+      "retryability": "NOT_RETRYABLE",
+      "presentation_state": "NOT_FOUND_OR_NOT_VISIBLE",
+      "recovery": "STOP_NO_RETRY",
+      "implies_safe": false,
+      "content_shown": false,
+      "alternate_presentation_state": null,
+      "alternate_condition": null
+    },
+    {
+      "error_code": "PRECONDITION_FAILED",
+      "http_status": 412,
+      "retryability": "RETRY_WITH_CHANGES",
+      "presentation_state": "STALE_STATE",
+      "recovery": "REFRESH_THEN_DECIDE",
+      "implies_safe": false,
+      "content_shown": false,
+      "alternate_presentation_state": null,
+      "alternate_condition": null
+    },
+    {
+      "error_code": "PRECONDITION_REQUIRED",
+      "http_status": 428,
+      "retryability": "RETRY_WITH_CHANGES",
+      "presentation_state": "PRECONDITION_REQUIRED",
+      "recovery": "REFRESH_THEN_DECIDE",
+      "implies_safe": false,
+      "content_shown": false,
+      "alternate_presentation_state": null,
+      "alternate_condition": null
+    },
+    {
+      "error_code": "RATE_LIMITED",
+      "http_status": 429,
+      "retryability": "RETRYABLE",
+      "presentation_state": "RATE_LIMITED",
+      "recovery": "WAIT_THEN_RETRY_SAME_REQUEST",
+      "implies_safe": false,
+      "content_shown": false,
+      "alternate_presentation_state": null,
+      "alternate_condition": null
+    },
+    {
+      "error_code": "REMOVED_UNDER_GOVERNANCE",
+      "http_status": 410,
+      "retryability": "NOT_RETRYABLE",
+      "presentation_state": "REMOVED_UNDER_GOVERNANCE",
+      "recovery": "STOP_NO_RETRY",
+      "implies_safe": false,
+      "content_shown": false,
+      "alternate_presentation_state": null,
+      "alternate_condition": null
+    },
+    {
+      "error_code": "REPLAY_UNAVAILABLE",
+      "http_status": 409,
+      "retryability": "NOT_RETRYABLE",
+      "presentation_state": "REPLAY_UNAVAILABLE",
+      "recovery": "STOP_NO_RETRY",
+      "implies_safe": false,
+      "content_shown": false,
+      "alternate_presentation_state": null,
+      "alternate_condition": null
+    },
+    {
+      "error_code": "REPORT_REGENERATION_UNAVAILABLE",
+      "http_status": 409,
+      "retryability": "NOT_RETRYABLE",
+      "presentation_state": "REPORT_REGENERATION_UNAVAILABLE",
+      "recovery": "STOP_NO_RETRY",
+      "implies_safe": false,
+      "content_shown": false,
+      "alternate_presentation_state": null,
+      "alternate_condition": null
+    },
+    {
+      "error_code": "STATE_CONFLICT",
+      "http_status": 409,
+      "retryability": "NOT_RETRYABLE",
+      "presentation_state": "CONFLICT",
+      "recovery": "STOP_NO_RETRY",
+      "implies_safe": false,
+      "content_shown": false,
+      "alternate_presentation_state": null,
+      "alternate_condition": null
+    },
+    {
+      "error_code": "UNAUTHENTICATED",
+      "http_status": 401,
+      "retryability": "RETRY_WITH_CHANGES",
+      "presentation_state": "AUTHENTICATION_REQUIRED",
+      "recovery": "REAUTHENTICATE_THEN_RETRY",
+      "implies_safe": false,
+      "content_shown": false,
+      "alternate_presentation_state": null,
+      "alternate_condition": null
+    }
+  ],
+  "evaluation_not_completed": {
+    "state_source_operation": "getEvaluation",
+    "error_code_alone_sufficient": false,
+    "rules": [
+      {
+        "evaluation_state": "QUEUED",
+        "result_availability": "NOT_YET_AVAILABLE",
+        "presentation_state": "ACTION_PENDING"
+      },
+      {
+        "evaluation_state": "RUNNING",
+        "result_availability": "NOT_YET_AVAILABLE",
+        "presentation_state": "ACTION_PENDING"
+      },
+      {
+        "evaluation_state": "FAILED",
+        "result_availability": "NOT_PRODUCED",
+        "presentation_state": "ACTION_FAILED"
+      }
+    ],
+    "unresolved_context": "DO_NOT_INFER_PENDING_OR_FAILURE"
+  },
+  "governed_removal": {
+    "removed_status": 410,
+    "removed_state": "REMOVED_UNDER_GOVERNANCE",
+    "not_found_status": 404,
+    "not_found_state": "NOT_FOUND_OR_NOT_VISIBLE",
+    "distinct": true,
+    "removed_presented_as_not_found": false,
+    "not_found_discloses_existence": false,
+    "recreate_removed_content": false,
+    "tombstone": {
+      "result_availability": "REMOVED_UNDER_GOVERNANCE",
+      "result_request": "410 REMOVED_UNDER_GOVERNANCE",
+      "evidence_content_request": "410 REMOVED_UNDER_GOVERNANCE",
+      "report_content_request": "410 REMOVED_UNDER_GOVERNANCE",
+      "replay_request": "409 REPLAY_UNAVAILABLE",
+      "report_regeneration": "REGENERATION_UNAVAILABLE"
+    },
+    "tombstone_content_rules": "NOT YET SPECIFIED (OI-05)"
+  },
+  "reports": {
+    "case_scoped": true,
+    "global_reports_endpoint": false,
+    "list_operation": "listReports",
+    "metadata_operation": "getReport",
+    "create_operation": "createReport",
+    "content_operation": "getReportContent",
+    "list_contract": {
+      "pagination": "CURSOR",
+      "filters": [
+        "state"
+      ],
+      "sort": "created_at desc, id desc"
+    },
+    "displayed_metadata": [
+      "report_id",
+      "revision_number",
+      "state",
+      "report_contract_version",
+      "report_digest",
+      "reproduction_of_report_id",
+      "generated_at",
+      "unavailable_reason"
+    ],
+    "content_link_displayed": false,
+    "create_fields": [
+      "evaluation_ids",
+      "reproduction_of_report_id"
+    ],
+    "pinned_sources": [
+      "CASE",
+      "EVALUATIONS",
+      "RESULT_DIGESTS",
+      "EVIDENCE_DIGESTS",
+      "BUNDLE_DIGEST",
+      "ENGINE_VERSION",
+      "REPORT_CONTRACT_VERSION"
+    ],
+    "uses_latest": false,
+    "new_revision_on_create": true,
+    "overwrites_revision": false,
+    "reproduction": "EXACT_FROM_PINS",
+    "state_labels": [
+      {
+        "state": "GENERATING",
+        "label": "Generating",
+        "meaning": "The report is being generated from its pinned sources; nothing is ready yet."
+      },
+      {
+        "state": "GENERATED",
+        "label": "Ready",
+        "meaning": "The report was generated from its pinned sources."
+      },
+      {
+        "state": "FAILED",
+        "label": "Generation failed",
+        "meaning": "The report could not be generated."
+      },
+      {
+        "state": "INTEGRITY_FAILED",
+        "label": "Integrity check failed",
+        "meaning": "The report content did not pass its integrity check and is withheld."
+      },
+      {
+        "state": "REGENERATION_UNAVAILABLE",
+        "label": "Cannot be regenerated",
+        "meaning": "A pinned source is no longer available, so the report cannot be reproduced; nothing is approximated."
+      },
+      {
+        "state": "REMOVED_UNDER_GOVERNANCE",
+        "label": "Removed under governance",
+        "meaning": "The report was removed through governed deletion; it is not recreated."
+      }
+    ],
+    "content": {
+      "delivery": "ATTACHMENT_DOWNLOAD",
+      "inline_rendering": false,
+      "client_cache": false,
+      "format": "NOT YET SPECIFIED (REPORT-001)",
+      "automatic_transmission": false,
+      "audit_event": "REPORT_EXPORTED",
+      "pre_access_notice": "Downloading this report is recorded in the audit log."
+    },
+    "regeneration_unavailable": {
+      "report_state": "REGENERATION_UNAVAILABLE",
+      "content_error": "REPORT_REGENERATION_UNAVAILABLE",
+      "approximate_regeneration": false,
+      "latest_substitution": false,
+      "ai_call": false,
+      "reconstruct_removed_content": false,
+      "unavailable_reason_display": "CATEGORY_ONLY"
+    },
+    "content_rows": [
+      {
+        "principal_role": "USER",
+        "relationship": "OWNER",
+        "permits_evidence_content": true,
+        "content_action": "OFFERED"
+      },
+      {
+        "principal_role": "USER",
+        "relationship": "NONE",
+        "permits_evidence_content": false,
+        "content_action": "NOT_VISIBLE"
+      },
+      {
+        "principal_role": "ANALYST",
+        "relationship": "ASSIGNED_ANALYST",
+        "permits_evidence_content": true,
+        "content_action": "OFFERED"
+      },
+      {
+        "principal_role": "ANALYST",
+        "relationship": "ASSIGNED_ANALYST",
+        "permits_evidence_content": false,
+        "content_action": "CONTENT_PERMISSION_REQUIRED"
+      },
+      {
+        "principal_role": "ANALYST",
+        "relationship": "NONE",
+        "permits_evidence_content": false,
+        "content_action": "NOT_VISIBLE"
+      },
+      {
+        "principal_role": "KNOWLEDGE_EDITOR",
+        "relationship": "NONE",
+        "permits_evidence_content": false,
+        "content_action": "NOT_OFFERED"
+      },
+      {
+        "principal_role": "KNOWLEDGE_APPROVER",
+        "relationship": "NONE",
+        "permits_evidence_content": false,
+        "content_action": "NOT_OFFERED"
+      },
+      {
+        "principal_role": "ADMINISTRATOR",
+        "relationship": "NONE",
+        "permits_evidence_content": false,
+        "content_action": "NOT_OFFERED"
+      },
+      {
+        "principal_role": "ADMINISTRATOR",
+        "relationship": "BREAK_GLASS",
+        "permits_evidence_content": true,
+        "content_action": "NOT_OFFERED"
+      }
+    ]
+  },
+  "replay": {
+    "semantics": {
+      "meaning": "EXACT_HISTORICAL_VERIFICATION",
+      "calls_ai": false,
+      "calls_provider": false,
+      "uses_latest": false,
+      "creates_evaluation": false,
+      "replaces_result": false,
+      "missing_material": "REPLAY_UNAVAILABLE"
+    },
+    "create_operation": "createReplay",
+    "read_operation": "getReplay",
+    "request_fields": [
+      "reason_code"
+    ],
+    "content_free": true,
+    "administrator_entry_by_reference": true,
+    "displayed_fields": [
+      "replay_id",
+      "evaluation_id",
+      "state",
+      "capability",
+      "outcome",
+      "missing_material_kinds",
+      "replayed_result_digest",
+      "requested_at",
+      "completed_at"
+    ],
+    "unavailable_is_outcome": true,
+    "generic_error": false,
+    "new_result": false,
+    "fallback_to_reanalysis": false,
+    "reanalysis_offered_as": "SEPARATE_ACTION_NEW_EVALUATION",
+    "state_labels": [
+      {
+        "state": "PENDING",
+        "label": "Replay pending",
+        "meaning": "The replay was accepted and has not finished; no outcome is implied."
+      },
+      {
+        "state": "COMPLETED",
+        "label": "Replay finished",
+        "meaning": "The replay finished with the outcome shown."
+      }
+    ],
+    "outcome_labels": [
+      {
+        "outcome": "MATCH",
+        "label": "Reproduced exactly",
+        "meaning": "Replaying the pinned material produced the recorded result digest."
+      },
+      {
+        "outcome": "MISMATCH",
+        "label": "Did not reproduce",
+        "meaning": "Replaying the pinned material produced a different digest; the recorded result is unchanged."
+      },
+      {
+        "outcome": "FAILED_MISSING_MATERIAL",
+        "label": "Replay unavailable: material missing",
+        "meaning": "Required pinned material is missing, so the evaluation cannot be replayed."
+      },
+      {
+        "outcome": "FAILED_INTEGRITY",
+        "label": "Replay unavailable: integrity failure",
+        "meaning": "Pinned material failed its integrity check, so the evaluation cannot be replayed."
+      },
+      {
+        "outcome": "FAILED_ENGINE_UNAVAILABLE",
+        "label": "Replay unavailable: engine unavailable",
+        "meaning": "The pinned engine version is not available for replay."
+      },
+      {
+        "outcome": "FAILED_BUNDLE_UNAVAILABLE",
+        "label": "Replay unavailable: knowledge bundle unavailable",
+        "meaning": "The pinned knowledge bundle is not available for replay."
+      }
+    ],
+    "capabilities": [
+      "REPLAY_CAPABLE",
+      "REPLAY_UNAVAILABLE_REQUIRED_ARTIFACT_MISSING",
+      "REPLAY_UNAVAILABLE_INTEGRITY_FAILED",
+      "REPLAY_UNAVAILABLE_BUNDLE_MISSING",
+      "REPLAY_UNAVAILABLE_ENGINE_UNAVAILABLE"
+    ],
+    "material_kinds": [
+      "EVALUATION_PINS",
+      "GOVERNED_INPUT_ARTIFACT",
+      "KNOWLEDGE_BUNDLE",
+      "ENGINE_VERSION",
+      "AI_REPLAY_SNAPSHOT",
+      "DETECTION_RESULT",
+      "EVIDENCE_MANIFEST",
+      "EVIDENCE_BYTES",
+      "EVIDENCE_DERIVATIVE",
+      "INPUT_ENVELOPE"
+    ]
+  },
+  "reanalysis": {
+    "operation": "createEvaluations",
+    "request_fields": [
+      "analysis_mode",
+      "predecessor_evaluation_id",
+      "reason_code"
+    ],
+    "predecessor_required": true,
+    "reason_required": true,
+    "semantics": {
+      "meaning": "NEW_EVALUATION_CURRENT_GOVERNED_CONDITIONS",
+      "creates_new_evaluation": true,
+      "creates_new_governed_artifact": true,
+      "overwrites_history": false
+    },
+    "origin_server_derived": true,
+    "origins": [
+      "INITIAL",
+      "RE_EVALUATION",
+      "USER_CORRECTION",
+      "AI_RE_EXTRACTION",
+      "RETRY_AFTER_FAILURE"
+    ],
+    "analysis_modes": [
+      "DETERMINISTIC",
+      "AI_ASSISTED_IF_ENABLED"
+    ],
+    "ai_honoured_only_if_enabled": true,
+    "ai_fallback_shown_from": "EvaluationResponse.ai_usage",
+    "history": {
+      "predecessor_link_displayed": true,
+      "earlier_results_retained": true,
+      "newer_supersedes_earlier": false,
+      "aggregate_verdict": false
+    },
+    "notice": "A new analysis creates a new evaluation. Earlier evaluations and results are kept unchanged."
+  },
+  "correction": {
+    "operation": "createCorrection",
+    "roles": [
+      "USER"
+    ],
+    "resource_authorization": "CASE_OWNER",
+    "request_fields": [
+      "correction_description",
+      "reason_code"
+    ],
+    "creates_new_evaluation": true,
+    "origin": "USER_CORRECTION",
+    "edits_original": false,
+    "structured_field_editing": false,
+    "description_sensitivity": "C4",
+    "description_in_notifications": false,
+    "description_in_audit": false,
+    "ux001_surface_listed": false,
+    "placement": "UX-EVALUATION",
+    "notice": "Your correction creates a new evaluation. The earlier evaluation and its result are kept unchanged."
+  },
+  "deletion": {
+    "delete_verb_exists": false,
+    "request_is_deletion": false,
+    "optimistic_completion": false,
+    "request": {
+      "operation": "createDeletionRequest",
+      "roles": [
+        "USER"
+      ],
+      "resource_authorization": "DELETION_SCOPE_OWNER",
+      "fields": [
+        "scope_kind",
+        "scope_id",
+        "reason_code"
+      ],
+      "scope_kinds": [
+        "CASE",
+        "SUBMISSION",
+        "EVIDENCE_ITEM"
+      ]
+    },
+    "decision": {
+      "operations": [
+        "authorizeDeletionRequest",
+        "rejectDeletionRequest"
+      ],
+      "roles": [
+        "ADMINISTRATOR"
+      ],
+      "precondition": "If-Match",
+      "reason_required": true,
+      "administrator_sees_content": false,
+      "eligible_from": [
+        "REQUESTED"
+      ],
+      "terminal_requests_read_only": true
+    },
+    "execution": {
+      "api_operation": null,
+      "executor": "GOVERNED_EXECUTOR",
+      "progress_from": "getDeletionRequest"
+    },
+    "list_contract": {
+      "pagination": "CURSOR",
+      "filters": [
+        "state",
+        "scope_kind",
+        "requested_from",
+        "requested_to"
+      ],
+      "sort": "requested_at desc, id desc"
+    },
+    "displayed_fields": [
+      "deletion_request_id",
+      "scope_kind",
+      "scope_id",
+      "state",
+      "requested_at",
+      "completed_at",
+      "failure_category"
+    ],
+    "failure_display": "CATEGORY_ONLY",
+    "retention": "NOT YET SPECIFIED",
+    "state_labels": [
+      {
+        "state": "REQUESTED",
+        "label": "Requested",
+        "meaning": "The request was recorded and awaits an administrator decision; nothing has been removed.",
+        "completion_claimed": false
+      },
+      {
+        "state": "AUTHORIZED",
+        "label": "Authorized",
+        "meaning": "An administrator authorized the request; removal has not started.",
+        "completion_claimed": false
+      },
+      {
+        "state": "IN_PROGRESS",
+        "label": "In progress",
+        "meaning": "Governed removal is running; it is not finished.",
+        "completion_claimed": false
+      },
+      {
+        "state": "COMPLETE",
+        "label": "Removal complete",
+        "meaning": "Governed removal finished for the requested scope.",
+        "completion_claimed": true
+      },
+      {
+        "state": "PARTIALLY_FAILED",
+        "label": "Partly failed",
+        "meaning": "Governed removal covered only part of the scope; it is not complete.",
+        "completion_claimed": false
+      },
+      {
+        "state": "FAILED",
+        "label": "Failed",
+        "meaning": "Governed removal did not complete.",
+        "completion_claimed": false
+      },
+      {
+        "state": "REJECTED",
+        "label": "Rejected",
+        "meaning": "An administrator rejected the request; nothing was removed.",
+        "completion_claimed": false
+      }
+    ]
+  },
+  "historical_comparison": {
+    "api_capability": false,
+    "computed_comparison": false,
+    "improvement_or_change_claims": false,
+    "presentation": "SEPARATE_RECORDS_WITH_PROVENANCE",
+    "ordering": "requested_at",
+    "shown_per_record": [
+      "origin",
+      "predecessor_evaluation_id",
+      "requested_at",
+      "completed_at",
+      "result_availability"
+    ],
+    "notice": "Each evaluation is shown as its own record. No comparison between them is computed."
+  },
+  "access_consequences": [
+    {
+      "operation_id": "createReport",
+      "audit": "REQUIRED",
+      "audit_event": "REPORT_GENERATED",
+      "notice_shown": true
+    },
+    {
+      "operation_id": "listReports",
+      "audit": "NOT_REQUIRED",
+      "audit_event": null,
+      "notice_shown": false
+    },
+    {
+      "operation_id": "getReport",
+      "audit": "NOT_REQUIRED",
+      "audit_event": null,
+      "notice_shown": false
+    },
+    {
+      "operation_id": "getReportContent",
+      "audit": "REQUIRED",
+      "audit_event": "REPORT_EXPORTED",
+      "notice_shown": true
+    },
+    {
+      "operation_id": "createReplay",
+      "audit": "REQUIRED",
+      "audit_event": "REPLAY_EXECUTED",
+      "notice_shown": true
+    },
+    {
+      "operation_id": "getReplay",
+      "audit": "NOT_REQUIRED",
+      "audit_event": null,
+      "notice_shown": false
+    },
+    {
+      "operation_id": "createEvaluations",
+      "audit": "REQUIRED",
+      "audit_event": "EVALUATION_STARTED",
+      "notice_shown": true
+    },
+    {
+      "operation_id": "createCorrection",
+      "audit": "REQUIRED",
+      "audit_event": "USER_CORRECTION",
+      "notice_shown": true
+    },
+    {
+      "operation_id": "createDeletionRequest",
+      "audit": "REQUIRED",
+      "audit_event": "DELETION_REQUESTED",
+      "notice_shown": true
+    },
+    {
+      "operation_id": "listDeletionRequests",
+      "audit": "NOT_REQUIRED",
+      "audit_event": null,
+      "notice_shown": false
+    },
+    {
+      "operation_id": "getDeletionRequest",
+      "audit": "NOT_REQUIRED",
+      "audit_event": null,
+      "notice_shown": false
+    },
+    {
+      "operation_id": "authorizeDeletionRequest",
+      "audit": "REQUIRED",
+      "audit_event": "RETENTION_ACTION",
+      "notice_shown": true
+    },
+    {
+      "operation_id": "rejectDeletionRequest",
+      "audit": "REQUIRED",
+      "audit_event": "RETENTION_ACTION",
+      "notice_shown": true
+    }
+  ],
+  "guardrails": {
+    "history_modified": false,
+    "result_edited": false,
+    "replay_creates_result": false,
+    "replay_falls_back_to_reanalysis": false,
+    "report_uses_latest": false,
+    "report_approximated": false,
+    "global_reports_endpoint": false,
+    "automatic_transmission": false,
+    "optimistic_deletion": false,
+    "removed_presented_as_not_found": false,
+    "invented_report_format": false,
+    "invented_export_operation": false,
+    "invented_comparison_api": false,
+    "invented_retention": false,
+    "administrator_report_content": false,
+    "hidden_ui_security_control": false
+  },
+  "exposure": {
+    "raw_provider_bodies": false,
+    "credentials_secrets": false,
+    "connector_topology": false,
+    "internal_hosts_ips": false,
+    "evidence_store_locators": false,
+    "raw_evidence_without_permission": false,
+    "c4_without_permission": false,
+    "execution_fence_tokens": false,
+    "idempotency_key_material": false,
+    "audit_equals_activity": false
+  },
+  "open_decisions": [
+    {
+      "decision": "Report format and layout (REPORT-001); ReportContentDownload is opaque bytes until it is defined",
+      "owner": "Product / Reporting (REPORT-001), carried from UX-001",
+      "status": "DEFERRED"
+    },
+    {
+      "decision": "Source-pinned historical comparison has no accepted API capability; records are shown separately and no comparison is computed",
+      "owner": "API owner with Product / Reporting, carried from UX-001",
+      "status": "DEFERRED"
+    },
+    {
+      "decision": "User data export lacks an accepted API operation; no data-export surface is designed",
+      "owner": "API owner (governed API revision), carried from UX-001",
+      "status": "DEFERRED"
+    },
+    {
+      "decision": "createCorrection is an accepted operation placed on no UX-001 surface; its placement (UX-EVALUATION context) is recorded here pending a governed UX-001 revision",
+      "owner": "Programme UX governance",
+      "status": "DEFERRED"
+    },
+    {
+      "decision": "reason_code for report, replay, re-analysis, correction and deletion commands has no governed vocabulary",
+      "owner": "API owner (governed vocabulary)",
+      "status": "DEFERRED"
+    },
+    {
+      "decision": "Retention period and tombstone content after governed removal are not specified (OI-05)",
+      "owner": "Sponsor + legal/governance (OI-05)",
+      "status": "DEFERRED"
+    },
+    {
+      "decision": "Final user-facing copy, translation and plain-language review of reporting and history labels",
+      "owner": "Product / Reporting UX with Phase 9",
+      "status": "DEFERRED"
+    },
+    {
+      "decision": "Detailed accessible and responsive layout of reporting and history surfaces",
+      "owner": "P7-WP6 / Accessibility UX",
+      "status": "DEFERRED"
+    }
+  ],
+  "carryovers": {
+    "G-09": {
+      "status": "OPEN",
+      "owner": "Phase 10 (testing/evaluation; QA Lead) with Sponsor for any corpus access"
+    },
+    "OI-05": {
+      "status": "OPEN",
+      "owner": "Sponsor + legal/governance"
+    },
+    "ASM-002": {
+      "status": "UNCONFIRMED / PROVISIONAL",
+      "owner": "Sponsor / Programme"
+    },
+    "P6-WP7-LOW-1": {
+      "status": "OPEN / NON-BLOCKING",
+      "owner": "Next governed Phase-6 snapshot revision / Programme governance"
+    }
+  },
+  "tenancy": {
+    "ux_enabled": false,
+    "organization_switcher_authority": false
+  },
+  "retention": {
+    "duration": "NOT YET SPECIFIED",
+    "numeric_duration_invented": false
+  },
+  "non_goals": [
+    "No frontend, API or runtime implementation.",
+    "No new API operation, persisted field, permission grant, role, report format or retention rule.",
+    "No computed historical comparison, global report listing or user data export.",
+    "No automatic report transmission."
+  ],
+  "claims": {
+    "frontend_implemented": false,
+    "api_implemented": false,
+    "production_ready": false,
+    "accessibility_compliant": false,
+    "usability_tested": false,
+    "security_tested": false,
+    "independently_reviewed": true,
+    "approved": true,
+    "later_wp_started": false
+  },
+  "review_findings": [
+    {
+      "id": "MEDIUM-1",
+      "severity": "MEDIUM",
+      "summary": "Security-critical display labels were not governed: REQUESTED and AUTHORIZED could read as completed removal, a removed report as not found, and a replay outcome could claim current-engine substitution",
+      "disposition": "CLOSED_BY_REREVIEW",
+      "owner": "P7-WP5 builder",
+      "round": 1,
+      "closed_in_round": 3
+    },
+    {
+      "id": "MEDIUM-2",
+      "severity": "MEDIUM",
+      "summary": "Deletion authorization and rejection were offered for any visible request: a rejection was offered and issued for a COMPLETE request",
+      "disposition": "CLOSED_BY_REREVIEW",
+      "owner": "P7-WP5 builder",
+      "round": 1,
+      "closed_in_round": 2
+    },
+    {
+      "id": "R2-MEDIUM-1",
+      "severity": "MEDIUM",
+      "summary": "Re-raised MEDIUM-1: replay-state labels were ungoverned (a PENDING replay could read as completed successfully), and an explicit denial of current-engine substitution was wrongly rejected",
+      "disposition": "CLOSED_BY_REREVIEW",
+      "owner": "P7-WP5 builder",
+      "round": 2,
+      "closed_in_round": 3
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "RP-01",
+      "title": "Owner creates a report revision",
+      "action": "CREATE_REPORT",
+      "context": {
+        "principal_role": "USER",
+        "relationship": "OWNER",
+        "permits_evidence_content": true,
+        "condition": "AVAILABLE"
+      },
+      "expected": {
+        "control_offered": true,
+        "request_issued": true,
+        "presentation_state": "ACTION_PENDING",
+        "content_delivery": "NONE",
+        "new_evaluation": false,
+        "history_modified": false,
+        "completion_claimed": false,
+        "audit_notice": true
+      }
+    },
+    {
+      "id": "RP-02",
+      "title": "Assigned analyst without content permission cannot create a report",
+      "action": "CREATE_REPORT",
+      "context": {
+        "principal_role": "ANALYST",
+        "relationship": "ASSIGNED_ANALYST",
+        "permits_evidence_content": false,
+        "condition": "AVAILABLE"
+      },
+      "expected": {
+        "control_offered": false,
+        "request_issued": false,
+        "presentation_state": "CONTENT_PERMISSION_REQUIRED",
+        "content_delivery": "NONE",
+        "new_evaluation": false,
+        "history_modified": false,
+        "completion_claimed": false,
+        "audit_notice": false
+      }
+    },
+    {
+      "id": "RP-03",
+      "title": "Administrator cannot create a report",
+      "action": "CREATE_REPORT",
+      "context": {
+        "principal_role": "ADMINISTRATOR",
+        "relationship": "NONE",
+        "permits_evidence_content": false,
+        "condition": "AVAILABLE"
+      },
+      "expected": {
+        "control_offered": false,
+        "request_issued": false,
+        "presentation_state": "ACCESS_DENIED",
+        "content_delivery": "NONE",
+        "new_evaluation": false,
+        "history_modified": false,
+        "completion_claimed": false,
+        "audit_notice": false
+      }
+    },
+    {
+      "id": "RP-04",
+      "title": "Owner lists case reports",
+      "action": "LIST_REPORTS",
+      "context": {
+        "principal_role": "USER",
+        "relationship": "OWNER",
+        "permits_evidence_content": true,
+        "condition": "AVAILABLE"
+      },
+      "expected": {
+        "control_offered": true,
+        "request_issued": true,
+        "presentation_state": "READY",
+        "content_delivery": "NONE",
+        "new_evaluation": false,
+        "history_modified": false,
+        "completion_claimed": false,
+        "audit_notice": false
+      }
+    },
+    {
+      "id": "RP-05",
+      "title": "Analyst without case visibility cannot list reports",
+      "action": "LIST_REPORTS",
+      "context": {
+        "principal_role": "ANALYST",
+        "relationship": "NONE",
+        "permits_evidence_content": false,
+        "condition": "AVAILABLE"
+      },
+      "expected": {
+        "control_offered": false,
+        "request_issued": false,
+        "presentation_state": "NOT_FOUND_OR_NOT_VISIBLE",
+        "content_delivery": "NONE",
+        "new_evaluation": false,
+        "history_modified": false,
+        "completion_claimed": false,
+        "audit_notice": false
+      }
+    },
+    {
+      "id": "RP-06",
+      "title": "Owner downloads a generated report",
+      "action": "DOWNLOAD_REPORT",
+      "context": {
+        "principal_role": "USER",
+        "relationship": "OWNER",
+        "permits_evidence_content": true,
+        "condition": "AVAILABLE"
+      },
+      "expected": {
+        "control_offered": true,
+        "request_issued": true,
+        "presentation_state": "READY",
+        "content_delivery": "ATTACHMENT",
+        "new_evaluation": false,
+        "history_modified": false,
+        "completion_claimed": false,
+        "audit_notice": true
+      }
+    },
+    {
+      "id": "RP-07",
+      "title": "Assigned analyst with content permission downloads a report",
+      "action": "DOWNLOAD_REPORT",
+      "context": {
+        "principal_role": "ANALYST",
+        "relationship": "ASSIGNED_ANALYST",
+        "permits_evidence_content": true,
+        "condition": "AVAILABLE"
+      },
+      "expected": {
+        "control_offered": true,
+        "request_issued": true,
+        "presentation_state": "READY",
+        "content_delivery": "ATTACHMENT",
+        "new_evaluation": false,
+        "history_modified": false,
+        "completion_claimed": false,
+        "audit_notice": true
+      }
+    },
+    {
+      "id": "RP-08",
+      "title": "Report whose pinned source was removed cannot be regenerated (known from report metadata)",
+      "action": "DOWNLOAD_REPORT",
+      "context": {
+        "principal_role": "USER",
+        "relationship": "OWNER",
+        "permits_evidence_content": true,
+        "condition": "REGENERATION_UNAVAILABLE"
+      },
+      "expected": {
+        "control_offered": false,
+        "request_issued": false,
+        "presentation_state": "REPORT_REGENERATION_UNAVAILABLE",
+        "content_delivery": "NONE",
+        "new_evaluation": false,
+        "history_modified": false,
+        "completion_claimed": false,
+        "audit_notice": false
+      }
+    },
+    {
+      "id": "RP-09",
+      "title": "Report removed under governance (known from report metadata)",
+      "action": "DOWNLOAD_REPORT",
+      "context": {
+        "principal_role": "USER",
+        "relationship": "OWNER",
+        "permits_evidence_content": true,
+        "condition": "REMOVED_UNDER_GOVERNANCE"
+      },
+      "expected": {
+        "control_offered": false,
+        "request_issued": false,
+        "presentation_state": "REMOVED_UNDER_GOVERNANCE",
+        "content_delivery": "NONE",
+        "new_evaluation": false,
+        "history_modified": false,
+        "completion_claimed": false,
+        "audit_notice": false
+      }
+    },
+    {
+      "id": "RP-10",
+      "title": "Administrator with break-glass still has no report content",
+      "action": "DOWNLOAD_REPORT",
+      "context": {
+        "principal_role": "ADMINISTRATOR",
+        "relationship": "BREAK_GLASS",
+        "permits_evidence_content": true,
+        "condition": "AVAILABLE"
+      },
+      "expected": {
+        "control_offered": false,
+        "request_issued": false,
+        "presentation_state": "ACCESS_DENIED",
+        "content_delivery": "NONE",
+        "new_evaluation": false,
+        "history_modified": false,
+        "completion_claimed": false,
+        "audit_notice": false
+      }
+    },
+    {
+      "id": "RP-11",
+      "title": "Assigned analyst replays a completed evaluation",
+      "action": "CREATE_REPLAY",
+      "context": {
+        "principal_role": "ANALYST",
+        "relationship": "ASSIGNED_ANALYST",
+        "permits_evidence_content": false,
+        "condition": "AVAILABLE"
+      },
+      "expected": {
+        "control_offered": true,
+        "request_issued": true,
+        "presentation_state": "ACTION_PENDING",
+        "content_delivery": "NONE",
+        "new_evaluation": false,
+        "history_modified": false,
+        "completion_claimed": false,
+        "audit_notice": true
+      }
+    },
+    {
+      "id": "RP-12",
+      "title": "Administrator replays through an authorized reference",
+      "action": "CREATE_REPLAY",
+      "context": {
+        "principal_role": "ADMINISTRATOR",
+        "relationship": "NONE",
+        "permits_evidence_content": false,
+        "condition": "AVAILABLE"
+      },
+      "expected": {
+        "control_offered": true,
+        "request_issued": true,
+        "presentation_state": "ACTION_PENDING",
+        "content_delivery": "NONE",
+        "new_evaluation": false,
+        "history_modified": false,
+        "completion_claimed": false,
+        "audit_notice": true
+      }
+    },
+    {
+      "id": "RP-13",
+      "title": "Replay of a removed result is unavailable, not re-analysis",
+      "action": "CREATE_REPLAY",
+      "context": {
+        "principal_role": "ANALYST",
+        "relationship": "ASSIGNED_ANALYST",
+        "permits_evidence_content": false,
+        "condition": "REMOVED_UNDER_GOVERNANCE"
+      },
+      "expected": {
+        "control_offered": false,
+        "request_issued": false,
+        "presentation_state": "REPLAY_UNAVAILABLE",
+        "content_delivery": "NONE",
+        "new_evaluation": false,
+        "history_modified": false,
+        "completion_claimed": false,
+        "audit_notice": false
+      }
+    },
+    {
+      "id": "RP-14",
+      "title": "Replay of an evaluation that has not completed",
+      "action": "CREATE_REPLAY",
+      "context": {
+        "principal_role": "ANALYST",
+        "relationship": "ASSIGNED_ANALYST",
+        "permits_evidence_content": false,
+        "condition": "EVALUATION_NOT_COMPLETED"
+      },
+      "expected": {
+        "control_offered": false,
+        "request_issued": false,
+        "presentation_state": "CONDITIONAL_ON_EVALUATION_STATE",
+        "content_delivery": "NONE",
+        "new_evaluation": false,
+        "history_modified": false,
+        "completion_claimed": false,
+        "audit_notice": false
+      }
+    },
+    {
+      "id": "RP-15",
+      "title": "Owner cannot replay",
+      "action": "CREATE_REPLAY",
+      "context": {
+        "principal_role": "USER",
+        "relationship": "OWNER",
+        "permits_evidence_content": true,
+        "condition": "AVAILABLE"
+      },
+      "expected": {
+        "control_offered": false,
+        "request_issued": false,
+        "presentation_state": "ACCESS_DENIED",
+        "content_delivery": "NONE",
+        "new_evaluation": false,
+        "history_modified": false,
+        "completion_claimed": false,
+        "audit_notice": false
+      }
+    },
+    {
+      "id": "RP-16",
+      "title": "Replay finished with material missing is an explicit outcome",
+      "action": "VIEW_REPLAY",
+      "context": {
+        "principal_role": "ANALYST",
+        "relationship": "ASSIGNED_ANALYST",
+        "permits_evidence_content": false,
+        "condition": "REPLAY_MATERIAL_MISSING"
+      },
+      "expected": {
+        "control_offered": true,
+        "request_issued": true,
+        "presentation_state": "REPLAY_UNAVAILABLE",
+        "content_delivery": "NONE",
+        "new_evaluation": false,
+        "history_modified": false,
+        "completion_claimed": false,
+        "audit_notice": false
+      }
+    },
+    {
+      "id": "RP-17",
+      "title": "Replay finished and reproduced",
+      "action": "VIEW_REPLAY",
+      "context": {
+        "principal_role": "ADMINISTRATOR",
+        "relationship": "NONE",
+        "permits_evidence_content": false,
+        "condition": "AVAILABLE"
+      },
+      "expected": {
+        "control_offered": true,
+        "request_issued": true,
+        "presentation_state": "READY",
+        "content_delivery": "NONE",
+        "new_evaluation": false,
+        "history_modified": false,
+        "completion_claimed": false,
+        "audit_notice": false
+      }
+    },
+    {
+      "id": "RP-18",
+      "title": "Owner runs a new analysis",
+      "action": "REANALYZE",
+      "context": {
+        "principal_role": "USER",
+        "relationship": "OWNER",
+        "permits_evidence_content": true,
+        "condition": "AVAILABLE"
+      },
+      "expected": {
+        "control_offered": true,
+        "request_issued": true,
+        "presentation_state": "ACTION_PENDING",
+        "content_delivery": "NONE",
+        "new_evaluation": true,
+        "history_modified": false,
+        "completion_claimed": false,
+        "audit_notice": true
+      }
+    },
+    {
+      "id": "RP-19",
+      "title": "Assigned analyst runs a new analysis",
+      "action": "REANALYZE",
+      "context": {
+        "principal_role": "ANALYST",
+        "relationship": "ASSIGNED_ANALYST",
+        "permits_evidence_content": false,
+        "condition": "AVAILABLE"
+      },
+      "expected": {
+        "control_offered": true,
+        "request_issued": true,
+        "presentation_state": "ACTION_PENDING",
+        "content_delivery": "NONE",
+        "new_evaluation": true,
+        "history_modified": false,
+        "completion_claimed": false,
+        "audit_notice": true
+      }
+    },
+    {
+      "id": "RP-20",
+      "title": "Administrator cannot run a new analysis",
+      "action": "REANALYZE",
+      "context": {
+        "principal_role": "ADMINISTRATOR",
+        "relationship": "NONE",
+        "permits_evidence_content": false,
+        "condition": "AVAILABLE"
+      },
+      "expected": {
+        "control_offered": false,
+        "request_issued": false,
+        "presentation_state": "ACCESS_DENIED",
+        "content_delivery": "NONE",
+        "new_evaluation": false,
+        "history_modified": false,
+        "completion_claimed": false,
+        "audit_notice": false
+      }
+    },
+    {
+      "id": "RP-21",
+      "title": "Owner submits a correction as a new evaluation",
+      "action": "CORRECT",
+      "context": {
+        "principal_role": "USER",
+        "relationship": "OWNER",
+        "permits_evidence_content": true,
+        "condition": "AVAILABLE"
+      },
+      "expected": {
+        "control_offered": true,
+        "request_issued": true,
+        "presentation_state": "ACTION_PENDING",
+        "content_delivery": "NONE",
+        "new_evaluation": true,
+        "history_modified": false,
+        "completion_claimed": false,
+        "audit_notice": true
+      }
+    },
+    {
+      "id": "RP-22",
+      "title": "Assigned analyst cannot submit a user correction",
+      "action": "CORRECT",
+      "context": {
+        "principal_role": "ANALYST",
+        "relationship": "ASSIGNED_ANALYST",
+        "permits_evidence_content": true,
+        "condition": "AVAILABLE"
+      },
+      "expected": {
+        "control_offered": false,
+        "request_issued": false,
+        "presentation_state": "ACCESS_DENIED",
+        "content_delivery": "NONE",
+        "new_evaluation": false,
+        "history_modified": false,
+        "completion_claimed": false,
+        "audit_notice": false
+      }
+    },
+    {
+      "id": "RP-23",
+      "title": "Correction of an evaluation that has not completed",
+      "action": "CORRECT",
+      "context": {
+        "principal_role": "USER",
+        "relationship": "OWNER",
+        "permits_evidence_content": true,
+        "condition": "EVALUATION_NOT_COMPLETED"
+      },
+      "expected": {
+        "control_offered": false,
+        "request_issued": false,
+        "presentation_state": "CONDITIONAL_ON_EVALUATION_STATE",
+        "content_delivery": "NONE",
+        "new_evaluation": false,
+        "history_modified": false,
+        "completion_claimed": false,
+        "audit_notice": false
+      }
+    },
+    {
+      "id": "RP-24",
+      "title": "Owner requests governed deletion",
+      "action": "REQUEST_DELETION",
+      "context": {
+        "principal_role": "USER",
+        "relationship": "OWNER",
+        "permits_evidence_content": true,
+        "condition": "AVAILABLE"
+      },
+      "expected": {
+        "control_offered": true,
+        "request_issued": true,
+        "presentation_state": "READY",
+        "content_delivery": "NONE",
+        "new_evaluation": false,
+        "history_modified": false,
+        "completion_claimed": false,
+        "audit_notice": true
+      }
+    },
+    {
+      "id": "RP-25",
+      "title": "Analyst cannot request deletion",
+      "action": "REQUEST_DELETION",
+      "context": {
+        "principal_role": "ANALYST",
+        "relationship": "ASSIGNED_ANALYST",
+        "permits_evidence_content": true,
+        "condition": "AVAILABLE"
+      },
+      "expected": {
+        "control_offered": false,
+        "request_issued": false,
+        "presentation_state": "ACCESS_DENIED",
+        "content_delivery": "NONE",
+        "new_evaluation": false,
+        "history_modified": false,
+        "completion_claimed": false,
+        "audit_notice": false
+      }
+    },
+    {
+      "id": "RP-26",
+      "title": "Administrator cannot request deletion",
+      "action": "REQUEST_DELETION",
+      "context": {
+        "principal_role": "ADMINISTRATOR",
+        "relationship": "NONE",
+        "permits_evidence_content": false,
+        "condition": "AVAILABLE"
+      },
+      "expected": {
+        "control_offered": false,
+        "request_issued": false,
+        "presentation_state": "ACCESS_DENIED",
+        "content_delivery": "NONE",
+        "new_evaluation": false,
+        "history_modified": false,
+        "completion_claimed": false,
+        "audit_notice": false
+      }
+    },
+    {
+      "id": "RP-27",
+      "title": "Requested deletion claims nothing removed",
+      "action": "VIEW_DELETION",
+      "context": {
+        "principal_role": "USER",
+        "relationship": "OWNER",
+        "permits_evidence_content": true,
+        "condition": "DELETION_REQUESTED"
+      },
+      "expected": {
+        "control_offered": true,
+        "request_issued": true,
+        "presentation_state": "READY",
+        "content_delivery": "NONE",
+        "new_evaluation": false,
+        "history_modified": false,
+        "completion_claimed": false,
+        "audit_notice": false
+      }
+    },
+    {
+      "id": "RP-28",
+      "title": "Completed removal is the only completion claim",
+      "action": "VIEW_DELETION",
+      "context": {
+        "principal_role": "USER",
+        "relationship": "OWNER",
+        "permits_evidence_content": true,
+        "condition": "DELETION_COMPLETE"
+      },
+      "expected": {
+        "control_offered": true,
+        "request_issued": true,
+        "presentation_state": "READY",
+        "content_delivery": "NONE",
+        "new_evaluation": false,
+        "history_modified": false,
+        "completion_claimed": true,
+        "audit_notice": false
+      }
+    },
+    {
+      "id": "RP-29",
+      "title": "Partly failed removal is not completion",
+      "action": "VIEW_DELETION",
+      "context": {
+        "principal_role": "ADMINISTRATOR",
+        "relationship": "NONE",
+        "permits_evidence_content": false,
+        "condition": "DELETION_PARTIALLY_FAILED"
+      },
+      "expected": {
+        "control_offered": true,
+        "request_issued": true,
+        "presentation_state": "READY",
+        "content_delivery": "NONE",
+        "new_evaluation": false,
+        "history_modified": false,
+        "completion_claimed": false,
+        "audit_notice": false
+      }
+    },
+    {
+      "id": "RP-30",
+      "title": "Administrator authorizes a requested deletion",
+      "action": "AUTHORIZE_DELETION",
+      "context": {
+        "principal_role": "ADMINISTRATOR",
+        "relationship": "NONE",
+        "permits_evidence_content": false,
+        "condition": "DELETION_REQUESTED"
+      },
+      "expected": {
+        "control_offered": true,
+        "request_issued": true,
+        "presentation_state": "ACTION_PENDING",
+        "content_delivery": "NONE",
+        "new_evaluation": false,
+        "history_modified": false,
+        "completion_claimed": false,
+        "audit_notice": true
+      }
+    },
+    {
+      "id": "RP-31",
+      "title": "Stale ETag on authorization",
+      "action": "AUTHORIZE_DELETION",
+      "context": {
+        "principal_role": "ADMINISTRATOR",
+        "relationship": "NONE",
+        "permits_evidence_content": false,
+        "condition": "STALE_ETAG"
+      },
+      "expected": {
+        "control_offered": true,
+        "request_issued": true,
+        "presentation_state": "STALE_STATE",
+        "content_delivery": "NONE",
+        "new_evaluation": false,
+        "history_modified": false,
+        "completion_claimed": false,
+        "audit_notice": true
+      }
+    },
+    {
+      "id": "RP-32",
+      "title": "Owner cannot authorize deletion",
+      "action": "AUTHORIZE_DELETION",
+      "context": {
+        "principal_role": "USER",
+        "relationship": "OWNER",
+        "permits_evidence_content": true,
+        "condition": "AVAILABLE"
+      },
+      "expected": {
+        "control_offered": false,
+        "request_issued": false,
+        "presentation_state": "ACCESS_DENIED",
+        "content_delivery": "NONE",
+        "new_evaluation": false,
+        "history_modified": false,
+        "completion_claimed": false,
+        "audit_notice": false
+      }
+    },
+    {
+      "id": "RP-33",
+      "title": "Administrator rejects a requested deletion",
+      "action": "REJECT_DELETION",
+      "context": {
+        "principal_role": "ADMINISTRATOR",
+        "relationship": "NONE",
+        "permits_evidence_content": false,
+        "condition": "DELETION_REQUESTED"
+      },
+      "expected": {
+        "control_offered": true,
+        "request_issued": true,
+        "presentation_state": "READY",
+        "content_delivery": "NONE",
+        "new_evaluation": false,
+        "history_modified": false,
+        "completion_claimed": false,
+        "audit_notice": true
+      }
+    },
+    {
+      "id": "RP-34",
+      "title": "Analyst cannot reject deletion",
+      "action": "REJECT_DELETION",
+      "context": {
+        "principal_role": "ANALYST",
+        "relationship": "ASSIGNED_ANALYST",
+        "permits_evidence_content": true,
+        "condition": "AVAILABLE"
+      },
+      "expected": {
+        "control_offered": false,
+        "request_issued": false,
+        "presentation_state": "ACCESS_DENIED",
+        "content_delivery": "NONE",
+        "new_evaluation": false,
+        "history_modified": false,
+        "completion_claimed": false,
+        "audit_notice": false
+      }
+    },
+    {
+      "id": "RP-35",
+      "title": "Owner without case visibility cannot download",
+      "action": "DOWNLOAD_REPORT",
+      "context": {
+        "principal_role": "USER",
+        "relationship": "NONE",
+        "permits_evidence_content": false,
+        "condition": "AVAILABLE"
+      },
+      "expected": {
+        "control_offered": false,
+        "request_issued": false,
+        "presentation_state": "NOT_FOUND_OR_NOT_VISIBLE",
+        "content_delivery": "NONE",
+        "new_evaluation": false,
+        "history_modified": false,
+        "completion_claimed": false,
+        "audit_notice": false
+      }
+    },
+    {
+      "id": "RP-36",
+      "title": "Knowledge approver has no deletion status",
+      "action": "VIEW_DELETION",
+      "context": {
+        "principal_role": "KNOWLEDGE_APPROVER",
+        "relationship": "NONE",
+        "permits_evidence_content": false,
+        "condition": "DELETION_REQUESTED"
+      },
+      "expected": {
+        "control_offered": false,
+        "request_issued": false,
+        "presentation_state": "ACCESS_DENIED",
+        "content_delivery": "NONE",
+        "new_evaluation": false,
+        "history_modified": false,
+        "completion_claimed": false,
+        "audit_notice": false
+      }
+    },
+    {
+      "id": "RP-37",
+      "title": "Rejection not offered for a completed removal",
+      "action": "REJECT_DELETION",
+      "context": {
+        "principal_role": "ADMINISTRATOR",
+        "relationship": "NONE",
+        "permits_evidence_content": false,
+        "condition": "DELETION_COMPLETE"
+      },
+      "expected": {
+        "control_offered": false,
+        "request_issued": false,
+        "presentation_state": "READY",
+        "content_delivery": "NONE",
+        "new_evaluation": false,
+        "history_modified": false,
+        "completion_claimed": false,
+        "audit_notice": false
+      }
+    },
+    {
+      "id": "RP-38",
+      "title": "Authorization not offered for a rejected request",
+      "action": "AUTHORIZE_DELETION",
+      "context": {
+        "principal_role": "ADMINISTRATOR",
+        "relationship": "NONE",
+        "permits_evidence_content": false,
+        "condition": "DELETION_REJECTED"
+      },
+      "expected": {
+        "control_offered": false,
+        "request_issued": false,
+        "presentation_state": "READY",
+        "content_delivery": "NONE",
+        "new_evaluation": false,
+        "history_modified": false,
+        "completion_claimed": false,
+        "audit_notice": false
+      }
+    },
+    {
+      "id": "RP-39",
+      "title": "Authorization not offered again once authorized",
+      "action": "AUTHORIZE_DELETION",
+      "context": {
+        "principal_role": "ADMINISTRATOR",
+        "relationship": "NONE",
+        "permits_evidence_content": false,
+        "condition": "DELETION_AUTHORIZED"
+      },
+      "expected": {
+        "control_offered": false,
+        "request_issued": false,
+        "presentation_state": "READY",
+        "content_delivery": "NONE",
+        "new_evaluation": false,
+        "history_modified": false,
+        "completion_claimed": false,
+        "audit_notice": false
+      }
+    },
+    {
+      "id": "RP-40",
+      "title": "Rejection not offered while removal is in progress",
+      "action": "REJECT_DELETION",
+      "context": {
+        "principal_role": "ADMINISTRATOR",
+        "relationship": "NONE",
+        "permits_evidence_content": false,
+        "condition": "DELETION_IN_PROGRESS"
+      },
+      "expected": {
+        "control_offered": false,
+        "request_issued": false,
+        "presentation_state": "READY",
+        "content_delivery": "NONE",
+        "new_evaluation": false,
+        "history_modified": false,
+        "completion_claimed": false,
+        "audit_notice": false
+      }
+    },
+    {
+      "id": "RP-41",
+      "title": "A rejected request stays viewable",
+      "action": "VIEW_DELETION",
+      "context": {
+        "principal_role": "ADMINISTRATOR",
+        "relationship": "NONE",
+        "permits_evidence_content": false,
+        "condition": "DELETION_REJECTED"
+      },
+      "expected": {
+        "control_offered": true,
+        "request_issued": true,
+        "presentation_state": "READY",
+        "content_delivery": "NONE",
+        "new_evaluation": false,
+        "history_modified": false,
+        "completion_claimed": false,
+        "audit_notice": false
+      }
+    }
+  ]
+}
