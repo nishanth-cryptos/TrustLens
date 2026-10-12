@@ -4,7 +4,7 @@
 | --- | --- |
 | Document ID | GATE-030 |
 | Version | 0.1 |
-| Status | P7-WP5 REPORTING AND HISTORICAL WORKFLOWS UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING |
+| Status | P7-WP5 REPORTING AND HISTORICAL WORKFLOWS UX CLOSED |
 | Phase / work package | Phase 7 — UX, Evidence & Reporting Design / P7-WP5 |
 | Owner role | Product / Reporting UX |
 | Branch | phase7-wp5-reporting-workflows |
@@ -18,9 +18,10 @@
 
 The builder confirmed that GATE-030 and UX-005 were unused at the baseline and that P7-WP4 was CLOSED there (PR #40).
 The initial independent review (round 1, §7) and the targeted re-review (round 2) returned REQUEST_CHANGES. After the
-builder's corrections, the round-3 targeted re-review returned **APPROVE** (§7) with no open finding. The work package
-is **approved following independent review — remote CI + merge pending**; it is not merged and not CLOSED: CLOSED
-requires the PR merge and remote-CI evidence pinned by the governed post-merge step. The gate adds no API capability,
+builder's corrections, the round-3 targeted re-review returned **APPROVE** (§7) with no open finding. PR #41 then merged
+with both required CI jobs successful on the PR-head and merge-commit runs, and the governed post-merge step (§8) recorded
+the work package as **CLOSED**. Independent design approval (§7, round 3) and post-merge closure (§8) are separate
+records; no further review round was created for the closure. The gate adds no API capability,
 persisted concept, permission grant, report format, retention rule, frontend or runtime. P7-WP6 and later work packages
 are not started.
 
@@ -44,7 +45,7 @@ are not started.
 | 14 | Missing capabilities recorded as owned deferred decisions | UX-005 §11; UXP-31 | MET (builder) |
 | 15 | Validator, negative mutations, positive controls and CI self-test defect bite | `validate_ux_reporting.py`; fixtures; `ci_selftest.py` | MET (builder) |
 | 16 | Independent review | §7 round 1 REQUEST_CHANGES (0/0/2/0/0); round 2 REQUEST_CHANGES (0/0/1/0/0); round 3 APPROVE (0/0/0/0/0) | **MET** |
-| 17 | Remote CI + merge | Not yet performed | **PENDING** |
+| 17 | Remote CI + merge | §8 — PR #41 merged as `7f3c289`; runs 38161387705 (PR head) and 38163633985 (merge commit) success | **MET** |
 | 18 | Every security-critical label and meaning governed and checked on its own (round-1 MEDIUM-1) | UX-005 §10; UXP-28, UXP-29 | CLOSED (round 3) |
 | 19 | Deletion decisions offered only for REQUESTED requests; terminal requests read-only (round-1 MEDIUM-2) | UX-005 §8; UXP-24, UXP-34…UXP-36 | CLOSED (round 2) |
 | 20 | Replay-state copy governed; a pending replay never claims completion; an explicit denial of engine substitution is allowed (round-2 R2-MEDIUM-1) | UX-005 §10; UXP-28, UXP-29 | CLOSED (round 3) |
@@ -73,9 +74,8 @@ accessibility-conformance, security-testing or detection-effectiveness claim.
 
 ## 5. Decision
 
-**P7-WP5 REPORTING AND HISTORICAL WORKFLOWS UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING**. Recommendation: proceed to the authorized P7-WP5 commit and PR. After the PR merges with successful
-remote CI, the governed post-merge step may pin the merge evidence and record the work package as CLOSED. Not merged, not
-closed and not an implemented reporting experience; P7-WP6 is not started.
+**P7-WP5 REPORTING AND HISTORICAL WORKFLOWS UX CLOSED**. The work package is closed as a design and contract deliverable: independently approved (§7, round 3)
+and merged with successful remote CI (§8). This is not an implemented reporting experience.
 
 ## 6. Open decisions
 
@@ -134,3 +134,22 @@ A review round, approval or merge evidence counts only when a governed bookkeepi
 | MEDIUM-2 | 1 | MEDIUM | Deletion authorization and rejection were offered for any visible request: a rejection was offered and issued for a COMPLETE request | CLOSED_BY_REREVIEW | 2 | P7-WP5 builder |
 | R2-MEDIUM-1 | 2 | MEDIUM | Re-raised MEDIUM-1: replay-state labels were ungoverned (a PENDING replay could read as completed successfully), and an explicit denial of current-engine substitution was wrongly rejected | CLOSED_BY_REREVIEW | 3 | P7-WP5 builder |
 <!-- UXP:findings:END -->
+
+## 8. Post-merge closure record
+
+| Item | Value |
+| --- | --- |
+| Repository | `nishanth-cryptos/TrustLens` |
+| PR | #41 — https://github.com/nishanth-cryptos/TrustLens/pull/41 — merged into `main` from `phase7-wp5-reporting-workflows` |
+| Original baseline | `b5a663a6dd6343b17b7cf8dfa927c0aae4f8ebd9` (P7-WP4 closure merge, PR #40) |
+| PR-head commit | `16500fe3c05b067241f1d7d300abc0f8a4aaac37` |
+| Merge commit | `7f3c2899dae693d3b497faa3a68f691890488d2d` |
+| Workflow | `knowledge-validation` (`.github/workflows/knowledge-validation.yml`) |
+| PR-head run | 38161387705 (run number 80) — completed / success — https://github.com/nishanth-cryptos/TrustLens/actions/runs/38161387705 |
+| Merge-commit run | 38163633985 (run number 81) — completed / success — https://github.com/nishanth-cryptos/TrustLens/actions/runs/38163633985 |
+| Required jobs (both runs) | "Knowledge validation suite" — success; "Quality-gate self-test (gate must bite)" — success |
+| Closure rests on | Independent approval round 3 (§7); no later approval round exists |
+| Evidence source | Programme-supplied GitHub evidence, re-checked by the builder. Local git confirms `origin/main` equals merge commit `7f3c289…` ("Merge pull request #41") with parents `b5a663a…` and `16500fe…`. GitHub API independently verified: PR #41 merged; PR-head run #80 (38161387705) SUCCESS, both jobs; post-merge run #81 (38163633985) SUCCESS, both jobs. Merge commit 7f3c2899dae693d3b497faa3a68f691890488d2d. |
+| Offline boundary | The validator pins this record (VERIFIED_MERGE_EVIDENCE) and requires the contract's merge evidence to match it exactly; it cannot authenticate GitHub and does not contact it |
+| Lifecycle effect | APPROVED → **CLOSED** |
+| Not implied | No production frontend, backend runtime or user-facing reporting experience exists |

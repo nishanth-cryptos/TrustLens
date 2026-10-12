@@ -7,8 +7,8 @@
       "expected_check": "UXP-01",
       "target": "doc",
       "op": "replace_text",
-      "old": "| Status | P7-WP5 REPORTING AND HISTORICAL WORKFLOWS UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING |",
-      "value": "| Status | P7-WP5 REPORTING AND HISTORICAL WORKFLOWS UX CLOSED |"
+      "old": "| Status | P7-WP5 REPORTING AND HISTORICAL WORKFLOWS UX CLOSED |",
+      "value": "| Status | P7-WP5 REPORTING AND HISTORICAL WORKFLOWS UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING |"
     },
     {
       "id": "NEG-UXP-002",
@@ -25,8 +25,8 @@
       "expected_check": "UXP-02",
       "target": "gate",
       "op": "replace_text",
-      "old": "| Status | P7-WP5 REPORTING AND HISTORICAL WORKFLOWS UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING |",
-      "value": "| Status | P7-WP5 REPORTING AND HISTORICAL WORKFLOWS UX CLOSED |"
+      "old": "| Status | P7-WP5 REPORTING AND HISTORICAL WORKFLOWS UX CLOSED |",
+      "value": "| Status | P7-WP5 REPORTING AND HISTORICAL WORKFLOWS UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING |"
     },
     {
       "id": "NEG-UXP-004",
@@ -2396,12 +2396,12 @@
     },
     {
       "id": "NEG-UXP-106",
-      "description": "Prose claims P7-WP5 closed beyond the recorded lifecycle",
+      "description": "Prose claims P7-WP5 implemented beyond the recorded lifecycle",
       "expected_check": "UXP-39",
       "target": "doc",
       "op": "replace_text",
       "old": "\n## 11. Open decisions\n",
-      "value": "\nP7-WP5 is closed.\n\n## 11. Open decisions\n"
+      "value": "\nP7-WP5 is implemented.\n\n## 11. Open decisions\n"
     },
     {
       "id": "NEG-UXP-107",
@@ -2418,7 +2418,7 @@
       "expected_check": "UXP-40",
       "target": "gate",
       "op": "replace_text",
-      "old": "**P7-WP5 REPORTING AND HISTORICAL WORKFLOWS UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING**",
+      "old": "**P7-WP5 REPORTING AND HISTORICAL WORKFLOWS UX CLOSED**",
       "value": "**P7-WP5 READY**"
     },
     {
@@ -4092,6 +4092,18 @@
         {
           "target": "contract",
           "op": "replace",
+          "path": "/lifecycle/state",
+          "value": "APPROVED"
+        },
+        {
+          "target": "contract",
+          "op": "replace",
+          "path": "/lifecycle/status",
+          "value": "P7-WP5 REPORTING AND HISTORICAL WORKFLOWS UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING"
+        },
+        {
+          "target": "contract",
+          "op": "replace",
           "path": "/lifecycle/review_history",
           "value": [
             {
@@ -4163,10 +4175,34 @@
           "value": 4
         },
         {
+          "target": "contract",
+          "op": "replace",
+          "path": "/lifecycle/merge_evidence",
+          "value": null
+        },
+        {
           "target": "gate",
           "op": "replace_text",
           "old": "<!-- UXP:review_history:BEGIN -->\n| Round | Kind | Decision | BLOCKER | HIGH | MEDIUM | LOW | INFO | Reviewer role | Evidence source | Record |\n| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n| 1 | INITIAL_INDEPENDENT_REVIEW | REQUEST_CHANGES | 0 | 0 | 2 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-030 §7 |\n| 2 | TARGETED_INDEPENDENT_REREVIEW | REQUEST_CHANGES | 0 | 0 | 1 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-030 §7 |\n| 3 | TARGETED_INDEPENDENT_REREVIEW | APPROVE | 0 | 0 | 0 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-030 §7 |\n<!-- UXP:review_history:END -->",
           "value": "<!-- UXP:review_history:BEGIN -->\n| Round | Kind | Decision | BLOCKER | HIGH | MEDIUM | LOW | INFO | Reviewer role | Evidence source | Record |\n| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n| 1 | INITIAL_INDEPENDENT_REVIEW | REQUEST_CHANGES | 0 | 0 | 2 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-030 §7 |\n| 2 | TARGETED_INDEPENDENT_REREVIEW | REQUEST_CHANGES | 0 | 0 | 1 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-030 §7 |\n| 3 | TARGETED_INDEPENDENT_REREVIEW | APPROVE | 0 | 0 | 0 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-030 §7 |\n| 4 | TARGETED_INDEPENDENT_REREVIEW | APPROVE | 0 | 0 | 0 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-030 §7 |\n<!-- UXP:review_history:END -->"
+        },
+        {
+          "target": "doc",
+          "op": "replace_text",
+          "old": "| Status | P7-WP5 REPORTING AND HISTORICAL WORKFLOWS UX CLOSED |",
+          "value": "| Status | P7-WP5 REPORTING AND HISTORICAL WORKFLOWS UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING |"
+        },
+        {
+          "target": "gate",
+          "op": "replace_text",
+          "old": "| Status | P7-WP5 REPORTING AND HISTORICAL WORKFLOWS UX CLOSED |",
+          "value": "| Status | P7-WP5 REPORTING AND HISTORICAL WORKFLOWS UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING |"
+        },
+        {
+          "target": "gate",
+          "op": "replace_text",
+          "old": "**P7-WP5 REPORTING AND HISTORICAL WORKFLOWS UX CLOSED**",
+          "value": "**P7-WP5 REPORTING AND HISTORICAL WORKFLOWS UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING**"
         },
         {
           "target": "pins",
@@ -4255,18 +4291,6 @@
         {
           "target": "contract",
           "op": "replace",
-          "path": "/lifecycle/state",
-          "value": "CLOSED"
-        },
-        {
-          "target": "contract",
-          "op": "replace",
-          "path": "/lifecycle/status",
-          "value": "P7-WP5 REPORTING AND HISTORICAL WORKFLOWS UX CLOSED"
-        },
-        {
-          "target": "contract",
-          "op": "replace",
           "path": "/lifecycle/review_history",
           "value": [
             {
@@ -4340,50 +4364,44 @@
         {
           "target": "contract",
           "op": "replace",
-          "path": "/lifecycle/merge_evidence",
-          "value": {
-            "repository": "nishanth-cryptos/TrustLens",
-            "pr_number": 999,
-            "pr_head_commit": "cccccccccccccccccccccccccccccccccccccccc",
-            "merge_commit": "dddddddddddddddddddddddddddddddddddddddd",
-            "base_commit": "b5a663a6dd6343b17b7cf8dfa927c0aae4f8ebd9",
-            "remote_ci": {
-              "workflow": "knowledge-validation",
-              "checks": [
-                "Knowledge validation suite",
-                "Quality-gate self-test (gate must bite)"
-              ],
-              "conclusion": "success",
-              "pr_head_run_id": 99999999998,
-              "merge_commit_run_id": 99999999999
-            },
-            "verification": "INDEPENDENT_PROGRAMME_VERIFICATION",
-            "verification_reference": "GATE-030 §7"
-          }
+          "path": "/lifecycle/merge_evidence/pr_number",
+          "value": 999
+        },
+        {
+          "target": "contract",
+          "op": "replace",
+          "path": "/lifecycle/merge_evidence/pr_head_commit",
+          "value": "cccccccccccccccccccccccccccccccccccccccc"
+        },
+        {
+          "target": "contract",
+          "op": "replace",
+          "path": "/lifecycle/merge_evidence/merge_commit",
+          "value": "dddddddddddddddddddddddddddddddddddddddd"
+        },
+        {
+          "target": "contract",
+          "op": "replace",
+          "path": "/lifecycle/merge_evidence/remote_ci/pr_head_run_id",
+          "value": 99999999998
+        },
+        {
+          "target": "contract",
+          "op": "replace",
+          "path": "/lifecycle/merge_evidence/remote_ci/merge_commit_run_id",
+          "value": 99999999999
+        },
+        {
+          "target": "contract",
+          "op": "replace",
+          "path": "/lifecycle/merge_evidence/verification_reference",
+          "value": "GATE-030 §7"
         },
         {
           "target": "gate",
           "op": "replace_text",
           "old": "<!-- UXP:review_history:BEGIN -->\n| Round | Kind | Decision | BLOCKER | HIGH | MEDIUM | LOW | INFO | Reviewer role | Evidence source | Record |\n| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n| 1 | INITIAL_INDEPENDENT_REVIEW | REQUEST_CHANGES | 0 | 0 | 2 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-030 §7 |\n| 2 | TARGETED_INDEPENDENT_REREVIEW | REQUEST_CHANGES | 0 | 0 | 1 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-030 §7 |\n| 3 | TARGETED_INDEPENDENT_REREVIEW | APPROVE | 0 | 0 | 0 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-030 §7 |\n<!-- UXP:review_history:END -->",
           "value": "<!-- UXP:review_history:BEGIN -->\n| Round | Kind | Decision | BLOCKER | HIGH | MEDIUM | LOW | INFO | Reviewer role | Evidence source | Record |\n| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n| 1 | INITIAL_INDEPENDENT_REVIEW | REQUEST_CHANGES | 0 | 0 | 2 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-030 §7 |\n| 2 | TARGETED_INDEPENDENT_REREVIEW | REQUEST_CHANGES | 0 | 0 | 1 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-030 §7 |\n| 3 | TARGETED_INDEPENDENT_REREVIEW | APPROVE | 0 | 0 | 0 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-030 §7 |\n| 4 | TARGETED_INDEPENDENT_REREVIEW | APPROVE | 0 | 0 | 0 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-030 §7 |\n<!-- UXP:review_history:END -->"
-        },
-        {
-          "target": "doc",
-          "op": "replace_text",
-          "old": "| Status | P7-WP5 REPORTING AND HISTORICAL WORKFLOWS UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING |",
-          "value": "| Status | P7-WP5 REPORTING AND HISTORICAL WORKFLOWS UX CLOSED |"
-        },
-        {
-          "target": "gate",
-          "op": "replace_text",
-          "old": "| Status | P7-WP5 REPORTING AND HISTORICAL WORKFLOWS UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING |",
-          "value": "| Status | P7-WP5 REPORTING AND HISTORICAL WORKFLOWS UX CLOSED |"
-        },
-        {
-          "target": "gate",
-          "op": "replace_text",
-          "old": "**P7-WP5 REPORTING AND HISTORICAL WORKFLOWS UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING**",
-          "value": "**P7-WP5 REPORTING AND HISTORICAL WORKFLOWS UX CLOSED**"
         },
         {
           "target": "pins",
