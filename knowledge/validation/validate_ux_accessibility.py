@@ -56,7 +56,14 @@ VERIFIED_REVIEW_HISTORY: list = [
      "evidence_source": "Independent review result supplied to the builder by the programme", "record_reference": "GATE-031 §7"},
 ]
 VERIFIED_APPROVAL = {"round": 2, "decision": "APPROVE", "record_reference": "GATE-031 §7", "reviewer_role": "Independent reviewer"}
-VERIFIED_MERGE_EVIDENCE = None
+VERIFIED_MERGE_EVIDENCE = {"repository": "nishanth-cryptos/TrustLens", "pr_number": 42,
+                           "pr_head_commit": "b5dd2c776f17564d01f45ae6c65cef060d560761",
+                           "merge_commit": "324fc320c47498a42f68c6bac941cc4a5dde9b39",
+                           "base_commit": "7f3c2899dae693d3b497faa3a68f691890488d2d",
+                           "remote_ci": {"workflow": "knowledge-validation",
+                                         "checks": ["Knowledge validation suite", "Quality-gate self-test (gate must bite)"],
+                                         "conclusion": "success", "pr_head_run_id": 38238792863, "merge_commit_run_id": 38244422412},
+                           "verification": "INDEPENDENT_PROGRAMME_VERIFICATION", "verification_reference": "GATE-031 §8"}
 INDEPENDENT_REVIEW_KINDS = {"INITIAL_INDEPENDENT_REVIEW", "TARGETED_INDEPENDENT_REREVIEW", "FINAL_INDEPENDENT_REVIEW"}
 INDEPENDENT_REVIEWER_ROLES = {"Independent reviewer"}
 PERMITTED_EVIDENCE_SOURCES = {"Independent review result supplied to the builder by the programme"}
