@@ -4,11 +4,11 @@
 | --- | --- |
 | Document ID | GATE-032 |
 | Version | 0.1 |
-| Status | PHASE 7 INTEGRATED CLOSURE APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING |
+| Status | PHASE 7 CLOSED |
 | Phase / work package | Phase 7 — UX, Evidence & Reporting Design / P7-WP7 |
 | Owner role | Programme / Product |
 | Branch | phase7-wp7-integrated-closure |
-| Baseline | 324fc320c47498a42f68c6bac941cc4a5dde9b39 (P7-WP6 delivery merge, PR #42); the P7-WP6 post-merge closure (GATE-031 §8) ships alongside on this branch |
+| Baseline | 324fc320c47498a42f68c6bac941cc4a5dde9b39 (P7-WP6 delivery merge, PR #42); the P7-WP6 post-merge closure (GATE-031 §8) shipped in PR #43 |
 | Deliverable | [PHASE-7-CLOSURE](PHASE-7-CLOSURE.md); [`phase7-closure-v1.json`](../../contracts/phase7/phase7-closure-v1.json); [`phase7-closure-contract.schema.json`](../../contracts/phase7/phase7-closure-contract.schema.json); `contracts/phase7/fixtures/phase7-closure-negative-mutations.json`; `knowledge/validation/validate_phase7_closure.py` |
 | Foundation | UX-001 to UX-006 / GATE-026 to GATE-031 (not modified apart from the P7-WP6 closure bookkeeping), the accepted Phase-6 contracts and the roadmap |
 | Independent review | Round 1 REQUEST_CHANGES preserved; Round 2 targeted APPROVE (0/0/0/0/0); both findings CLOSED_BY_REREVIEW |
@@ -17,9 +17,9 @@
 ## 1. Gate reservation and boundary
 
 The builder confirmed that GATE-032 and PHASE-7-CLOSURE were unused at the baseline. P7-WP6 merged there (PR #42); its
-post-merge closure (GATE-031 §8) ships on this branch as a separately identifiable change. The gate adds no API
+post-merge closure (GATE-031 §8) shipped in PR #43 as a separately identifiable change. The gate adds no API
 capability, persisted concept, permission, report format, frontend or runtime, and repeats no completed review.
-Phase 8 is not started.
+Phase 8 planning/approval is recorded separately in PLAN-001; no Phase 9 implementation has begun.
 
 ## 2. Exit criteria
 
@@ -35,7 +35,7 @@ Phase 8 is not started.
 | 8 | Phase-9 prerequisite RSK-006 carried | PHASE-7-CLOSURE §8; PC7-20 | MET (builder) |
 | 9 | Canonical Phase-7 validators reused, not duplicated; integrated gate and CI self-test defect bite | `run_all.py`; `ci_selftest.py`; PC7-21 | MET (builder) |
 | 10 | Independent approval | Round 2 targeted APPROVE; §7 | MET |
-| 11 | Remote CI + merge | Not yet available | PENDING |
+| 11 | Remote CI + merge | PR #43; successful PR-head CI #84 and post-merge CI #85, both jobs; §8 | MET |
 
 ## 3. Validation evidence (local builder)
 
@@ -81,10 +81,10 @@ detection-effectiveness claim.
 
 ## 5. Decision
 
-**PHASE 7 INTEGRATED CLOSURE APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING**. Round 2 targeted independent rereview approved the corrections and closed both findings.
-The user explicitly accepted Option A and both design-contract exceptions (§6). Remote CI and merge remain PENDING.
-Phase 7 is NOT CLOSED until the WP7 PR merges, required CI evidence is verified, and governed post-merge bookkeeping
-records final closure.
+**PHASE 7 CLOSED**. Round 2 targeted independent rereview approved the corrections and closed both findings.
+The user explicitly accepted Option A and both design-contract exceptions (§6). PR #43 merged, and both required
+jobs succeeded in PR-head CI #84 and post-merge CI #85; §8 records verified post-merge closure. REPORT-001 remains
+UNDELIVERED and WCAG 2.2 AA remains NOT VERIFIED. Phase 8 itself is NOT CLOSED; no Phase 9 implementation has begun.
 
 ## 6. Open decisions
 
@@ -132,3 +132,30 @@ round, approval or merge evidence counts only when a governed bookkeeping step p
 | MEDIUM-1 | 1 | MEDIUM | Critical closure/prerequisite claim governance | CLOSED_BY_REREVIEW | 2 | P7-WP7 implementation agent |
 | MEDIUM-2 | 1 | MEDIUM | Incorrectly resolved responsive-layout decisions | CLOSED_BY_REREVIEW | 2 | P7-WP7 implementation agent |
 <!-- PC7:findings:END -->
+
+## 8. Verified post-merge closure
+
+Post-merge bookkeeping on `phase8-delivery-blueprint`, base/HEAD
+`0a21d1f858eb7680e05ce703966201f06902e4c8`. PR-head evidence was supplied as GitHub-verified and previously
+checked read-only; CI #85 and both required jobs were rechecked read-only for this closure. The original WP7
+baseline remains the PR base, `324fc320c47498a42f68c6bac941cc4a5dde9b39`.
+
+| Evidence | Verified value |
+| --- | --- |
+| Repository | nishanth-cryptos/TrustLens |
+| Pull request | [#43](https://github.com/nishanth-cryptos/TrustLens/pull/43), MERGED |
+| PR head commit | 5af988d2740c4d826abc0f2e3074cd1fe3d28526 |
+| Merge commit | 0a21d1f858eb7680e05ce703966201f06902e4c8 |
+| PR base commit | 324fc320c47498a42f68c6bac941cc4a5dde9b39 |
+| Workflow | knowledge-validation |
+| PR-head CI | [#84 / 38266862243](https://github.com/nishanth-cryptos/TrustLens/actions/runs/38266862243), completed / SUCCESS |
+| Post-merge CI | [#85 / 38273120361](https://github.com/nishanth-cryptos/TrustLens/actions/runs/38273120361), completed / SUCCESS |
+| Required jobs, each run | Knowledge validation suite — SUCCESS; Quality-gate self-test (gate must bite) — SUCCESS |
+| Verification | READ_ONLY_GITHUB_VERIFICATION |
+| Governed reference | GATE-032 §8 |
+| WP7 / final Phase 7 lifecycle | CLOSED — design-contract scope with the accepted Option A exceptions |
+
+The exact merge/CI record is pinned by `VERIFIED_MERGE_EVIDENCE` and equals the machine contract's
+`lifecycle.merge_evidence`. This is post-merge evidence, not a new independent review. Both existing review rounds,
+zero open findings, the 36-deliverable snapshot and all 48 decisions are preserved. Neither accepted exception is
+completed or waived; their future owners and requirements in §6 remain binding.

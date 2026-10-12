@@ -4,11 +4,11 @@
 | --- | --- |
 | Document ID | PHASE-7-CLOSURE |
 | Version | 0.1 |
-| Status | PHASE 7 INTEGRATED CLOSURE APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING |
+| Status | PHASE 7 CLOSED |
 | Phase / work package | Phase 7 — UX, Evidence & Reporting Design / P7-WP7 |
 | Owner role | Programme / Product |
 | Branch | phase7-wp7-integrated-closure |
-| Baseline | 324fc320c47498a42f68c6bac941cc4a5dde9b39 (P7-WP6 delivery merge, PR #42); the P7-WP6 post-merge closure ships alongside on this branch |
+| Baseline | 324fc320c47498a42f68c6bac941cc4a5dde9b39 (P7-WP6 delivery merge, PR #42); the P7-WP6 post-merge closure shipped in PR #43 |
 | Machine record | [`phase7-closure-v1.json`](../../contracts/phase7/phase7-closure-v1.json) with [`phase7-closure-contract.schema.json`](../../contracts/phase7/phase7-closure-contract.schema.json) |
 | Validation | `knowledge/validation/validate_phase7_closure.py`; `contracts/phase7/fixtures/phase7-closure-negative-mutations.json` |
 | Gate | [GATE-032](GATE-032-phase-7-closure.md) |
@@ -16,8 +16,8 @@
 
 ## 1. Purpose and scope
 
-This independently approved record proposes closure of Phase 7 as a design and contract phase and records its future Phase-8 handoff.
-Remote CI and merge remain pending; the final Phase-7 lifecycle is NOT CLOSED. It checks the six
+This record documents verified design-contract closure of Phase 7 and its Phase-8 handoff.
+PR #43 is merged and both required jobs succeeded on PR-head CI #84 and post-merge CI #85; GATE-032 §8 records the exact evidence. It checks the six
 Phase-7 work packages together: what each package's own validator cannot see. It adds no API operation, persisted field,
 permission, supported language, breakpoint value, report format, frontend or backend. Each package's own rules stay with
 its canonical validator (`validate_ux_foundation.py` through `validate_ux_accessibility.py`), which the canonical suite
@@ -262,7 +262,10 @@ claimed (G-09). The structured lifecycle in the machine record is authoritative 
 approval or merge evidence counts only when it equals the record pinned in `validate_phase7_closure.py` by a governed
 bookkeeping step. Round 1 remains REQUEST_CHANGES (0 BLOCKER, 0 HIGH, 2 MEDIUM, 0 LOW, 0 INFO);
 Round 2 targeted independent rereview returned APPROVE (0/0/0/0/0) and closed both findings in GATE-032 §7.
-WP7 is APPROVED following independent review. Both design-contract exceptions are accepted through the user
-explicitly choosing Option A (GATE-032 §6); neither future deliverable is waived. Remote CI and merge remain PENDING.
-The final Phase-7 lifecycle remains NOT CLOSED until the WP7 PR merges, required CI evidence is verified, and a governed
-post-merge step records closure.
+WP7 lifecycle and final Phase-7 design-contract lifecycle are CLOSED. PR #43 merged as
+`0a21d1f858eb7680e05ce703966201f06902e4c8`, with PR head `5af988d2740c4d826abc0f2e3074cd1fe3d28526`.
+PR-head CI #84 (`38266862243`) and post-merge CI #85 (`38273120361`) completed SUCCESS, both required jobs,
+as recorded in GATE-032 §8 and pinned in the machine record and validator. Both independent review rounds and their
+closed findings are preserved. Option A acceptance (GATE-032 §6) does not satisfy or waive REPORT-001 or WCAG: the
+report format remains required in Phase 8, and accessibility conformance testing/evidence remain required in Phase 10.
+PLAN-001 approval is recorded separately; Phase 8 itself is NOT CLOSED and no Phase 9 implementation has begun.
