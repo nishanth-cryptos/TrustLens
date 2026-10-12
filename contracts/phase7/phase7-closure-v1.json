@@ -1,0 +1,1433 @@
+{
+  "closure_id": "PHASE-7-CLOSURE",
+  "closure_version": "0.1.0",
+  "phase": "Phase 7 — UX, Evidence & Reporting Design",
+  "work_package": "P7-WP7",
+  "gate": "GATE-032",
+  "baseline": "324fc320c47498a42f68c6bac941cc4a5dde9b39",
+  "engine_version": "1.0.0",
+  "lifecycle": {
+    "state": "APPROVED",
+    "status": "PHASE 7 INTEGRATED CLOSURE APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING",
+    "decision_vocabulary": [
+      "APPROVE",
+      "REQUEST_CHANGES"
+    ],
+    "review_history": [
+      {
+        "round": 1,
+        "kind": "INITIAL_INDEPENDENT_REVIEW",
+        "decision": "REQUEST_CHANGES",
+        "counts": {
+          "BLOCKER": 0,
+          "HIGH": 0,
+          "MEDIUM": 2,
+          "LOW": 0,
+          "INFO": 0
+        },
+        "reviewer_role": "Independent reviewer",
+        "record_reference": "GATE-032 §7",
+        "evidence_source": "User-supplied P7-WP7 Round 1 review and independently reproduced findings (2026-10-12)"
+      },
+      {
+        "round": 2,
+        "kind": "TARGETED_INDEPENDENT_REREVIEW",
+        "decision": "APPROVE",
+        "counts": {
+          "BLOCKER": 0,
+          "HIGH": 0,
+          "MEDIUM": 0,
+          "LOW": 0,
+          "INFO": 0
+        },
+        "reviewer_role": "Independent reviewer",
+        "record_reference": "GATE-032 §7",
+        "evidence_source": "User-supplied P7-WP7 targeted Round 2 APPROVE; both findings independently closed (2026-10-12)"
+      }
+    ],
+    "approval": {
+      "round": 2,
+      "decision": "APPROVE",
+      "record_reference": "GATE-032 §7",
+      "reviewer_role": "Independent reviewer"
+    },
+    "merge_evidence": null
+  },
+  "scope": {
+    "owned": [
+      "Integrated Phase-7 closure"
+    ],
+    "excluded": [
+      "Frontend, backend and API implementation (Phase 9)",
+      "Implementation planning content of PLAN-001 (Phase 8)",
+      "New API operations, persisted fields, permissions, supported languages or breakpoint values"
+    ]
+  },
+  "work_packages": [
+    {
+      "work_package": "P7-WP1",
+      "contract_id": "UX-001",
+      "gate": "GATE-026",
+      "effective_state": "MERGED_CI_VERIFIED",
+      "contract_status": "P7-WP1 UX FOUNDATION APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING",
+      "final_review": "APPROVE",
+      "record": "PHASE-7-CLOSURE §2",
+      "pr_number": 34,
+      "pr_head_commit": "1d99bcc88004d36115f2ea501cdde8755f2f87d5",
+      "merge_commit": "d16ee7a8fd65a0428a0cde7cc1dceb7bd166d528",
+      "base_commit": "bbe741b8ebfb7adbc399c1231b74f67f73ba2cfc",
+      "pr_head_run_id": 37309265948,
+      "merge_commit_run_id": 37309298428
+    },
+    {
+      "work_package": "P7-WP2",
+      "contract_id": "UX-002",
+      "gate": "GATE-027",
+      "effective_state": "CLOSED",
+      "contract_status": "P7-WP2 SUBMISSION INTAKE CLOSED",
+      "final_review": "APPROVE",
+      "record": "GATE-027 §8",
+      "pr_number": 35,
+      "pr_head_commit": "8eb1e3f8743adfd4b20ac674a8b3d525461496f0",
+      "merge_commit": "4567b9b0e7fc9be847ce0b1567ef6ef1ad77c51d",
+      "base_commit": "d16ee7a8fd65a0428a0cde7cc1dceb7bd166d528",
+      "pr_head_run_id": 37932022803,
+      "merge_commit_run_id": 37934882890
+    },
+    {
+      "work_package": "P7-WP3",
+      "contract_id": "UX-003",
+      "gate": "GATE-028",
+      "effective_state": "CLOSED",
+      "contract_status": "P7-WP3 RESULT PRESENTATION CLOSED",
+      "final_review": "APPROVE",
+      "record": "GATE-028 §8",
+      "pr_number": 37,
+      "pr_head_commit": "b4c457257f4b7880d30f35fc98350d745e59ffa2",
+      "merge_commit": "8d9b71a3d9fbd864d7b373e3bd4c541348a44349",
+      "base_commit": "47f57d1d8f2b9f2ddedb2b438bc40ac3f32e4a70",
+      "pr_head_run_id": 38116825962,
+      "merge_commit_run_id": 38118409062
+    },
+    {
+      "work_package": "P7-WP4",
+      "contract_id": "UX-004",
+      "gate": "GATE-029",
+      "effective_state": "CLOSED",
+      "contract_status": "P7-WP4 EVIDENCE REVIEW AND SECURITY UX CLOSED",
+      "final_review": "APPROVE",
+      "record": "GATE-029 §8",
+      "pr_number": 39,
+      "pr_head_commit": "cf4ca8d37388f0f1a7e132a716e4cb776d0b38bc",
+      "merge_commit": "5f8c373d63cbf0544ddccf414020659b9fd3330a",
+      "base_commit": "e58dac6bff63a8cb79512338919af6d15db958c1",
+      "pr_head_run_id": 38139502369,
+      "merge_commit_run_id": 38142036162
+    },
+    {
+      "work_package": "P7-WP5",
+      "contract_id": "UX-005",
+      "gate": "GATE-030",
+      "effective_state": "CLOSED",
+      "contract_status": "P7-WP5 REPORTING AND HISTORICAL WORKFLOWS UX CLOSED",
+      "final_review": "APPROVE",
+      "record": "GATE-030 §8",
+      "pr_number": 41,
+      "pr_head_commit": "16500fe3c05b067241f1d7d300abc0f8a4aaac37",
+      "merge_commit": "7f3c2899dae693d3b497faa3a68f691890488d2d",
+      "base_commit": "b5a663a6dd6343b17b7cf8dfa927c0aae4f8ebd9",
+      "pr_head_run_id": 38161387705,
+      "merge_commit_run_id": 38163633985
+    },
+    {
+      "work_package": "P7-WP6",
+      "contract_id": "UX-006",
+      "gate": "GATE-031",
+      "effective_state": "CLOSED",
+      "contract_status": "P7-WP6 ACCESSIBILITY, RESPONSIVE AND ENRICHMENT UX CLOSED",
+      "final_review": "APPROVE",
+      "record": "GATE-031 §8",
+      "pr_number": 42,
+      "pr_head_commit": "b5dd2c776f17564d01f45ae6c65cef060d560761",
+      "merge_commit": "324fc320c47498a42f68c6bac941cc4a5dde9b39",
+      "base_commit": "7f3c2899dae693d3b497faa3a68f691890488d2d",
+      "pr_head_run_id": 38238792863,
+      "merge_commit_run_id": 38244422412
+    }
+  ],
+  "snapshot": [
+    {
+      "contract_id": "UX-001",
+      "path": "contracts/ux/ux-foundation-v1.json",
+      "sha256": "2a1a058028f4cf50597dc787aa4f18fa0f8364752818474ccb9cfa5a43aa7430"
+    },
+    {
+      "contract_id": "UX-001",
+      "path": "contracts/ux/ux-foundation-contract.schema.json",
+      "sha256": "e63ab8621e5ebfe4bc44e8d9e3aa5a03ce49789d42b2884778cc6e2180c815cc"
+    },
+    {
+      "contract_id": "UX-001",
+      "path": "contracts/ux/fixtures/negative-mutations.json",
+      "sha256": "e5d42964c68978661d454fbe4d99fa493f759033ddd126bd6727d9cf849cb312"
+    },
+    {
+      "contract_id": "UX-001",
+      "path": "docs/07-ux/UX-001-experience-foundation-information-architecture.md",
+      "sha256": "622f1a1a59dd5658e3f6555d164437d0b01c7c84bf3a5f8bbe0d2c5728b750aa"
+    },
+    {
+      "contract_id": "UX-001",
+      "path": "docs/00-program/GATE-026-phase-7-ux-foundation.md",
+      "sha256": "09da5cabc0252c75f60ede0f16afc801ef044de3dc719aab028b89c418201f9b"
+    },
+    {
+      "contract_id": "UX-001",
+      "path": "knowledge/validation/validate_ux_foundation.py",
+      "sha256": "cbcf16fcfd6a8709cb3e113994414a41ed159ca75be3495cfa7b574c6c0e72e6"
+    },
+    {
+      "contract_id": "UX-002",
+      "path": "contracts/ux/ux-intake-v1.json",
+      "sha256": "be4a2933a1153549233813e4bf16a349aff578f66f29dd7db58425241706a83a"
+    },
+    {
+      "contract_id": "UX-002",
+      "path": "contracts/ux/ux-intake-contract.schema.json",
+      "sha256": "fd619a70d2db6fb0245bd7e38277f8aa695ad3d490aa682e7a5905d2f7d0e83c"
+    },
+    {
+      "contract_id": "UX-002",
+      "path": "contracts/ux/fixtures/intake-negative-mutations.json",
+      "sha256": "73293799621d664aa0f533fde98d70f1dbf4de71d4eb76c883b916a5ab7e7ed1"
+    },
+    {
+      "contract_id": "UX-002",
+      "path": "docs/07-ux/UX-002-submission-evidence-intake.md",
+      "sha256": "6db2f57750593c9dd9e757fcf6e3c9a261d056bfdc3ff52a4fbdd14e74443453"
+    },
+    {
+      "contract_id": "UX-002",
+      "path": "docs/00-program/GATE-027-phase-7-submission-intake.md",
+      "sha256": "dbbc171c032582c5fcea5c32fd7101d727b556e64e5813fe94e3ace031e4e8d9"
+    },
+    {
+      "contract_id": "UX-002",
+      "path": "knowledge/validation/validate_ux_intake.py",
+      "sha256": "b8f31c83ab207ea2962562d34dc35ab584abfa7a5cc68516b4f45d629a923bcf"
+    },
+    {
+      "contract_id": "UX-003",
+      "path": "contracts/ux/ux-result-v1.json",
+      "sha256": "c8f63807165bbd1983f31d459d1281e46b77ff917ffd728c5cec034435951862"
+    },
+    {
+      "contract_id": "UX-003",
+      "path": "contracts/ux/ux-result-contract.schema.json",
+      "sha256": "16110a5b735770720f3dd6f6e4b36bafd2cc21d36f74772e347c76203bde5e7b"
+    },
+    {
+      "contract_id": "UX-003",
+      "path": "contracts/ux/fixtures/result-negative-mutations.json",
+      "sha256": "a8da40826295a4f3cd60bdbd60ed33aeb2adac7a7468715d2af44e9c943d7f63"
+    },
+    {
+      "contract_id": "UX-003",
+      "path": "docs/07-ux/UX-003-result-presentation.md",
+      "sha256": "c1fc84afbffae3e31e14b2f41b8373e62c5afa6e14eb2954313acfd86c39e9df"
+    },
+    {
+      "contract_id": "UX-003",
+      "path": "docs/00-program/GATE-028-phase-7-result-presentation.md",
+      "sha256": "93390e644935a6383dc366603c9fd0f99ac3309e38aa7adc3fac448897a6310d"
+    },
+    {
+      "contract_id": "UX-003",
+      "path": "knowledge/validation/validate_ux_result.py",
+      "sha256": "4bc3fd5496763bbaf1b65bc02b7425ad75a0b3116c0cc99c5cb2b3639f2f998d"
+    },
+    {
+      "contract_id": "UX-004",
+      "path": "contracts/ux/ux-review-v1.json",
+      "sha256": "86e029b42144191cfbaff536c74c4db5cc8ae173d38e2bd9eedf9692b3e8421a"
+    },
+    {
+      "contract_id": "UX-004",
+      "path": "contracts/ux/ux-review-contract.schema.json",
+      "sha256": "b44d612dc1cea5d054adb9cfcb857b9518d93241e82e007dd19c2acfee16ff83"
+    },
+    {
+      "contract_id": "UX-004",
+      "path": "contracts/ux/fixtures/review-negative-mutations.json",
+      "sha256": "8696b2540bdd0563d779d3c5e1aeed5fd454fff61e4c9e43e20543bd3234ad72"
+    },
+    {
+      "contract_id": "UX-004",
+      "path": "docs/07-ux/UX-004-evidence-review-security.md",
+      "sha256": "04f4642a47abb6c82ae798159e74e34ea251f0bb571bb7968fc1a3aa3a0c3247"
+    },
+    {
+      "contract_id": "UX-004",
+      "path": "docs/00-program/GATE-029-phase-7-evidence-review-security.md",
+      "sha256": "fb2d51498eafcd5cb2dbc4bf3071a50ce60720e575b4fd21b5175da5d32879f4"
+    },
+    {
+      "contract_id": "UX-004",
+      "path": "knowledge/validation/validate_ux_review.py",
+      "sha256": "1eb2bbf74e95915fabe344c34c116098656a6450c1eec4fb2e855c0966efb178"
+    },
+    {
+      "contract_id": "UX-005",
+      "path": "contracts/ux/ux-reporting-v1.json",
+      "sha256": "4034c252ef0e6143105c518fdd9bf724ef3cc93f022ea3335b87ab9338a75f5d"
+    },
+    {
+      "contract_id": "UX-005",
+      "path": "contracts/ux/ux-reporting-contract.schema.json",
+      "sha256": "4d95f496753f254a8e45a4b93641ba1f15bcfb1f5e79908509b0d0d75cef0e64"
+    },
+    {
+      "contract_id": "UX-005",
+      "path": "contracts/ux/fixtures/reporting-negative-mutations.json",
+      "sha256": "4a7224518314b7b70e34760f452aa547f763bd5986858a51eddc8a8537115ebc"
+    },
+    {
+      "contract_id": "UX-005",
+      "path": "docs/07-ux/UX-005-reporting-historical-workflows.md",
+      "sha256": "ed5d30527753938e049778ad60c5c84f481758905f2ea9b914cb9a85654d24d0"
+    },
+    {
+      "contract_id": "UX-005",
+      "path": "docs/00-program/GATE-030-phase-7-reporting-historical-workflows.md",
+      "sha256": "6632e1fa77c0886e637420ad44d811413d95390dc5d9a7a4719bedb077c96628"
+    },
+    {
+      "contract_id": "UX-005",
+      "path": "knowledge/validation/validate_ux_reporting.py",
+      "sha256": "53aea1282be7df52ae52154274344b2602da8d95e816572f8f890e2f4f87d8bb"
+    },
+    {
+      "contract_id": "UX-006",
+      "path": "contracts/ux/ux-accessibility-v1.json",
+      "sha256": "856f2c537249acfaeb88e9bdbddd77ab0ca79a596df901d876457a83f6a3c20d"
+    },
+    {
+      "contract_id": "UX-006",
+      "path": "contracts/ux/ux-accessibility-contract.schema.json",
+      "sha256": "08919163fd14f12403329d99a8e59ed47885595b6e6fc63938b01f5e45372ea4"
+    },
+    {
+      "contract_id": "UX-006",
+      "path": "contracts/ux/fixtures/accessibility-negative-mutations.json",
+      "sha256": "92e15bad693d34d148597ce5bbfe51f86fe05e14acbe7e7aaeed6f03ad19fa83"
+    },
+    {
+      "contract_id": "UX-006",
+      "path": "docs/07-ux/UX-006-accessibility-responsive-enrichment.md",
+      "sha256": "22d92321de90f3e8b0777293929a711b23e426348573abdf056018ee081307ec"
+    },
+    {
+      "contract_id": "UX-006",
+      "path": "docs/00-program/GATE-031-phase-7-accessibility-enrichment.md",
+      "sha256": "6a630becee65323e9ed1f7755853fbd053cbe32b4a729a41ea42c76cbeda9e6f"
+    },
+    {
+      "contract_id": "UX-006",
+      "path": "knowledge/validation/validate_ux_accessibility.py",
+      "sha256": "f21be495d6a1c72977f6e5813348a3638b64cdd8ed4d1f5a6f65f167ac2545b3"
+    }
+  ],
+  "handoffs": [
+    {
+      "work_package": "P7-WP2",
+      "consumed_by": "UX-002",
+      "scope": [
+        "Submission flow",
+        "Evidence capture",
+        "Upload interaction",
+        "Evidence metadata preview",
+        "Submission progress",
+        "Capture errors",
+        "Supported consent/instruction copy"
+      ]
+    },
+    {
+      "work_package": "P7-WP3",
+      "consumed_by": "UX-003",
+      "scope": [
+        "DetectionResult presentation",
+        "Classification labels",
+        "Risk/severity/confidence",
+        "Matched and indeterminate rules",
+        "Negative indicators",
+        "Uncertainty",
+        "Recommended actions",
+        "Explanation hierarchy"
+      ]
+    },
+    {
+      "work_package": "P7-WP4",
+      "consumed_by": "UX-004",
+      "scope": [
+        "Evidence review",
+        "Content permission",
+        "Review queue",
+        "Assignment",
+        "Break-glass",
+        "Adjudication",
+        "C4 rationale",
+        "Audit access"
+      ]
+    },
+    {
+      "work_package": "P7-WP5",
+      "consumed_by": "UX-005",
+      "scope": [
+        "Reports",
+        "Replay",
+        "Re-analysis",
+        "Governed deletion",
+        "410 removed",
+        "Replay unavailable",
+        "Report regeneration unavailable",
+        "Historical comparison"
+      ]
+    },
+    {
+      "work_package": "P7-WP6",
+      "consumed_by": "UX-006",
+      "scope": [
+        "Accessibility patterns",
+        "Unsupported language",
+        "Responsive behavior",
+        "External enrichment",
+        "Provider attribution",
+        "CLEAN / NOT_FOUND / UNAVAILABLE interpretation"
+      ]
+    },
+    {
+      "work_package": "P7-WP7",
+      "consumed_by": "PHASE-7-CLOSURE",
+      "scope": [
+        "Integrated Phase-7 closure"
+      ]
+    }
+  ],
+  "operation_coverage": [
+    {
+      "operation_id": "activateKnowledgeBundle",
+      "coverage": "NOT_DESIGNED",
+      "contracts": [],
+      "gap": "P7C-01"
+    },
+    {
+      "operation_id": "assignReview",
+      "coverage": "DETAILED",
+      "contracts": [
+        "UX-004"
+      ],
+      "gap": null
+    },
+    {
+      "operation_id": "authorizeDeletionRequest",
+      "coverage": "DETAILED",
+      "contracts": [
+        "UX-005"
+      ],
+      "gap": null
+    },
+    {
+      "operation_id": "closeCase",
+      "coverage": "FOUNDATION_SURFACE",
+      "contracts": [
+        "UX-001"
+      ],
+      "gap": null
+    },
+    {
+      "operation_id": "createAdjudication",
+      "coverage": "DETAILED",
+      "contracts": [
+        "UX-004"
+      ],
+      "gap": null
+    },
+    {
+      "operation_id": "createBreakGlassGrant",
+      "coverage": "DETAILED",
+      "contracts": [
+        "UX-004"
+      ],
+      "gap": null
+    },
+    {
+      "operation_id": "createCase",
+      "coverage": "DETAILED",
+      "contracts": [
+        "UX-002"
+      ],
+      "gap": null
+    },
+    {
+      "operation_id": "createCorrection",
+      "coverage": "DETAILED",
+      "contracts": [
+        "UX-005"
+      ],
+      "gap": null
+    },
+    {
+      "operation_id": "createDeletionRequest",
+      "coverage": "DETAILED",
+      "contracts": [
+        "UX-005"
+      ],
+      "gap": null
+    },
+    {
+      "operation_id": "createEvaluations",
+      "coverage": "DETAILED",
+      "contracts": [
+        "UX-002",
+        "UX-005"
+      ],
+      "gap": null
+    },
+    {
+      "operation_id": "createEvidenceUpload",
+      "coverage": "DETAILED",
+      "contracts": [
+        "UX-002"
+      ],
+      "gap": null
+    },
+    {
+      "operation_id": "createReplay",
+      "coverage": "DETAILED",
+      "contracts": [
+        "UX-005"
+      ],
+      "gap": null
+    },
+    {
+      "operation_id": "createReport",
+      "coverage": "DETAILED",
+      "contracts": [
+        "UX-005"
+      ],
+      "gap": null
+    },
+    {
+      "operation_id": "createSubmission",
+      "coverage": "DETAILED",
+      "contracts": [
+        "UX-002"
+      ],
+      "gap": null
+    },
+    {
+      "operation_id": "endBreakGlassGrant",
+      "coverage": "DETAILED",
+      "contracts": [
+        "UX-004"
+      ],
+      "gap": null
+    },
+    {
+      "operation_id": "finalizeEvidence",
+      "coverage": "DETAILED",
+      "contracts": [
+        "UX-002"
+      ],
+      "gap": null
+    },
+    {
+      "operation_id": "getActiveKnowledge",
+      "coverage": "FOUNDATION_SURFACE",
+      "contracts": [
+        "UX-001"
+      ],
+      "gap": null
+    },
+    {
+      "operation_id": "getAdjudication",
+      "coverage": "DETAILED",
+      "contracts": [
+        "UX-004"
+      ],
+      "gap": null
+    },
+    {
+      "operation_id": "getBreakGlassGrant",
+      "coverage": "DETAILED",
+      "contracts": [
+        "UX-004"
+      ],
+      "gap": null
+    },
+    {
+      "operation_id": "getCase",
+      "coverage": "DETAILED",
+      "contracts": [
+        "UX-002",
+        "UX-004",
+        "UX-005"
+      ],
+      "gap": null
+    },
+    {
+      "operation_id": "getDeletionRequest",
+      "coverage": "DETAILED",
+      "contracts": [
+        "UX-005"
+      ],
+      "gap": null
+    },
+    {
+      "operation_id": "getDetectionResult",
+      "coverage": "DETAILED",
+      "contracts": [
+        "UX-003",
+        "UX-004"
+      ],
+      "gap": null
+    },
+    {
+      "operation_id": "getEvaluation",
+      "coverage": "DETAILED",
+      "contracts": [
+        "UX-002",
+        "UX-003",
+        "UX-004",
+        "UX-005"
+      ],
+      "gap": null
+    },
+    {
+      "operation_id": "getEvidenceContent",
+      "coverage": "DETAILED",
+      "contracts": [
+        "UX-004"
+      ],
+      "gap": null
+    },
+    {
+      "operation_id": "getEvidenceMetadata",
+      "coverage": "DETAILED",
+      "contracts": [
+        "UX-002"
+      ],
+      "gap": null
+    },
+    {
+      "operation_id": "getKnowledgeBundle",
+      "coverage": "FOUNDATION_SURFACE",
+      "contracts": [
+        "UX-001"
+      ],
+      "gap": null
+    },
+    {
+      "operation_id": "getMe",
+      "coverage": "DETAILED",
+      "contracts": [
+        "UX-004"
+      ],
+      "gap": null
+    },
+    {
+      "operation_id": "getOperationalHealth",
+      "coverage": "NOT_DESIGNED",
+      "contracts": [],
+      "gap": "P7C-01"
+    },
+    {
+      "operation_id": "getReplay",
+      "coverage": "DETAILED",
+      "contracts": [
+        "UX-005"
+      ],
+      "gap": null
+    },
+    {
+      "operation_id": "getReport",
+      "coverage": "DETAILED",
+      "contracts": [
+        "UX-005"
+      ],
+      "gap": null
+    },
+    {
+      "operation_id": "getReportContent",
+      "coverage": "DETAILED",
+      "contracts": [
+        "UX-005"
+      ],
+      "gap": null
+    },
+    {
+      "operation_id": "getSubmission",
+      "coverage": "DETAILED",
+      "contracts": [
+        "UX-002"
+      ],
+      "gap": null
+    },
+    {
+      "operation_id": "listAdjudications",
+      "coverage": "DETAILED",
+      "contracts": [
+        "UX-004"
+      ],
+      "gap": null
+    },
+    {
+      "operation_id": "listAuditEvents",
+      "coverage": "DETAILED",
+      "contracts": [
+        "UX-004"
+      ],
+      "gap": null
+    },
+    {
+      "operation_id": "listCaseAccessGrants",
+      "coverage": "DETAILED",
+      "contracts": [
+        "UX-004"
+      ],
+      "gap": null
+    },
+    {
+      "operation_id": "listCaseEvaluations",
+      "coverage": "DETAILED",
+      "contracts": [
+        "UX-002",
+        "UX-005"
+      ],
+      "gap": null
+    },
+    {
+      "operation_id": "listCases",
+      "coverage": "DETAILED",
+      "contracts": [
+        "UX-002"
+      ],
+      "gap": null
+    },
+    {
+      "operation_id": "listDeletionRequests",
+      "coverage": "DETAILED",
+      "contracts": [
+        "UX-005"
+      ],
+      "gap": null
+    },
+    {
+      "operation_id": "listEvaluationEnrichments",
+      "coverage": "DETAILED",
+      "contracts": [
+        "UX-006"
+      ],
+      "gap": null
+    },
+    {
+      "operation_id": "listEvidence",
+      "coverage": "DETAILED",
+      "contracts": [
+        "UX-002"
+      ],
+      "gap": null
+    },
+    {
+      "operation_id": "listKnowledgeActivations",
+      "coverage": "FOUNDATION_SURFACE",
+      "contracts": [
+        "UX-001"
+      ],
+      "gap": null
+    },
+    {
+      "operation_id": "listReports",
+      "coverage": "DETAILED",
+      "contracts": [
+        "UX-005"
+      ],
+      "gap": null
+    },
+    {
+      "operation_id": "listReviewQueue",
+      "coverage": "DETAILED",
+      "contracts": [
+        "UX-004"
+      ],
+      "gap": null
+    },
+    {
+      "operation_id": "listSubmissions",
+      "coverage": "DETAILED",
+      "contracts": [
+        "UX-002"
+      ],
+      "gap": null
+    },
+    {
+      "operation_id": "putEvidenceContent",
+      "coverage": "DETAILED",
+      "contracts": [
+        "UX-002"
+      ],
+      "gap": null
+    },
+    {
+      "operation_id": "rejectDeletionRequest",
+      "coverage": "DETAILED",
+      "contracts": [
+        "UX-005"
+      ],
+      "gap": null
+    },
+    {
+      "operation_id": "reopenCase",
+      "coverage": "FOUNDATION_SURFACE",
+      "contracts": [
+        "UX-001"
+      ],
+      "gap": null
+    },
+    {
+      "operation_id": "reviewBreakGlassGrant",
+      "coverage": "DETAILED",
+      "contracts": [
+        "UX-004"
+      ],
+      "gap": null
+    },
+    {
+      "operation_id": "revokeCaseAccessGrant",
+      "coverage": "DETAILED",
+      "contracts": [
+        "UX-004"
+      ],
+      "gap": null
+    },
+    {
+      "operation_id": "rollbackKnowledgeBundle",
+      "coverage": "NOT_DESIGNED",
+      "contracts": [],
+      "gap": "P7C-01"
+    },
+    {
+      "operation_id": "withdrawKnowledgeBundle",
+      "coverage": "NOT_DESIGNED",
+      "contracts": [],
+      "gap": "P7C-01"
+    }
+  ],
+  "decision_register": [
+    {
+      "id": "UX-001#0",
+      "decision": "Browser session / CSRF profile; accepted OIDC boundary unchanged",
+      "source_owner": "Phase 7 / Security Architect before browser implementation",
+      "disposition": "CARRIED",
+      "target_phase": "PHASE_8",
+      "carried_owner": "Security Architect (browser session / CSRF profile before any browser implementation; PLAN-001 prerequisite)",
+      "superseded_by": null,
+      "resolved_by": []
+    },
+    {
+      "id": "UX-001#1",
+      "decision": "User data export lacks an accepted API operation; no UX data-export surface",
+      "source_owner": "P7-WP5 / API owner; later governed API revision",
+      "disposition": "SUPERSEDED_BY",
+      "target_phase": null,
+      "carried_owner": null,
+      "superseded_by": "UX-005#2",
+      "resolved_by": []
+    },
+    {
+      "id": "UX-001#2",
+      "decision": "Administrator assignment target and If-Match acquisition; no queue-read or principal-directory capability for administrator-only callers",
+      "source_owner": "P7-WP4 / API owner; resolve before detailed assignment workflow",
+      "disposition": "SUPERSEDED_BY",
+      "target_phase": null,
+      "carried_owner": null,
+      "superseded_by": "UX-004#0",
+      "resolved_by": []
+    },
+    {
+      "id": "UX-001#3",
+      "decision": "Report format and source-pinned comparison",
+      "source_owner": "P7-WP5 / Reporting",
+      "disposition": "SUPERSEDED_BY",
+      "target_phase": null,
+      "carried_owner": null,
+      "superseded_by": "UX-005#0",
+      "resolved_by": []
+    },
+    {
+      "id": "UX-001#4",
+      "decision": "Provider identity and detailed outcome attribution beyond current EnrichmentView",
+      "source_owner": "P7-WP6 / API owner; governed API revision if needed",
+      "disposition": "SUPERSEDED_BY",
+      "target_phase": null,
+      "carried_owner": null,
+      "superseded_by": "UX-006#0",
+      "resolved_by": []
+    },
+    {
+      "id": "UX-001#5",
+      "decision": "Detailed intake, result, review and accessibility interactions",
+      "source_owner": "P7-WP2 through P7-WP6 owners",
+      "disposition": "RESOLVED_BY",
+      "target_phase": null,
+      "carried_owner": null,
+      "superseded_by": null,
+      "resolved_by": [
+        "UX-002",
+        "UX-003",
+        "UX-004",
+        "UX-005",
+        "UX-006"
+      ]
+    },
+    {
+      "id": "UX-001#6",
+      "decision": "Breakpoints and responsive behavior",
+      "source_owner": "P7-WP6 / Accessibility UX",
+      "disposition": "SUPERSEDED_BY",
+      "target_phase": null,
+      "carried_owner": null,
+      "superseded_by": "UX-006#1",
+      "resolved_by": []
+    },
+    {
+      "id": "UX-002#0",
+      "decision": "Accepted media types and size limit are configuration with no discovery operation; how users learn limits before upload",
+      "source_owner": "API owner / Phase 9 configuration (governed API revision if a discovery operation is needed)",
+      "disposition": "CARRIED",
+      "target_phase": "PHASE_9",
+      "carried_owner": "API owner / Phase 9 configuration (governed API revision only if a discovery operation is needed)",
+      "superseded_by": null,
+      "resolved_by": []
+    },
+    {
+      "id": "UX-002#1",
+      "decision": "Consent / acknowledgement capture has no accepted API field",
+      "source_owner": "Sponsor + legal/governance with API owner",
+      "disposition": "CARRIED",
+      "target_phase": "PROGRAMME",
+      "carried_owner": "Sponsor + legal/governance with API owner",
+      "superseded_by": null,
+      "resolved_by": []
+    },
+    {
+      "id": "UX-002#2",
+      "decision": "Email source accepted media type(s)",
+      "source_owner": "API owner / Phase 9 configuration",
+      "disposition": "CARRIED",
+      "target_phase": "PHASE_9",
+      "carried_owner": "API owner / Phase 9 configuration",
+      "superseded_by": null,
+      "resolved_by": []
+    },
+    {
+      "id": "UX-002#3",
+      "decision": "Whether intake offers an AI-assisted analysis_mode choice",
+      "source_owner": "Programme / P7-WP3 with AI governance",
+      "disposition": "SUPERSEDED_BY",
+      "target_phase": null,
+      "carried_owner": null,
+      "superseded_by": "UX-003#4",
+      "resolved_by": []
+    },
+    {
+      "id": "UX-002#4",
+      "decision": "Local draft persistence on the device (sensitive content at rest in the browser)",
+      "source_owner": "Security Architect / Phase 9",
+      "disposition": "CARRIED",
+      "target_phase": "PHASE_9",
+      "carried_owner": "Security Architect / Phase 9",
+      "superseded_by": null,
+      "resolved_by": []
+    },
+    {
+      "id": "UX-002#5",
+      "decision": "Abandoned AWAITING_CONTENT items: user-visible cleanup path beyond governed deletion",
+      "source_owner": "P7-WP5 / API owner",
+      "disposition": "CARRIED",
+      "target_phase": "PHASE_8",
+      "carried_owner": "API owner (governed API revision, scheduled in PLAN-001)",
+      "superseded_by": null,
+      "resolved_by": []
+    },
+    {
+      "id": "UX-002#6",
+      "decision": "Polling cadence, retry limits and backoff values",
+      "source_owner": "Phase 9 implementation profile (OPS-001 parameters)",
+      "disposition": "CARRIED",
+      "target_phase": "PHASE_9",
+      "carried_owner": "Phase 9 implementation profile (OPS-001 parameters)",
+      "superseded_by": null,
+      "resolved_by": []
+    },
+    {
+      "id": "UX-002#7",
+      "decision": "Dedicated artifact_kind for user context (currently OTHER + vendor media type)",
+      "source_owner": "Next DATA-001-WP2 vocabulary revision (API-001 §41 #3)",
+      "disposition": "CARRIED",
+      "target_phase": "PHASE_8",
+      "carried_owner": "Data owner (next governed DATA-001-WP2 vocabulary revision, scheduled in PLAN-001)",
+      "superseded_by": null,
+      "resolved_by": []
+    },
+    {
+      "id": "UX-002#8",
+      "decision": "No accepted API field distinguishes PROCESSING sub-states (CONTENT_PENDING / FAILED_RETRYABLE): re-PUT and finalize behaviour after an interrupted PUT, or a readiness indicator, needs API-owner clarification; until then finalization is unavailable without an observed successful PUT",
+      "source_owner": "API owner (governed API revision if required)",
+      "disposition": "CARRIED",
+      "target_phase": "PHASE_8",
+      "carried_owner": "API owner (governed API revision, scheduled in PLAN-001)",
+      "superseded_by": null,
+      "resolved_by": []
+    },
+    {
+      "id": "UX-003#0",
+      "decision": "Negative and mitigating indicator identities are not exposed by DetectionResultResponse v1; presenting them needs a governed API revision",
+      "source_owner": "API owner (governed API revision)",
+      "disposition": "CARRIED",
+      "target_phase": "PHASE_8",
+      "carried_owner": "API owner (governed API revision, scheduled in PLAN-001)",
+      "superseded_by": null,
+      "resolved_by": []
+    },
+    {
+      "id": "UX-003#1",
+      "decision": "Supporting observations and spans are not exposed by DetectionResultResponse v1; observation-level explanation needs a governed API revision and the P7-WP4 content boundary",
+      "source_owner": "API owner with P7-WP4",
+      "disposition": "CARRIED",
+      "target_phase": "PHASE_8",
+      "carried_owner": "API owner (governed API revision, scheduled in PLAN-001)",
+      "superseded_by": null,
+      "resolved_by": []
+    },
+    {
+      "id": "UX-003#2",
+      "decision": "Per-action reason identifiers are not exposed by RecommendedActionView; action-specific reasons need a governed API revision",
+      "source_owner": "API owner (governed API revision)",
+      "disposition": "CARRIED",
+      "target_phase": "PHASE_8",
+      "carried_owner": "API owner (governed API revision, scheduled in PLAN-001)",
+      "superseded_by": null,
+      "resolved_by": []
+    },
+    {
+      "id": "UX-003#3",
+      "decision": "Explanation evidence_basis is a list of strings in the API; its exact rendering as source statements needs confirmation of the serialized form",
+      "source_owner": "API owner",
+      "disposition": "CARRIED",
+      "target_phase": "PHASE_8",
+      "carried_owner": "API owner (governed API revision, scheduled in PLAN-001)",
+      "superseded_by": null,
+      "resolved_by": []
+    },
+    {
+      "id": "UX-003#4",
+      "decision": "Whether intake offers an AI-assisted analysis_mode choice (carried from UX-002; not resolved here)",
+      "source_owner": "Programme with AI governance",
+      "disposition": "CARRIED",
+      "target_phase": "PROGRAMME",
+      "carried_owner": "Programme with AI governance",
+      "superseded_by": null,
+      "resolved_by": []
+    },
+    {
+      "id": "UX-003#5",
+      "decision": "Final user-facing copy, translation and plain-language review of labels and meanings",
+      "source_owner": "Product / Result UX with Phase 9",
+      "disposition": "CARRIED",
+      "target_phase": "PHASE_9",
+      "carried_owner": "Product / Result UX with Phase 9",
+      "superseded_by": null,
+      "resolved_by": []
+    },
+    {
+      "id": "UX-003#6",
+      "decision": "Detailed accessible and responsive result layout",
+      "source_owner": "P7-WP6 / Accessibility UX",
+      "disposition": "SUPERSEDED_BY",
+      "target_phase": null,
+      "carried_owner": null,
+      "superseded_by": "UX-006#1",
+      "resolved_by": []
+    },
+    {
+      "id": "UX-003#7",
+      "decision": "Phase-3 result.py matched_rule_ids() counts any MATCHED rule result as fired while aggregation eligibility requires COMPOSITE; impact: a SUPPRESSION-kind MATCHED result could be counted as a fired rule by the envelope validator; the result surface follows aggregation eligibility (a SUPPRESSION-kind rule is never a finding) pending Phase-3 owner clarification (round-2 R2-INFO-1)",
+      "source_owner": "Detection owner (Phase-3 governance)",
+      "disposition": "CARRIED",
+      "target_phase": "PROGRAMME",
+      "carried_owner": "Detection owner (Phase-3 governance)",
+      "superseded_by": null,
+      "resolved_by": []
+    },
+    {
+      "id": "UX-004#0",
+      "decision": "Administrator assignment target and If-Match acquisition: no administrator queue-read or principal-directory capability exists, so the assignment command can only act on a review item reference, ETag and analyst identifier supplied through an accepted channel",
+      "source_owner": "API owner (governed API revision), carried from UX-001",
+      "disposition": "CARRIED",
+      "target_phase": "PHASE_8",
+      "carried_owner": "API owner (governed API revision, scheduled in PLAN-001)",
+      "superseded_by": null,
+      "resolved_by": []
+    },
+    {
+      "id": "UX-004#1",
+      "decision": "A CASE_EVIDENCE break-glass grant has no accepted evidence-listing operation for administrators (listEvidence and getCase are USER/ANALYST only); evidence identifiers are reachable only from content-free audit metadata",
+      "source_owner": "API owner with Security Architect",
+      "disposition": "CARRIED",
+      "target_phase": "PHASE_8",
+      "carried_owner": "API owner (governed API revision, scheduled in PLAN-001) with Security Architect",
+      "superseded_by": null,
+      "resolved_by": []
+    },
+    {
+      "id": "UX-004#2",
+      "decision": "No operation lists break-glass grants awaiting review; reviewers find grants through listAuditEvents (BREAK_GLASS_ACTIVATED) and then getBreakGlassGrant",
+      "source_owner": "API owner with Security Architect",
+      "disposition": "CARRIED",
+      "target_phase": "PHASE_8",
+      "carried_owner": "API owner (governed API revision, scheduled in PLAN-001) with Security Architect",
+      "superseded_by": null,
+      "resolved_by": []
+    },
+    {
+      "id": "UX-004#3",
+      "decision": "reason_code on assignment and access-grant revocation has no governed vocabulary",
+      "source_owner": "API owner (governed vocabulary)",
+      "disposition": "CARRIED",
+      "target_phase": "PHASE_8",
+      "carried_owner": "API owner (governed API revision, scheduled in PLAN-001) (governed vocabulary)",
+      "superseded_by": null,
+      "resolved_by": []
+    },
+    {
+      "id": "UX-004#4",
+      "decision": "Principals appear as opaque identifiers; no principal display-name capability exists for queues, grants or audit",
+      "source_owner": "API owner with Product / Security UX",
+      "disposition": "CARRIED",
+      "target_phase": "PHASE_8",
+      "carried_owner": "API owner (governed API revision, scheduled in PLAN-001) with Product / Security UX",
+      "superseded_by": null,
+      "resolved_by": []
+    },
+    {
+      "id": "UX-004#5",
+      "decision": "An assigned analyst without permits_evidence_content may author a C4 rationale that the same analyst cannot read back; confirm the intended authoring rule",
+      "source_owner": "API owner with Security Architect",
+      "disposition": "CARRIED",
+      "target_phase": "PHASE_8",
+      "carried_owner": "API owner (governed API revision, scheduled in PLAN-001) with Security Architect",
+      "superseded_by": null,
+      "resolved_by": []
+    },
+    {
+      "id": "UX-004#6",
+      "decision": "Break-glass duration is server-set and NOT YET SPECIFIED; the UX shows only the server's expires_at",
+      "source_owner": "Security Architect / P5-WP5 implementation",
+      "disposition": "CARRIED",
+      "target_phase": "PHASE_9",
+      "carried_owner": "Security Architect / Phase 9 implementation",
+      "superseded_by": null,
+      "resolved_by": []
+    },
+    {
+      "id": "UX-004#7",
+      "decision": "Final user-facing copy, translation and plain-language review of review and security labels",
+      "source_owner": "Product / Security UX with Phase 9",
+      "disposition": "CARRIED",
+      "target_phase": "PHASE_9",
+      "carried_owner": "Product / Security UX with Phase 9",
+      "superseded_by": null,
+      "resolved_by": []
+    },
+    {
+      "id": "UX-004#8",
+      "decision": "Detailed accessible and responsive layout of review and security surfaces",
+      "source_owner": "P7-WP6 / Accessibility UX",
+      "disposition": "SUPERSEDED_BY",
+      "target_phase": null,
+      "carried_owner": null,
+      "superseded_by": "UX-006#1",
+      "resolved_by": []
+    },
+    {
+      "id": "UX-005#0",
+      "decision": "Report format and layout (REPORT-001); ReportContentDownload is opaque bytes until it is defined",
+      "source_owner": "Product / Reporting (REPORT-001), carried from UX-001",
+      "disposition": "CARRIED",
+      "target_phase": "PHASE_8",
+      "carried_owner": "Product / Reporting (REPORT-001 must be produced before the report slice is planned)",
+      "superseded_by": null,
+      "resolved_by": []
+    },
+    {
+      "id": "UX-005#1",
+      "decision": "Source-pinned historical comparison has no accepted API capability; records are shown separately and no comparison is computed",
+      "source_owner": "API owner with Product / Reporting, carried from UX-001",
+      "disposition": "CARRIED",
+      "target_phase": "PHASE_8",
+      "carried_owner": "API owner (governed API revision, scheduled in PLAN-001) with Product / Reporting",
+      "superseded_by": null,
+      "resolved_by": []
+    },
+    {
+      "id": "UX-005#2",
+      "decision": "User data export lacks an accepted API operation; no data-export surface is designed",
+      "source_owner": "API owner (governed API revision), carried from UX-001",
+      "disposition": "CARRIED",
+      "target_phase": "PHASE_8",
+      "carried_owner": "API owner (governed API revision, scheduled in PLAN-001)",
+      "superseded_by": null,
+      "resolved_by": []
+    },
+    {
+      "id": "UX-005#3",
+      "decision": "createCorrection is an accepted operation placed on no UX-001 surface; its placement (UX-EVALUATION context) is recorded here pending a governed UX-001 revision",
+      "source_owner": "Programme UX governance",
+      "disposition": "CARRIED",
+      "target_phase": "PROGRAMME",
+      "carried_owner": "Programme UX governance (governed UX-001 revision)",
+      "superseded_by": null,
+      "resolved_by": []
+    },
+    {
+      "id": "UX-005#4",
+      "decision": "reason_code for report, replay, re-analysis, correction and deletion commands has no governed vocabulary",
+      "source_owner": "API owner (governed vocabulary)",
+      "disposition": "CARRIED",
+      "target_phase": "PHASE_8",
+      "carried_owner": "API owner (governed API revision, scheduled in PLAN-001) (governed vocabulary)",
+      "superseded_by": null,
+      "resolved_by": []
+    },
+    {
+      "id": "UX-005#5",
+      "decision": "Retention period and tombstone content after governed removal are not specified (OI-05)",
+      "source_owner": "Sponsor + legal/governance (OI-05)",
+      "disposition": "CARRIED",
+      "target_phase": "PROGRAMME",
+      "carried_owner": "Sponsor + legal/governance (OI-05)",
+      "superseded_by": null,
+      "resolved_by": []
+    },
+    {
+      "id": "UX-005#6",
+      "decision": "Final user-facing copy, translation and plain-language review of reporting and history labels",
+      "source_owner": "Product / Reporting UX with Phase 9",
+      "disposition": "CARRIED",
+      "target_phase": "PHASE_9",
+      "carried_owner": "Product / Reporting UX with Phase 9",
+      "superseded_by": null,
+      "resolved_by": []
+    },
+    {
+      "id": "UX-005#7",
+      "decision": "Detailed accessible and responsive layout of reporting and history surfaces",
+      "source_owner": "P7-WP6 / Accessibility UX",
+      "disposition": "SUPERSEDED_BY",
+      "target_phase": null,
+      "carried_owner": null,
+      "superseded_by": "UX-006#1",
+      "resolved_by": []
+    },
+    {
+      "id": "UX-006#0",
+      "decision": "Provider identity and detailed outcome attribution beyond the current EnrichmentView",
+      "source_owner": "API owner (governed API revision), carried from UX-001",
+      "disposition": "CARRIED",
+      "target_phase": "PHASE_8",
+      "carried_owner": "API owner (governed API revision, scheduled in PLAN-001)",
+      "superseded_by": null,
+      "resolved_by": []
+    },
+    {
+      "id": "UX-006#1",
+      "decision": "Breakpoint values and responsive layout details are NOT YET SPECIFIED; only behaviour rules are governed here",
+      "source_owner": "Phase 9 design system with Product / Accessibility UX, carried from UX-001",
+      "disposition": "CARRIED",
+      "target_phase": "PHASE_9",
+      "carried_owner": "Phase 9 design system with Product / Accessibility UX",
+      "superseded_by": null,
+      "resolved_by": []
+    },
+    {
+      "id": "UX-006#2",
+      "decision": "The integration lookup outcome (FOUND, NOT_FOUND, UNAVAILABLE, INVALID_RESPONSE) is not exposed by EnrichmentView, so NOT_FOUND and UNAVAILABLE cannot be told apart from neighbouring outcomes",
+      "source_owner": "API owner with INT-001 owner (governed API revision)",
+      "disposition": "CARRIED",
+      "target_phase": "PHASE_8",
+      "carried_owner": "API owner (governed API revision, scheduled in PLAN-001) with INT-001 owner",
+      "superseded_by": null,
+      "resolved_by": []
+    },
+    {
+      "id": "UX-006#3",
+      "decision": "Enrichment freshness (FRESH, STALE, UNKNOWN) is not exposed by EnrichmentView and has no governed period",
+      "source_owner": "API owner with provider policy owner",
+      "disposition": "CARRIED",
+      "target_phase": "PHASE_8",
+      "carried_owner": "API owner (governed API revision, scheduled in PLAN-001) with provider policy owner",
+      "superseded_by": null,
+      "resolved_by": []
+    },
+    {
+      "id": "UX-006#4",
+      "decision": "Detection scope beyond English (ADR-0014 options B/C) requires verified non-English evidence",
+      "source_owner": "Sponsor with Knowledge governance (ADR-0014)",
+      "disposition": "CARRIED",
+      "target_phase": "PROGRAMME",
+      "carried_owner": "Sponsor with Knowledge governance (ADR-0014)",
+      "superseded_by": null,
+      "resolved_by": []
+    },
+    {
+      "id": "UX-006#5",
+      "decision": "Interface language, translation and final user-facing copy",
+      "source_owner": "Product / Accessibility UX with Phase 9",
+      "disposition": "CARRIED",
+      "target_phase": "PHASE_9",
+      "carried_owner": "Product / Accessibility UX with Phase 9",
+      "superseded_by": null,
+      "resolved_by": []
+    },
+    {
+      "id": "UX-006#6",
+      "decision": "Accessibility conformance testing with assistive technologies; no conformance is claimed",
+      "source_owner": "Phase 10 / QA Lead",
+      "disposition": "CARRIED",
+      "target_phase": "PHASE_10",
+      "carried_owner": "Phase 10 / QA Lead (assistive-technology and conformance testing)",
+      "superseded_by": null,
+      "resolved_by": []
+    }
+  ],
+  "integration_gaps": [
+    {
+      "id": "P7C-01",
+      "gap": "Knowledge-lifecycle commands and operational health have no Phase-7 UX surface or design",
+      "operations": [
+        "activateKnowledgeBundle",
+        "getOperationalHealth",
+        "rollbackKnowledgeBundle",
+        "withdrawKnowledgeBundle"
+      ],
+      "target_phase": "PHASE_8",
+      "carried_owner": "Product with Knowledge governance and Operations (decide in PLAN-001 whether operator UX is in scope)"
+    },
+    {
+      "id": "P7C-02",
+      "gap": "UX-001 and GATE-026 keep their pre-merge status rows because later contracts hash-pin UX-001; P7-WP1 merge and CI are recorded in this closure instead",
+      "operations": [],
+      "target_phase": "PROGRAMME",
+      "carried_owner": "Programme governance (next governed UX snapshot revision)"
+    }
+  ],
+  "roadmap_deviations": [
+    {
+      "id": "P7D-01",
+      "roadmap_item": "REPORT-001",
+      "kind": "OUTPUT_NOT_PRODUCED",
+      "statement": "Phase 7 did not produce REPORT-001; the report format remains deferred and report content is opaque bytes",
+      "linked_decision": "UX-005#0",
+      "target_phase": "PHASE_8",
+      "status": "ACCEPTED",
+      "programme_acceptance": "ACCEPTED_OPTION_A"
+    },
+    {
+      "id": "P7D-02",
+      "roadmap_item": "WCAG 2.2 AA",
+      "kind": "GATE_CRITERION_NOT_VERIFIED",
+      "statement": "Accessibility is specified as design requirements only; conformance with WCAG 2.2 AA is not claimed or tested",
+      "linked_decision": "UX-006#6",
+      "target_phase": "PHASE_10",
+      "status": "ACCEPTED",
+      "programme_acceptance": "ACCEPTED_OPTION_A"
+    }
+  ],
+  "phase8_prerequisites": [
+    {
+      "id": "RSK-006",
+      "statement": "Docker and PostgreSQL must be installed before Phase 9 implementation can begin (roadmap: resolve in Phase 8)",
+      "owner": "Sponsor (admin install)"
+    }
+  ],
+  "carryovers": {
+    "G-09": {
+      "status": "OPEN",
+      "owner": "Phase 10 (testing/evaluation; QA Lead) with Sponsor for any corpus access"
+    },
+    "OI-05": {
+      "status": "OPEN",
+      "owner": "Sponsor + legal/governance"
+    },
+    "ASM-002": {
+      "status": "UNCONFIRMED / PROVISIONAL",
+      "owner": "Sponsor / Programme"
+    },
+    "P6-WP7-LOW-1": {
+      "status": "OPEN / NON-BLOCKING",
+      "owner": "Next governed Phase-6 snapshot revision / Programme governance"
+    }
+  },
+  "claims": {
+    "phase7_closed": false,
+    "frontend_implemented": false,
+    "backend_implemented": false,
+    "api_changed": false,
+    "accessibility_conformance": false,
+    "usability_tested": false,
+    "production_ready": false,
+    "detection_effectiveness": false,
+    "independently_reviewed": true,
+    "approved": true,
+    "phase8_started": false
+  },
+  "review_findings": [
+    {
+      "id": "MEDIUM-1",
+      "round": 1,
+      "severity": "MEDIUM",
+      "summary": "Critical closure/prerequisite claim governance",
+      "disposition": "CLOSED_BY_REREVIEW",
+      "closed_in_round": 2,
+      "owner": "P7-WP7 implementation agent"
+    },
+    {
+      "id": "MEDIUM-2",
+      "round": 1,
+      "severity": "MEDIUM",
+      "summary": "Incorrectly resolved responsive-layout decisions",
+      "disposition": "CLOSED_BY_REREVIEW",
+      "closed_in_round": 2,
+      "owner": "P7-WP7 implementation agent"
+    }
+  ],
+  "decision_disposition_counts": {
+    "CARRIED": 38,
+    "SUPERSEDED_BY": 9,
+    "RESOLVED_BY": 1
+  },
+  "programme_acceptance_record": {
+    "decision": "OPTION_A_ACCEPTED",
+    "accepted_by": "User (programme sponsor)",
+    "authority_reference": "PROGRAM-001 §4.1",
+    "evidence_source": "User's explicit Option A decision in the P7-WP7 Final Acceptance Bookkeeping request (2026-10-12)",
+    "record_reference": "GATE-032 §6",
+    "deviation_ids": [
+      "P7D-01",
+      "P7D-02"
+    ],
+    "scope": "DESIGN_CONTRACT_CLOSURE_ONLY",
+    "future_deliverables_waived": false
+  }
+}

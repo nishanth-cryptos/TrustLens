@@ -4,7 +4,7 @@
 | --- | --- |
 | Document ID | UX-006 |
 | Version | 0.1 |
-| Status | P7-WP6 ACCESSIBILITY, RESPONSIVE AND ENRICHMENT UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING |
+| Status | P7-WP6 ACCESSIBILITY, RESPONSIVE AND ENRICHMENT UX CLOSED |
 | Phase / work package | Phase 7 — UX, Evidence & Reporting Design / P7-WP6 |
 | Owner role | Product / Accessibility UX |
 | Branch | phase7-wp6-accessibility-ux |
@@ -20,7 +20,7 @@
 UX-006 is the P7-WP6 UX design and contract for the cross-cutting experience rules UX-001 handed to this
 work package: accessibility patterns, responsive behaviour, unsupported language, external enrichment, provider
 attribution and the interpretation of CLEAN, NOT_FOUND and UNAVAILABLE. It is approved following independent review
-(GATE-031 §7, round 2); remote CI and merge are pending. It is a
+(GATE-031 §7, round 2) and CLOSED after merge (PR #42; GATE-031 §8). It is a
 design and contract package only: there is no frontend, API or runtime implementation, and nothing here is a
 production-readiness, usability-testing, accessibility-conformance or security-testing claim.
 
@@ -259,5 +259,6 @@ structured lifecycle in the machine contract is authoritative and fails closed: 
 evidence counts only when it equals the record pinned in `validate_ux_accessibility.py` by a governed bookkeeping step.
 Round 1 (initial independent review) returned REQUEST_CHANGES (BLOCKER 0 / HIGH 0 / MEDIUM 2 / LOW 0 / INFO 0):
 duplicate semantic rows and case-existence masking. Round 2 (targeted re-review) returned APPROVE (BLOCKER 0 / HIGH 0 /
-MEDIUM 0 / LOW 0 / INFO 0) and closed both, so the lifecycle is APPROVED. Merge evidence is absent, so CLOSED remains
-unavailable until a governed post-merge step pins it. GATE-031 §7 holds the review record.
+MEDIUM 0 / LOW 0 / INFO 0) and closed both. PR #42 then merged with both required CI jobs successful, and the governed
+post-merge step recorded the lifecycle as CLOSED; the merge evidence is pinned in the validator, which checks exact
+agreement and does not contact GitHub. GATE-031 §7 holds the review record and §8 the post-merge closure record.

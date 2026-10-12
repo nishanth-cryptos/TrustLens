@@ -322,6 +322,22 @@ def d_ux_enrichment_clean_is_safe(root: Path):
     dump(p, d)
     return p, orig
 
+
+def d_phase7_decision_dropped(root: Path):
+    p = root / "contracts" / "phase7" / "phase7-closure-v1.json"
+    orig = p.read_bytes()
+    d = load(p)
+    reg = d.get("decision_register", [])
+    i = next((n for n, x in enumerate(reg) if x.get("disposition") == "CARRIED" and x.get("target_phase") == "PHASE_10"), None)
+    if i is None:
+        raise RuntimeError("ci_selftest could not find a Phase-10 carried decision in the Phase-7 closure (renamed?)")
+    # P7-WP7-only defect: a deferred Phase-7 decision (accessibility conformance testing) silently disappears from the
+    # Phase-8 handoff. No other validator reads the closure record and no Phase-7 contract changes, so only the integrated
+    # closure gate (PC7-16) can bite.
+    del reg[i]
+    dump(p, d)
+    return p, orig
+
 DEFECTS = [
     ("unknown indicator reference", d_unknown_indicator, "validate_rules.py"),
     ("invalid taxonomy ID", d_invalid_taxonomy, "validate_rules.py"),
@@ -343,6 +359,7 @@ DEFECTS = [
     ("administrator offered evidence content by role (P7-WP4)", d_ux_review_admin_content_by_role, "validate_ux_review.py"),
     ("deletion request presented as completed removal (P7-WP5)", d_ux_reporting_request_claims_completion, "validate_ux_reporting.py"),
     ("provider CLEAN presented as TrustLens safety (P7-WP6)", d_ux_enrichment_clean_is_safe, "validate_ux_accessibility.py"),
+    ("deferred decision dropped from the Phase-7 closure handoff (P7-WP7)", d_phase7_decision_dropped, "validate_phase7_closure.py"),
 ]
 
 

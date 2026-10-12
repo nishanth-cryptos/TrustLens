@@ -7,8 +7,8 @@
       "expected_check": "UXA-01",
       "target": "doc",
       "op": "replace_text",
-      "old": "| Status | P7-WP6 ACCESSIBILITY, RESPONSIVE AND ENRICHMENT UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING |",
-      "value": "| Status | P7-WP6 ACCESSIBILITY, RESPONSIVE AND ENRICHMENT UX CLOSED |"
+      "old": "| Status | P7-WP6 ACCESSIBILITY, RESPONSIVE AND ENRICHMENT UX CLOSED |",
+      "value": "| Status | P7-WP6 ACCESSIBILITY, RESPONSIVE AND ENRICHMENT UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING |"
     },
     {
       "id": "NEG-UXA-002",
@@ -25,8 +25,8 @@
       "expected_check": "UXA-02",
       "target": "gate",
       "op": "replace_text",
-      "old": "| Status | P7-WP6 ACCESSIBILITY, RESPONSIVE AND ENRICHMENT UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING |",
-      "value": "| Status | P7-WP6 ACCESSIBILITY, RESPONSIVE AND ENRICHMENT UX CLOSED |"
+      "old": "| Status | P7-WP6 ACCESSIBILITY, RESPONSIVE AND ENRICHMENT UX CLOSED |",
+      "value": "| Status | P7-WP6 ACCESSIBILITY, RESPONSIVE AND ENRICHMENT UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING |"
     },
     {
       "id": "NEG-UXA-004",
@@ -104,16 +104,12 @@
     },
     {
       "id": "NEG-UXA-012",
-      "description": "Lifecycle closed without pinned merge evidence (synchronized)",
+      "description": "Closed lifecycle without its pinned merge evidence",
       "expected_check": "UXA-05",
-      "steps": [
-        {
-          "target": "contract",
-          "op": "replace",
-          "path": "/lifecycle/state",
-          "value": "CLOSED"
-        }
-      ]
+      "target": "contract",
+      "op": "replace",
+      "path": "/lifecycle/merge_evidence",
+      "value": null
     },
     {
       "id": "NEG-UXA-013",
@@ -207,25 +203,25 @@
           "target": "contract",
           "op": "replace",
           "path": "/lifecycle/status",
-          "value": "P7-WP6 ACCESSIBILITY, RESPONSIVE AND ENRICHMENT UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING (FINAL)"
+          "value": "P7-WP6 ACCESSIBILITY, RESPONSIVE AND ENRICHMENT UX CLOSED (FINAL)"
         },
         {
           "target": "doc",
           "op": "replace_text",
-          "old": "| Status | P7-WP6 ACCESSIBILITY, RESPONSIVE AND ENRICHMENT UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING |",
-          "value": "| Status | P7-WP6 ACCESSIBILITY, RESPONSIVE AND ENRICHMENT UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING (FINAL) |"
+          "old": "| Status | P7-WP6 ACCESSIBILITY, RESPONSIVE AND ENRICHMENT UX CLOSED |",
+          "value": "| Status | P7-WP6 ACCESSIBILITY, RESPONSIVE AND ENRICHMENT UX CLOSED (FINAL) |"
         },
         {
           "target": "gate",
           "op": "replace_text",
-          "old": "| Status | P7-WP6 ACCESSIBILITY, RESPONSIVE AND ENRICHMENT UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING |",
-          "value": "| Status | P7-WP6 ACCESSIBILITY, RESPONSIVE AND ENRICHMENT UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING (FINAL) |"
+          "old": "| Status | P7-WP6 ACCESSIBILITY, RESPONSIVE AND ENRICHMENT UX CLOSED |",
+          "value": "| Status | P7-WP6 ACCESSIBILITY, RESPONSIVE AND ENRICHMENT UX CLOSED (FINAL) |"
         },
         {
           "target": "gate",
           "op": "replace_text",
-          "old": "**P7-WP6 ACCESSIBILITY, RESPONSIVE AND ENRICHMENT UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING**",
-          "value": "**P7-WP6 ACCESSIBILITY, RESPONSIVE AND ENRICHMENT UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING (FINAL)**"
+          "old": "**P7-WP6 ACCESSIBILITY, RESPONSIVE AND ENRICHMENT UX CLOSED**",
+          "value": "**P7-WP6 ACCESSIBILITY, RESPONSIVE AND ENRICHMENT UX CLOSED (FINAL)**"
         }
       ]
     },
@@ -4393,21 +4389,21 @@
     },
     {
       "id": "NEG-UXA-160",
-      "description": "Prose claims P7-WP6 closed beyond the recorded lifecycle",
+      "description": "Prose claims P7-WP6 complete beyond the recorded lifecycle",
       "expected_check": "UXA-32",
       "target": "doc",
       "op": "replace_text",
       "old": "\n## 9. Open decisions\n",
-      "value": "\nP7-WP6 is closed.\n\n## 9. Open decisions\n"
+      "value": "\nP7-WP6 is complete.\n\n## 9. Open decisions\n"
     },
     {
       "id": "NEG-UXA-161",
-      "description": "Prose claims P7-WP6 merged",
+      "description": "Prose claims P7-WP7 complete",
       "expected_check": "UXA-32",
       "target": "gate",
       "op": "replace_text",
       "old": "\n## 6. Open decisions\n",
-      "value": "\nP7-WP6 has been merged.\n\n## 6. Open decisions\n"
+      "value": "\nP7-WP7 is complete.\n\n## 6. Open decisions\n"
     },
     {
       "id": "NEG-UXA-162",
@@ -4434,7 +4430,7 @@
       "target": "gate",
       "op": "replace_text",
       "old": "\n## 6. Open decisions\n",
-      "value": "\n**P7-WP6 ACCESSIBILITY, RESPONSIVE AND ENRICHMENT UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING**\n\n## 6. Open decisions\n"
+      "value": "\n**P7-WP6 ACCESSIBILITY, RESPONSIVE AND ENRICHMENT UX CLOSED**\n\n## 6. Open decisions\n"
     },
     {
       "id": "NEG-UXA-165",
@@ -4451,7 +4447,7 @@
       "expected_check": "UXA-33",
       "target": "gate",
       "op": "replace_text",
-      "old": "**P7-WP6 ACCESSIBILITY, RESPONSIVE AND ENRICHMENT UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING**. ",
+      "old": "**P7-WP6 ACCESSIBILITY, RESPONSIVE AND ENRICHMENT UX CLOSED**. ",
       "value": ""
     },
     {
@@ -5617,11 +5613,11 @@
     },
     {
       "id": "POS-UXA-004",
-      "description": "Negated prose about closure is not a claim",
+      "description": "Negated prose about implementation is not a claim",
       "target": "doc",
       "op": "replace_text",
       "old": "\n## 9. Open decisions\n",
-      "value": "\nP7-WP6 is not closed until merge evidence is pinned.\n\n## 9. Open decisions\n"
+      "value": "\nP7-WP6 is not implemented as a frontend.\n\n## 9. Open decisions\n"
     },
     {
       "id": "POS-UXA-005",
@@ -5722,6 +5718,18 @@
         {
           "target": "contract",
           "op": "replace",
+          "path": "/lifecycle/state",
+          "value": "APPROVED"
+        },
+        {
+          "target": "contract",
+          "op": "replace",
+          "path": "/lifecycle/status",
+          "value": "P7-WP6 ACCESSIBILITY, RESPONSIVE AND ENRICHMENT UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING"
+        },
+        {
+          "target": "contract",
+          "op": "replace",
           "path": "/lifecycle/review_history",
           "value": [
             {
@@ -5778,10 +5786,34 @@
           "value": 3
         },
         {
+          "target": "contract",
+          "op": "replace",
+          "path": "/lifecycle/merge_evidence",
+          "value": null
+        },
+        {
           "target": "gate",
           "op": "replace_text",
           "old": "<!-- UXA:review_history:BEGIN -->\n| Round | Kind | Decision | BLOCKER | HIGH | MEDIUM | LOW | INFO | Reviewer role | Evidence source | Record |\n| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n| 1 | INITIAL_INDEPENDENT_REVIEW | REQUEST_CHANGES | 0 | 0 | 2 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-031 §7 |\n| 2 | TARGETED_INDEPENDENT_REREVIEW | APPROVE | 0 | 0 | 0 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-031 §7 |\n<!-- UXA:review_history:END -->",
           "value": "<!-- UXA:review_history:BEGIN -->\n| Round | Kind | Decision | BLOCKER | HIGH | MEDIUM | LOW | INFO | Reviewer role | Evidence source | Record |\n| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n| 1 | INITIAL_INDEPENDENT_REVIEW | REQUEST_CHANGES | 0 | 0 | 2 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-031 §7 |\n| 2 | TARGETED_INDEPENDENT_REREVIEW | APPROVE | 0 | 0 | 0 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-031 §7 |\n| 3 | TARGETED_INDEPENDENT_REREVIEW | APPROVE | 0 | 0 | 0 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-031 §7 |\n<!-- UXA:review_history:END -->"
+        },
+        {
+          "target": "doc",
+          "op": "replace_text",
+          "old": "| Status | P7-WP6 ACCESSIBILITY, RESPONSIVE AND ENRICHMENT UX CLOSED |",
+          "value": "| Status | P7-WP6 ACCESSIBILITY, RESPONSIVE AND ENRICHMENT UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING |"
+        },
+        {
+          "target": "gate",
+          "op": "replace_text",
+          "old": "| Status | P7-WP6 ACCESSIBILITY, RESPONSIVE AND ENRICHMENT UX CLOSED |",
+          "value": "| Status | P7-WP6 ACCESSIBILITY, RESPONSIVE AND ENRICHMENT UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING |"
+        },
+        {
+          "target": "gate",
+          "op": "replace_text",
+          "old": "**P7-WP6 ACCESSIBILITY, RESPONSIVE AND ENRICHMENT UX CLOSED**",
+          "value": "**P7-WP6 ACCESSIBILITY, RESPONSIVE AND ENRICHMENT UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING**"
         },
         {
           "target": "pins",
@@ -5855,18 +5887,6 @@
         {
           "target": "contract",
           "op": "replace",
-          "path": "/lifecycle/state",
-          "value": "CLOSED"
-        },
-        {
-          "target": "contract",
-          "op": "replace",
-          "path": "/lifecycle/status",
-          "value": "P7-WP6 ACCESSIBILITY, RESPONSIVE AND ENRICHMENT UX CLOSED"
-        },
-        {
-          "target": "contract",
-          "op": "replace",
           "path": "/lifecycle/review_history",
           "value": [
             {
@@ -5925,50 +5945,44 @@
         {
           "target": "contract",
           "op": "replace",
-          "path": "/lifecycle/merge_evidence",
-          "value": {
-            "repository": "nishanth-cryptos/TrustLens",
-            "pr_number": 999,
-            "pr_head_commit": "cccccccccccccccccccccccccccccccccccccccc",
-            "merge_commit": "dddddddddddddddddddddddddddddddddddddddd",
-            "base_commit": "7f3c2899dae693d3b497faa3a68f691890488d2d",
-            "remote_ci": {
-              "workflow": "knowledge-validation",
-              "checks": [
-                "Knowledge validation suite",
-                "Quality-gate self-test (gate must bite)"
-              ],
-              "conclusion": "success",
-              "pr_head_run_id": 99999999998,
-              "merge_commit_run_id": 99999999999
-            },
-            "verification": "INDEPENDENT_PROGRAMME_VERIFICATION",
-            "verification_reference": "GATE-031 §7"
-          }
+          "path": "/lifecycle/merge_evidence/pr_number",
+          "value": 999
+        },
+        {
+          "target": "contract",
+          "op": "replace",
+          "path": "/lifecycle/merge_evidence/pr_head_commit",
+          "value": "cccccccccccccccccccccccccccccccccccccccc"
+        },
+        {
+          "target": "contract",
+          "op": "replace",
+          "path": "/lifecycle/merge_evidence/merge_commit",
+          "value": "dddddddddddddddddddddddddddddddddddddddd"
+        },
+        {
+          "target": "contract",
+          "op": "replace",
+          "path": "/lifecycle/merge_evidence/remote_ci/pr_head_run_id",
+          "value": 99999999998
+        },
+        {
+          "target": "contract",
+          "op": "replace",
+          "path": "/lifecycle/merge_evidence/remote_ci/merge_commit_run_id",
+          "value": 99999999999
+        },
+        {
+          "target": "contract",
+          "op": "replace",
+          "path": "/lifecycle/merge_evidence/verification_reference",
+          "value": "GATE-031 §7"
         },
         {
           "target": "gate",
           "op": "replace_text",
           "old": "<!-- UXA:review_history:BEGIN -->\n| Round | Kind | Decision | BLOCKER | HIGH | MEDIUM | LOW | INFO | Reviewer role | Evidence source | Record |\n| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n| 1 | INITIAL_INDEPENDENT_REVIEW | REQUEST_CHANGES | 0 | 0 | 2 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-031 §7 |\n| 2 | TARGETED_INDEPENDENT_REREVIEW | APPROVE | 0 | 0 | 0 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-031 §7 |\n<!-- UXA:review_history:END -->",
           "value": "<!-- UXA:review_history:BEGIN -->\n| Round | Kind | Decision | BLOCKER | HIGH | MEDIUM | LOW | INFO | Reviewer role | Evidence source | Record |\n| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n| 1 | INITIAL_INDEPENDENT_REVIEW | REQUEST_CHANGES | 0 | 0 | 2 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-031 §7 |\n| 2 | TARGETED_INDEPENDENT_REREVIEW | APPROVE | 0 | 0 | 0 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-031 §7 |\n| 3 | TARGETED_INDEPENDENT_REREVIEW | APPROVE | 0 | 0 | 0 | 0 | 0 | Independent reviewer | Independent review result supplied to the builder by the programme | GATE-031 §7 |\n<!-- UXA:review_history:END -->"
-        },
-        {
-          "target": "doc",
-          "op": "replace_text",
-          "old": "| Status | P7-WP6 ACCESSIBILITY, RESPONSIVE AND ENRICHMENT UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING |",
-          "value": "| Status | P7-WP6 ACCESSIBILITY, RESPONSIVE AND ENRICHMENT UX CLOSED |"
-        },
-        {
-          "target": "gate",
-          "op": "replace_text",
-          "old": "| Status | P7-WP6 ACCESSIBILITY, RESPONSIVE AND ENRICHMENT UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING |",
-          "value": "| Status | P7-WP6 ACCESSIBILITY, RESPONSIVE AND ENRICHMENT UX CLOSED |"
-        },
-        {
-          "target": "gate",
-          "op": "replace_text",
-          "old": "**P7-WP6 ACCESSIBILITY, RESPONSIVE AND ENRICHMENT UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING**",
-          "value": "**P7-WP6 ACCESSIBILITY, RESPONSIVE AND ENRICHMENT UX CLOSED**"
         },
         {
           "target": "pins",

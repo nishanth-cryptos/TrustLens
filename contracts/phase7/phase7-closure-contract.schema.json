@@ -1,0 +1,863 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:trustlens:phase7:closure-contract:v1",
+  "title": "TrustLens P7-WP7 integrated Phase-7 closure record (PHASE-7-CLOSURE)",
+  "type": "object",
+  "properties": {
+    "closure_id": {
+      "type": "string"
+    },
+    "closure_version": {
+      "type": "string"
+    },
+    "phase": {
+      "type": "string"
+    },
+    "work_package": {
+      "type": "string"
+    },
+    "gate": {
+      "type": "string"
+    },
+    "baseline": {
+      "type": "string"
+    },
+    "engine_version": {
+      "type": "string"
+    },
+    "lifecycle": {
+      "type": "object",
+      "properties": {
+        "state": {
+          "enum": [
+            "CANDIDATE",
+            "APPROVED",
+            "CLOSED"
+          ]
+        },
+        "status": {
+          "type": "string"
+        },
+        "decision_vocabulary": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "review_history": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "round": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "kind": {
+                "type": "string"
+              },
+              "decision": {
+                "enum": [
+                  "APPROVE",
+                  "REQUEST_CHANGES"
+                ]
+              },
+              "counts": {
+                "type": "object",
+                "properties": {
+                  "BLOCKER": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "HIGH": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "MEDIUM": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "LOW": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "INFO": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                },
+                "required": [
+                  "BLOCKER",
+                  "HIGH",
+                  "MEDIUM",
+                  "LOW",
+                  "INFO"
+                ],
+                "additionalProperties": false
+              },
+              "reviewer_role": {
+                "type": "string"
+              },
+              "record_reference": {
+                "type": "string"
+              },
+              "evidence_source": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "round",
+              "kind",
+              "decision",
+              "counts",
+              "reviewer_role",
+              "record_reference",
+              "evidence_source"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "approval": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "round": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "decision": {
+                  "enum": [
+                    "APPROVE"
+                  ]
+                },
+                "record_reference": {
+                  "type": "string"
+                },
+                "reviewer_role": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "round",
+                "decision",
+                "record_reference",
+                "reviewer_role"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "merge_evidence": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "repository": {
+                  "type": "string"
+                },
+                "pr_number": {
+                  "type": "integer"
+                },
+                "pr_head_commit": {
+                  "type": "string"
+                },
+                "merge_commit": {
+                  "type": "string"
+                },
+                "base_commit": {
+                  "type": "string"
+                },
+                "remote_ci": {
+                  "type": "object",
+                  "properties": {
+                    "workflow": {
+                      "type": "string"
+                    },
+                    "checks": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "conclusion": {
+                      "type": "string"
+                    },
+                    "pr_head_run_id": {
+                      "type": "integer"
+                    },
+                    "merge_commit_run_id": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "workflow",
+                    "checks",
+                    "conclusion",
+                    "pr_head_run_id",
+                    "merge_commit_run_id"
+                  ],
+                  "additionalProperties": false
+                },
+                "verification": {
+                  "type": "string"
+                },
+                "verification_reference": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "repository",
+                "pr_number",
+                "pr_head_commit",
+                "merge_commit",
+                "base_commit",
+                "remote_ci",
+                "verification",
+                "verification_reference"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        }
+      },
+      "required": [
+        "state",
+        "status",
+        "decision_vocabulary",
+        "review_history",
+        "approval",
+        "merge_evidence"
+      ],
+      "additionalProperties": false
+    },
+    "scope": {
+      "type": "object",
+      "properties": {
+        "owned": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "excluded": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "owned",
+        "excluded"
+      ],
+      "additionalProperties": false
+    },
+    "work_packages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "work_package": {
+            "type": "string"
+          },
+          "contract_id": {
+            "type": "string"
+          },
+          "gate": {
+            "type": "string"
+          },
+          "effective_state": {
+            "type": "string"
+          },
+          "contract_status": {
+            "type": "string"
+          },
+          "final_review": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "record": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "pr_number": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "pr_head_commit": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "merge_commit": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "base_commit": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "pr_head_run_id": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "merge_commit_run_id": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "work_package",
+          "contract_id",
+          "gate",
+          "effective_state",
+          "contract_status",
+          "final_review",
+          "record",
+          "pr_number",
+          "pr_head_commit",
+          "merge_commit",
+          "base_commit",
+          "pr_head_run_id",
+          "merge_commit_run_id"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "snapshot": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "contract_id": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          },
+          "sha256": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "contract_id",
+          "path",
+          "sha256"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "handoffs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "work_package": {
+            "type": "string"
+          },
+          "consumed_by": {
+            "type": "string"
+          },
+          "scope": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "work_package",
+          "consumed_by",
+          "scope"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "operation_coverage": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "operation_id": {
+            "type": "string"
+          },
+          "coverage": {
+            "type": "string"
+          },
+          "contracts": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "gap": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "operation_id",
+          "coverage",
+          "contracts",
+          "gap"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "decision_register": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "decision": {
+            "type": "string"
+          },
+          "source_owner": {
+            "type": "string"
+          },
+          "disposition": {
+            "type": "string"
+          },
+          "target_phase": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "carried_owner": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "superseded_by": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "resolved_by": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "decision",
+          "source_owner",
+          "disposition",
+          "target_phase",
+          "carried_owner",
+          "superseded_by",
+          "resolved_by"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "integration_gaps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "gap": {
+            "type": "string"
+          },
+          "operations": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "target_phase": {
+            "type": "string"
+          },
+          "carried_owner": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "gap",
+          "operations",
+          "target_phase",
+          "carried_owner"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "roadmap_deviations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "roadmap_item": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "statement": {
+            "type": "string"
+          },
+          "linked_decision": {
+            "type": "string"
+          },
+          "target_phase": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "programme_acceptance": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "roadmap_item",
+          "kind",
+          "statement",
+          "linked_decision",
+          "target_phase",
+          "status",
+          "programme_acceptance"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "phase8_prerequisites": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "statement": {
+            "type": "string"
+          },
+          "owner": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "statement",
+          "owner"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "carryovers": {
+      "type": "object",
+      "properties": {
+        "G-09": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string"
+            },
+            "owner": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "status",
+            "owner"
+          ],
+          "additionalProperties": false
+        },
+        "OI-05": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string"
+            },
+            "owner": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "status",
+            "owner"
+          ],
+          "additionalProperties": false
+        },
+        "ASM-002": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string"
+            },
+            "owner": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "status",
+            "owner"
+          ],
+          "additionalProperties": false
+        },
+        "P6-WP7-LOW-1": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string"
+            },
+            "owner": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "status",
+            "owner"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "G-09",
+        "OI-05",
+        "ASM-002",
+        "P6-WP7-LOW-1"
+      ],
+      "additionalProperties": false
+    },
+    "claims": {
+      "type": "object",
+      "properties": {
+        "phase7_closed": {
+          "type": "boolean"
+        },
+        "frontend_implemented": {
+          "type": "boolean"
+        },
+        "backend_implemented": {
+          "type": "boolean"
+        },
+        "api_changed": {
+          "type": "boolean"
+        },
+        "accessibility_conformance": {
+          "type": "boolean"
+        },
+        "usability_tested": {
+          "type": "boolean"
+        },
+        "production_ready": {
+          "type": "boolean"
+        },
+        "detection_effectiveness": {
+          "type": "boolean"
+        },
+        "independently_reviewed": {
+          "type": "boolean"
+        },
+        "approved": {
+          "type": "boolean"
+        },
+        "phase8_started": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "phase7_closed",
+        "frontend_implemented",
+        "backend_implemented",
+        "api_changed",
+        "accessibility_conformance",
+        "usability_tested",
+        "production_ready",
+        "detection_effectiveness",
+        "independently_reviewed",
+        "approved",
+        "phase8_started"
+      ],
+      "additionalProperties": false
+    },
+    "review_findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "severity": {
+            "enum": [
+              "BLOCKER",
+              "HIGH",
+              "MEDIUM",
+              "LOW",
+              "INFO"
+            ]
+          },
+          "summary": {
+            "type": "string"
+          },
+          "disposition": {
+            "type": "string"
+          },
+          "owner": {
+            "type": "string"
+          },
+          "round": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "closed_in_round": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 1
+          }
+        },
+        "required": [
+          "id",
+          "severity",
+          "summary",
+          "disposition",
+          "owner",
+          "round",
+          "closed_in_round"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "decision_disposition_counts": {
+      "type": "object",
+      "properties": {
+        "CARRIED": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "SUPERSEDED_BY": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "RESOLVED_BY": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "CARRIED",
+        "SUPERSEDED_BY",
+        "RESOLVED_BY"
+      ],
+      "additionalProperties": false
+    },
+    "programme_acceptance_record": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "decision": {
+              "type": "string"
+            },
+            "accepted_by": {
+              "type": "string"
+            },
+            "authority_reference": {
+              "type": "string"
+            },
+            "evidence_source": {
+              "type": "string"
+            },
+            "record_reference": {
+              "type": "string"
+            },
+            "scope": {
+              "type": "string"
+            },
+            "deviation_ids": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "future_deliverables_waived": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "decision",
+            "accepted_by",
+            "authority_reference",
+            "evidence_source",
+            "record_reference",
+            "scope",
+            "deviation_ids",
+            "future_deliverables_waived"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    }
+  },
+  "required": [
+    "closure_id",
+    "closure_version",
+    "phase",
+    "work_package",
+    "gate",
+    "baseline",
+    "engine_version",
+    "lifecycle",
+    "scope",
+    "work_packages",
+    "snapshot",
+    "handoffs",
+    "operation_coverage",
+    "decision_register",
+    "integration_gaps",
+    "roadmap_deviations",
+    "phase8_prerequisites",
+    "carryovers",
+    "claims",
+    "review_findings",
+    "decision_disposition_counts",
+    "programme_acceptance_record"
+  ],
+  "additionalProperties": false
+}

@@ -4,7 +4,7 @@
 | --- | --- |
 | Document ID | GATE-031 |
 | Version | 0.1 |
-| Status | P7-WP6 ACCESSIBILITY, RESPONSIVE AND ENRICHMENT UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING |
+| Status | P7-WP6 ACCESSIBILITY, RESPONSIVE AND ENRICHMENT UX CLOSED |
 | Phase / work package | Phase 7 — UX, Evidence & Reporting Design / P7-WP6 |
 | Owner role | Product / Accessibility UX |
 | Branch | phase7-wp6-accessibility-ux |
@@ -21,8 +21,10 @@ and is recorded CLOSED by its post-merge closure (GATE-030 §8), which ships on 
 change. The gate adds no API capability, persisted concept, permission grant, provider identity field, lookup-outcome
 field, supported language, breakpoint value, frontend or runtime, and makes no accessibility-conformance claim. The
 initial independent review (round 1, §7) returned REQUEST_CHANGES; after the builder's corrections, the round-2 targeted
-re-review returned **APPROVE** (§7) with no open finding. Remote CI and merge are pending, so the work package is not
-closed. P7-WP7 and later work packages are not started.
+re-review returned **APPROVE** (§7) with no open finding. PR #42 then merged with both required CI jobs successful on
+the PR-head and merge-commit runs, and the governed post-merge step (§8) recorded the work package as **CLOSED**.
+Independent design approval (§7, round 2) and post-merge closure (§8) are separate records; no further review round was
+created for the closure. P7-WP7 was not started before this package merged.
 
 ## 2. Acceptance criteria
 
@@ -42,7 +44,7 @@ closed. P7-WP7 and later work packages are not started.
 | 12 | Missing capabilities recorded as owned deferred decisions | UX-006 §9; UXA-24 | MET (builder) |
 | 13 | Validator, negative mutations, positive controls and CI self-test defect bite | `validate_ux_accessibility.py`; fixtures; `ci_selftest.py` | MET (builder) |
 | 14 | Independent review | §7 round 1 REQUEST_CHANGES (0/0/2/0/0); round 2 APPROVE (0/0/0/0/0) | **MET** |
-| 15 | Remote CI + merge | Not yet available | PENDING |
+| 15 | Remote CI + merge | §8 — PR #42 merged as `324fc32`; runs 38238792863 (PR head) and 38244422412 (merge commit) success | **MET** |
 | 16 | Duplicate provider-outcome or announcement rows rejected; every original row validated (round-1 MEDIUM-1) | UX-006 §3, §5; UXA-13, UXA-15, UXA-18 | CLOSED (round 2) |
 | 17 | A case-scoped resource without case visibility answers the masked not-found state in every layout; a visible case without the role answers access denied (round-1 MEDIUM-2) | UX-006 §2, §8; UXA-27, UXA-29 | CLOSED (round 2) |
 
@@ -70,8 +72,8 @@ production-readiness, usability-testing, accessibility-conformance, security-tes
 
 ## 5. Decision
 
-**P7-WP6 ACCESSIBILITY, RESPONSIVE AND ENRICHMENT UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING**. Independently approved (§7, round 2) as a design and contract deliverable; remote CI and merge are
-pending, and closure is recorded only by a governed post-merge step. This is not an
+**P7-WP6 ACCESSIBILITY, RESPONSIVE AND ENRICHMENT UX CLOSED**. The work package is closed as a design and contract deliverable: independently approved (§7, round 2)
+and merged with successful remote CI (§8). This is not an
 implemented accessible or responsive experience.
 
 ## 6. Open decisions
@@ -121,3 +123,22 @@ A review round, approval or merge evidence counts only when a governed bookkeepi
 | MEDIUM-1 | 1 | MEDIUM | Duplicate semantic rows: provider-outcome and announcement rows were keyed into dictionaries before duplicates were detected, so an earlier unsafe row could hide behind a later valid one | CLOSED_BY_REREVIEW | 2 | Builder (P7-WP6) |
 | MEDIUM-2 | 1 | MEDIUM | Case-existence masking: role was checked before case visibility, so a caller without case visibility was told access denied instead of the masked not-found state (API-001 §5) | CLOSED_BY_REREVIEW | 2 | Builder (P7-WP6) |
 <!-- UXA:findings:END -->
+
+## 8. Post-merge closure record
+
+| Item | Value |
+| --- | --- |
+| Repository | `nishanth-cryptos/TrustLens` |
+| PR | #42 — https://github.com/nishanth-cryptos/TrustLens/pull/42 — merged into `main` from `phase7-wp6-accessibility-ux` (with the P7-WP5 closure) |
+| Original baseline | `7f3c2899dae693d3b497faa3a68f691890488d2d` (P7-WP5 delivery merge, PR #41) |
+| PR-head commit | `b5dd2c776f17564d01f45ae6c65cef060d560761` |
+| Merge commit | `324fc320c47498a42f68c6bac941cc4a5dde9b39` |
+| Workflow | `knowledge-validation` (`.github/workflows/knowledge-validation.yml`) |
+| PR-head run | 38238792863 (run number 82) — completed / success — https://github.com/nishanth-cryptos/TrustLens/actions/runs/38238792863 |
+| Merge-commit run | 38244422412 (run number 83) — completed / success — https://github.com/nishanth-cryptos/TrustLens/actions/runs/38244422412 |
+| Required jobs (both runs) | "Knowledge validation suite" — success; "Quality-gate self-test (gate must bite)" — success |
+| Closure rests on | Independent approval round 2 (§7); no later approval round exists |
+| Evidence source | Programme-supplied GitHub evidence, re-checked by the builder. Local git confirms `main` equals merge commit `324fc32…` ("Merge pull request #42") with parents `7f3c289…` and `b5dd2c7…`. GitHub API independently verified: PR #42 merged; PR-head run #82 (38238792863) SUCCESS, both jobs; post-merge run #83 (38244422412) SUCCESS, both jobs. Merge commit 324fc320c47498a42f68c6bac941cc4a5dde9b39. |
+| Offline boundary | The validator pins this record (VERIFIED_MERGE_EVIDENCE) and requires the contract's merge evidence to match it exactly; it cannot authenticate GitHub and does not contact it |
+| Lifecycle effect | APPROVED → **CLOSED** |
+| Not implied | No production frontend, backend runtime, accessibility conformance or user-facing experience exists |
