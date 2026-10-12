@@ -53,7 +53,22 @@ VERIFIED_REVIEW_HISTORY = [{
     "evidence_source": "User-supplied P7-WP7 targeted Round 2 APPROVE; both findings independently closed (2026-10-12)",
 }]
 VERIFIED_APPROVAL = {"round": 2, "decision": "APPROVE", "record_reference": "GATE-032 §7", "reviewer_role": "Independent reviewer"}
-VERIFIED_MERGE_EVIDENCE = None
+VERIFIED_MERGE_EVIDENCE = {
+    "repository": "nishanth-cryptos/TrustLens",
+    "pr_number": 43,
+    "pr_head_commit": "5af988d2740c4d826abc0f2e3074cd1fe3d28526",
+    "merge_commit": "0a21d1f858eb7680e05ce703966201f06902e4c8",
+    "base_commit": BASELINE,
+    "remote_ci": {
+        "workflow": "knowledge-validation",
+        "checks": ["Knowledge validation suite", "Quality-gate self-test (gate must bite)"],
+        "conclusion": "success",
+        "pr_head_run_id": 38266862243,
+        "merge_commit_run_id": 38273120361,
+    },
+    "verification": "READ_ONLY_GITHUB_VERIFICATION",
+    "verification_reference": "GATE-032 §8",
+}
 VERIFIED_PROGRAMME_ACCEPTANCE = {
     "decision": "OPTION_A_ACCEPTED",
     "accepted_by": "User (programme sponsor)",

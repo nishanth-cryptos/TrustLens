@@ -4,20 +4,20 @@
     {
       "id": "NEG-PC7-001",
       "description": "PHASE-7-CLOSURE status row claims a state other than recorded",
+      "expected_check": "PC7-01",
       "target": "doc",
       "op": "replace_text",
-      "old": "| Status | PHASE 7 INTEGRATED CLOSURE APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING |",
-      "value": "| Status | PHASE 7 INTEGRATED CLOSURE CANDIDATE |",
-      "expected_check": "PC7-01"
+      "old": "| Status | PHASE 7 CLOSED |",
+      "value": "| Status | PHASE 7 INTEGRATED CLOSURE CANDIDATE |"
     },
     {
       "id": "NEG-PC7-002",
       "description": "GATE-032 status row claims a state other than recorded",
+      "expected_check": "PC7-02",
       "target": "gate",
       "op": "replace_text",
-      "old": "| Status | PHASE 7 INTEGRATED CLOSURE APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING |",
-      "value": "| Status | PHASE 7 INTEGRATED CLOSURE CANDIDATE |",
-      "expected_check": "PC7-02"
+      "old": "| Status | PHASE 7 CLOSED |",
+      "value": "| Status | PHASE 7 INTEGRATED CLOSURE CANDIDATE |"
     },
     {
       "id": "NEG-PC7-003",
@@ -50,55 +50,21 @@
     },
     {
       "id": "NEG-PC7-006",
-      "description": "Phase 7 declared closed before pinned remote CI and merge evidence (synchronized)",
-      "steps": [
-        {
-          "target": "contract",
-          "op": "replace",
-          "path": "/lifecycle/state",
-          "value": "CLOSED"
-        },
-        {
-          "target": "contract",
-          "op": "replace",
-          "path": "/lifecycle/status",
-          "value": "PHASE 7 CLOSED"
-        },
-        {
-          "target": "contract",
-          "op": "replace",
-          "path": "/claims/phase7_closed",
-          "value": true
-        },
-        {
-          "target": "doc",
-          "op": "replace_text",
-          "old": "| Status | PHASE 7 INTEGRATED CLOSURE APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING |",
-          "value": "| Status | PHASE 7 CLOSED |"
-        },
-        {
-          "target": "gate",
-          "op": "replace_text",
-          "old": "| Status | PHASE 7 INTEGRATED CLOSURE APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING |",
-          "value": "| Status | PHASE 7 CLOSED |"
-        },
-        {
-          "target": "gate",
-          "op": "replace_text",
-          "old": "**PHASE 7 INTEGRATED CLOSURE APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING**",
-          "value": "**PHASE 7 CLOSED**"
-        }
-      ],
-      "expected_check": "PC7-05"
+      "description": "CLOSED lifecycle lacks its pinned remote CI and merge evidence",
+      "expected_check": "PC7-05",
+      "target": "contract",
+      "op": "replace",
+      "path": "/lifecycle/merge_evidence",
+      "value": null
     },
     {
       "id": "NEG-PC7-007",
-      "description": "Phase-7 closure claimed in the claims block",
+      "description": "CLOSED lifecycle contradicts its Phase-7 closure claim",
+      "expected_check": "PC7-05",
       "target": "contract",
       "op": "replace",
       "path": "/claims/phase7_closed",
-      "value": true,
-      "expected_check": "PC7-05"
+      "value": false
     },
     {
       "id": "NEG-PC7-008",
@@ -2144,12 +2110,12 @@
     },
     {
       "id": "NEG-PC7-063",
-      "description": "Prose claims Phase 7 closed",
+      "description": "Design-contract closure falsely claims production readiness",
+      "expected_check": "PC7-23",
       "target": "doc",
       "op": "replace_text",
       "old": "\n## 10. Claim boundary and lifecycle\n",
-      "value": "\nPhase 7 is closed.\n\n## 10. Claim boundary and lifecycle\n",
-      "expected_check": "PC7-23"
+      "value": "\nTrustLens is production-ready.\n\n## 10. Claim boundary and lifecycle\n"
     },
     {
       "id": "NEG-PC7-064",
@@ -2172,11 +2138,11 @@
     {
       "id": "NEG-PC7-066",
       "description": "Gate decision line duplicated",
+      "expected_check": "PC7-23",
       "target": "gate",
       "op": "replace_text",
       "old": "\n## 6. Open decisions\n",
-      "value": "\n**PHASE 7 INTEGRATED CLOSURE APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING**\n\n## 6. Open decisions\n",
-      "expected_check": "PC7-23"
+      "value": "\n**PHASE 7 CLOSED**\n\n## 6. Open decisions\n"
     },
     {
       "id": "NEG-PC7-067",
@@ -2992,8 +2958,32 @@
         {
           "target": "contract",
           "op": "replace",
+          "path": "/lifecycle/state",
+          "value": "APPROVED"
+        },
+        {
+          "target": "contract",
+          "op": "replace",
+          "path": "/lifecycle/status",
+          "value": "PHASE 7 INTEGRATED CLOSURE APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING"
+        },
+        {
+          "target": "contract",
+          "op": "replace",
           "path": "/lifecycle/review_history/1/evidence_source",
           "value": "SYNTHETIC POSITIVE CONTROL ONLY"
+        },
+        {
+          "target": "contract",
+          "op": "replace",
+          "path": "/lifecycle/merge_evidence",
+          "value": null
+        },
+        {
+          "target": "contract",
+          "op": "replace",
+          "path": "/claims/phase7_closed",
+          "value": false
         },
         {
           "target": "pins",
@@ -3002,10 +2992,34 @@
           "value": "SYNTHETIC POSITIVE CONTROL ONLY"
         },
         {
+          "target": "pins",
+          "op": "replace",
+          "path": "/merge_evidence",
+          "value": null
+        },
+        {
           "target": "gate",
           "op": "replace_text",
           "old": "| 2 | TARGETED_INDEPENDENT_REREVIEW | APPROVE | 0 | 0 | 0 | 0 | 0 | Independent reviewer | User-supplied P7-WP7 targeted Round 2 APPROVE; both findings independently closed (2026-10-12) | GATE-032 §7 |\n",
           "value": "| 2 | TARGETED_INDEPENDENT_REREVIEW | APPROVE | 0 | 0 | 0 | 0 | 0 | Independent reviewer | SYNTHETIC POSITIVE CONTROL ONLY | GATE-032 §7 |\n"
+        },
+        {
+          "target": "doc",
+          "op": "replace_text",
+          "old": "| Status | PHASE 7 CLOSED |",
+          "value": "| Status | PHASE 7 INTEGRATED CLOSURE APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING |"
+        },
+        {
+          "target": "gate",
+          "op": "replace_text",
+          "old": "| Status | PHASE 7 CLOSED |",
+          "value": "| Status | PHASE 7 INTEGRATED CLOSURE APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING |"
+        },
+        {
+          "target": "gate",
+          "op": "replace_text",
+          "old": "**PHASE 7 CLOSED**",
+          "value": "**PHASE 7 INTEGRATED CLOSURE APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING**"
         }
       ]
     },
@@ -3013,18 +3027,6 @@
       "id": "POS-PC7-002",
       "description": "Hypothetical CLOSED with pinned merge evidence (synthetic pins)",
       "steps": [
-        {
-          "target": "contract",
-          "op": "replace",
-          "path": "/lifecycle/state",
-          "value": "CLOSED"
-        },
-        {
-          "target": "contract",
-          "op": "replace",
-          "path": "/lifecycle/status",
-          "value": "PHASE 7 CLOSED"
-        },
         {
           "target": "contract",
           "op": "replace",
@@ -3054,12 +3056,6 @@
             "verification": "INDEPENDENT_PROGRAMME_VERIFICATION",
             "verification_reference": "GATE-032 §7"
           }
-        },
-        {
-          "target": "contract",
-          "op": "replace",
-          "path": "/claims/phase7_closed",
-          "value": true
         },
         {
           "target": "pins",
@@ -3096,24 +3092,6 @@
           "op": "replace_text",
           "old": "| 2 | TARGETED_INDEPENDENT_REREVIEW | APPROVE | 0 | 0 | 0 | 0 | 0 | Independent reviewer | User-supplied P7-WP7 targeted Round 2 APPROVE; both findings independently closed (2026-10-12) | GATE-032 §7 |\n",
           "value": "| 2 | TARGETED_INDEPENDENT_REREVIEW | APPROVE | 0 | 0 | 0 | 0 | 0 | Independent reviewer | SYNTHETIC POSITIVE CONTROL ONLY | GATE-032 §7 |\n"
-        },
-        {
-          "target": "doc",
-          "op": "replace_text",
-          "old": "| Status | PHASE 7 INTEGRATED CLOSURE APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING |",
-          "value": "| Status | PHASE 7 CLOSED |"
-        },
-        {
-          "target": "gate",
-          "op": "replace_text",
-          "old": "| Status | PHASE 7 INTEGRATED CLOSURE APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING |",
-          "value": "| Status | PHASE 7 CLOSED |"
-        },
-        {
-          "target": "gate",
-          "op": "replace_text",
-          "old": "**PHASE 7 INTEGRATED CLOSURE APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING**",
-          "value": "**PHASE 7 CLOSED**"
         }
       ]
     },
@@ -3482,6 +3460,24 @@
         {
           "target": "contract",
           "op": "replace",
+          "path": "/lifecycle/state",
+          "value": "APPROVED"
+        },
+        {
+          "target": "contract",
+          "op": "replace",
+          "path": "/lifecycle/status",
+          "value": "PHASE 7 INTEGRATED CLOSURE APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING"
+        },
+        {
+          "target": "contract",
+          "op": "replace",
+          "path": "/lifecycle/merge_evidence",
+          "value": null
+        },
+        {
+          "target": "contract",
+          "op": "replace",
           "path": "/roadmap_deviations/0/status",
           "value": "PROPOSED"
         },
@@ -3506,7 +3502,19 @@
         {
           "target": "contract",
           "op": "replace",
+          "path": "/claims/phase7_closed",
+          "value": false
+        },
+        {
+          "target": "contract",
+          "op": "replace",
           "path": "/programme_acceptance_record",
+          "value": null
+        },
+        {
+          "target": "pins",
+          "op": "replace",
+          "path": "/merge_evidence",
           "value": null
         },
         {
@@ -3538,6 +3546,24 @@
           "op": "replace_text",
           "old": "| decision | OPTION_A_ACCEPTED |\n| accepted_by | User (programme sponsor) |\n| authority_reference | PROGRAM-001 §4.1 |\n| evidence_source | User's explicit Option A decision in the P7-WP7 Final Acceptance Bookkeeping request (2026-10-12) |\n| record_reference | GATE-032 §6 |\n| deviation_ids | P7D-01, P7D-02 |\n| scope | DESIGN_CONTRACT_CLOSURE_ONLY |\n| future_deliverables_waived | False |\n",
           "value": "| decision | PENDING_PROGRAMME_ACCEPTANCE |\n"
+        },
+        {
+          "target": "doc",
+          "op": "replace_text",
+          "old": "| Status | PHASE 7 CLOSED |",
+          "value": "| Status | PHASE 7 INTEGRATED CLOSURE APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING |"
+        },
+        {
+          "target": "gate",
+          "op": "replace_text",
+          "old": "| Status | PHASE 7 CLOSED |",
+          "value": "| Status | PHASE 7 INTEGRATED CLOSURE APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING |"
+        },
+        {
+          "target": "gate",
+          "op": "replace_text",
+          "old": "**PHASE 7 CLOSED**",
+          "value": "**PHASE 7 INTEGRATED CLOSURE APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING**"
         }
       ]
     }

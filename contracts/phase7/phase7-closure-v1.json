@@ -7,8 +7,8 @@
   "baseline": "324fc320c47498a42f68c6bac941cc4a5dde9b39",
   "engine_version": "1.0.0",
   "lifecycle": {
-    "state": "APPROVED",
-    "status": "PHASE 7 INTEGRATED CLOSURE APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING",
+    "state": "CLOSED",
+    "status": "PHASE 7 CLOSED",
     "decision_vocabulary": [
       "APPROVE",
       "REQUEST_CHANGES"
@@ -51,7 +51,25 @@
       "record_reference": "GATE-032 §7",
       "reviewer_role": "Independent reviewer"
     },
-    "merge_evidence": null
+    "merge_evidence": {
+      "repository": "nishanth-cryptos/TrustLens",
+      "pr_number": 43,
+      "pr_head_commit": "5af988d2740c4d826abc0f2e3074cd1fe3d28526",
+      "merge_commit": "0a21d1f858eb7680e05ce703966201f06902e4c8",
+      "base_commit": "324fc320c47498a42f68c6bac941cc4a5dde9b39",
+      "remote_ci": {
+        "workflow": "knowledge-validation",
+        "checks": [
+          "Knowledge validation suite",
+          "Quality-gate self-test (gate must bite)"
+        ],
+        "conclusion": "success",
+        "pr_head_run_id": 38266862243,
+        "merge_commit_run_id": 38273120361
+      },
+      "verification": "READ_ONLY_GITHUB_VERIFICATION",
+      "verification_reference": "GATE-032 §8"
+    }
   },
   "scope": {
     "owned": [
@@ -1380,7 +1398,7 @@
     }
   },
   "claims": {
-    "phase7_closed": false,
+    "phase7_closed": true,
     "frontend_implemented": false,
     "backend_implemented": false,
     "api_changed": false,
