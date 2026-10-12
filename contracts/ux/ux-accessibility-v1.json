@@ -1,0 +1,1453 @@
+{
+  "contract_id": "UX-006",
+  "contract_version": "0.1.0",
+  "phase": "Phase 7 — UX, Evidence & Reporting Design",
+  "work_package": "P7-WP6",
+  "baseline": "7f3c2899dae693d3b497faa3a68f691890488d2d",
+  "lifecycle": {
+    "state": "APPROVED",
+    "status": "P7-WP6 ACCESSIBILITY, RESPONSIVE AND ENRICHMENT UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING",
+    "decision_vocabulary": [
+      "APPROVE",
+      "REQUEST_CHANGES"
+    ],
+    "review_history": [
+      {
+        "round": 1,
+        "kind": "INITIAL_INDEPENDENT_REVIEW",
+        "decision": "REQUEST_CHANGES",
+        "counts": {
+          "BLOCKER": 0,
+          "HIGH": 0,
+          "MEDIUM": 2,
+          "LOW": 0,
+          "INFO": 0
+        },
+        "reviewer_role": "Independent reviewer",
+        "evidence_source": "Independent review result supplied to the builder by the programme",
+        "record_reference": "GATE-031 §7"
+      },
+      {
+        "round": 2,
+        "kind": "TARGETED_INDEPENDENT_REREVIEW",
+        "decision": "APPROVE",
+        "counts": {
+          "BLOCKER": 0,
+          "HIGH": 0,
+          "MEDIUM": 0,
+          "LOW": 0,
+          "INFO": 0
+        },
+        "reviewer_role": "Independent reviewer",
+        "evidence_source": "Independent review result supplied to the builder by the programme",
+        "record_reference": "GATE-031 §7"
+      }
+    ],
+    "approval": {
+      "round": 2,
+      "decision": "APPROVE",
+      "record_reference": "GATE-031 §7",
+      "reviewer_role": "Independent reviewer"
+    },
+    "merge_evidence": null
+  },
+  "engine_version": "1.0.0",
+  "foundation": {
+    "foundation_contract": "UX-001",
+    "foundation_gate": "GATE-026",
+    "foundation_handoff_scope": [
+      "Accessibility patterns",
+      "Unsupported language",
+      "Responsive behavior",
+      "External enrichment",
+      "Provider attribution",
+      "CLEAN / NOT_FOUND / UNAVAILABLE interpretation"
+    ],
+    "consumed_contracts": [
+      "UX-002",
+      "UX-003",
+      "UX-004",
+      "UX-005"
+    ],
+    "consumed_gates": [
+      "GATE-027",
+      "GATE-028",
+      "GATE-029",
+      "GATE-030"
+    ],
+    "integration_contract": "INT-001",
+    "language_decision": "ADR-0014 / DEC-008",
+    "predecessors_modified": false
+  },
+  "scope": {
+    "owned": [
+      "Accessibility patterns",
+      "Unsupported language",
+      "Responsive behavior",
+      "External enrichment",
+      "Provider attribution",
+      "CLEAN / NOT_FOUND / UNAVAILABLE interpretation"
+    ],
+    "request_mapping": [
+      {
+        "request_item": "Accessibility and keyboard / screen-reader interaction patterns",
+        "handoff_item": "Accessibility patterns"
+      },
+      {
+        "request_item": "Responsive layouts and smaller-screen behaviour",
+        "handoff_item": "Responsive behavior"
+      },
+      {
+        "request_item": "Sensitive-content redaction and permission consistency across devices",
+        "handoff_item": "Responsive behavior"
+      },
+      {
+        "request_item": "Unsupported-language and unsupported-input experiences",
+        "handoff_item": "Unsupported language"
+      },
+      {
+        "request_item": "External enrichment presentation and advisory limitations",
+        "handoff_item": "External enrichment"
+      },
+      {
+        "request_item": "Provider attribution",
+        "handoff_item": "Provider attribution"
+      },
+      {
+        "request_item": "Correct distinction between CLEAN, NOT_FOUND and UNAVAILABLE",
+        "handoff_item": "CLEAN / NOT_FOUND / UNAVAILABLE interpretation"
+      }
+    ],
+    "deferred": [
+      {
+        "item": "Frontend, API and runtime implementation, including the design system and component library",
+        "owner": "Phase 9"
+      },
+      {
+        "item": "Accessibility conformance testing with assistive technologies and real users",
+        "owner": "Phase 10"
+      }
+    ],
+    "scope_differences": [
+      "The accepted EnrichmentView exposes status and reputation_result only; NOT_FOUND and FOUND-with-unknown reputation share one pair, and UNAVAILABLE and INVALID_RESPONSE share another, so the design presents those pairs without claiming the distinction.",
+      "Unsupported input at intake (415, 413) stays owned by UX-002; this package adds the accessible and responsive presentation and the unsupported-language explanation on the result."
+    ]
+  },
+  "surfaces": [
+    {
+      "surface_id": "UX-ENRICHMENT",
+      "handoff_items": [
+        "External enrichment",
+        "Provider attribution",
+        "CLEAN / NOT_FOUND / UNAVAILABLE interpretation"
+      ],
+      "operations": [
+        "listEvaluationEnrichments"
+      ],
+      "allowed_roles": [
+        "ANALYST"
+      ],
+      "role_alone_sufficient": false
+    }
+  ],
+  "operations": [
+    {
+      "operation_id": "listEvaluationEnrichments",
+      "surface_id": "UX-ENRICHMENT",
+      "method": "GET",
+      "path": "/api/v1/evaluations/{evaluation_id}/enrichments",
+      "roles": [
+        "ANALYST"
+      ],
+      "resource_authorization": "CASE_ACCESS",
+      "sensitive_content_permission": "NONE",
+      "break_glass_roles": [],
+      "request_schema": null,
+      "response_schema": "EnrichmentListResponse",
+      "success_status": 200,
+      "mode": "SYNC",
+      "idempotency": "NOT_APPLICABLE",
+      "audit": "NOT_REQUIRED",
+      "audit_event": null,
+      "sensitivity": "C2",
+      "concurrency": "NONE",
+      "caller_constraints": [],
+      "errors": [
+        "DEPENDENCY_UNAVAILABLE",
+        "FORBIDDEN",
+        "INTERNAL_ERROR",
+        "INVALID_REQUEST",
+        "NOT_FOUND",
+        "RATE_LIMITED",
+        "UNAUTHENTICATED"
+      ],
+      "audit_notice_shown": false
+    }
+  ],
+  "cross_cutting_surfaces": [
+    "UX-SESSION",
+    "UX-HOME",
+    "UX-CASES",
+    "UX-CASE",
+    "UX-SUBMISSION",
+    "UX-EVIDENCE-METADATA",
+    "UX-EVIDENCE-CONTENT",
+    "UX-EVALUATION",
+    "UX-RESULT",
+    "UX-ADJUDICATION",
+    "UX-REPORTS",
+    "UX-REPORT-CONTENT",
+    "UX-REPLAY",
+    "UX-REVIEW-QUEUE",
+    "UX-ASSIGNMENT",
+    "UX-AUDIT",
+    "UX-ENRICHMENT",
+    "UX-BREAK-GLASS",
+    "UX-DELETION",
+    "UX-ACCESS-GRANTS",
+    "UX-ACCOUNT",
+    "UX-KNOWLEDGE"
+  ],
+  "recovery_vocabulary": [
+    {
+      "recovery": "RETRY_SAME_REQUEST",
+      "retryability": [
+        "RETRYABLE"
+      ],
+      "meaning": "Repeat the same read."
+    },
+    {
+      "recovery": "WAIT_THEN_RETRY_SAME_REQUEST",
+      "retryability": [
+        "RETRYABLE"
+      ],
+      "meaning": "Repeat later, honouring any returned Retry-After; no countdown is invented."
+    },
+    {
+      "recovery": "CORRECT_REQUEST",
+      "retryability": [
+        "RETRY_WITH_CHANGES"
+      ],
+      "meaning": "Correct the request before any new attempt; field values are not echoed."
+    },
+    {
+      "recovery": "REAUTHENTICATE_THEN_RETRY",
+      "retryability": [
+        "RETRY_WITH_CHANGES"
+      ],
+      "meaning": "Re-establish authentication, then repeat."
+    },
+    {
+      "recovery": "STOP_NO_RETRY",
+      "retryability": [
+        "NOT_RETRYABLE"
+      ],
+      "meaning": "Do not retry; show the governed state only."
+    }
+  ],
+  "error_presentation": [
+    {
+      "error_code": "DEPENDENCY_UNAVAILABLE",
+      "http_status": 503,
+      "retryability": "RETRYABLE",
+      "presentation_state": "TEMPORARILY_UNAVAILABLE",
+      "recovery": "WAIT_THEN_RETRY_SAME_REQUEST",
+      "implies_safe": false
+    },
+    {
+      "error_code": "FORBIDDEN",
+      "http_status": 403,
+      "retryability": "NOT_RETRYABLE",
+      "presentation_state": "ACCESS_DENIED",
+      "recovery": "STOP_NO_RETRY",
+      "implies_safe": false
+    },
+    {
+      "error_code": "INTERNAL_ERROR",
+      "http_status": 500,
+      "retryability": "RETRYABLE",
+      "presentation_state": "SERVER_ERROR",
+      "recovery": "RETRY_SAME_REQUEST",
+      "implies_safe": false
+    },
+    {
+      "error_code": "INVALID_REQUEST",
+      "http_status": 400,
+      "retryability": "RETRY_WITH_CHANGES",
+      "presentation_state": "ACTION_FAILED",
+      "recovery": "CORRECT_REQUEST",
+      "implies_safe": false
+    },
+    {
+      "error_code": "NOT_FOUND",
+      "http_status": 404,
+      "retryability": "NOT_RETRYABLE",
+      "presentation_state": "NOT_FOUND_OR_NOT_VISIBLE",
+      "recovery": "STOP_NO_RETRY",
+      "implies_safe": false
+    },
+    {
+      "error_code": "RATE_LIMITED",
+      "http_status": 429,
+      "retryability": "RETRYABLE",
+      "presentation_state": "RATE_LIMITED",
+      "recovery": "WAIT_THEN_RETRY_SAME_REQUEST",
+      "implies_safe": false
+    },
+    {
+      "error_code": "UNAUTHENTICATED",
+      "http_status": 401,
+      "retryability": "RETRY_WITH_CHANGES",
+      "presentation_state": "AUTHENTICATION_REQUIRED",
+      "recovery": "REAUTHENTICATE_THEN_RETRY",
+      "implies_safe": false
+    }
+  ],
+  "enrichment": {
+    "operation": "listEvaluationEnrichments",
+    "roles": [
+      "ANALYST"
+    ],
+    "authority": "SUPPORTING_ADVISORY",
+    "advisory_always_labelled": true,
+    "presented_on_result_surface": false,
+    "changes_classification": false,
+    "changes_severity_risk_or_confidence": false,
+    "consumed_in_governed_artifact": false,
+    "displayed_fields": [
+      "provider_category",
+      "status",
+      "reputation_result",
+      "observed_at",
+      "advisory"
+    ],
+    "attribution_fields": [
+      "provider_category",
+      "observed_at"
+    ],
+    "provider_identity_displayed": false,
+    "raw_provider_body": false,
+    "observed_at_absent_text": "Observation time not provided.",
+    "freshness_claimed": false,
+    "list_contract": {
+      "pagination": "CURSOR",
+      "filters": [
+        "status"
+      ],
+      "sort": "created_at desc, id desc"
+    },
+    "advisory_notice": "External lookups are advisory. They come from outside TrustLens and do not change the TrustLens result.",
+    "interpretation": [
+      {
+        "status": "FAILED",
+        "reputation_result": "NOT_EVALUATED",
+        "possible_outcomes": [
+          "INVALID_RESPONSE",
+          "UNAVAILABLE"
+        ],
+        "distinguishes_outcome": false,
+        "presentation": "LOOKUP_DID_NOT_COMPLETE",
+        "label": "Lookup did not complete",
+        "meaning": "The lookup failed or its response could not be used, so there is no provider assertion.",
+        "provider_assertion": false,
+        "implies_safe": false
+      },
+      {
+        "status": "NOT_EVALUATED",
+        "reputation_result": "NOT_EVALUATED",
+        "possible_outcomes": [],
+        "distinguishes_outcome": false,
+        "presentation": "NOT_LOOKED_UP",
+        "label": "Not looked up",
+        "meaning": "No external lookup was made for this indicator.",
+        "provider_assertion": false,
+        "implies_safe": false
+      },
+      {
+        "status": "REJECTED",
+        "reputation_result": "NOT_EVALUATED",
+        "possible_outcomes": [
+          "POLICY_REJECTED"
+        ],
+        "distinguishes_outcome": true,
+        "presentation": "LOOKUP_NOT_PERMITTED",
+        "label": "Lookup not permitted",
+        "meaning": "TrustLens policy did not allow this lookup, so there is no provider assertion.",
+        "provider_assertion": false,
+        "implies_safe": false
+      },
+      {
+        "status": "SUCCEEDED",
+        "reputation_result": "CLEAN",
+        "possible_outcomes": [
+          "FOUND"
+        ],
+        "distinguishes_outcome": true,
+        "presentation": "PROVIDER_CLEAN_ASSERTION",
+        "label": "Provider reports no adverse reputation",
+        "meaning": "An external provider reported no adverse reputation for this indicator at the time shown. This is the provider's assertion only, not a TrustLens judgement.",
+        "provider_assertion": true,
+        "implies_safe": false
+      },
+      {
+        "status": "SUCCEEDED",
+        "reputation_result": "MALICIOUS",
+        "possible_outcomes": [
+          "FOUND"
+        ],
+        "distinguishes_outcome": true,
+        "presentation": "PROVIDER_ADVERSE_ASSERTION",
+        "label": "Provider reports malicious",
+        "meaning": "An external provider reported this indicator as malicious at the time shown. This is the provider's assertion, not a TrustLens finding.",
+        "provider_assertion": true,
+        "implies_safe": false
+      },
+      {
+        "status": "SUCCEEDED",
+        "reputation_result": "SUSPICIOUS",
+        "possible_outcomes": [
+          "FOUND"
+        ],
+        "distinguishes_outcome": true,
+        "presentation": "PROVIDER_CAUTION_ASSERTION",
+        "label": "Provider reports suspicious",
+        "meaning": "An external provider reported this indicator as suspicious at the time shown. This is the provider's assertion, not a TrustLens finding.",
+        "provider_assertion": true,
+        "implies_safe": false
+      },
+      {
+        "status": "SUCCEEDED",
+        "reputation_result": "UNKNOWN",
+        "possible_outcomes": [
+          "FOUND",
+          "NOT_FOUND"
+        ],
+        "distinguishes_outcome": false,
+        "presentation": "NO_PROVIDER_ASSERTION",
+        "label": "No provider assertion",
+        "meaning": "The lookup finished without a reputation from the provider. Whether the provider had an entry cannot be told from this record.",
+        "provider_assertion": false,
+        "implies_safe": false
+      },
+      {
+        "status": "TIMED_OUT",
+        "reputation_result": "NOT_EVALUATED",
+        "possible_outcomes": [
+          "UNAVAILABLE"
+        ],
+        "distinguishes_outcome": true,
+        "presentation": "LOOKUP_UNAVAILABLE",
+        "label": "Lookup timed out",
+        "meaning": "The provider did not answer in time, so there is no provider assertion.",
+        "provider_assertion": false,
+        "implies_safe": false
+      }
+    ],
+    "unrecognized_pair": {
+      "presentation": "UNRECOGNIZED_RECORD",
+      "label": "Unrecognized lookup record",
+      "meaning": "This lookup record could not be interpreted and is not shown as a provider assertion.",
+      "interpreted": false
+    }
+  },
+  "unsupported_language": {
+    "detection_scope": {
+      "languages": [
+        "en"
+      ],
+      "scripts": [
+        "Latn"
+      ],
+      "source": "ADR-0014 / DEC-008"
+    },
+    "classification": "UNSUPPORTED",
+    "benign_inference": false,
+    "conclusion_reached": false,
+    "client_language_detection": false,
+    "language_fields_rendered_verbatim": true,
+    "language_fields": [
+      "language",
+      "script"
+    ],
+    "explanation_when": "input_support_status UNSUPPORTED and language[] contains a value outside the detection scope",
+    "explanation": "This content is in a language TrustLens does not evaluate yet, so no conclusion was reached and none is implied.",
+    "support_presentation": [
+      {
+        "input_support_status": "SUPPORTED",
+        "presentation": "SUPPORTED_INPUT",
+        "conclusion_reached": true
+      },
+      {
+        "input_support_status": "PARTIALLY_SUPPORTED",
+        "presentation": "PARTIALLY_SUPPORTED_INPUT",
+        "conclusion_reached": true
+      },
+      {
+        "input_support_status": "UNSUPPORTED",
+        "presentation": "UNSUPPORTED_INPUT",
+        "conclusion_reached": false
+      },
+      {
+        "input_support_status": "INSUFFICIENT_INFORMATION",
+        "presentation": "INSUFFICIENT_INFORMATION_INPUT",
+        "conclusion_reached": false
+      },
+      {
+        "input_support_status": "ERROR",
+        "presentation": "ERROR_INPUT",
+        "conclusion_reached": false
+      }
+    ],
+    "language_explanation_presentation": "UNSUPPORTED_LANGUAGE",
+    "interface_language_is_detection_scope": false,
+    "unsupported_input_owner": "UX-002",
+    "unsupported_input_states": [
+      "UNSUPPORTED_INPUT",
+      "INPUT_LIMIT_EXCEEDED"
+    ],
+    "input_support_statuses": [
+      "SUPPORTED",
+      "PARTIALLY_SUPPORTED",
+      "UNSUPPORTED",
+      "INSUFFICIENT_INFORMATION",
+      "ERROR"
+    ]
+  },
+  "accessibility": {
+    "patterns": [
+      {
+        "id": "KEYBOARD_OPERATION",
+        "requirement": "Every action, disclosure, table and dialog is reachable and operable from the keyboard, with no keyboard trap.",
+        "ux001_flag": "keyboard_operable"
+      },
+      {
+        "id": "FOCUS_ORDER",
+        "requirement": "Focus follows the reading order of each surface.",
+        "ux001_flag": "logical_focus_order"
+      },
+      {
+        "id": "VISIBLE_FOCUS",
+        "requirement": "The focused element is always visibly indicated.",
+        "ux001_flag": "visible_focus"
+      },
+      {
+        "id": "HEADINGS_AND_REGIONS",
+        "requirement": "Each surface and section has a heading and a named region; tables have header cells.",
+        "ux001_flag": "semantic_headings_regions"
+      },
+      {
+        "id": "TEXT_STATUS_EQUIVALENTS",
+        "requirement": "Every state, outcome and provider assertion is stated in text; colour, icons and position only repeat it.",
+        "ux001_flag": "textual_status_equivalents"
+      },
+      {
+        "id": "ERROR_SUMMARY",
+        "requirement": "Errors appear in a summary linked to the affected fields, and focus moves to the summary.",
+        "ux001_flag": "error_summary_field_association"
+      },
+      {
+        "id": "CONTROL_LABELS",
+        "requirement": "Every control has a programmatic name that matches its visible label.",
+        "ux001_flag": "screen_reader_control_labels"
+      },
+      {
+        "id": "STATUS_ANNOUNCEMENTS",
+        "requirement": "State changes are announced politely; only blocking errors interrupt.",
+        "ux001_flag": "dynamic_announcements"
+      },
+      {
+        "id": "NO_MANDATORY_MOTION",
+        "requirement": "No meaning depends on animation, and motion can be avoided.",
+        "ux001_flag": "mandatory_animation"
+      }
+    ],
+    "colour_only_meaning": false,
+    "time_limit_imposed": false,
+    "hover_only_interaction": false,
+    "conformance_claim": false,
+    "announcements": [
+      {
+        "state": "ENRICHMENT_PROVIDER_ASSERTION",
+        "text": "External lookup: provider assertion available.",
+        "announced_fields": [
+          "provider_category",
+          "reputation_result"
+        ]
+      },
+      {
+        "state": "ENRICHMENT_NO_ASSERTION",
+        "text": "External lookup: no provider assertion.",
+        "announced_fields": [
+          "provider_category"
+        ]
+      },
+      {
+        "state": "UNSUPPORTED_LANGUAGE",
+        "text": "Unsupported language. No conclusion was reached.",
+        "announced_fields": []
+      },
+      {
+        "state": "CONTENT_WITHHELD",
+        "text": "Some content is not shown.",
+        "announced_fields": []
+      }
+    ]
+  },
+  "responsive": {
+    "breakpoint_values": "NOT YET SPECIFIED",
+    "layouts": [
+      "NARROW",
+      "WIDE"
+    ],
+    "permission_parity": true,
+    "controls_parity": true,
+    "narrow_layout_exposes_hidden_content": false,
+    "content_reflows": true,
+    "wide_tables_on_narrow": "SCROLL_WITHIN_TABLE_REGION_WITH_HEADERS",
+    "device_specific_permissions": false,
+    "orientation_locked": false
+  },
+  "redaction": {
+    "withheld_content_rendered_then_hidden": false,
+    "placeholder_content_free": true,
+    "same_redaction_all_layouts": true,
+    "tooltips_titles_alt_text_content_free": true,
+    "notifications_content_free": true,
+    "previews_content_free": true,
+    "print_renders_only_permitted_view": true,
+    "copy_of_withheld_content_possible": false
+  },
+  "access_consequences": [
+    {
+      "operation_id": "listEvaluationEnrichments",
+      "audit": "NOT_REQUIRED",
+      "audit_event": null,
+      "notice_shown": false
+    }
+  ],
+  "guardrails": {
+    "provider_clean_as_safe": false,
+    "not_found_claimed_without_api_field": false,
+    "unavailable_as_clean": false,
+    "enrichment_changes_result": false,
+    "invented_provider_identity": false,
+    "invented_lookup_outcome_field": false,
+    "invented_supported_language": false,
+    "client_language_detection": false,
+    "conformance_claim": false,
+    "device_specific_permissions": false,
+    "hidden_ui_security_control": false,
+    "invented_breakpoints": false
+  },
+  "exposure": {
+    "raw_provider_bodies": false,
+    "credentials_secrets": false,
+    "connector_topology": false,
+    "internal_hosts_ips": false,
+    "evidence_store_locators": false,
+    "raw_evidence_without_permission": false,
+    "c4_without_permission": false,
+    "execution_fence_tokens": false,
+    "idempotency_key_material": false,
+    "audit_equals_activity": false
+  },
+  "open_decisions": [
+    {
+      "decision": "Provider identity and detailed outcome attribution beyond the current EnrichmentView",
+      "owner": "API owner (governed API revision), carried from UX-001",
+      "status": "DEFERRED"
+    },
+    {
+      "decision": "Breakpoint values and responsive layout details are NOT YET SPECIFIED; only behaviour rules are governed here",
+      "owner": "Phase 9 design system with Product / Accessibility UX, carried from UX-001",
+      "status": "DEFERRED"
+    },
+    {
+      "decision": "The integration lookup outcome (FOUND, NOT_FOUND, UNAVAILABLE, INVALID_RESPONSE) is not exposed by EnrichmentView, so NOT_FOUND and UNAVAILABLE cannot be told apart from neighbouring outcomes",
+      "owner": "API owner with INT-001 owner (governed API revision)",
+      "status": "DEFERRED"
+    },
+    {
+      "decision": "Enrichment freshness (FRESH, STALE, UNKNOWN) is not exposed by EnrichmentView and has no governed period",
+      "owner": "API owner with provider policy owner",
+      "status": "DEFERRED"
+    },
+    {
+      "decision": "Detection scope beyond English (ADR-0014 options B/C) requires verified non-English evidence",
+      "owner": "Sponsor with Knowledge governance (ADR-0014)",
+      "status": "DEFERRED"
+    },
+    {
+      "decision": "Interface language, translation and final user-facing copy",
+      "owner": "Product / Accessibility UX with Phase 9",
+      "status": "DEFERRED"
+    },
+    {
+      "decision": "Accessibility conformance testing with assistive technologies; no conformance is claimed",
+      "owner": "Phase 10 / QA Lead",
+      "status": "DEFERRED"
+    }
+  ],
+  "carryovers": {
+    "G-09": {
+      "status": "OPEN",
+      "owner": "Phase 10 (testing/evaluation; QA Lead) with Sponsor for any corpus access"
+    },
+    "OI-05": {
+      "status": "OPEN",
+      "owner": "Sponsor + legal/governance"
+    },
+    "ASM-002": {
+      "status": "UNCONFIRMED / PROVISIONAL",
+      "owner": "Sponsor / Programme"
+    },
+    "P6-WP7-LOW-1": {
+      "status": "OPEN / NON-BLOCKING",
+      "owner": "Next governed Phase-6 snapshot revision / Programme governance"
+    }
+  },
+  "tenancy": {
+    "ux_enabled": false,
+    "organization_switcher_authority": false
+  },
+  "retention": {
+    "duration": "NOT YET SPECIFIED",
+    "numeric_duration_invented": false
+  },
+  "non_goals": [
+    "No frontend, API or runtime implementation.",
+    "No new endpoint, provider identity field, lookup-outcome field, supported language or breakpoint value.",
+    "No accessibility conformance claim.",
+    "No change to the TrustLens result from external enrichment."
+  ],
+  "claims": {
+    "frontend_implemented": false,
+    "api_implemented": false,
+    "production_ready": false,
+    "accessibility_compliant": false,
+    "usability_tested": false,
+    "security_tested": false,
+    "independently_reviewed": true,
+    "approved": true,
+    "later_wp_started": false
+  },
+  "review_findings": [
+    {
+      "id": "MEDIUM-1",
+      "round": 1,
+      "severity": "MEDIUM",
+      "summary": "Duplicate semantic rows: provider-outcome and announcement rows were keyed into dictionaries before duplicates were detected, so an earlier unsafe row could hide behind a later valid one",
+      "disposition": "CLOSED_BY_REREVIEW",
+      "closed_in_round": 2,
+      "owner": "Builder (P7-WP6)"
+    },
+    {
+      "id": "MEDIUM-2",
+      "round": 1,
+      "severity": "MEDIUM",
+      "summary": "Case-existence masking: role was checked before case visibility, so a caller without case visibility was told access denied instead of the masked not-found state (API-001 §5)",
+      "disposition": "CLOSED_BY_REREVIEW",
+      "closed_in_round": 2,
+      "owner": "Builder (P7-WP6)"
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "AX-01",
+      "title": "Provider reports no adverse reputation",
+      "action": "VIEW_ENRICHMENT",
+      "context": {
+        "principal_role": "ANALYST",
+        "relationship": "ASSIGNED_ANALYST",
+        "permits_evidence_content": true,
+        "layout": "WIDE",
+        "enrichment_status": "SUCCEEDED",
+        "reputation_result": "CLEAN",
+        "input_support_status": null,
+        "language": null
+      },
+      "expected": {
+        "presented": true,
+        "presentation": "PROVIDER_CLEAN_ASSERTION",
+        "distinguishes_outcome": true,
+        "provider_assertion": true,
+        "implies_safe": false,
+        "on_result_surface": false,
+        "conclusion_reached": false,
+        "content_exposed_beyond_permission": false
+      }
+    },
+    {
+      "id": "AX-02",
+      "title": "Provider reports malicious",
+      "action": "VIEW_ENRICHMENT",
+      "context": {
+        "principal_role": "ANALYST",
+        "relationship": "ASSIGNED_ANALYST",
+        "permits_evidence_content": true,
+        "layout": "WIDE",
+        "enrichment_status": "SUCCEEDED",
+        "reputation_result": "MALICIOUS",
+        "input_support_status": null,
+        "language": null
+      },
+      "expected": {
+        "presented": true,
+        "presentation": "PROVIDER_ADVERSE_ASSERTION",
+        "distinguishes_outcome": true,
+        "provider_assertion": true,
+        "implies_safe": false,
+        "on_result_surface": false,
+        "conclusion_reached": false,
+        "content_exposed_beyond_permission": false
+      }
+    },
+    {
+      "id": "AX-03",
+      "title": "Lookup finished without a reputation (not found or unknown)",
+      "action": "VIEW_ENRICHMENT",
+      "context": {
+        "principal_role": "ANALYST",
+        "relationship": "ASSIGNED_ANALYST",
+        "permits_evidence_content": true,
+        "layout": "WIDE",
+        "enrichment_status": "SUCCEEDED",
+        "reputation_result": "UNKNOWN",
+        "input_support_status": null,
+        "language": null
+      },
+      "expected": {
+        "presented": true,
+        "presentation": "NO_PROVIDER_ASSERTION",
+        "distinguishes_outcome": false,
+        "provider_assertion": false,
+        "implies_safe": false,
+        "on_result_surface": false,
+        "conclusion_reached": false,
+        "content_exposed_beyond_permission": false
+      }
+    },
+    {
+      "id": "AX-04",
+      "title": "Lookup timed out",
+      "action": "VIEW_ENRICHMENT",
+      "context": {
+        "principal_role": "ANALYST",
+        "relationship": "ASSIGNED_ANALYST",
+        "permits_evidence_content": true,
+        "layout": "WIDE",
+        "enrichment_status": "TIMED_OUT",
+        "reputation_result": "NOT_EVALUATED",
+        "input_support_status": null,
+        "language": null
+      },
+      "expected": {
+        "presented": true,
+        "presentation": "LOOKUP_UNAVAILABLE",
+        "distinguishes_outcome": true,
+        "provider_assertion": false,
+        "implies_safe": false,
+        "on_result_surface": false,
+        "conclusion_reached": false,
+        "content_exposed_beyond_permission": false
+      }
+    },
+    {
+      "id": "AX-05",
+      "title": "Lookup failed or response unusable",
+      "action": "VIEW_ENRICHMENT",
+      "context": {
+        "principal_role": "ANALYST",
+        "relationship": "ASSIGNED_ANALYST",
+        "permits_evidence_content": true,
+        "layout": "WIDE",
+        "enrichment_status": "FAILED",
+        "reputation_result": "NOT_EVALUATED",
+        "input_support_status": null,
+        "language": null
+      },
+      "expected": {
+        "presented": true,
+        "presentation": "LOOKUP_DID_NOT_COMPLETE",
+        "distinguishes_outcome": false,
+        "provider_assertion": false,
+        "implies_safe": false,
+        "on_result_surface": false,
+        "conclusion_reached": false,
+        "content_exposed_beyond_permission": false
+      }
+    },
+    {
+      "id": "AX-06",
+      "title": "Lookup refused by policy",
+      "action": "VIEW_ENRICHMENT",
+      "context": {
+        "principal_role": "ANALYST",
+        "relationship": "ASSIGNED_ANALYST",
+        "permits_evidence_content": true,
+        "layout": "WIDE",
+        "enrichment_status": "REJECTED",
+        "reputation_result": "NOT_EVALUATED",
+        "input_support_status": null,
+        "language": null
+      },
+      "expected": {
+        "presented": true,
+        "presentation": "LOOKUP_NOT_PERMITTED",
+        "distinguishes_outcome": true,
+        "provider_assertion": false,
+        "implies_safe": false,
+        "on_result_surface": false,
+        "conclusion_reached": false,
+        "content_exposed_beyond_permission": false
+      }
+    },
+    {
+      "id": "AX-07",
+      "title": "No lookup made",
+      "action": "VIEW_ENRICHMENT",
+      "context": {
+        "principal_role": "ANALYST",
+        "relationship": "ASSIGNED_ANALYST",
+        "permits_evidence_content": true,
+        "layout": "WIDE",
+        "enrichment_status": "NOT_EVALUATED",
+        "reputation_result": "NOT_EVALUATED",
+        "input_support_status": null,
+        "language": null
+      },
+      "expected": {
+        "presented": true,
+        "presentation": "NOT_LOOKED_UP",
+        "distinguishes_outcome": false,
+        "provider_assertion": false,
+        "implies_safe": false,
+        "on_result_surface": false,
+        "conclusion_reached": false,
+        "content_exposed_beyond_permission": false
+      }
+    },
+    {
+      "id": "AX-08",
+      "title": "Inconsistent record is not interpreted",
+      "action": "VIEW_ENRICHMENT",
+      "context": {
+        "principal_role": "ANALYST",
+        "relationship": "ASSIGNED_ANALYST",
+        "permits_evidence_content": true,
+        "layout": "WIDE",
+        "enrichment_status": "FAILED",
+        "reputation_result": "CLEAN",
+        "input_support_status": null,
+        "language": null
+      },
+      "expected": {
+        "presented": true,
+        "presentation": "UNRECOGNIZED_RECORD",
+        "distinguishes_outcome": false,
+        "provider_assertion": false,
+        "implies_safe": false,
+        "on_result_surface": false,
+        "conclusion_reached": false,
+        "content_exposed_beyond_permission": false
+      }
+    },
+    {
+      "id": "AX-09",
+      "title": "Same clean assertion on a narrow screen",
+      "action": "VIEW_ENRICHMENT",
+      "context": {
+        "principal_role": "ANALYST",
+        "relationship": "ASSIGNED_ANALYST",
+        "permits_evidence_content": true,
+        "layout": "NARROW",
+        "enrichment_status": "SUCCEEDED",
+        "reputation_result": "CLEAN",
+        "input_support_status": null,
+        "language": null
+      },
+      "expected": {
+        "presented": true,
+        "presentation": "PROVIDER_CLEAN_ASSERTION",
+        "distinguishes_outcome": true,
+        "provider_assertion": true,
+        "implies_safe": false,
+        "on_result_surface": false,
+        "conclusion_reached": false,
+        "content_exposed_beyond_permission": false
+      }
+    },
+    {
+      "id": "AX-10",
+      "title": "Owner has no enrichment surface",
+      "action": "VIEW_ENRICHMENT",
+      "context": {
+        "principal_role": "USER",
+        "relationship": "OWNER",
+        "permits_evidence_content": true,
+        "layout": "WIDE",
+        "enrichment_status": "SUCCEEDED",
+        "reputation_result": "MALICIOUS",
+        "input_support_status": null,
+        "language": null
+      },
+      "expected": {
+        "presented": false,
+        "presentation": "ACCESS_DENIED",
+        "distinguishes_outcome": false,
+        "provider_assertion": false,
+        "implies_safe": false,
+        "on_result_surface": false,
+        "conclusion_reached": false,
+        "content_exposed_beyond_permission": false
+      }
+    },
+    {
+      "id": "AX-11",
+      "title": "Owner has no enrichment surface on a narrow screen either",
+      "action": "VIEW_ENRICHMENT",
+      "context": {
+        "principal_role": "USER",
+        "relationship": "OWNER",
+        "permits_evidence_content": true,
+        "layout": "NARROW",
+        "enrichment_status": "SUCCEEDED",
+        "reputation_result": "MALICIOUS",
+        "input_support_status": null,
+        "language": null
+      },
+      "expected": {
+        "presented": false,
+        "presentation": "ACCESS_DENIED",
+        "distinguishes_outcome": false,
+        "provider_assertion": false,
+        "implies_safe": false,
+        "on_result_surface": false,
+        "conclusion_reached": false,
+        "content_exposed_beyond_permission": false
+      }
+    },
+    {
+      "id": "AX-12",
+      "title": "Analyst without case visibility",
+      "action": "VIEW_ENRICHMENT",
+      "context": {
+        "principal_role": "ANALYST",
+        "relationship": "NONE",
+        "permits_evidence_content": true,
+        "layout": "WIDE",
+        "enrichment_status": "SUCCEEDED",
+        "reputation_result": "CLEAN",
+        "input_support_status": null,
+        "language": null
+      },
+      "expected": {
+        "presented": false,
+        "presentation": "NOT_FOUND_OR_NOT_VISIBLE",
+        "distinguishes_outcome": false,
+        "provider_assertion": false,
+        "implies_safe": false,
+        "on_result_surface": false,
+        "conclusion_reached": false,
+        "content_exposed_beyond_permission": false
+      }
+    },
+    {
+      "id": "AX-13",
+      "title": "Administrator without case visibility gets the masked not-found state",
+      "action": "VIEW_ENRICHMENT",
+      "context": {
+        "principal_role": "ADMINISTRATOR",
+        "relationship": "NONE",
+        "permits_evidence_content": true,
+        "layout": "WIDE",
+        "enrichment_status": "SUCCEEDED",
+        "reputation_result": "CLEAN",
+        "input_support_status": null,
+        "language": null
+      },
+      "expected": {
+        "presented": false,
+        "presentation": "NOT_FOUND_OR_NOT_VISIBLE",
+        "distinguishes_outcome": false,
+        "provider_assertion": false,
+        "implies_safe": false,
+        "on_result_surface": false,
+        "conclusion_reached": false,
+        "content_exposed_beyond_permission": false
+      }
+    },
+    {
+      "id": "AX-14",
+      "title": "Unsupported language explained on the result",
+      "action": "VIEW_LANGUAGE_SUPPORT",
+      "context": {
+        "principal_role": "USER",
+        "relationship": "OWNER",
+        "permits_evidence_content": true,
+        "layout": "WIDE",
+        "enrichment_status": null,
+        "reputation_result": null,
+        "input_support_status": "UNSUPPORTED",
+        "language": [
+          "hi"
+        ]
+      },
+      "expected": {
+        "presented": true,
+        "presentation": "UNSUPPORTED_LANGUAGE",
+        "distinguishes_outcome": false,
+        "provider_assertion": false,
+        "implies_safe": false,
+        "on_result_surface": false,
+        "conclusion_reached": false,
+        "content_exposed_beyond_permission": false
+      }
+    },
+    {
+      "id": "AX-15",
+      "title": "Unsupported language explained on a narrow screen",
+      "action": "VIEW_LANGUAGE_SUPPORT",
+      "context": {
+        "principal_role": "USER",
+        "relationship": "OWNER",
+        "permits_evidence_content": true,
+        "layout": "NARROW",
+        "enrichment_status": null,
+        "reputation_result": null,
+        "input_support_status": "UNSUPPORTED",
+        "language": [
+          "hi"
+        ]
+      },
+      "expected": {
+        "presented": true,
+        "presentation": "UNSUPPORTED_LANGUAGE",
+        "distinguishes_outcome": false,
+        "provider_assertion": false,
+        "implies_safe": false,
+        "on_result_surface": false,
+        "conclusion_reached": false,
+        "content_exposed_beyond_permission": false
+      }
+    },
+    {
+      "id": "AX-16",
+      "title": "Unsupported input in scope language gets no language explanation",
+      "action": "VIEW_LANGUAGE_SUPPORT",
+      "context": {
+        "principal_role": "USER",
+        "relationship": "OWNER",
+        "permits_evidence_content": true,
+        "layout": "WIDE",
+        "enrichment_status": null,
+        "reputation_result": null,
+        "input_support_status": "UNSUPPORTED",
+        "language": [
+          "en"
+        ]
+      },
+      "expected": {
+        "presented": true,
+        "presentation": "UNSUPPORTED_INPUT",
+        "distinguishes_outcome": false,
+        "provider_assertion": false,
+        "implies_safe": false,
+        "on_result_surface": false,
+        "conclusion_reached": false,
+        "content_exposed_beyond_permission": false
+      }
+    },
+    {
+      "id": "AX-17",
+      "title": "Supported English input",
+      "action": "VIEW_LANGUAGE_SUPPORT",
+      "context": {
+        "principal_role": "USER",
+        "relationship": "OWNER",
+        "permits_evidence_content": true,
+        "layout": "WIDE",
+        "enrichment_status": null,
+        "reputation_result": null,
+        "input_support_status": "SUPPORTED",
+        "language": [
+          "en"
+        ]
+      },
+      "expected": {
+        "presented": true,
+        "presentation": "SUPPORTED_INPUT",
+        "distinguishes_outcome": false,
+        "provider_assertion": false,
+        "implies_safe": false,
+        "on_result_surface": false,
+        "conclusion_reached": true,
+        "content_exposed_beyond_permission": false
+      }
+    },
+    {
+      "id": "AX-18",
+      "title": "Partially supported input lists its gap",
+      "action": "VIEW_LANGUAGE_SUPPORT",
+      "context": {
+        "principal_role": "ANALYST",
+        "relationship": "ASSIGNED_ANALYST",
+        "permits_evidence_content": true,
+        "layout": "WIDE",
+        "enrichment_status": null,
+        "reputation_result": null,
+        "input_support_status": "PARTIALLY_SUPPORTED",
+        "language": [
+          "en",
+          "hi"
+        ]
+      },
+      "expected": {
+        "presented": true,
+        "presentation": "PARTIALLY_SUPPORTED_INPUT",
+        "distinguishes_outcome": false,
+        "provider_assertion": false,
+        "implies_safe": false,
+        "on_result_surface": false,
+        "conclusion_reached": true,
+        "content_exposed_beyond_permission": false
+      }
+    },
+    {
+      "id": "AX-19",
+      "title": "Insufficient information is not a conclusion",
+      "action": "VIEW_LANGUAGE_SUPPORT",
+      "context": {
+        "principal_role": "USER",
+        "relationship": "OWNER",
+        "permits_evidence_content": true,
+        "layout": "WIDE",
+        "enrichment_status": null,
+        "reputation_result": null,
+        "input_support_status": "INSUFFICIENT_INFORMATION",
+        "language": [
+          "en"
+        ]
+      },
+      "expected": {
+        "presented": true,
+        "presentation": "INSUFFICIENT_INFORMATION_INPUT",
+        "distinguishes_outcome": false,
+        "provider_assertion": false,
+        "implies_safe": false,
+        "on_result_surface": false,
+        "conclusion_reached": false,
+        "content_exposed_beyond_permission": false
+      }
+    },
+    {
+      "id": "AX-20",
+      "title": "No language detected for unsupported input",
+      "action": "VIEW_LANGUAGE_SUPPORT",
+      "context": {
+        "principal_role": "USER",
+        "relationship": "OWNER",
+        "permits_evidence_content": true,
+        "layout": "WIDE",
+        "enrichment_status": null,
+        "reputation_result": null,
+        "input_support_status": "UNSUPPORTED",
+        "language": []
+      },
+      "expected": {
+        "presented": true,
+        "presentation": "UNSUPPORTED_INPUT",
+        "distinguishes_outcome": false,
+        "provider_assertion": false,
+        "implies_safe": false,
+        "on_result_surface": false,
+        "conclusion_reached": false,
+        "content_exposed_beyond_permission": false
+      }
+    },
+    {
+      "id": "AX-21",
+      "title": "Owner without content permission sees no result language detail",
+      "action": "VIEW_LANGUAGE_SUPPORT",
+      "context": {
+        "principal_role": "USER",
+        "relationship": "OWNER",
+        "permits_evidence_content": false,
+        "layout": "WIDE",
+        "enrichment_status": null,
+        "reputation_result": null,
+        "input_support_status": "UNSUPPORTED",
+        "language": [
+          "hi"
+        ]
+      },
+      "expected": {
+        "presented": false,
+        "presentation": "CONTENT_PERMISSION_REQUIRED",
+        "distinguishes_outcome": false,
+        "provider_assertion": false,
+        "implies_safe": false,
+        "on_result_surface": false,
+        "conclusion_reached": false,
+        "content_exposed_beyond_permission": false
+      }
+    },
+    {
+      "id": "AX-22",
+      "title": "Same withheld result on a narrow screen",
+      "action": "VIEW_LANGUAGE_SUPPORT",
+      "context": {
+        "principal_role": "USER",
+        "relationship": "OWNER",
+        "permits_evidence_content": false,
+        "layout": "NARROW",
+        "enrichment_status": null,
+        "reputation_result": null,
+        "input_support_status": "UNSUPPORTED",
+        "language": [
+          "hi"
+        ]
+      },
+      "expected": {
+        "presented": false,
+        "presentation": "CONTENT_PERMISSION_REQUIRED",
+        "distinguishes_outcome": false,
+        "provider_assertion": false,
+        "implies_safe": false,
+        "on_result_surface": false,
+        "conclusion_reached": false,
+        "content_exposed_beyond_permission": false
+      }
+    },
+    {
+      "id": "AX-23",
+      "title": "Provider reports suspicious",
+      "action": "VIEW_ENRICHMENT",
+      "context": {
+        "principal_role": "ANALYST",
+        "relationship": "ASSIGNED_ANALYST",
+        "permits_evidence_content": true,
+        "layout": "WIDE",
+        "enrichment_status": "SUCCEEDED",
+        "reputation_result": "SUSPICIOUS",
+        "input_support_status": null,
+        "language": null
+      },
+      "expected": {
+        "presented": true,
+        "presentation": "PROVIDER_CAUTION_ASSERTION",
+        "distinguishes_outcome": true,
+        "provider_assertion": true,
+        "implies_safe": false,
+        "on_result_surface": false,
+        "conclusion_reached": false,
+        "content_exposed_beyond_permission": false
+      }
+    },
+    {
+      "id": "AX-24",
+      "title": "Mixed-language unsupported input explained",
+      "action": "VIEW_LANGUAGE_SUPPORT",
+      "context": {
+        "principal_role": "USER",
+        "relationship": "OWNER",
+        "permits_evidence_content": true,
+        "layout": "WIDE",
+        "enrichment_status": null,
+        "reputation_result": null,
+        "input_support_status": "UNSUPPORTED",
+        "language": [
+          "hi",
+          "en"
+        ]
+      },
+      "expected": {
+        "presented": true,
+        "presentation": "UNSUPPORTED_LANGUAGE",
+        "distinguishes_outcome": false,
+        "provider_assertion": false,
+        "implies_safe": false,
+        "on_result_surface": false,
+        "conclusion_reached": false,
+        "content_exposed_beyond_permission": false
+      }
+    },
+    {
+      "id": "AX-25",
+      "title": "Owner without case visibility gets the masked not-found state",
+      "action": "VIEW_ENRICHMENT",
+      "context": {
+        "principal_role": "USER",
+        "relationship": "NONE",
+        "permits_evidence_content": true,
+        "layout": "WIDE",
+        "enrichment_status": "SUCCEEDED",
+        "reputation_result": "MALICIOUS",
+        "input_support_status": null,
+        "language": null
+      },
+      "expected": {
+        "presented": false,
+        "presentation": "NOT_FOUND_OR_NOT_VISIBLE",
+        "distinguishes_outcome": false,
+        "provider_assertion": false,
+        "implies_safe": false,
+        "on_result_surface": false,
+        "conclusion_reached": false,
+        "content_exposed_beyond_permission": false
+      }
+    },
+    {
+      "id": "AX-26",
+      "title": "Administrator without case visibility masked on a narrow screen too",
+      "action": "VIEW_ENRICHMENT",
+      "context": {
+        "principal_role": "ADMINISTRATOR",
+        "relationship": "NONE",
+        "permits_evidence_content": true,
+        "layout": "NARROW",
+        "enrichment_status": "SUCCEEDED",
+        "reputation_result": "CLEAN",
+        "input_support_status": null,
+        "language": null
+      },
+      "expected": {
+        "presented": false,
+        "presentation": "NOT_FOUND_OR_NOT_VISIBLE",
+        "distinguishes_outcome": false,
+        "provider_assertion": false,
+        "implies_safe": false,
+        "on_result_surface": false,
+        "conclusion_reached": false,
+        "content_exposed_beyond_permission": false
+      }
+    },
+    {
+      "id": "AX-27",
+      "title": "Administrator without case visibility gets no result language detail",
+      "action": "VIEW_LANGUAGE_SUPPORT",
+      "context": {
+        "principal_role": "ADMINISTRATOR",
+        "relationship": "NONE",
+        "permits_evidence_content": false,
+        "layout": "WIDE",
+        "enrichment_status": null,
+        "reputation_result": null,
+        "input_support_status": "UNSUPPORTED",
+        "language": [
+          "hi"
+        ]
+      },
+      "expected": {
+        "presented": false,
+        "presentation": "NOT_FOUND_OR_NOT_VISIBLE",
+        "distinguishes_outcome": false,
+        "provider_assertion": false,
+        "implies_safe": false,
+        "on_result_surface": false,
+        "conclusion_reached": false,
+        "content_exposed_beyond_permission": false
+      }
+    }
+  ]
+}

@@ -5,8 +5,8 @@
   "work_package": "P7-WP5",
   "baseline": "b5a663a6dd6343b17b7cf8dfa927c0aae4f8ebd9",
   "lifecycle": {
-    "state": "APPROVED",
-    "status": "P7-WP5 REPORTING AND HISTORICAL WORKFLOWS UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING",
+    "state": "CLOSED",
+    "status": "P7-WP5 REPORTING AND HISTORICAL WORKFLOWS UX CLOSED",
     "decision_vocabulary": [
       "APPROVE",
       "REQUEST_CHANGES"
@@ -64,7 +64,25 @@
       "record_reference": "GATE-030 §7",
       "reviewer_role": "Independent reviewer"
     },
-    "merge_evidence": null
+    "merge_evidence": {
+      "repository": "nishanth-cryptos/TrustLens",
+      "pr_number": 41,
+      "pr_head_commit": "16500fe3c05b067241f1d7d300abc0f8a4aaac37",
+      "merge_commit": "7f3c2899dae693d3b497faa3a68f691890488d2d",
+      "base_commit": "b5a663a6dd6343b17b7cf8dfa927c0aae4f8ebd9",
+      "remote_ci": {
+        "workflow": "knowledge-validation",
+        "checks": [
+          "Knowledge validation suite",
+          "Quality-gate self-test (gate must bite)"
+        ],
+        "conclusion": "success",
+        "pr_head_run_id": 38161387705,
+        "merge_commit_run_id": 38163633985
+      },
+      "verification": "INDEPENDENT_PROGRAMME_VERIFICATION",
+      "verification_reference": "GATE-030 §8"
+    }
   },
   "engine_version": "1.0.0",
   "foundation": {

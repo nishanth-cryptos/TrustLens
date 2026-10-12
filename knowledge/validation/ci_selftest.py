@@ -306,6 +306,22 @@ def d_ux_reporting_request_claims_completion(root: Path):
     dump(p, d)
     return p, orig
 
+
+def d_ux_enrichment_clean_is_safe(root: Path):
+    p = root / "contracts" / "ux" / "ux-accessibility-v1.json"
+    orig = p.read_bytes()
+    d = load(p)
+    row = next((x for x in d.get("enrichment", {}).get("interpretation", [])
+                if x.get("status") == "SUCCEEDED" and x.get("reputation_result") == "CLEAN"), None)
+    if row is None or row.get("implies_safe") is not False:
+        raise RuntimeError("ci_selftest could not find the P7-WP6 provider CLEAN interpretation row (renamed?)")
+    # P7-WP6-only defect: a provider CLEAN assertion is presented as TrustLens safety. No other validator reads the
+    # accessibility contract and no accepted API / INT-001 / UX-001..UX-005 artifact changes, so only the P7-WP6 gate
+    # (UXA-13) can bite.
+    row["implies_safe"] = True
+    dump(p, d)
+    return p, orig
+
 DEFECTS = [
     ("unknown indicator reference", d_unknown_indicator, "validate_rules.py"),
     ("invalid taxonomy ID", d_invalid_taxonomy, "validate_rules.py"),
@@ -326,6 +342,7 @@ DEFECTS = [
     ("NO_SCAM_PATTERN presented as safe (P7-WP3)", d_ux_result_no_scam_is_safe, "validate_ux_result.py"),
     ("administrator offered evidence content by role (P7-WP4)", d_ux_review_admin_content_by_role, "validate_ux_review.py"),
     ("deletion request presented as completed removal (P7-WP5)", d_ux_reporting_request_claims_completion, "validate_ux_reporting.py"),
+    ("provider CLEAN presented as TrustLens safety (P7-WP6)", d_ux_enrichment_clean_is_safe, "validate_ux_accessibility.py"),
 ]
 
 

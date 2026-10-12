@@ -64,7 +64,21 @@ VERIFIED_REVIEW_HISTORY: list = [
 ]
 # The independent approval of round 3 (GATE-030 §7). CLOSED additionally needs merge evidence pinned post-merge.
 VERIFIED_APPROVAL = {"round": 3, "decision": "APPROVE", "record_reference": "GATE-030 §7", "reviewer_role": "Independent reviewer"}
-VERIFIED_MERGE_EVIDENCE = None
+# The P7-WP5 merge record, pinned by the governed post-merge closure step from programme-verified GitHub evidence
+# (PR #41, PR-head run 38161387705, merge-commit run 38163633985; GATE-030 §8). Offline validation cannot authenticate
+# GitHub: CLOSED needs the contract's merge evidence to equal this record exactly.
+VERIFIED_MERGE_EVIDENCE = {
+    "repository": "nishanth-cryptos/TrustLens",
+    "pr_number": 41,
+    "pr_head_commit": "16500fe3c05b067241f1d7d300abc0f8a4aaac37",
+    "merge_commit": "7f3c2899dae693d3b497faa3a68f691890488d2d",
+    "base_commit": "b5a663a6dd6343b17b7cf8dfa927c0aae4f8ebd9",
+    "remote_ci": {"workflow": "knowledge-validation",
+                  "checks": ["Knowledge validation suite", "Quality-gate self-test (gate must bite)"],
+                  "conclusion": "success", "pr_head_run_id": 38161387705, "merge_commit_run_id": 38163633985},
+    "verification": "INDEPENDENT_PROGRAMME_VERIFICATION",
+    "verification_reference": "GATE-030 §8",
+}
 INDEPENDENT_REVIEW_KINDS = {"INITIAL_INDEPENDENT_REVIEW", "TARGETED_INDEPENDENT_REREVIEW", "FINAL_INDEPENDENT_REVIEW"}
 INDEPENDENT_REVIEWER_ROLES = {"Independent reviewer"}
 PERMITTED_EVIDENCE_SOURCES = {"Independent review result supplied to the builder by the programme"}

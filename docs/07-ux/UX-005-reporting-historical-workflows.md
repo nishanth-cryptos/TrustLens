@@ -4,7 +4,7 @@
 | --- | --- |
 | Document ID | UX-005 |
 | Version | 0.1 |
-| Status | P7-WP5 REPORTING AND HISTORICAL WORKFLOWS UX APPROVED FOLLOWING INDEPENDENT REVIEW — REMOTE CI + MERGE PENDING |
+| Status | P7-WP5 REPORTING AND HISTORICAL WORKFLOWS UX CLOSED |
 | Phase / work package | Phase 7 — UX, Evidence & Reporting Design / P7-WP5 |
 | Owner role | Product / Reporting UX |
 | Branch | phase7-wp5-reporting-workflows |
@@ -17,7 +17,8 @@
 
 ## 1. Authority and scope
 
-UX-005 is the P7-WP5 UX design and contract for reporting and historical workflows, approved following independent review: case-scoped reports and
+UX-005 is the P7-WP5 UX design and contract for reporting and historical workflows, approved following independent review
+and CLOSED after merge (PR #41; GATE-030 §8): case-scoped reports and
 their content, historical replay, re-analysis and user correction as new evaluations, governed deletion, governed
 removal (410) versus not found or not visible (404), report regeneration that cannot happen, and honest history. It is a
 design and contract package only: there is no frontend, API or runtime implementation, and nothing here is a
@@ -346,6 +347,7 @@ and fails closed: a review round, an approval or merge evidence counts only when
 `validate_ux_reporting.py` by a governed bookkeeping step. Round 1 (initial independent review) returned
 REQUEST_CHANGES (BLOCKER 0 / HIGH 0 / MEDIUM 2 / LOW 0 / INFO 0). Round 2 (targeted re-review) closed MEDIUM-2 and returned
 REQUEST_CHANGES (BLOCKER 0 / HIGH 0 / MEDIUM 1 / LOW 0 / INFO 0) on replay copy. Round 3 (targeted re-review) returned
-APPROVE (BLOCKER 0 / HIGH 0 / MEDIUM 0 / LOW 0 / INFO 0) with no open finding. The lifecycle is APPROVED following
-independent review, with remote CI and merge pending; CLOSED needs merge and remote-CI evidence pinned by the governed
-post-merge step. GATE-030 §7 holds the review record.
+APPROVE (BLOCKER 0 / HIGH 0 / MEDIUM 0 / LOW 0 / INFO 0) with no open finding. PR #41 then merged with both
+required CI jobs successful, and the governed post-merge step recorded the lifecycle as CLOSED; the merge evidence is
+pinned in the validator, which checks exact agreement and does not contact GitHub. GATE-030 §7 holds the review record and
+§8 the post-merge closure record.
