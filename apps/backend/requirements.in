@@ -1,0 +1,9 @@
+# Application runtime and smoke-test dependencies. Independent of root requirements.txt.
+fastapi==0.143.0
+uvicorn==0.54.0
+psycopg[binary]==3.3.6
+SQLAlchemy==2.1.4
+alembic==1.20.0
+python-dotenv==1.2.4
+jsonschema==4.26.0
+httpx==0.28.1

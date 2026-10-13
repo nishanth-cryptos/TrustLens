@@ -3,10 +3,10 @@
 | Field | Value |
 |---|---|
 | Document ID | REG-ASSUMPTION |
-| Version | 1.1 |
+| Version | 1.2 |
 | Status | Active |
 | Owner role | Technical Program Director |
-| Last updated | 2026-08-14 |
+| Last updated | 2026-10-13 |
 
 Per the `MP §7` quality gate: *"No later architecture decision may rely on an unstated
 assumption."* Every inference the programme rests on is recorded here. Anything marked
@@ -53,9 +53,23 @@ significant:
    assumption was stated in advance, tested, disproved, and its cost accepted openly rather than
    discovered late.
 
+## Forward resolutions
+
+**ASM-002 — CONFIRMED SINGLE-TENANT MVP (2026-10-13).** The user's explicit sponsor decision is recorded in
+[DEC-009](decision-log.md#dec-009--single-tenant-trustlens-mvp-asm-002-resolved). One application deployment
+supports multiple users and all five existing roles, with existing case/content authorization. Multi-tenancy
+requires a future governed revision, migration and isolation tests. The original assumption-table row and frozen
+contract statuses above are historical inputs to closed-phase validators, not a remaining sponsor decision gate.
+
+**ASM-011 — local profile revised (2026-10-13).** The user reports, and the builder rechecked, running Docker
+29.7.2 / Compose and PostgreSQL 17 in `trustlens-postgres-dev`, loopback port 55432, persistent volume
+`trustlens-pg-dev`. The historical PostgreSQL-16/no-install assumption above is superseded for local development;
+application migrations and protected-flow readiness remain separate. PLAN-001 records the technical evidence.
+
 ## Change history
 
 | Version | Date | Change | Author role |
 |---|---|---|---|
 | 1.0 | 2026-07-31 | Register opened with 19 assumptions recorded during Phase 0. | Technical Program Director |
 | 1.1 | 2026-08-14 | ASM-016 closed as **disproved** at the Phase 1 gate ([GATE-001](GATE-001-phase-1-assessment.md)) and restated as a standing operating condition. 18 assumptions remain open. | Technical Program Director |
+| 1.2 | 2026-10-13 | Forward ASM-002 sponsor resolution (DEC-009) and verified local ASM-011 environment; historical closure inputs retained. | Programme / builder bookkeeping |

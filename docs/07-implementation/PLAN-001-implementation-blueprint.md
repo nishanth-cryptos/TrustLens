@@ -4,21 +4,21 @@
 | --- | --- |
 | Document ID | PLAN-001 |
 | Version | 0.1 |
-| Status | APPROVED FOLLOWING INDEPENDENT REVIEW — Phase 8 itself NOT CLOSED; no Phase 9 implementation begun |
+| Status | APPROVED blueprint; user-authorized S1 foundation work begun — Phase 8 itself NOT CLOSED |
 | Phase | Phase 8 — Implementation blueprint |
 | Owner role | Programme / Backend / Product |
 | Branch | phase8-delivery-blueprint |
 | Base commit | 0a21d1f858eb7680e05ce703966201f06902e4c8 |
 | Phase 7 entry | CLOSED through GATE-032 §8; PR #43 merged; CI #84 and #85 SUCCESS, both required jobs |
-| Last updated | 2026-10-12 |
+| Last updated | 2026-10-13 |
 
 ## 1. Outcome, scope and current evidence
 
 The first priority is a runnable application: a user can sign in, preserve submitted text, request deterministic
 analysis and read an explanation whose provenance survives a restart. Deliver the persistent walking skeleton at
 S2, then the useful text-analysis journey at S5. Reports, optional providers and advanced workflows follow their
-own readiness conditions. This document plans future implementation; no application service or infrastructure is
-created by this kickoff.
+own readiness conditions. This blueprint plans implementation. The user-authorized S1 foundation now provides local scaffolds;
+the authenticated persistent S2 journey is not implemented or claimed complete.
 
 The [roadmap](../00-program/roadmap.md) assigns PLAN-001 epics, slices, tasks, acceptance criteria, Definition of
 Ready/Done, demonstrations and release criteria. The existing README reserves this directory for those artifacts;
@@ -39,7 +39,7 @@ merged at the base commit, head `5af988d2740c4d826abc0f2e3074cd1fe3d28526`.
 [CI #85](https://github.com/nishanth-cryptos/TrustLens/actions/runs/38273120361), run `38273120361`, is
 completed/SUCCESS; both required jobs completed SUCCESS, as rechecked read-only. GATE-032 §8 now records
 governed final Phase 7 closure. PLAN-001 is APPROVED following independent review; this is blueprint approval,
-not final Phase 8 closure. Phase 8 itself is NOT CLOSED and no Phase 9 implementation has begun.
+not final Phase 8 closure. Phase 8 itself is NOT CLOSED. The user authorized S1 foundation work on 2026-10-13 after the scoped readiness evidence below; S2 remains blocked.
 
 The accepted Option A exceptions remain binding: REPORT-001 was **not delivered**, and WCAG 2.2 AA is **NOT
 VERIFIED**. Phase 8 must define the report format before planning the report implementation portion of S6;
@@ -67,24 +67,31 @@ The roadmap still controls the eleven-slice sequence below. Its historical Java 
 wording is superseded by ADR-0008; Python is the backend from the start, and S10 adds optional AI integration
 rather than a required remote reasoning service. No engine rewrite or new deployable is justified here.
 
-HTTP framework, PostgreSQL driver/adapter, frontend build tooling, runtime versions, IdP, content-store adapter,
-secret/key mechanism and deployment target are not approved product selections in this record. T03 must record a
-bounded implementation profile and pin application dependencies before S1/S2 are ready. Assess exact API/OpenAPI
-parity, transaction/fencing support, binary transfer, authentication, supported versions and reproducible builds;
-keep application locks separate from the existing knowledge-validation requirements. A topology or authority
-change requires the existing ADR process; choosing an adapter within accepted ports does not reopen Phase 5.
+Under the user's S1 authorization, the builder selected this bounded local profile on 2026-10-13: Python 3.12.12; FastAPI 0.143.0 / Uvicorn 0.54.0;
+psycopg 3.3.6; SQLAlchemy Core 2.1.4 and Alembic 1.20.0 (SQL-first, no ORM selected); Node 26.0.0 / npm 11.12.1;
+React 19.3.0; TypeScript 7.0.2 / Vite 8.3.4. Application dependency locks are separate from knowledge validation.
+PostgreSQL 17 runs locally at 127.0.0.1:55432 in trustlens-postgres-dev with volume trustlens-pg-dev. Credentials
+remain outside Git in ~/.config/trustlens/postgres-dev.env. This is one single-tenant MVP deployment, not one user.
+
+T03 is satisfied for S1 install/build/smoke work only: internal probes and a static frontend foundation, with no
+protected browser flow, ingestion, evidence store or application schema migration. External OIDC/provider setup,
+TrustLens trusted role provisioning, browser session/CSRF (T05), encrypted content-store and secret/key mechanism,
+and the remaining bounded runtime parameters (T09) must be resolved before S2. A local database diagnostic uses
+a five-second connection timeout; it does not select production lease/retry/retention values. Future application
+migrations require the reviewed revision and separate tl_schema_migrator role, not the development connection role.
+A topology or authority change still requires existing ADR governance; no earlier contract or kernel is rewritten.
 
 ## 3. Phase 8 decisions and prerequisites
 
-T01 is MET through the verified closure record; T02–T10 remain OPEN. Names denote accountable existing roles, not additional API roles.
+T01, T02 and T04 are MET. T03 is selected for the user-authorized S1 smoke scope, with protected-flow selections still OPEN for S2. T05–T10 remain OPEN. Names denote accountable existing roles, not additional API roles.
 
 | Task | Decision or evidence required | Owner | Blocks |
 | --- | --- | --- | --- |
 | T01 | MET — CI #85 and both required jobs succeeded; governed Phase 7 closure recorded in GATE-032 §8. | Programme / builder bookkeeping | Phase 7 closure dependency satisfied; remaining Phase 8/implementation prerequisites are unchanged. |
-| T02 | RSK-006 / OI-02: install Docker and PostgreSQL; verify daemon/Compose operation, database connectivity, a disposable migration exercise and persistence across restart. Command presence alone is insufficient. | Sponsor (admin install) with DevSecOps | Any Phase 9 implementation; Testcontainers integration checks. Installation is not established by this task. |
-| T03 | Select and document the bounded local application profile described in §2, including runtime/dependency pins, identity provisioning, protected storage/key references and resource limits. Use synthetic development data; no credentials in Git. OI-06 remains a sponsor decision for hosting. | Backend / Data / Security / DevSecOps with Sponsor | S1 completion and runnable S2; external deployment remains separately gated. |
-| T04 | Resolve ASM-002 before accepting or executing the first schema-creating migration, exactly as DATA-001-WP2 §3 requires. Single tenancy is still UNCONFIRMED / PROVISIONAL. Multi-tenancy requires the governed contract revision before schema implementation. | Sponsor / Programme | Schema creation and tenancy-sensitive implementation in S1/S2. No tenant field is invented. |
-| T05 | UX-001#0: decide the unresolved browser session / CSRF profile in Phase 8 **before browser implementation**. Record token/session custody, credential transport, CSRF controls where applicable, origins, logout/revocation and secret handling while preserving external OIDC. | Security Architect | Any S2 browser authentication or protected browser flow. CLI API bearer authentication is not a browser-profile decision. |
+| T02 | MET local development on 2026-10-13: Docker 29.7.2 / Compose 5.5.1, PostgreSQL 17.11, SELECT 1, disposable SQL migration and committed record surviving restart; test namespace cleaned and existing object snapshot unchanged. | Sponsor (admin install) with DevSecOps / builder verification | RSK-006 local installation/persistence prerequisite satisfied; no application migration or S2 readiness claim. |
+| T03 | MET for the bounded S1 local profile in §2 / apps/README.md. External OIDC, trusted role provisioning, protected content storage/key mechanisms and deployment-specific selections remain OPEN before S2. | Backend / Data / Security / DevSecOps with Sponsor | S1 install/build/smoke profile satisfied; protected S2 readiness remains blocked. |
+| T04 | MET by the user's explicit single-tenant MVP decision, DEC-009 (2026-10-13). Multiple users and five roles remain; no tenant fields/APIs. Frozen statuses are historical. | Sponsor / Programme | Sponsor decision gate satisfied before schema work; future multi-tenancy requires governed revision, migration and isolation tests. |
+| T05 | UX-001#0: decide the unresolved browser session / CSRF profile in Phase 8 **before S2 browser authentication/protected flows**. The user explicitly authorized the content-free S1 static preview separately. Record token/session custody, credential transport, CSRF controls where applicable, origins, logout/revocation and secret handling while preserving external OIDC. | Security Architect | Any S2 browser authentication or protected browser flow. CLI API bearer authentication is not a browser-profile decision. |
 | T06 | UX-005#0: define and approve REPORT-001, with format, reproducible pinned inputs, uncertainty/disclaimer, content access and export requirements. | Product / Reporting | Planning the report implementation portion of S6, then its implementation. §4 reserves that work without defining a formatter or report layout. |
 | T07 | P7C-01: agree operator interaction scope for the four accepted but undesigned workflows (§6). The candidate proposal is an authenticated operator CLI first; detailed interaction design and failure/confirmation copy remain required. | Product with Knowledge governance and Operations | Operator interaction delivery in S3/S9/S11; none is claimed UX-designed by Phase 7. |
 | T08 | Schedule the Phase 8 API/data/copy clarifications in §7; retain accepted contracts until a necessary governed revision is approved. Safe restricted scope may proceed where identified. | Existing carried owners in PHASE-7-CLOSURE | Each dependent operation or presentation; no speculative API expansion. |
@@ -92,7 +99,7 @@ T01 is MET through the verified closure record; T02–T10 remain OPEN. Names den
 | T10 | Resolve OI-05 retention/legal basis and permitted tombstone/backup residual metadata before live retention, deletion or restored-content promotion. Preserve G-09, ASM-001 and the existing programme caveats. | Sponsor + legal/governance; QA for G-09 | Live-data policy and dependent S6/S11 release scope. ASM-014's historic 90-day assumption is not an accepted duration. |
 
 No calendar commitment exists (OI-03 / ASM-009). Sizes below are relative planning estimates, not dates or capacity
-promises. No infrastructure, credentials, provider or deployment is represented as already available.
+promises. Only the verified local Docker/PostgreSQL environment is available. OIDC, encryption/key mechanisms, providers and production deployment are not represented as configured.
 
 ## 4. Ordered vertical slices and implementation tasks
 
@@ -203,8 +210,8 @@ SUPERSEDED_BY UX-006#1, owned by the Phase 9 design system with Product / Access
 | UX-006#4 | S4/S8/S10, Sponsor with Knowledge governance | Non-English detection requires verified evidence and ADR-0014 governance; untranslated or unsupported input is not benign. |
 | UX-006#6 | Phase 10 / QA Lead | Accessibility conformance testing with assistive technologies and evidence; no WCAG conformance claim before that work. |
 
-G-09 remains OPEN with Phase 10 / QA and the Sponsor for corpus access. OI-05, ASM-002 and
-P6-WP7-LOW-1 retain their existing owned statuses; the latter is a future governed Phase-6 snapshot revision, not an
+G-09 remains OPEN with Phase 10 / QA and the Sponsor for corpus access. OI-05 and P6-WP7-LOW-1 retain
+their existing owned statuses. ASM-002 is resolved forward by DEC-009; closed-phase records retain historical values; the latter is a future governed Phase-6 snapshot revision, not an
 excuse to modify the frozen 19-artifact snapshot during implementation planning.
 
 ## 8. Definition of Ready and Definition of Done
@@ -214,7 +221,7 @@ excuse to modify the frozen 19-artifact snapshot during implementation planning.
 - PLAN-001 scope has independent approval, formal Phase 7 entry is complete, and the slice's dependencies are
   demonstrably available. All blocking tasks in §3 and relevant source decisions in §7 have an owned disposition.
 - Docker and PostgreSQL are installed and functionally verified before Phase 9; ASM-002 is resolved before any
-  schema-creating migration; browser session/CSRF is decided before browser code; REPORT-001 is defined before
+  schema-creating migration; browser session/CSRF is decided before S2 browser authentication/protected code (the user-authorized S1 preview captures no content); REPORT-001 is defined before
   report implementation planning. These prerequisites are not waived by a successful static validator.
 - Enumerate exact API operations, request/response schemas, authorization/content checks, errors, state transitions,
   audit events, idempotency/preconditions and sensitive-data handling for the slice. Missing capability is recorded
@@ -278,11 +285,20 @@ links (22/22), all carried decisions accounted for exactly once (38/38), authent
 requirements, Docker/PostgreSQL and browser security prerequisites, REPORT-001 and operator UX scope decisions,
 and passing existing checks and git diff check. Earlier approved phases are not re-reviewed.
 
-PLAN-001 is APPROVED FOLLOWING INDEPENDENT REVIEW. Phase 8 itself remains NOT CLOSED; no Phase 9 implementation
-has begun. No new gate, schema, fixture corpus or validator is introduced for this approval. T01 is MET; all other
-owned prerequisites and scope reservations remain unchanged.
+PLAN-001 is APPROVED FOLLOWING INDEPENDENT REVIEW. Phase 8 itself remains NOT CLOSED. The user separately
+authorized S1 on 2026-10-13; this does not authorize S2 before its security prerequisites. T01/T02/T04 are MET,
+T03 is selected for S1 and remains incomplete for protected S2 flows; T05/T09 and other reservations remain OPEN.
+No new gate, fixture corpus or canonical validator is introduced for this S1 foundation.
 
-Next: obtain the T02/T04 sponsor evidence and T05 security decision; settle T03/T09 for the first runnable scope;
+S1 local evidence (2026-10-13): eight backend boundary tests and two frontend smoke tests passed; TypeScript/Vite
+build, explicit empty Alembic history and host-port database SELECT 1 passed. Live loopback backend/frontend
+smoke succeeded; readiness correctly remains NOT_READY. Canonical validation passed 36/36, with unchanged
+frozen UX validators scoped to their historical design delivery and two existing ordering fixtures decoupled
+from whole-runner text. No application revision, protected journey, OIDC provider or encryption keys were created.
+Application CI is configured but remote results remain pending user Git operations; S1 is runnable locally, not
+formally closed as a reviewed/merged slice.
+
+Next: resolve T05 and the remaining protected-flow T03/T09 selections;
 define REPORT-001 through T06 before report build planning; and resolve the candidate operator scope T07. Amend
 unresolved reservations through the existing review process before their dependent implementation.
 The builder performs no stage/commit/push/PR/merge operation; the user owns all Git transitions.

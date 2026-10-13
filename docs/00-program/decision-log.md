@@ -3,10 +3,10 @@
 | Field | Value |
 |---|---|
 | Document ID | REG-DECISION |
-| Version | 1.0 |
+| Version | 1.4 |
 | Status | Active |
 | Owner role | Technical Program Director |
-| Last updated | 2026-08-28 |
+| Last updated | 2026-10-13 |
 
 Programme-level decisions. **Architecture** decisions live as numbered ADRs in
 [`adr/`](../../adr/README.md); this log records scope, process and evidence-policy decisions,
@@ -261,6 +261,33 @@ migration.
 
 ---
 
+## DEC-009 — Single-tenant TrustLens MVP (ASM-002 resolved)
+
+| | |
+| --- | --- |
+| Date | 2026-10-13 |
+| Decided by | User (programme sponsor), explicit Single-Tenant MVP Decision + Phase 9 Slice 1 Foundation request |
+| Status | Accepted |
+| Related | ASM-002; PLAN-001 T04; DATA-001-WP2 §3 |
+
+**Decision.** The initial MVP has one single-tenant application deployment, with multiple users and the five
+accepted roles. Multi-tenancy is deferred to a future version. Case visibility, role/resource authorization and
+separate evidence-content permissions remain mandatory. No tenant columns, organization switching or tenant
+management API is introduced.
+
+**Alternatives and justification.** Multi-tenancy now is deferred by the sponsor to keep the MVP bounded;
+single-user or role-free operation is not the chosen scope. Single tenancy does not waive authentication,
+authorization, encryption or audit.
+
+**Consequences.** Resolves the sponsor decision required by DATA-001-WP2 §3 before a schema-creating migration.
+Frozen Phase 6/7 artifacts retain their historical provisional status; this forward decision is the current
+implementation authority. It does not approve an application migration or claim tested tenant isolation.
+
+**Reversal cost.** High: future multi-tenancy requires a governed contract/architecture revision, data migration
+and isolation tests. It is not a configuration toggle.
+
+---
+
 ## Summary
 
 | ID | Decision | Decided by | Status |
@@ -273,6 +300,7 @@ migration.
 | DEC-006 | Evidence hierarchy (official-alternate + replacement) | Programme | Accepted |
 | DEC-007 | Sextortion in taxonomy; detection deferred (safeguarding) | Programme | Accepted |
 | DEC-008 | MVP language scope English-only (OI-04 resolved); schemas stay extensible | Sponsor | Accepted |
+| DEC-009 | Single-tenant MVP; multiple users and five roles; future multi-tenancy requires governed revision/migration/tests | User (programme sponsor) | Accepted |
 
 ## Change history
 
@@ -282,3 +310,4 @@ migration.
 | 1.1 | 2026-08-28 | DEC-006 added — evidence hierarchy admitting official-alternate and replacement provenance, arising from the RESEARCH-006 manual retrieval reconciliation. Points to ADR-0015. | Chief Architect |
 | 1.2 | 2026-08-28 | DEC-007 added — sextortion added to the taxonomy (TAX-11) with detection deferred for safeguarding (WP5). | Threat Intelligence Lead |
 | 1.3 | 2026-08-29 | DEC-008 added — Sponsor resolved OI-04: MVP language scope is English-only (CONF-004 option a); schemas stay language/script-extensible. Accepts ADR-0014; unblocks Phase-2 closure. | Technical Program Director |
+| 1.4 | 2026-10-13 | DEC-009 records the user's explicit single-tenant MVP decision; ASM-002 resolved forward without rewriting frozen contracts. | Programme / builder bookkeeping |
