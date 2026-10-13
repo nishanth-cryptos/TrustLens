@@ -1,0 +1,33 @@
+name: application-smoke
+
+on:
+  push:
+    branches: [main]
+    paths: ["apps/**", "Makefile", ".github/workflows/application-smoke.yml"]
+  pull_request:
+    paths: ["apps/**", "Makefile", ".github/workflows/application-smoke.yml"]
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12.12"
+      - run: make backend-install backend-build backend-test migration-history
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "26.0.0"
+          cache: npm
+          cache-dependency-path: apps/frontend/package-lock.json
+      - run: npm install --global npm@11.12.1
+      - run: make frontend-install frontend-test frontend-build

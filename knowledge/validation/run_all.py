@@ -59,12 +59,42 @@ from __future__ import annotations
 
 import json
 import re
+import shutil
 import subprocess
 import sys
+import tempfile
 import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+
+# These frozen Phase-7 validators also checked that no application existed in their design delivery.
+# After Phase 7 closes, later apps/ code belongs to implementation, not that historical design scope.
+# Keep the validators and their mutation audits unchanged; validate current governed files in a view
+# excluding only the later application tree. Runtime files elsewhere still fail their original checks.
+DESIGN_SCOPE_VALIDATORS = {"validate_ux_foundation.py", "validate_ux_intake.py", "validate_ux_result.py"}
+_design_view = None
+
+
+def phase7_design_root():
+    global _design_view
+    closure = ROOT / "contracts/phase7/phase7-closure-v1.json"
+    if not closure.exists() or json.loads(closure.read_text())["lifecycle"]["state"] != "CLOSED":
+        return ROOT
+    if _design_view is None:
+        _design_view = tempfile.TemporaryDirectory(prefix="trustlens-phase7-design-")
+        destination = Path(_design_view.name) / "repo"
+
+        def ignore(directory, names):
+            excluded = {".git", ".venv", "__pycache__", "node_modules"}
+            excluded.update(name for name in names if name == ".env" or name.startswith(".env.")
+                            or name.endswith((".key", ".pem")))
+            if Path(directory) == ROOT:
+                excluded.add("apps")
+            return set(names) & excluded
+
+        shutil.copytree(ROOT, destination, ignore=ignore)
+    return Path(_design_view.name) / "repo"
 
 # Dependency-aware execution order. Each entry: (repo-relative path, why-it-runs-here).
 # Rationale — the suite flows from the most foundational invariant to the most derived, ending
@@ -217,13 +247,14 @@ def preflight_offline():
 def run_one(relpath: str):
     """Run a single validator as an isolated subprocess; return a result dict."""
     module = Path(relpath).name
-    path = ROOT / relpath
+    validation_root = phase7_design_root() if module in DESIGN_SCOPE_VALIDATORS else ROOT
+    path = validation_root / relpath
     start = time.perf_counter()
     proc = subprocess.run(
         [sys.executable, str(path), "--quiet"],
         capture_output=True,
         text=True,
-        cwd=str(ROOT),
+        cwd=str(validation_root),
         timeout=PASS_TIMEOUT_S,
     )
     dur = time.perf_counter() - start
