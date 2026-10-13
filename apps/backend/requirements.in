@@ -7,3 +7,6 @@ alembic==1.20.0
 python-dotenv==1.2.4
 jsonschema==4.26.0
 httpx==0.28.1
+# S2 authentication: standards-based OIDC ID-token signature/claim validation (no homemade JWT code).
+PyJWT[crypto]==2.15.1
+cryptography==50.0.2

@@ -1,6 +1,7 @@
-# TrustLens S1 local foundation
+# TrustLens local application (S1 foundation + S2 authentication)
 
-Run commands from the repository root. This is a local smoke scaffold, not the authenticated S2 journey.
+Run commands from the repository root. S2 adds real browser sign-in through the local Keycloak; see
+[§ S2 authentication](#s2-authentication) and the [T05 profile](../docs/07-implementation/T05-browser-session-profile.md).
 Python **3.12.12**, Node **26.0.0** and npm **11.12.1** are the selected profile. Runtime/test dependencies
 are pinned in `backend/requirements.lock` and `frontend/package-lock.json`; the knowledge `.venv` and root
 `requirements.txt` remain independent.
@@ -14,8 +15,8 @@ make database-check
 Start these in separate terminals:
 
 ```sh
-make backend-run     # http://127.0.0.1:8000 — internal probes only
-make frontend-run    # http://127.0.0.1:5173 — static development preview
+make backend-run     # http://127.0.0.1:8000 — probes, /auth/* boundary, GET /api/v1/me (single process)
+make frontend-run    # http://127.0.0.1:5173 — sign-in UI; proxies /api and /auth to the backend
 ```
 
 ```sh
@@ -24,9 +25,9 @@ curl --fail http://127.0.0.1:8000/health/ready
 ```
 
 The accepted probe response is HTTP 200 with categorical status: liveness reports `OK`, readiness reports
-`NOT_READY`. Check the body, not HTTP success alone. No protected API, login, ingestion or content storage is
-enabled; framework `/docs`, `/redoc` and `/openapi.json` are disabled. The frontend does not proxy internal
-health endpoints, collect content or call a new API. Both development servers bind to loopback.
+`NOT_READY` (sign-in alone does not make the service ready). Check the body, not HTTP success alone. No ingestion
+or content storage is enabled; framework `/docs`, `/redoc` and `/openapi.json` are disabled. The frontend does
+not proxy internal health endpoints or collect content. Both development servers bind to loopback.
 
 ## Database configuration and migrations
 
@@ -47,7 +48,7 @@ native macOS psql is unnecessary.
 make migration-history   # Valid empty Alembic history; no database connection or DDL
 ```
 
-There are no application revisions in S1. `alembic.ini`, `migrations/env.py` and the SQL-first template are
+S1 had no application revisions; S2 adds `0001_principal_role` (below). `alembic.ini`, `migrations/env.py` and the SQL-first template are
 explicit entry points for later reviewed revisions. Execution refuses an empty revision chain; online migration
 also requires the distinct `tl_schema_migrator` role and serializes executors with a PostgreSQL advisory lock.
 Application startup never invokes Alembic or creates a schema. Before a future upgrade, review its contract
@@ -79,3 +80,28 @@ No production deployment, accuracy, WCAG conformance or complete user journey is
 
 Framework references: [FastAPI](https://fastapi.tiangolo.com/deployment/),
 [Alembic](https://alembic.sqlalchemy.org/en/latest/tutorial.html), [Vite](https://vite.dev/guide/).
+
+## S2 authentication
+
+Keycloak authenticates the person; TrustLens decides access. Signing in never creates a TrustLens principal or role:
+an identity must be provisioned first, and roles are re-read from PostgreSQL on every request. Tokens and the client
+secret stay in the backend; the browser holds only an HttpOnly session cookie (details: T05 profile).
+
+One-time, sponsor-executed setup (privileged; never run by the application):
+
+1. Bootstrap roles and schema as the database owner, then set both passwords interactively (SCRAM, not echoed):
+   `docker exec -i trustlens-postgres-dev psql -U <owner> -d trustlens_dev < apps/backend/migrations/bootstrap/s2_roles_and_schema.sql`, then
+   `docker exec -it trustlens-postgres-dev psql -U <owner> -d trustlens_dev -c '\password tl_schema_migrator'` (and `tl_app_runtime`).
+2. Create `~/.config/trustlens/migrator-db.env` and `~/.config/trustlens/app-db.env` (`chmod 600`), each with
+   `POSTGRES_DB=trustlens_dev`, `POSTGRES_USER=` the role and `POSTGRES_PASSWORD=` its password.
+3. Review `make migration-sql`, then `make migrate` (refused for any role except `tl_schema_migrator`). This applies
+   `0001_principal_role` and `0002_audit_chain`; an environment already at 0001 only needs `make migrate` again.
+4. Grant USER to the Keycloak account by its user ID (Keycloak admin console → realm `trustlens-local` → Users →
+   `tl-demo-user` → ID): `make provision-user SUBJECT=<id>`. Only USER can be granted this way.
+
+Run `make backend-run` and `make frontend-run`, open http://127.0.0.1:5173 (not localhost) and choose
+**Sign in with Keycloak**. `/auth/*` are authentication-boundary routes, not API v1 operations. Sessions live in the
+backend process: restarting it signs everyone out, so run exactly one backend process. Sign-in outcomes,
+authorization denials and role grants/revocations are written to the hash-chained audit log (`make audit-verify`
+recomputes it); if the audit append fails, sign-in fails closed. Rate limiting and a durable session store are not
+implemented yet.
