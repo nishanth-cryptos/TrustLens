@@ -8,7 +8,7 @@ from uuid import UUID
 from fastapi.testclient import TestClient
 
 from trustlens_backend.database import DatabaseConfigurationError, DatabaseSettings
-from trustlens_backend.main import app
+from trustlens_backend.main import app, create_app
 
 ROOT = Path(__file__).resolve().parents[3]
 
@@ -17,8 +17,9 @@ class FoundationTests(unittest.TestCase):
     def test_probe_surface_matches_accepted_contract(self):
         catalog = json.loads((ROOT / "contracts/api/api-v1.json").read_text())
         expected = {o["path"] for o in catalog["operations"] if o.get("internal")}
-        self.assertEqual({route.path for route in app.routes}, expected)
-        with TestClient(app) as client:
+        unconfigured = create_app(None, configure_from_environment=False)
+        self.assertTrue(expected <= {route.path for route in unconfigured.routes})   # full surface: test_auth
+        with TestClient(unconfigured) as client:
             for path, status in (("/health/live", "OK"), ("/health/ready", "NOT_READY")):
                 response = client.get(path, headers={"X-Request-Id": "untrusted-client-id"})
                 self.assertEqual(response.status_code, 200)
@@ -26,10 +27,12 @@ class FoundationTests(unittest.TestCase):
                 self.assertIn(status, catalog["vocabularies"]["probe_status"]["values"])
                 self.assertEqual(UUID(response.headers["X-Request-Id"]).version, 4)
 
-    def test_protected_routes_and_framework_docs_are_not_enabled(self):
-        with TestClient(app) as client:
-            for path in ("/api/v1/me", "/api/v1/cases", "/docs", "/redoc", "/openapi.json"):
+    def test_unimplemented_routes_and_framework_docs_are_not_enabled(self):
+        with TestClient(create_app(None, configure_from_environment=False)) as client:
+            for path in ("/api/v1/cases", "/api/v1/evaluations", "/docs", "/redoc", "/openapi.json"):
                 self.assertEqual(client.get(path).status_code, 404)
+            # getMe exists from S2 but fails closed without authentication configuration; it never answers 200.
+            self.assertEqual(client.get("/api/v1/me").status_code, 503)
 
     def test_startup_does_not_connect_or_create_schema(self):
         with patch("psycopg.connect", side_effect=AssertionError("unexpected database call")), \
@@ -56,11 +59,13 @@ class FoundationTests(unittest.TestCase):
         with self.assertRaisesRegex(DatabaseConfigurationError, "must be an integer"):
             DatabaseSettings.from_environment({"TRUSTLENS_DB_PORT": "invalid"})
 
-    def test_empty_migration_chain_cannot_create_application_schema(self):
+    def test_application_role_cannot_run_migrations(self):
         from alembic import command
         from alembic.config import Config
-        with patch("sqlalchemy.create_engine", side_effect=AssertionError("unexpected database mutation")):
-            with self.assertRaisesRegex(RuntimeError, "No application revisions"):
+        ordinary = {"POSTGRES_DB": "synthetic", "POSTGRES_USER": "tl_app_runtime", "POSTGRES_PASSWORD": "synthetic"}
+        with patch.dict("os.environ", ordinary), \
+                patch("sqlalchemy.create_engine", side_effect=AssertionError("unexpected database mutation")):
+            with self.assertRaisesRegex(RuntimeError, "tl_schema_migrator"):
                 command.upgrade(Config(str(ROOT / "apps/backend/alembic.ini")), "head")
 
     def test_historical_design_scope_still_rejects_runtime_outside_apps(self):

@@ -12,4 +12,14 @@ p { max-width: 660px; line-height: 1.65; color: #536760; }
 .status { display: flex; gap: 10px; align-items: center; margin-top: 36px; color: #28584d; }
 .note { font-size: 14px; }
 footer { font-size: 12px; color: #617469; }
+.notice { padding: 14px 18px; border-radius: 12px; background: #fdf3e7; color: #6b4318; border: 1px solid #ecd2ad; }
+.button { display: inline-block; margin-top: 28px; padding: 13px 22px; border: 0; border-radius: 12px; font: inherit; font-weight: 650;
+  color: white; background: #28584d; text-decoration: none; cursor: pointer; }
+.button:hover { background: #1f463d; }
+.button:focus-visible { outline: 3px solid #e2a03f; outline-offset: 3px; }
+.button.secondary { color: #28584d; background: #e8efe9; }
+.button:disabled { opacity: .6; cursor: progress; }
+.principal { display: grid; grid-template-columns: max-content 1fr; gap: 10px 24px; margin: 32px 0 0; }
+.principal dt { font-weight: 650; color: #28584d; }
+.principal dd { margin: 0; color: #536760; overflow-wrap: anywhere; }
 @media (max-width: 600px) { .workspace { padding: 24px 16px; } .foundation { margin-top: 48px; padding: 28px 22px; } }
