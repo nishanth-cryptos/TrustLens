@@ -3,7 +3,7 @@
   "addendum_id": "P9-S2-ADD-001",
   "title": "Evidence upload intent and idempotency-scope supersession (DATA-001-WP2 revision: additive, with one governed constraint relaxation)",
   "status": "ACTIVATED",
-  "status_note": "Approved in principle by the sponsor on 2026-10-14. APPROVED FOLLOWING INDEPENDENT REVIEW (Codex final verdict APPROVE, 0 remaining material findings; relaxation P9-S2-ADD-001-REL-01 explicitly approved), recorded in GATE-033. Forward activation recorded by the accepted Phase-6 snapshot revision P6-SNAPSHOT-REV-001 — REMOTE CI + MERGE PENDING. Not applied to the sponsor's database.",
+  "status_note": "Approved in principle by the sponsor on 2026-10-14. APPROVED FOLLOWING INDEPENDENT REVIEW (Codex final verdict APPROVE, 0 remaining material findings; relaxation P9-S2-ADD-001-REL-01 explicitly approved), recorded in GATE-033. Activated by the accepted Phase-6 snapshot revision P6-SNAPSHOT-REV-001 and merged in PR #47 (merge commit 258cca4084fc1ead680cdc2473bab95c915aedaf). The sponsor reports migration 0004 applied locally.",
   "change_class": "ADDITIVE_WITH_GOVERNED_CONSTRAINT_RELAXATION",
   "extends": {
     "path": "contracts/postgresql/schema-v1.json",
@@ -13,7 +13,7 @@
   },
   "resulting_contract": {
     "contract_version": "0.3.0",
-    "status": "EFFECTIVE 0.3.0 = 0.2.0 + P9-S2-ADD-001 (APPROVED FOLLOWING INDEPENDENT REVIEW, GATE-033; ACTIVATED by P6-SNAPSHOT-REV-001 — REMOTE CI + MERGE PENDING)"
+    "status": "EFFECTIVE 0.3.0 = 0.2.0 + P9-S2-ADD-001 (APPROVED FOLLOWING INDEPENDENT REVIEW, GATE-033; ACTIVATED by P6-SNAPSHOT-REV-001; MERGED in PR #47)"
   },
   "human_contract": "docs/06-contracts/DATA-001-WP2-ADD-P9-S2-001-evidence-upload-intent.md",
   "frozen_artifacts_unchanged": [

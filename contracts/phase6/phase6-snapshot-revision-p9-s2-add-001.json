@@ -63,9 +63,9 @@
     ]
   },
   "integration": {
-    "state": "REMOTE_CI_AND_MERGE_PENDING",
-    "pr_number": null,
-    "merge_commit": null
+    "state": "MERGED",
+    "pr_number": 47,
+    "merge_commit": "258cca4084fc1ead680cdc2473bab95c915aedaf"
   },
   "authorizing_change": {
     "id": "P9-S2-ADD-001",
@@ -255,7 +255,7 @@
     {
       "id": "P9-S2-ADD-001-MACHINE",
       "path": "contracts/postgresql/schema-v1-addendum-p9-s2-add-001.json",
-      "sha256": "c616ee70c57ae1102a717ee48add22209d0b2210d54afdc4d218cbe87fc3f04d",
+      "sha256": "b2b095fe59da35fd8f48fa6311e5c91375c1c5957e7c4a40ceeab966c94e5b78",
       "role": "Machine addendum (becomes authoritative on activation)"
     },
     {
@@ -267,7 +267,7 @@
     {
       "id": "DATA-001-WP2-ADD-P9-S2-001",
       "path": "docs/06-contracts/DATA-001-WP2-ADD-P9-S2-001-evidence-upload-intent.md",
-      "sha256": "a99bcc43ae5142f3df36025afa6eb742b2578beb94948e5d4d6a2ecd72f4fed2",
+      "sha256": "4439a934dc75e544ecdb3fa01961e78cdd443434e3f283c39b22e42bf0d8fdc2",
       "role": "Human addendum contract"
     },
     {
@@ -285,19 +285,19 @@
     {
       "id": "SNAPSHOT-REVISION-NEGATIVES",
       "path": "contracts/phase6/fixtures/snapshot-revision-negative-mutations.json",
-      "sha256": "396f8777ef420ed6f88cfb4a3d79a6516be23a4e9558b4de3f7cc822a7a8414e",
+      "sha256": "b40e95e90cdb4312e3b0fb2aa737efd785e78e8af7d3fba5e3151f1fc6f86162",
       "role": "Negative mutations that must bite"
     },
     {
       "id": "SNAPSHOT-REVISION-VALIDATOR",
       "path": "knowledge/validation/validate_phase6_snapshot_revision.py",
-      "sha256": "a8b3fb4e5510482e5a5c4e1c286b2e2d327745d6d38f2f8a3791ea52288a18ad",
+      "sha256": "e7160faa8cf84115d9edb2b0e217eada0b6c6a2d79547b6acf96b191484235c3",
       "role": "Offline validator of this revision"
     },
     {
       "id": "GATE-033",
       "path": "docs/00-program/GATE-033-p9-s2-add-001-persistence-revision.md",
-      "sha256": "c1114b01c66cfdef6fe048b942db2001edfd915561c7aee6ccec359fa1ab5d5c",
+      "sha256": "30694974b5716f532b6b7380a0b5511b869da144d4390f0a58eb9a08eaea09e2",
       "role": "Gate record of the independent approval"
     }
   ],
@@ -342,7 +342,7 @@
     "path": "apps/backend/migrations/versions/0004_evidence_intake.py",
     "revision": "0004_evidence_intake",
     "down_revision": "0003_case_submission",
-    "applied_to_sponsor_database": false,
+    "applied_to_sponsor_database": true,
     "apply_before_activation": false
   },
   "open_items": [
@@ -366,25 +366,25 @@
     }
   ],
   "activation_steps": [
-    "Done: independent review returned APPROVE (GATE-033); this revision is ACCEPTED and the addendum ACTIVATED in branch phase9-s2-evidence-intake.",
-    "Pending: the sponsor opens a pull request, remote CI passes and the sponsor merges; record the PR number and merge commit in integration afterwards.",
-    "After merge: the sponsor creates the evidence key with the documented noclobber command (S2-local-development-profile.md).",
-    "After merge: the sponsor reviews the rendered SQL with make migration-sql, then applies it with make migrate as tl_schema_migrator.",
-    "Restart the backend; evidence intake turns on only when migration 0004 and the evidence key are both present."
+    "Done: independent review returned APPROVE (GATE-033); this revision is ACCEPTED and the addendum ACTIVATED.",
+    "Done: pull request #47 merged into main as merge commit 258cca4084fc1ead680cdc2473bab95c915aedaf (GATE-033 §8). Remote CI is not verified in this record.",
+    "Done (sponsor-reported, GATE-033 §8): the documented route is make migration-sql for review, then make migrate as tl_schema_migrator; migration 0004 is reported applied locally.",
+    "Done (sponsor-reported): synthetic evidence finalized, which requires the evidence key; it persisted across browser refresh and backend restart, and audit verification passed.",
+    "Remaining: formal S2 acceptance against PLAN-001 (not claimed by this revision)."
   ],
   "claim_boundary": {
     "may_support": [
       "APPROVED_FOLLOWING_INDEPENDENT_REVIEW",
-      "ACTIVATED_IN_BRANCH",
+      "ACTIVATED",
+      "MERGED",
+      "SPONSOR_REPORTED_LOCAL_MIGRATION",
       "EFFECTIVE_CONTRACT_STRUCTURALLY_VALID",
       "HISTORICAL_PINS_UNCHANGED",
       "OFFLINE_VALIDATION_PASSES"
     ],
     "must_not_support": [
-      "MERGED",
       "REMOTE_CI_PASSED",
       "PRODUCTION_READY",
-      "SPONSOR_DATABASE_MIGRATED",
       "COMPLETE_T09",
       "PRODUCTION_KMS",
       "FULL_S2_COMPLETE",

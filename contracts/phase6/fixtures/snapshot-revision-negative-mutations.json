@@ -697,12 +697,12 @@
     },
     {
       "id": "PSR-N55",
-      "description": "migration recorded as applied to the sponsor database",
+      "description": "migration recorded as applied before activation",
       "expect": "PSR-17",
       "path": [
         "manifest",
         "migration",
-        "applied_to_sponsor_database"
+        "apply_before_activation"
       ],
       "op": "set",
       "value": true
@@ -898,15 +898,15 @@
     },
     {
       "id": "PSR-N69",
-      "description": "integration claims MERGED without a PR number or merge commit",
+      "description": "integration claims MERGED without a PR number",
       "expect": "PSR-02",
       "path": [
         "manifest",
         "integration",
-        "state"
+        "pr_number"
       ],
       "op": "set",
-      "value": "MERGED"
+      "value": null
     },
     {
       "id": "PSR-N70",
@@ -922,14 +922,14 @@
     },
     {
       "id": "PSR-N71",
-      "description": "gate record status claims a merge instead of merge pending",
+      "description": "gate record status no longer records the merge",
       "expect": "PSR-02",
       "path": [
         "gate"
       ],
       "op": "replace_text",
-      "old": "FORWARD ACTIVATION RECORDED — REMOTE CI + MERGE PENDING**",
-      "new": "FORWARD ACTIVATION RECORDED — MERGED**"
+      "old": "MERGED (PR #47",
+      "new": "MERGE PENDING (PR #47"
     },
     {
       "id": "PSR-N72",
@@ -962,24 +962,15 @@
     },
     {
       "id": "PSR-N74",
-      "description": "claim boundary no longer excludes MERGED",
+      "description": "merged revision still excludes MERGED from its claim boundary",
       "expect": "PSR-17",
       "path": [
         "manifest",
         "claim_boundary",
         "must_not_support"
       ],
-      "op": "set",
-      "value": [
-        "PRODUCTION_READY",
-        "SPONSOR_DATABASE_MIGRATED",
-        "COMPLETE_T09",
-        "PRODUCTION_KMS",
-        "FULL_S2_COMPLETE",
-        "ACCESSIBILITY_CONFORMANCE",
-        "REMOTE_CI_PASSED",
-        "API_CHANGED"
-      ]
+      "op": "append",
+      "value": "MERGED"
     },
     {
       "id": "PSR-N75",
@@ -1008,6 +999,52 @@
         }
       ],
       "op": "remove"
+    },
+    {
+      "id": "PSR-N77",
+      "description": "merge commit differs from the one recorded in the gate",
+      "expect": "PSR-02",
+      "path": [
+        "manifest",
+        "integration",
+        "merge_commit"
+      ],
+      "op": "set",
+      "value": "0000000000000000000000000000000000000000"
+    },
+    {
+      "id": "PSR-N78",
+      "description": "claim boundary stops excluding an unverified remote CI pass",
+      "expect": "PSR-17",
+      "path": [
+        "manifest",
+        "claim_boundary",
+        "must_not_support"
+      ],
+      "op": "set",
+      "value": [
+        "PRODUCTION_READY",
+        "COMPLETE_T09",
+        "PRODUCTION_KMS",
+        "FULL_S2_COMPLETE",
+        "ACCESSIBILITY_CONFORMANCE",
+        "API_CHANGED"
+      ]
+    },
+    {
+      "id": "PSR-N79",
+      "description": "sponsor database recorded as migrated while the merge is still pending",
+      "expect": "PSR-17",
+      "path": [
+        "manifest",
+        "integration"
+      ],
+      "op": "set",
+      "value": {
+        "state": "REMOTE_CI_AND_MERGE_PENDING",
+        "pr_number": null,
+        "merge_commit": null
+      }
     }
   ]
 }

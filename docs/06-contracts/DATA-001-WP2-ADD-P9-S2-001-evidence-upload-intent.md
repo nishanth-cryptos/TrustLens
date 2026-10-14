@@ -2,8 +2,8 @@
 
 | Field | Value |
 | --- | --- |
-| Status | **APPROVED FOLLOWING INDEPENDENT REVIEW — ACTIVATED BY P6-SNAPSHOT-REV-001 — REMOTE CI + MERGE PENDING** ([GATE-033](../00-program/GATE-033-p9-s2-add-001-persistence-revision.md)). Approved in principle by the sponsor on 2026-10-14; the final independent review returned APPROVE with 0 remaining material findings. Not applied to the sponsor's database |
-| Status history | 2026-10-14 CANDIDATE (not independently reviewed) → 2026-10-14 approved following independent review (GATE-033) |
+| Status | **APPROVED FOLLOWING INDEPENDENT REVIEW — ACTIVATED BY P6-SNAPSHOT-REV-001 — MERGED (PR #47, merge `258cca4`)** ([GATE-033](../00-program/GATE-033-p9-s2-add-001-persistence-revision.md)). Approved in principle by the sponsor on 2026-10-14; the final independent review returned APPROVE with 0 remaining material findings. The sponsor reports migration 0004 applied locally (GATE-033 §8) |
+| Status history | 2026-10-14 CANDIDATE (not independently reviewed) → 2026-10-14 approved following independent review (GATE-033) → 2026-10-14 merged (PR #47) |
 | Change class | **Additive, with one governed constraint relaxation** (§2.3), explicitly approved by the independent review. It is not a purely additive change |
 | Extends | `contracts/postgresql/schema-v1.json` (DATA-001-WP2 0.2.0), pinned by SHA-256 in the machine addendum; the base is unchanged |
 | Machine addendum | [`contracts/postgresql/schema-v1-addendum-p9-s2-add-001.json`](../../contracts/postgresql/schema-v1-addendum-p9-s2-add-001.json): the artifact that becomes authoritative on activation |
@@ -124,8 +124,10 @@ A key reused after `active_until`:
    0004 and the snapshot revision. The final verdict was APPROVE (GATE-033).
 2. **Done in this branch:** snapshot revision `P6-SNAPSHOT-REV-001` is ACCEPTED, with GATE-033 pinned. The original
    Phase-6 snapshot, `schema-v1.json`, the DATA-001-WP2 document and the API/OAS contracts are **not** edited.
-3. **Pending:** the sponsor's own pull request, remote CI and merge. The revision becomes repository authority on merge.
-4. **Pending, after merge:** the sponsor creates the evidence key, reviews `make migration-sql`, then runs
+3. **Done:** merged into `main` by PR #47 (merge commit `258cca4084fc1ead680cdc2473bab95c915aedaf`). Remote CI is
+   not verified in GATE-033.
+4. **Done (sponsor-reported):** the evidence key exists and migration 0004 is applied locally. The documented route is
+   to create the key, review `make migration-sql`, then run
    `make migrate`.
 
 **Known limitation (carried):** the structural schema only admits additive-revision ids of the form

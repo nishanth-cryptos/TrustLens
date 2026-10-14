@@ -7,8 +7,13 @@ type Props = { initialCases?: CaseView[]; initialSubmissions?: SubmissionView[];
                initialSubmission?: string | null; initialEvidence?: EvidenceView[] };
 
 const when = (iso: string) => new Date(iso).toLocaleString();
-const STATE_LABELS: Record<string, string> = { OPEN: "Open", UNDER_REVIEW: "Under review", CLOSED: "Closed",
-  RECEIVING: "Waiting for evidence", RECEIVED: "Evidence received" };
+const CASE_STATE_LABELS: Record<string, string> = { OPEN: "Open", UNDER_REVIEW: "Under review", CLOSED: "Closed" };
+// Submission processing state (UX-002 submission_states), not evidence content state: RECEIVING means the submission is
+// open for evidence intake, whether or not evidence is already stored. Each evidence item's own state is shown with it.
+export const SUBMISSION_STATE_LABELS: Record<string, string> = {
+  RECEIVING: "Open for evidence", RECEIVED: "Evidence intake recorded", PROCESSING: "Processing recorded",
+  PROCESSED: "Processing finished", PARTIALLY_FAILED: "Some processing failed", FAILED: "Processing failed",
+};
 
 export default function Workspace({ initialCases, initialSubmissions = [], initialSelected = null, initialSubmission = null,
                                     initialEvidence }: Props) {
@@ -74,7 +79,7 @@ export default function Workspace({ initialCases, initialSubmissions = [], initi
               <button type="button" className={c.case_id === selected ? "case-item selected" : "case-item"}
                       aria-pressed={c.case_id === selected} onClick={() => { setSelected(c.case_id); setOpenSubmission(null); setMessage(null); }}>
                 <span>Case created {when(c.created_at)}</span>
-                <span className="meta">{STATE_LABELS[c.state] ?? c.state}{c.is_synthetic ? " · synthetic test data" : ""}</span>
+                <span className="meta">{CASE_STATE_LABELS[c.state] ?? c.state}{c.is_synthetic ? " · synthetic test data" : ""}</span>
               </button>
             </li>
           ))}
@@ -85,7 +90,7 @@ export default function Workspace({ initialCases, initialSubmissions = [], initi
         <div className="case-detail" aria-labelledby="case-detail-title">
           <h3 id="case-detail-title">Case details</h3>
           <dl className="principal">
-            <dt>Status</dt><dd>{STATE_LABELS[current.state] ?? current.state}</dd>
+            <dt>Status</dt><dd>{CASE_STATE_LABELS[current.state] ?? current.state}</dd>
             <dt>Your access</dt><dd>{current.viewer_access.relationship === "OWNER" ? "Owner" : current.viewer_access.relationship}</dd>
             <dt>Case reference</dt><dd><code>{current.case_id}</code></dd>
           </dl>
@@ -98,7 +103,7 @@ export default function Workspace({ initialCases, initialSubmissions = [], initi
                   <button type="button" className={s.submission_id === openSubmission ? "case-item selected" : "case-item"}
                           aria-expanded={s.submission_id === openSubmission}
                           onClick={() => setOpenSubmission(s.submission_id === openSubmission ? null : s.submission_id)}>
-                    {INPUT_TYPES[s.declared_input_type] ?? s.declared_input_type} · {STATE_LABELS[s.state] ?? s.state} · received {when(s.received_at)}
+                    {INPUT_TYPES[s.declared_input_type] ?? s.declared_input_type} · {SUBMISSION_STATE_LABELS[s.state] ?? s.state} · received {when(s.received_at)}
                   </button>
                   {s.submission_id === openSubmission && (
                     <EvidencePanel submissionId={s.submission_id} initialEvidence={initialEvidence}

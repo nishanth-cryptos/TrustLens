@@ -117,7 +117,7 @@ Signed-in users can create cases and record submissions through the accepted API
 
 Migration `0003_case_submission` adds the contract tables; apply it with `make migrate`, as before.
 
-## S2 evidence intake (built; contract approved, merge and local migration pending)
+## S2 evidence intake (contract approved and merged)
 
 Owners can paste synthetic message text into a submission. The upload uses the accepted three-step flow:
 `createEvidenceUpload`, then `putEvidenceContent` (exact bytes as `text/plain; charset=utf-8`), then `finalizeEvidence`
@@ -130,8 +130,9 @@ Owners can paste synthetic message text into a submission. The upload uses the a
 Evidence routes answer `503` until **both** of these are true:
 1. Migration `0004_evidence_intake` is applied. It implements persistence addendum
    [DATA-001-WP2-ADD-P9-S2-001](../docs/06-contracts/DATA-001-WP2-ADD-P9-S2-001-evidence-upload-intent.md), approved
-   following independent review ([GATE-033](../docs/00-program/GATE-033-p9-s2-add-001-persistence-revision.md)); remote
-   CI and merge are pending. After merge, review `make migration-sql` before `make migrate`.
+   following independent review and merged in PR #47
+   ([GATE-033](../docs/00-program/GATE-033-p9-s2-add-001-persistence-revision.md)). Review `make migration-sql`
+   before `make migrate`.
 2. The sponsor has created the evidence key; see
    [S2-local-development-profile.md](../docs/07-implementation/S2-local-development-profile.md).
 
