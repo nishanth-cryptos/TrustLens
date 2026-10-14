@@ -8,14 +8,16 @@ from alembic.script import ScriptDirectory
 from sqlalchemy import create_engine, text
 from sqlalchemy.pool import NullPool
 
-from trustlens_backend.database import DatabaseSettings
+from trustlens_backend.database import DatabaseSettings, disposable_mode, install_connect_guard
 
 SCHEMA = "trustlens"
 config = context.config
 if not ScriptDirectory.from_config(config).get_heads():
     raise RuntimeError("No application revisions exist; add and review explicit SQL before migration execution")
 
-settings = DatabaseSettings.from_environment()
+if disposable_mode():
+    install_connect_guard()       # disposable runs: refuse the persistent endpoint before any connection
+settings = DatabaseSettings.from_environment()   # disposable mode: explicit TRUSTLENS_DB_HOST/PORT, never 55432
 if context.is_offline_mode():
     context.configure(url=settings.sqlalchemy_url(), target_metadata=None, literal_binds=True, version_table_schema=SCHEMA)
     with context.begin_transaction():

@@ -15,7 +15,7 @@ make database-check
 Start these in separate terminals:
 
 ```sh
-make backend-run     # http://127.0.0.1:8000 — probes, /auth/* boundary, GET /api/v1/me (single process)
+make backend-run     # http://127.0.0.1:8000 — single process, loopback only, proxy headers off (trustlens_backend.serve)
 make frontend-run    # http://127.0.0.1:5173 — sign-in UI; proxies /api and /auth to the backend
 ```
 
@@ -103,5 +103,36 @@ Run `make backend-run` and `make frontend-run`, open http://127.0.0.1:5173 (not 
 **Sign in with Keycloak**. `/auth/*` are authentication-boundary routes, not API v1 operations. Sessions live in the
 backend process: restarting it signs everyone out, so run exactly one backend process. Sign-in outcomes,
 authorization denials and role grants/revocations are written to the hash-chained audit log (`make audit-verify`
-recomputes it); if the audit append fails, sign-in fails closed. Rate limiting and a durable session store are not
-implemented yet.
+recomputes it); if the audit append fails, sign-in fails closed. Sign-in and state-changing requests are bounded by
+local, in-memory admission control; a durable session store is not implemented yet.
+
+## S2 cases and submissions
+
+Signed-in users can create cases and record submissions through the accepted API operations `createCase`, `getCase`,
+`listCases`, `createSubmission`, `getSubmission` and `listSubmissions`:
+- owners and grants are set by the server;
+- access is masked as 404 or refused as 403;
+- creates require an `Idempotency-Key`;
+- `CASE_CREATED` is audited atomically.
+
+Migration `0003_case_submission` adds the contract tables; apply it with `make migrate`, as before.
+
+## S2 evidence intake (built; contract approved, merge and local migration pending)
+
+Owners can paste synthetic message text into a submission. The upload uses the accepted three-step flow:
+`createEvidenceUpload`, then `putEvidenceContent` (exact bytes as `text/plain; charset=utf-8`), then `finalizeEvidence`
+(`202`). `getEvidenceMetadata` and `listEvidence` read it back.
+- The server computes the SHA-256; a client digest is optional and advisory.
+- Content is encrypted at rest with the approved local key profile.
+- Custody steps are audited in the hash chain.
+- Nothing is analysed or scored.
+
+Evidence routes answer `503` until **both** of these are true:
+1. Migration `0004_evidence_intake` is applied. It implements persistence addendum
+   [DATA-001-WP2-ADD-P9-S2-001](../docs/06-contracts/DATA-001-WP2-ADD-P9-S2-001-evidence-upload-intent.md), approved
+   following independent review ([GATE-033](../docs/00-program/GATE-033-p9-s2-add-001-persistence-revision.md)); remote
+   CI and merge are pending. After merge, review `make migration-sql` before `make migrate`.
+2. The sponsor has created the evidence key; see
+   [S2-local-development-profile.md](../docs/07-implementation/S2-local-development-profile.md).
+
+That file also lists the approved limits and the bounded local admission control (`429 RATE_LIMITED`).

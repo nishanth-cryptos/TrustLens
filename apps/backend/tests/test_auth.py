@@ -149,7 +149,11 @@ class AuthTestCase(unittest.TestCase):
         self.runtime = AuthRuntime(settings=s, oidc=oidc, transactions=TransactionStore(300, 100, clock=self.clock),
                                    sessions=SessionStore(1800, 28800, 100, clock=self.clock), principals=self.principals,
                                    audit=self.audit)
-        self.client = TestClient(create_app(self.runtime), base_url=BACKEND)
+        app = create_app(self.runtime)
+        from trustlens_backend.admission import Admission, BucketProfile
+        generous = BucketProfile(capacity=10_000, refill_per_second=10_000)       # admission has its own tests
+        app.state.admission = Admission(generous, generous)
+        self.client = TestClient(app, base_url=BACKEND)
         self.client.__enter__()
         self.addCleanup(self.client.__exit__, None, None, None)
 
@@ -737,8 +741,14 @@ class RouteSurfaceTests(unittest.TestCase):
         catalog = json.loads((ROOT / "contracts/api/api-v1.json").read_text())
         probes = {o["path"] for o in catalog["operations"] if o.get("internal")}
         me = next(o["path"] for o in catalog["operations"] if o["operation_id"] == "getMe")
+        from trustlens_backend.cases import OPERATIONS
+        from trustlens_backend.evidence import OPERATIONS as EVIDENCE_OPERATIONS
+        s2 = {o["path"] for o in catalog["operations"] if o["operation_id"] in {**OPERATIONS, **EVIDENCE_OPERATIONS}}
         app = create_app(None, configure_from_environment=False)
-        self.assertEqual({r.path for r in app.routes}, probes | {me} | AUTH_BOUNDARY_ROUTES)
+        self.assertEqual({r.path for r in app.routes}, probes | {me} | s2 | AUTH_BOUNDARY_ROUTES)
+        served = {(m, r.path) for r in app.routes for m in getattr(r, "methods", ()) if r.path.startswith("/api/")}
+        catalogued = {(o["method"], o["path"]) for o in catalog["operations"]}
+        self.assertTrue(served <= catalogued, served - catalogued)          # no invented operation or method
         self.assertFalse(any(p.startswith(catalog["base_path"]) for p in AUTH_BOUNDARY_ROUTES))
 
 

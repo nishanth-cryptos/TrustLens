@@ -1,0 +1,433 @@
+{
+  "addendum_schema_version": "1.1",
+  "addendum_id": "P9-S2-ADD-001",
+  "title": "Evidence upload intent and idempotency-scope supersession (DATA-001-WP2 revision: additive, with one governed constraint relaxation)",
+  "status": "ACTIVATED",
+  "status_note": "Approved in principle by the sponsor on 2026-10-14. APPROVED FOLLOWING INDEPENDENT REVIEW (Codex final verdict APPROVE, 0 remaining material findings; relaxation P9-S2-ADD-001-REL-01 explicitly approved), recorded in GATE-033. Forward activation recorded by the accepted Phase-6 snapshot revision P6-SNAPSHOT-REV-001 — REMOTE CI + MERGE PENDING. Not applied to the sponsor's database.",
+  "change_class": "ADDITIVE_WITH_GOVERNED_CONSTRAINT_RELAXATION",
+  "extends": {
+    "path": "contracts/postgresql/schema-v1.json",
+    "contract_id": "TRUSTLENS-POSTGRESQL-PERSISTENCE",
+    "contract_version": "0.2.0",
+    "sha256": "f3595294ff5138e2e7f0167df2818b291bbc1b77ccf9e38113ea4921954c7ecd"
+  },
+  "resulting_contract": {
+    "contract_version": "0.3.0",
+    "status": "EFFECTIVE 0.3.0 = 0.2.0 + P9-S2-ADD-001 (APPROVED FOLLOWING INDEPENDENT REVIEW, GATE-033; ACTIVATED by P6-SNAPSHOT-REV-001 — REMOTE CI + MERGE PENDING)"
+  },
+  "human_contract": "docs/06-contracts/DATA-001-WP2-ADD-P9-S2-001-evidence-upload-intent.md",
+  "frozen_artifacts_unchanged": [
+    "contracts/postgresql/schema-v1.json",
+    "docs/06-contracts/DATA-001-WP2-postgresql-persistence-contract.md",
+    "contracts/api/api-v1.json",
+    "contracts/api/openapi-v1.json",
+    "contracts/phase6/phase6-closure-v1.json",
+    "contracts/postgresql/schema-contract.schema.json"
+  ],
+  "api_impact": "NONE. API-001/OAS-001 operations, DTOs, states and status codes are unchanged; client_declared_sha256 stays optional.",
+  "reasons": [
+    "evidence_item.content_sha256 and byte_length are NOT NULL, but API-001 §12 creates the evidence item before any bytes exist and the authoritative digest is computed only at PUT; display_filename and declared_byte_length have no column.",
+    "api_idempotency_record makes its scope columns write-once and uq_api_idempotency_scope covers the full scope with no expiry term, so the OPS-001 §5 'fresh claim after active_until' is impossible without deleting a governed record, which tl_app_runtime cannot and should not do."
+  ],
+  "byte_definitions": {
+    "TL_EVIDENCE_BYTES_V1": "The exact HTTP request body bytes of putEvidenceContent, with no decoding, normalisation, trimming or newline conversion. content_sha256 is SHA-256 over exactly these bytes."
+  },
+  "vocabularies_added": {
+    "evidence_upload_intent_state": {
+      "authority": "PERSISTENCE_CONTRACT",
+      "source": "P9-S2-ADD-001",
+      "values": [
+        "OPEN",
+        "MATERIALIZED"
+      ],
+      "note": "OPEN until the first accepted PUT creates the evidence_item; MATERIALIZED is terminal for the intent."
+    },
+    "evidence_put_rejection_category": {
+      "authority": "PERSISTENCE_CONTRACT",
+      "source": "P9-S2-ADD-001",
+      "values": [
+        "LENGTH_MISMATCH",
+        "DIGEST_MISMATCH",
+        "MEDIA_INVALID",
+        "SIZE_EXCEEDED"
+      ],
+      "note": "Most recent rejected PUT, recorded without changing the intent state; the client may retry with the exact declared bytes."
+    }
+  },
+  "logical_object_coverage_added": {
+    "EvidenceItem": [
+      "evidence_upload_intent"
+    ]
+  },
+  "tables_added": [
+    {
+      "name": "evidence_upload_intent",
+      "logical_object": "EvidenceItem",
+      "purpose": "P9-S2-ADD-001: durable record of an accepted createEvidenceUpload before its bytes exist (pre-content intake stage of DATA-001 EvidenceItem). Its identifier IS the API evidence_id and, once the first accepted PUT materializes it, the evidence_item_id. Holds declared values only; never a digest the server has not computed.",
+      "store_class": "OPS",
+      "authority": "OPERATIONAL_RECORD",
+      "classification": "C2",
+      "mutability": "M-OPS",
+      "delete_policy": "GOVERNED_DELETION_ONLY",
+      "retention": {
+        "mode": "EXPLICIT",
+        "column": "retention_policy_reference_id"
+      },
+      "columns": [
+        {
+          "name": "evidence_upload_intent_id",
+          "type": "uuid",
+          "nullable": false,
+          "classification": "C2",
+          "description": "API evidence_id (application-generated UUIDv4); equals evidence_item_id after materialization."
+        },
+        {
+          "name": "submission_id",
+          "type": "uuid",
+          "nullable": false,
+          "classification": "C2",
+          "description": "Owning submission."
+        },
+        {
+          "name": "initiated_by_principal_id",
+          "type": "uuid",
+          "nullable": false,
+          "classification": "C2",
+          "description": "Authenticated principal that initiated the upload (server-derived)."
+        },
+        {
+          "name": "artifact_kind",
+          "type": "text",
+          "nullable": false,
+          "classification": "C2",
+          "description": "Declared artifact kind.",
+          "vocabulary": "artifact_kind"
+        },
+        {
+          "name": "declared_media_type",
+          "type": "text",
+          "nullable": false,
+          "classification": "C2",
+          "description": "Declared media type (untrusted; bounded)."
+        },
+        {
+          "name": "declared_byte_length",
+          "type": "bigint",
+          "nullable": false,
+          "classification": "C2",
+          "description": "Declared byte length; the PUT body must match exactly."
+        },
+        {
+          "name": "display_filename",
+          "type": "text",
+          "nullable": true,
+          "classification": "C4",
+          "description": "Untrusted display name; never a storage path or download filename."
+        },
+        {
+          "name": "capture_declared_at",
+          "type": "timestamptz",
+          "nullable": true,
+          "classification": "C2",
+          "description": "User-declared capture instant."
+        },
+        {
+          "name": "client_declared_sha256",
+          "type": "text",
+          "nullable": true,
+          "classification": "C2",
+          "description": "Advisory client digest (optional, API-001); a mismatch with the server-computed digest is rejected and recorded. Never authoritative.",
+          "pattern": "^[0-9a-f]{64}$",
+          "content_kind": "DIGEST"
+        },
+        {
+          "name": "idempotency_key",
+          "type": "uuid",
+          "nullable": false,
+          "classification": "C2",
+          "description": "Internal key shared with the EVIDENCE_INGEST cross_store_operation and the evidence_item (not the client Idempotency-Key)."
+        },
+        {
+          "name": "intent_state",
+          "type": "text",
+          "nullable": false,
+          "classification": "C2",
+          "description": "Intent state.",
+          "vocabulary": "evidence_upload_intent_state"
+        },
+        {
+          "name": "last_rejection_category",
+          "type": "text",
+          "nullable": true,
+          "classification": "C2",
+          "description": "Category of the most recent rejected PUT.",
+          "vocabulary": "evidence_put_rejection_category"
+        },
+        {
+          "name": "evidence_item_id",
+          "type": "uuid",
+          "nullable": true,
+          "classification": "C2",
+          "description": "Materialized evidence item (write-once)."
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "classification": "C2",
+          "description": "Initiation instant (API ingested_at)."
+        },
+        {
+          "name": "state_changed_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "classification": "C2",
+          "description": "Last change instant."
+        },
+        {
+          "name": "retention_policy_reference_id",
+          "type": "uuid",
+          "nullable": false,
+          "classification": "C2",
+          "description": "Retention class/policy reference (no duration; OI-05)."
+        }
+      ],
+      "primary_key": [
+        "evidence_upload_intent_id"
+      ],
+      "foreign_keys": [
+        {
+          "columns": [
+            "submission_id"
+          ],
+          "references": {
+            "table": "submission",
+            "columns": [
+              "submission_id"
+            ]
+          },
+          "on_delete": "RESTRICT"
+        },
+        {
+          "columns": [
+            "initiated_by_principal_id"
+          ],
+          "references": {
+            "table": "principal_reference",
+            "columns": [
+              "principal_reference_id"
+            ]
+          },
+          "on_delete": "RESTRICT"
+        },
+        {
+          "columns": [
+            "evidence_item_id"
+          ],
+          "references": {
+            "table": "evidence_item",
+            "columns": [
+              "evidence_item_id"
+            ]
+          },
+          "on_delete": "RESTRICT"
+        },
+        {
+          "columns": [
+            "retention_policy_reference_id"
+          ],
+          "references": {
+            "table": "retention_policy_reference",
+            "columns": [
+              "retention_policy_reference_id"
+            ]
+          },
+          "on_delete": "RESTRICT"
+        }
+      ],
+      "unique": [
+        {
+          "name": "uq_evidence_upload_intent_idempotency",
+          "columns": [
+            "idempotency_key"
+          ],
+          "purpose": "One intent per internal ingest key, shared 1:1 with its EVIDENCE_INGEST cross_store_operation and evidence_item."
+        },
+        {
+          "name": "uq_evidence_upload_intent_evidence_item",
+          "columns": [
+            "evidence_item_id"
+          ],
+          "purpose": "An evidence item is materialized from at most one intent; also the supporting index for the evidence_item FK (DC-24)."
+        }
+      ],
+      "checks": [
+        {
+          "name": "ck_evidence_upload_intent_materialized",
+          "rule": "(intent_state = 'MATERIALIZED') = (evidence_item_id IS NOT NULL)",
+          "purpose": "MATERIALIZED exactly when the evidence item exists (no half-materialized intent)."
+        },
+        {
+          "name": "ck_evidence_upload_intent_same_identity",
+          "rule": "evidence_item_id IS NULL OR evidence_item_id = evidence_upload_intent_id",
+          "purpose": "The API evidence_id is one identity across intent and evidence_item."
+        },
+        {
+          "name": "ck_evidence_upload_intent_declared_length",
+          "rule": "declared_byte_length >= 0",
+          "purpose": "Declared length is a non-negative byte count (the request validator requires >= 1)."
+        },
+        {
+          "name": "ck_evidence_upload_intent_bounded_text",
+          "rule": "length(declared_media_type) <= 255 AND (display_filename IS NULL OR length(display_filename) <= 255)",
+          "purpose": "Untrusted declared text is length-bounded."
+        }
+      ],
+      "indexes": [
+        {
+          "name": "ix_evidence_upload_intent_submission",
+          "columns": [
+            "submission_id",
+            "created_at"
+          ],
+          "justification": "listEvidence by submission in created order, and deletion enumeration for the submission FK (DC-24)."
+        },
+        {
+          "name": "ix_evidence_upload_intent_open",
+          "columns": [
+            "intent_state",
+            "state_changed_at"
+          ],
+          "where": "intent_state = 'OPEN'",
+          "justification": "Reconciliation of abandoned uploads (no automatic cleanup period; UX-002#5 / OI-05)."
+        }
+      ],
+      "mutable_columns": [
+        "intent_state",
+        "last_rejection_category",
+        "state_changed_at"
+      ],
+      "write_once_columns": [
+        "evidence_item_id"
+      ],
+      "soft_references": [],
+      "transition_guards": [
+        "intent_state OPEN -> MATERIALIZED only, in the same transaction that inserts the evidence_item with the same identifier; MATERIALIZED is terminal for the intent."
+      ],
+      "constraint_triggers": [
+        {
+          "name": "tg_evidence_upload_intent_guard",
+          "timing": "BEFORE_UPDATE",
+          "rule": "Declared values, identity, idempotency_key, created_at and retention reference are immutable; intent_state moves only OPEN -> MATERIALIZED; evidence_item_id is write-once.",
+          "purpose": "Keeps the intake record an accountable, append-style history of what was declared."
+        }
+      ]
+    }
+  ],
+  "tables_amended": [
+    {
+      "name": "api_idempotency_record",
+      "columns_added": [
+        {
+          "name": "superseded_at",
+          "type": "timestamptz",
+          "nullable": true,
+          "classification": "C2",
+          "description": "Write-once: set only after active_until has passed, when a reused key starts a fresh claim (OPS-001 §5). The superseded record is kept, never deleted."
+        }
+      ],
+      "write_once_columns_added": [
+        "superseded_at"
+      ],
+      "unique_replaced": [
+        {
+          "from": {
+            "name": "uq_api_idempotency_scope",
+            "columns": [
+              "principal_reference_id",
+              "operation_id",
+              "target_resource_scope",
+              "idempotency_key_digest"
+            ],
+            "purpose": "Atomic claim: exactly one record per principal + operation + target resource + key; concurrent duplicates conflict on this constraint instead of check-then-insert."
+          },
+          "to": {
+            "name": "uq_api_idempotency_scope",
+            "columns": [
+              "principal_reference_id",
+              "operation_id",
+              "target_resource_scope",
+              "idempotency_key_digest"
+            ],
+            "where": "superseded_at IS NULL",
+            "purpose": "Atomic claim: at most one GOVERNING (non-superseded) record per principal + operation + target resource + key; concurrent duplicates conflict on this partial unique index instead of check-then-insert. Superseded history is kept, never deleted."
+          },
+          "relaxation_id": "P9-S2-ADD-001-REL-01"
+        }
+      ],
+      "transition_guards_replaced": [
+        {
+          "from": "Claim = INSERT ... ON CONFLICT (uq_api_idempotency_scope) DO NOTHING with execution_state IN_PROGRESS and a fresh claim_token; only the inserting request executes.",
+          "to": "Claim = INSERT ... ON CONFLICT DO NOTHING against the partial unique index uq_api_idempotency_scope (WHERE superseded_at IS NULL) with execution_state IN_PROGRESS and a fresh claim_token; only the inserting request executes."
+        },
+        {
+          "from": "After active_until the record no longer governs the key and may be purged by governed retention action; behaviour of a reused key after expiry is the documented expiry policy (OPS-001 §5).",
+          "to": "After active_until the record no longer governs the key (OPS-001 §5): a reused key is a NEW request. The expired record is marked superseded_at = now() by compare-and-swap (only while active_until <= now() and superseded_at IS NULL) and a fresh claim is inserted in the same transaction. Superseded records are kept unchanged and never govern again; no record is deleted by the request path."
+        }
+      ],
+      "transition_guards_added": [
+        "superseded_at is write-once and may move NULL -> value only when active_until <= now(); a superseded record is immutable."
+      ]
+    },
+    {
+      "name": "cross_store_operation",
+      "transition_guards_added": [
+        "attempt_count is the content-write fencing token: it never decreases and advances by exactly one per attempt; an attempt records its outcome only WHERE attempt_count still equals its own number and state = CONTENT_PENDING, so a stale success or failure changes nothing. While CONTENT_PENDING, next_attempt_not_before is the live attempt lease (approved 30 s); a later attempt may take over only after it passes. No transaction spans the content store."
+      ]
+    }
+  ],
+  "constraint_relaxations": [
+    {
+      "id": "P9-S2-ADD-001-REL-01",
+      "classification": "GOVERNED_CONSTRAINT_RELAXATION",
+      "table": "api_idempotency_record",
+      "constraint": "uq_api_idempotency_scope",
+      "from": "UNIQUE (principal_reference_id, operation_id, target_resource_scope, idempotency_key_digest)",
+      "to": "UNIQUE (principal_reference_id, operation_id, target_resource_scope, idempotency_key_digest) WHERE superseded_at IS NULL",
+      "why": "OPS-001 §5 makes a reused key after active_until a new request. Under the full-scope constraint the only way to admit that request is to delete the governed record, which tl_app_runtime cannot and must not do. Restricting uniqueness to governing (non-superseded) records admits exactly one new claim per scope while keeping the history.",
+      "not_purely_additive": true,
+      "preserved_invariants": [
+        "At most one governing record per (principal, operation, target resource, key digest) at any instant: the partial unique index still serializes concurrent claims (atomic INSERT ... ON CONFLICT, never check-then-insert).",
+        "Within the 24 h active window behaviour is unchanged: replay, IDEMPOTENCY_KEY_REUSED and IDEMPOTENCY_IN_PROGRESS exactly as P6-WP6.",
+        "A record can be superseded only after its own active_until, once, by compare-and-swap; a superseded record is immutable and never governs again.",
+        "Only the SHA-256 key digest is stored; no raw key, no cached response body, no DELETE grant, no request-path deletion.",
+        "Completion stays fenced by claim_token and atomic with the governed effect."
+      ],
+      "migration_compatibility": [
+        "Existing 0003 rows all have superseded_at NULL, so they satisfy the partial index exactly as they satisfied the full constraint; the index build cannot fail on them.",
+        "Migration 0004 adds the column, drops the constraint and creates the partial unique index (same name) in one migration transaction; there is no window without uniqueness.",
+        "Application code on a 0003 database keeps full-scope semantics (an expired key is refused as IDEMPOTENCY_KEY_REUSED, stricter than OPS-001 §5) and evidence intake stays disabled, so mixed versions never execute a request twice.",
+        "There is no automatic downgrade: as for 0001-0003, downgrade() raises and a rollback needs its own review. Restoring the full-scope constraint would be lossless only while no record is superseded; afterwards it would require deleting history."
+      ],
+      "review_required": "Accepted explicitly by the independent review recorded in GATE-033 (it was not covered by \"additive\")."
+    }
+  ],
+  "existing_contract_tables_created_by_migration": [
+    "evidence_item",
+    "cross_store_operation"
+  ],
+  "api_resolution": {
+    "getEvidenceMetadata/listEvidence": "Every evidence_id has exactly one evidence_upload_intent. upload_state = map(evidence_item.content_state) via api_upload_state.maps_from when materialized, else AWAITING_CONTENT. content_sha256/byte_length/verified_media_type/finalized_at come only from evidence_item; artifact_kind, declared_media_type, display_filename and ingested_at (= created_at) from the intent.",
+    "putEvidenceContent": "First accepted PUT: insert evidence_item (RECEIVED, server digest) and set the intent MATERIALIZED in one transaction. Each content-write attempt takes the next attempt_count (fencing token) and a 30 s lease, writes the encrypted object outside any transaction, and records CONTENT_STORED (with the EVIDENCE_STORED audit) or FAILED_RETRYABLE/FAILED_TERMINAL only while it still holds the fence. Identical re-PUT is a no-op on stored content, waits (503 Retry-After) while another attempt holds a live lease, or resumes after it; different bytes -> STATE_CONFLICT.",
+    "finalizeEvidence": "202. Re-read, decrypt and verify digest, length and media; INTEGRITY_VERIFIED -> FINALIZED with the custody audit in one transaction; verification failure -> INTEGRITY_FAILED + INTEGRITY_FAILURE audit, never FINALIZED."
+  },
+  "grants_added": {
+    "tl_app_runtime": [
+      "SELECT, INSERT on evidence_upload_intent, evidence_item, cross_store_operation",
+      "UPDATE(intent_state, last_rejection_category, state_changed_at, evidence_item_id) on evidence_upload_intent",
+      "UPDATE(content_state, state_changed_at, ecs_locator, verified_at, finalized_at, verified_media_type) on evidence_item",
+      "UPDATE(state, attempt_count, last_failure_category, next_attempt_not_before, state_changed_at, terminal_at, ecs_object_ref) on cross_store_operation",
+      "UPDATE(superseded_at) on api_idempotency_record"
+    ]
+  }
+}

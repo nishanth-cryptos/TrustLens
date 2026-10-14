@@ -1,0 +1,573 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://trustlens/contracts/phase6/phase6-snapshot-revision-contract.schema.json",
+  "title": "TrustLens forward Phase-6 snapshot revision",
+  "description": "Closed record of a forward revision of the Phase-6 contract snapshot. It carries the original closure pins unchanged, adds new pins, and states the revision lifecycle. It never edits the original closure manifest.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "revision_schema_version",
+    "revision_id",
+    "title",
+    "status",
+    "approved",
+    "activated",
+    "independent_review",
+    "integration",
+    "authorizing_change",
+    "predecessor",
+    "phase7_closure",
+    "carried_artifacts",
+    "structural_schema_pins",
+    "added_artifacts",
+    "effective_persistence_contract",
+    "constraint_relaxations",
+    "api_contract",
+    "migration",
+    "open_items",
+    "activation_steps",
+    "claim_boundary"
+  ],
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "path": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_./-]+$",
+      "not": {
+        "pattern": "(^/|\\.\\.)"
+      }
+    },
+    "pin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "path",
+        "sha256"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 3
+        },
+        "path": {
+          "$ref": "#/$defs/path"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "role": {
+          "type": "string",
+          "minLength": 5
+        }
+      }
+    }
+  },
+  "properties": {
+    "revision_schema_version": {
+      "const": "1.0.0"
+    },
+    "revision_id": {
+      "type": "string",
+      "pattern": "^P6-SNAPSHOT-REV-[0-9]{3}$"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 10
+    },
+    "status": {
+      "enum": [
+        "CANDIDATE",
+        "ACCEPTED"
+      ]
+    },
+    "approved": {
+      "type": "boolean"
+    },
+    "activated": {
+      "type": "boolean"
+    },
+    "independent_review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "verdict_record",
+        "prior_rounds"
+      ],
+      "properties": {
+        "state": {
+          "enum": [
+            "PENDING",
+            "APPROVED",
+            "REQUEST_CHANGES"
+          ]
+        },
+        "verdict_record": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "prior_rounds": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "reviewer",
+              "verdict",
+              "counts",
+              "summary",
+              "findings_addressed"
+            ],
+            "properties": {
+              "reviewer": {
+                "type": "string"
+              },
+              "verdict": {
+                "enum": [
+                  "APPROVE",
+                  "REQUEST_CHANGES"
+                ]
+              },
+              "counts": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "BLOCKER",
+                      "HIGH",
+                      "MEDIUM",
+                      "LOW"
+                    ],
+                    "properties": {
+                      "BLOCKER": {
+                        "type": "integer"
+                      },
+                      "HIGH": {
+                        "type": "integer"
+                      },
+                      "MEDIUM": {
+                        "type": "integer"
+                      },
+                      "LOW": {
+                        "type": "integer"
+                      }
+                    }
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Severity counts as reported by the reviewer; null when the round's report gave no severity breakdown."
+              },
+              "findings_addressed": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 5
+                }
+              },
+              "summary": {
+                "type": "string",
+                "minLength": 10
+              }
+            }
+          }
+        }
+      }
+    },
+    "authorizing_change": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "phase",
+        "work_package",
+        "sponsor_decision",
+        "addendum",
+        "human_contract"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "phase": {
+          "type": "string"
+        },
+        "work_package": {
+          "type": "string"
+        },
+        "sponsor_decision": {
+          "type": "string"
+        },
+        "addendum": {
+          "$ref": "#/$defs/path"
+        },
+        "human_contract": {
+          "$ref": "#/$defs/path"
+        }
+      }
+    },
+    "predecessor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256",
+        "snapshot_artifact_count",
+        "unchanged",
+        "rule"
+      ],
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/path"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "snapshot_artifact_count": {
+          "type": "integer"
+        },
+        "unchanged": {
+          "type": "boolean"
+        },
+        "rule": {
+          "type": "string",
+          "minLength": 10
+        }
+      }
+    },
+    "phase7_closure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256",
+        "unchanged"
+      ],
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/path"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "unchanged": {
+          "type": "boolean"
+        }
+      }
+    },
+    "carried_artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "path",
+          "work_package",
+          "role",
+          "sha256"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "path": {
+            "$ref": "#/$defs/path"
+          },
+          "work_package": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "sha256": {
+            "$ref": "#/$defs/sha256"
+          }
+        }
+      }
+    },
+    "structural_schema_pins": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "origin",
+        "artifacts"
+      ],
+      "properties": {
+        "origin": {
+          "type": "string"
+        },
+        "artifacts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pin"
+          }
+        }
+      }
+    },
+    "added_artifacts": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/pin"
+      }
+    },
+    "effective_persistence_contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "base_path",
+        "base_version",
+        "base_sha256",
+        "addendum_id",
+        "effective_version",
+        "structural_schema",
+        "composition",
+        "table_count",
+        "vocabulary_count",
+        "added_tables",
+        "amended_tables"
+      ],
+      "properties": {
+        "base_path": {
+          "const": "contracts/postgresql/schema-v1.json"
+        },
+        "base_version": {
+          "type": "string"
+        },
+        "base_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "addendum_id": {
+          "type": "string"
+        },
+        "effective_version": {
+          "type": "string"
+        },
+        "structural_schema": {
+          "const": "contracts/postgresql/schema-contract.schema.json"
+        },
+        "composition": {
+          "type": "string",
+          "minLength": 10
+        },
+        "table_count": {
+          "type": "integer"
+        },
+        "vocabulary_count": {
+          "type": "integer"
+        },
+        "added_tables": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "amended_tables": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "constraint_relaxations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "classification",
+          "table",
+          "constraint",
+          "accepted",
+          "acceptance_by"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "classification": {
+            "const": "GOVERNED_CONSTRAINT_RELAXATION"
+          },
+          "table": {
+            "type": "string"
+          },
+          "constraint": {
+            "type": "string"
+          },
+          "accepted": {
+            "type": "boolean"
+          },
+          "acceptance_by": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "api_contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "api_catalog_path",
+        "api_version",
+        "api_catalog_sha256",
+        "openapi_path",
+        "openapi_info_version",
+        "openapi_sha256",
+        "changed"
+      ],
+      "properties": {
+        "api_catalog_path": {
+          "const": "contracts/api/api-v1.json"
+        },
+        "api_version": {
+          "type": "string"
+        },
+        "api_catalog_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "openapi_path": {
+          "const": "contracts/api/openapi-v1.json"
+        },
+        "openapi_info_version": {
+          "type": "string"
+        },
+        "openapi_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "changed": {
+          "type": "boolean"
+        }
+      }
+    },
+    "migration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "revision",
+        "down_revision",
+        "applied_to_sponsor_database",
+        "apply_before_activation"
+      ],
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/path"
+        },
+        "revision": {
+          "type": "string"
+        },
+        "down_revision": {
+          "type": "string"
+        },
+        "applied_to_sponsor_database": {
+          "type": "boolean"
+        },
+        "apply_before_activation": {
+          "type": "boolean"
+        }
+      }
+    },
+    "open_items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "state",
+          "why_open",
+          "owner"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "why_open": {
+            "type": "string",
+            "minLength": 10
+          },
+          "owner": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "activation_steps": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 10
+      }
+    },
+    "claim_boundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "may_support",
+        "must_not_support"
+      ],
+      "properties": {
+        "may_support": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Z0-9_]+$"
+          }
+        },
+        "must_not_support": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Z0-9_]+$"
+          }
+        }
+      }
+    },
+    "integration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "pr_number",
+        "merge_commit"
+      ],
+      "description": "Git integration of this revision. Only the sponsor's PR/merge process can make it MERGED.",
+      "properties": {
+        "state": {
+          "enum": [
+            "NOT_SUBMITTED",
+            "REMOTE_CI_AND_MERGE_PENDING",
+            "MERGED"
+          ]
+        },
+        "pr_number": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "merge_commit": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[0-9a-f]{40}$"
+        }
+      }
+    }
+  }
+}

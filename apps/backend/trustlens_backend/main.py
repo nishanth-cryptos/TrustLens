@@ -8,8 +8,11 @@ from uuid import uuid4
 
 from fastapi import FastAPI, Request
 
+from .admission import Admission, admission_middleware
 from .audit import AuditUnavailable, PostgresAuditSink
 from .auth import AuthRuntime, csrf_middleware, install
+from .cases import install as install_cases
+from .evidence import install as install_evidence
 from .config import AuthConfigurationError, AuthSettings, load_environment_files
 from .database import DatabaseConfigurationError, DatabaseSettings
 from .oidc import OIDCClient
@@ -28,7 +31,9 @@ def runtime_from_environment(environment=None) -> AuthRuntime:
     return AuthRuntime(settings=settings, oidc=OIDCClient(settings),
                        transactions=TransactionStore(settings.transaction_seconds, settings.max_pending_transactions),
                        sessions=SessionStore(settings.session_idle_seconds, settings.session_absolute_seconds, settings.max_sessions),
-                       principals=principals, audit=audit)
+                       principals=principals, audit=audit, database=database,
+                       evidence_store_paths=(env.get("TRUSTLENS_EVIDENCE_DIR", "~/.local/share/trustlens/evidence-dev"),
+                                             env.get("TRUSTLENS_EVIDENCE_KEK_FILE", "~/.config/trustlens/evidence-kek-v1.key")))
 
 
 def create_app(runtime: AuthRuntime | None = None, configure_from_environment: bool = True) -> FastAPI:
@@ -39,8 +44,10 @@ def create_app(runtime: AuthRuntime | None = None, configure_from_environment: b
         except AuthConfigurationError as error:
             print(f"Authentication disabled (fail closed): {error}", file=sys.stderr)   # messages carry no values
     app.state.auth = runtime
+    app.state.admission = Admission()
 
     app.middleware("http")(csrf_middleware)
+    app.middleware("http")(admission_middleware)        # outside CSRF: refuse floods before any further work
 
     @app.middleware("http")
     async def request_identity(request: Request, call_next):
@@ -61,6 +68,8 @@ def create_app(runtime: AuthRuntime | None = None, configure_from_environment: b
         return {"status": "NOT_READY"}
 
     install(app)
+    install_cases(app)
+    install_evidence(app)
     return app
 
 

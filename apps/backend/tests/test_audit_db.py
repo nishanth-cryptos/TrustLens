@@ -12,11 +12,10 @@ import uuid
 from unittest.mock import patch
 
 import psycopg
-from dotenv import dotenv_values
 
 from trustlens_backend import audit, provisioning
 from trustlens_backend.audit import AuditEvent, AuditUnavailable, PostgresAuditSink, event_hash, verify_chain, verify_rows
-from trustlens_backend.database import DatabaseSettings
+from trustlens_backend.database import disposable_settings_from_file, install_connect_guard
 
 ISSUER = "http://127.0.0.1:8081/realms/test"
 
@@ -101,9 +100,7 @@ class VerifySnapshotUnitTests(unittest.TestCase):
 
 
 def _settings(variable):
-    path = os.environ.get(variable, "")
-    env = {k: v for k, v in dotenv_values(path).items() if v is not None} if path else {}
-    return DatabaseSettings.from_environment(env)
+    return disposable_settings_from_file(os.environ.get(variable, ""))     # same fail-closed guard as db_harness
 
 
 @unittest.skipUnless(os.environ.get("TRUSTLENS_TEST_DISPOSABLE_DB") == "1", "needs an explicitly disposable PostgreSQL")
@@ -112,8 +109,7 @@ class AuditDatabaseTests(unittest.TestCase):
     def setUpClass(cls):
         cls.app = _settings("TRUSTLENS_TEST_APP_DB_ENV_FILE")
         cls.migrator = _settings("TRUSTLENS_TEST_MIGRATOR_DB_ENV_FILE")
-        if 55432 in (cls.app.port, cls.migrator.port):
-            raise unittest.SkipTest("refusing the persistent development database port 55432")
+        install_connect_guard()
         assert cls.app.user == "tl_app_runtime" and cls.migrator.user == "tl_schema_migrator"
 
     def connect(self, settings=None, autocommit=False):
