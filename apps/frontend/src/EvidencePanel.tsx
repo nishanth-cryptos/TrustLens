@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
+import AnalysisPanel from "./AnalysisPanel";
+import { EvaluationView, ResultView } from "./evaluation";
 import { MAX_EVIDENCE_BYTES, STAGE_LABELS, Stage, EvidenceView, UPLOAD_STATE_LABELS, canResume, listEvidence, resumeUpload, uploadText,
   utf8Bytes } from "./evidence";
 
-type Props = { submissionId: string; canUpload: boolean; initialEvidence?: EvidenceView[] };
+type Props = { caseId: string; submissionId: string; canUpload: boolean; initialEvidence?: EvidenceView[];
+               initialEvaluation?: EvaluationView | null; initialResult?: ResultView | null };
 
 const when = (iso: string | null) => (iso ? new Date(iso).toLocaleString() : "");
 const BUSY: Stage[] = ["PREPARING", "SENDING", "CHECKING"];
 
-export default function EvidencePanel({ submissionId, canUpload, initialEvidence }: Props) {
+export default function EvidencePanel({ caseId, submissionId, canUpload, initialEvidence, initialEvaluation, initialResult }: Props) {
   const [items, setItems] = useState<EvidenceView[] | null>(initialEvidence ?? null);
   const [text, setText] = useState("");
   const [stage, setStage] = useState<Stage | null>(null);
@@ -75,7 +78,10 @@ export default function EvidencePanel({ submissionId, canUpload, initialEvidence
       )}
       {stage && <p className={stage === "FINALIZED" ? "success" : "meta"} role="status">{STAGE_LABELS[stage]}</p>}
       {error && <p className="notice" role="alert">{error}</p>}
-      <p className="note">The text is stored encrypted for this case. It is not analysed and no result is produced.</p>
+      <p className="note">The text is stored encrypted for this case. It is analysed only when you choose to analyse it.</p>
+      <AnalysisPanel caseId={caseId} submissionId={submissionId}
+                     hasFinalized={(items ?? []).filter((e) => e.upload_state === "FINALIZED").length === 1}
+                     initialEvaluation={initialEvaluation} initialResult={initialResult} />
     </div>
   );
 }

@@ -6,7 +6,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { createServer } from "vite";
 
 const server = await createServer({ server: { middlewareMode: true }, appType: "custom" });
-let App, auth, Workspace, submissionLabels, cases, evidence, KnowledgeStatus, knowledge;
+let App, auth, Workspace, submissionLabels, cases, evidence, KnowledgeStatus, knowledge, evaluation, AnalysisPanel;
 try {
   ({ default: App } = await server.ssrLoadModule("/src/App.tsx"));
   auth = await server.ssrLoadModule("/src/auth.ts");
@@ -15,6 +15,8 @@ try {
   evidence = await server.ssrLoadModule("/src/evidence.ts");
   ({ default: KnowledgeStatus } = await server.ssrLoadModule("/src/KnowledgeStatus.tsx"));
   knowledge = await server.ssrLoadModule("/src/knowledge.ts");
+  evaluation = await server.ssrLoadModule("/src/evaluation.ts");
+  ({ default: AnalysisPanel } = await server.ssrLoadModule("/src/AnalysisPanel.tsx"));
 } finally {
   await server.close();
 }
@@ -57,7 +59,8 @@ test("collects no content and keeps no credential in browser storage", () => {
   }
   const code = (file) => readFileSync(new URL(file, import.meta.url), "utf8").replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/.*$/gm, "");
   const source = code("./App.tsx") + code("./auth.ts") + code("./cases.ts") + code("./Workspace.tsx") + code("./evidence.ts")
-    + code("./EvidencePanel.tsx") + code("./knowledge.ts") + code("./KnowledgeStatus.tsx");
+    + code("./EvidencePanel.tsx") + code("./knowledge.ts") + code("./KnowledgeStatus.tsx") + code("./evaluation.ts")
+    + code("./AnalysisPanel.tsx");
   for (const forbidden of [/localStorage/, /sessionStorage/, /indexedDB/i, /document\.cookie/, /Authorization/,
                            /access_token|id_token|refresh_token/, /console\./]) {
     assert.doesNotMatch(source, forbidden);
@@ -114,7 +117,7 @@ test("workspace lists cases and submissions; text entry appears only for a chose
   assert.match(html, /synthetic test data/);
   assert.match(html, /Text message \(SMS\) · Open for evidence/);
   assert.match(html, /Record submission/);
-  assert.match(html, /Nothing is\s+analysed/);
+  assert.match(html, /not official\s+determinations/);
   assert.doesNotMatch(html, /<(form|input|textarea|iframe)\b/);
   assert.doesNotMatch(html, /risk|score|verdict|safe|scam detected/i);
 });
@@ -182,7 +185,8 @@ test("an owner's chosen submission offers one text box with a byte counter and h
   assert.match(html, /synthetic test data only/);
   assert.match(html, /0 of 65,536 bytes/);
   assert.match(html.replace(/<\/?(span|code)[^>]*>/g, ""), /Stored and verified · 57 bytes · SHA-256 abababababab…/);
-  assert.match(html, /not analysed and no result is produced/);
+  assert.match(html, /analysed only when you choose to analyse it/);
+  assert.match(html, /Analyze message<\/button>/);                       // one finalized text: the analysis action is offered
   assert.doesNotMatch(html, /risk|score|verdict|safe|scam detected|report ready/i);
 });
 
@@ -367,4 +371,173 @@ test("knowledge status uses only the accepted read operation", async () => {
   assert.equal(r.kind, "ok");
   assert.deepEqual(s.calls.map((c) => [c.url, c.init.method ?? "GET"]), [["/api/v1/knowledge/active", "GET"]]);
   assert.deepEqual(knowledge.KNOWLEDGE_READERS, ["ANALYST", "KNOWLEDGE_EDITOR", "KNOWLEDGE_APPROVER", "ADMINISTRATOR"]);
+});
+
+// ---- S5 analysis and result presentation (UX-003)
+const evaluationId = "3f2e1d0c-9b8a-4c7d-8e6f-5a4b3c2d1e0f";
+const anEvaluation = (state, extra = {}) => ({ evaluation_id: evaluationId, case_id: aCase.case_id, submission_id: aSubmission.submission_id,
+  origin: "INITIAL", predecessor_evaluation_id: null, state, failure: null,
+  result_availability: state === "COMPLETED" ? "AVAILABLE" : state === "FAILED" ? "NOT_PRODUCED" : "NOT_YET_AVAILABLE",
+  requested_at: "2026-10-15T09:00:00Z", completed_at: state === "COMPLETED" ? "2026-10-15T09:00:01Z" : null,
+  ai_usage: { requested: false, enabled_by_policy: false, used: false, fallback_reason: null }, provenance: null, links: {}, ...extra });
+const aResult = (extra = {}) => ({ evaluation_id: evaluationId, result_contract_version: "1.1.0", result_digest: "ef".repeat(32), view: "STANDARD",
+  input_support_status: "SUPPORTED", language: ["en"], script: ["Latn"], classification: "SCAM_PATTERN_DETECTED", decision_severity: "CRITICAL",
+  matched_evidence_strength: "STRONG", risk_level: "CRITICAL", detection_confidence: "HIGH", degraded: false,
+  governing_rule: { rule_id: "TL-CRED-001", rule_version: "1.0.0", source_references: ["SRC-004"] },
+  matched_rules: [{ rule_id: "TL-CRED-001", rule_version: "1.0.0", source_references: ["SRC-004"] }],
+  explanation: { summary: "Scam pattern detected: OTP solicited from the recipient under a pretext — risk CRITICAL, confidence HIGH.",
+                 evidence_basis: ["Reserve Bank of India (SRC-004): “banks never ask for OTP”"] },
+  recommended_actions: [{ action_code: "DO_NOT_SHARE_CREDENTIALS" }, { action_code: "CONTACT_BANK" }],
+  limitations: ["Synthetic-only validation; no accuracy/precision/recall claim (G-09)."], unknowns: [], ambiguities: [],
+  provenance: { engine_version: "1.0.0", result_contract_version: "1.1.0", bundle_content_digest: "bd4f1dca".padEnd(64, "0"), bundle_version: "1.0.0",
+                evaluation_profile_id: "mvp-default", evaluation_timestamp: "2026-10-15T09:00:00.000000Z" },
+  not_an_official_determination: true, absence_of_finding_notice: null, ...extra });
+const panel = (props) => renderToStaticMarkup(createElement(AnalysisPanel, { caseId: aCase.case_id, submissionId: aSubmission.submission_id,
+  hasFinalized: true, ...props }));
+const visible = (html) => html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ");
+
+test("a completed result renders every governed section with separate categorical axes", () => {
+  const html = visible(panel({ initialEvaluation: anEvaluation("COMPLETED"), initialResult: aResult() }));
+  assert.match(html, /Result available: Scam pattern detected\./);
+  for (const title of Object.values(evaluation.SECTION_TITLES)) assert.ok(html.includes(title), title);
+  assert.match(html, /A governed scam pattern matched the evidence evaluated\. This is not a legal finding/);
+  assert.match(html, /Risk level \(band\) CRITICAL/);
+  assert.match(html, /Detection confidence \(not a probability\) HIGH/);
+  assert.match(html, /Severity if genuine CRITICAL/);
+  assert.match(html, /TL-CRED-001 v1\.0\.0/);
+  assert.match(html, /Reserve Bank of India \(SRC-004\)/);
+  assert.match(html, /Do not share passwords, one-time codes, PINs or other credentials in response to this message\./);
+  assert.match(html, /Recommended by the governed action policy/);
+  assert.match(html, /This result is not an official determination\./);
+  assert.match(html, /Analyze message again/);
+  assert.doesNotMatch(html, /%|\bscore\b|probability of|\d+ ?\/ ?100/i);
+});
+
+test("no-pattern, insufficient and unsupported results are never presented as safe", () => {
+  const notice = "No governed scam pattern was established from the evidence evaluated. This is not a determination that the content is safe or legitimate.";
+  for (const [classification, support, extra] of [["NO_SCAM_PATTERN", "SUPPORTED", { absence_of_finding_notice: notice }],
+                                                  ["INSUFFICIENT_EVIDENCE", "SUPPORTED", {}], ["UNSUPPORTED", "UNSUPPORTED", {}],
+                                                  ["ERROR", "ERROR", {}]]) {
+    const result = aResult({ classification, input_support_status: support, risk_level: "NONE", decision_severity: "NONE",
+      matched_evidence_strength: "NONE", detection_confidence: "NOT_APPLICABLE", governing_rule: null, matched_rules: [],
+      recommended_actions: [{ action_code: "SEEK_HUMAN_REVIEW" }], ...extra });
+    const html = visible(panel({ initialEvaluation: anEvaluation("COMPLETED"), initialResult: result }));
+    assert.match(html, new RegExp(evaluation.CLASSIFICATIONS[classification].label.replace(/[()]/g, "\\$&")));
+    const claims = html.replace(/not a determination that the content is safe( or legitimate)?/g, "");
+    assert.doesNotMatch(claims, /\bsafe\b|legitimate|no risk|verified/i, classification);
+    if (classification === "NO_SCAM_PATTERN") assert.ok(html.includes(notice));
+  }
+});
+
+test("incomplete, contradictory or other-view responses are withheld, never partially shown", () => {
+  const cases = [[{ ...aResult(), risk_level: undefined }, "RESULT_UNRENDERABLE"],
+                 [aResult({ evaluation_id: "00000000-0000-4000-8000-000000000000" }), "RESULT_UNRENDERABLE"],
+                 [aResult({ view: "DETAILED" }), "RESULT_VIEW_NOT_AUTHORIZED"],
+                 [aResult({ rule_results: [] }), "RESULT_VIEW_NOT_AUTHORIZED"],
+                 [aResult({ classification: "SAFE" }), "RESULT_UNRENDERABLE"],
+                 [aResult({ risk_level: "7/10" }), "RESULT_UNRENDERABLE"],
+                 [aResult({ input_support_status: "UNSUPPORTED" }), "RESULT_UNRENDERABLE"],
+                 [aResult({ classification: "NO_SCAM_PATTERN" }), "RESULT_UNRENDERABLE"],
+                 [aResult({ not_an_official_determination: false }), "RESULT_UNRENDERABLE"]];
+  for (const [body, state] of cases) {
+    assert.equal(evaluation.validateResult(body, evaluationId, "STANDARD"), state);
+    const html = visible(panel({ initialEvaluation: anEvaluation("COMPLETED"), initialResult: body }));
+    assert.ok(html.includes(evaluation.ANNOUNCEMENTS[state]), state);
+    assert.doesNotMatch(html, /Scam pattern detected|TL-CRED-001|Do not share/);
+  }
+  assert.equal(evaluation.validateResult(aResult(), evaluationId, "STANDARD"), "READY");
+});
+
+test("pending and failed evaluations show their state and never a result", () => {
+  const queued = visible(panel({ initialEvaluation: anEvaluation("QUEUED"), initialResult: aResult() }));
+  assert.match(queued, /Analysis requested/);
+  assert.match(queued, /The evaluation has not finished; no result is available yet\./);
+  assert.match(queued, /Analysing…/);
+  assert.doesNotMatch(queued, /Scam pattern detected/);
+  const failed = visible(panel({ initialEvaluation: anEvaluation("FAILED", { failure: { failure_class: "INFRASTRUCTURE",
+    reason: "INFRASTRUCTURE_FAILURE", retry_guidance: "RETRY_AS_NEW_EVALUATION" } }) }));
+  assert.match(failed, /The evaluation or request did not produce a result\./);
+  assert.match(failed, /not a determination that the content is safe/);
+  assert.match(failed, /Analyze message again/);
+  const none = visible(panel({ hasFinalized: false, initialEvaluation: undefined }));
+  assert.match(none, /once one message text is stored and verified/);
+  assert.doesNotMatch(none, /<button/);
+});
+
+test("analysis requests carry no decision fields; retries of a failure reference it as predecessor", async () => {
+  const { fetcher, calls } = fakeFetch({ "/auth/csrf": [200, { csrf_token: "t" }],
+    [`/api/v1/submissions/${aSubmission.submission_id}/evaluations`]: [202, { evaluations: [anEvaluation("QUEUED")] }] });
+  const r = await evaluation.createEvaluation(aSubmission.submission_id, {}, fetcher, () => "key-0123456789abcdef");
+  assert.equal(r.kind, "ok");
+  const post = calls.find((c) => c.init.method === "POST");
+  assert.equal(post.init.body, "{}");
+  assert.equal(post.init.headers["X-CSRF-Token"], "t");
+  assert.equal(post.init.headers["Idempotency-Key"], "key-0123456789abcdef");
+  const source = readFileSync(new URL("./AnalysisPanel.tsx", import.meta.url), "utf8");
+  assert.match(source, /predecessor_evaluation_id: previous\.evaluation_id/);
+  const request = readFileSync(new URL("./evaluation.ts", import.meta.url), "utf8").match(/export const createEvaluation = [\s\S]*?;\n/)[0];
+  assert.doesNotMatch(request, /classification|risk_level|severity|confidence/);         // the request carries no decision field
+});
+
+test("status polling is bounded and the result is requested only after COMPLETED + AVAILABLE", async () => {
+  let polls = 0;
+  const fetcher = async (url) => { polls++; return { status: 200, ok: true, json: async () => anEvaluation("RUNNING") }; };
+  const r = await evaluation.waitForEvaluation(anEvaluation("QUEUED"), { fetcher, sleep: async () => {} });
+  assert.equal(polls, evaluation.MAX_STATUS_POLLS);
+  assert.equal(r.value.state, "RUNNING");
+  assert.equal(evaluation.presentationForStatus(anEvaluation("COMPLETED")), "REQUEST_RESULT");
+  assert.equal(evaluation.presentationForStatus(anEvaluation("COMPLETED", { result_availability: "NOT_YET_AVAILABLE" })), "RESULT_STATUS_UNRESOLVED");
+  assert.equal(evaluation.presentationForStatus(anEvaluation("FAILED")), "ACTION_FAILED");
+  assert.equal(evaluation.presentationForStatus(null), "RESULT_STATUS_UNRESOLVED");
+  assert.equal(evaluation.presentationForError({ kind: "error", code: "FORBIDDEN", message: "" }), "ACCESS_DENIED");
+  assert.equal(evaluation.presentationForError({ kind: "error", code: "SOMETHING_NEW", message: "" }), "RESULT_RESPONSE_UNCONFIRMED");
+});
+
+test("contradictory axis combinations are withheld (UX-003 axis_consistency), valid combinations render", () => {
+  const none = { decision_severity: "NONE", matched_evidence_strength: "NONE", risk_level: "NONE", detection_confidence: "NOT_APPLICABLE",
+                 governing_rule: null, matched_rules: [], recommended_actions: [{ action_code: "SEEK_HUMAN_REVIEW" }] };
+  const notice = { absence_of_finding_notice: "No governed scam pattern was established from the evidence evaluated. This is not a determination that the content is safe or legitimate." };
+  const contradictions = {
+    "ERROR support with NO_SCAM_PATTERN": aResult({ ...none, ...notice, input_support_status: "ERROR", classification: "NO_SCAM_PATTERN" }),
+    "LOW confidence with SCAM_PATTERN_DETECTED": aResult({ detection_confidence: "LOW" }),
+    "HIGH severity + WEAK evidence as CRITICAL risk": aResult({ decision_severity: "HIGH", matched_evidence_strength: "WEAK", risk_level: "CRITICAL" }),
+    "INSUFFICIENT_INFORMATION with NO_SCAM_PATTERN": aResult({ ...none, ...notice, input_support_status: "INSUFFICIENT_INFORMATION", classification: "NO_SCAM_PATTERN" }),
+    "finding without a governing rule": aResult({ governing_rule: null }),
+    "governing rule not among matched rules": aResult({ governing_rule: { rule_id: "TL-PAY-001", rule_version: "1.0.0" } }),
+    "detected without any matched rule": aResult({ matched_rules: [], governing_rule: null }),
+    "no finding with non-NONE risk": aResult({ ...none, classification: "INSUFFICIENT_EVIDENCE", risk_level: "LOW" }),
+    "no finding with a governing rule": aResult({ ...none, classification: "INSUFFICIENT_EVIDENCE", governing_rule: { rule_id: "TL-CRED-001", rule_version: "1.0.0" } }),
+    "degraded with HIGH confidence": aResult({ degraded: true }),
+    "malformed rule identity": aResult({ matched_rules: [{ rule_id: "cred-1", rule_version: "1" }], governing_rule: { rule_id: "cred-1", rule_version: "1" } }),
+    "duplicated matched rule": aResult({ matched_rules: [aResult().matched_rules[0], aResult().matched_rules[0]] }),
+  };
+  for (const [name, body] of Object.entries(contradictions)) {
+    assert.equal(evaluation.validateResult(body, evaluationId, "STANDARD"), "RESULT_UNRENDERABLE", name);
+    const html = visible(panel({ initialEvaluation: anEvaluation("COMPLETED"), initialResult: body }));
+    assert.ok(html.includes(evaluation.ANNOUNCEMENTS.RESULT_UNRENDERABLE), name);
+    assert.doesNotMatch(html, /Scam pattern detected|No governed scam pattern established|TL-CRED-001|Risk level/, name);
+  }
+  const valid = [aResult(),
+    aResult({ classification: "SCAM_PATTERN_SUSPECTED", detection_confidence: "LOW", decision_severity: "HIGH", matched_evidence_strength: "WEAK", risk_level: "MEDIUM" }),
+    aResult({ degraded: true, detection_confidence: "MEDIUM" }),
+    aResult({ ...none, ...notice, classification: "NO_SCAM_PATTERN" }),
+    aResult({ ...none, classification: "INSUFFICIENT_EVIDENCE", input_support_status: "PARTIALLY_SUPPORTED" }),
+    aResult({ ...none, classification: "INSUFFICIENT_EVIDENCE", input_support_status: "INSUFFICIENT_INFORMATION" }),
+    aResult({ ...none, classification: "UNSUPPORTED", input_support_status: "UNSUPPORTED" }),
+    aResult({ ...none, classification: "ERROR", input_support_status: "ERROR" }),
+    aResult({ ...none, classification: "ERROR", input_support_status: "SUPPORTED" })];
+  for (const body of valid) assert.equal(evaluation.validateResult(body, evaluationId, "STANDARD"), "READY", body.classification);
+});
+
+test("frontend consistency tables equal the accepted UX-003 contract (no invented risk model)", () => {
+  const contract = JSON.parse(readFileSync(new URL("../../../contracts/ux/ux-result-v1.json", import.meta.url), "utf8")).response_validation;
+  assert.deepEqual(evaluation.PERMITTED_SUPPORT_CLASSIFICATION,
+    Object.fromEntries(contract.permitted_support_classification.map((r) => [r.input_support_status, r.classifications])));
+  const axes = contract.axis_consistency;
+  assert.deepEqual(evaluation.RISK_MATRIX, axes.risk_matrix.map((r) => [r.decision_severity, r.matched_evidence_strength, r.risk_level]));
+  assert.deepEqual(evaluation.FINDING_CLASSIFICATION_BY_CONFIDENCE, axes.finding_classification_by_confidence);
+  assert.deepEqual(evaluation.NO_FINDING_AXES, axes.no_finding_axes);
+  assert.equal(evaluation.DEGRADED_CONFIDENCE_CAP, axes.degraded_confidence_cap);
+  assert.equal(axes.finding_basis, "matched_rules NON_EMPTY");
+  assert.equal(contract.rule_identity.rule_id_pattern, "^TL-[A-Z]{3,5}-\\d{3}$");
 });

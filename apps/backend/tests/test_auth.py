@@ -744,8 +744,9 @@ class RouteSurfaceTests(unittest.TestCase):
         from trustlens_backend.cases import OPERATIONS
         from trustlens_backend.evidence import OPERATIONS as EVIDENCE_OPERATIONS
         from trustlens_backend.knowledge_seam import OPERATIONS as KNOWLEDGE_OPERATIONS
+        from trustlens_backend.evaluation import OPERATIONS as EVALUATION_OPERATIONS
         s2 = {o["path"] for o in catalog["operations"]
-              if o["operation_id"] in {**OPERATIONS, **EVIDENCE_OPERATIONS, **KNOWLEDGE_OPERATIONS}}
+              if o["operation_id"] in {**OPERATIONS, **EVIDENCE_OPERATIONS, **KNOWLEDGE_OPERATIONS, **EVALUATION_OPERATIONS}}
         app = create_app(None, configure_from_environment=False)
         self.assertEqual({r.path for r in app.routes}, probes | {me} | s2 | AUTH_BOUNDARY_ROUTES)
         served = {(m, r.path) for r in app.routes for m in getattr(r, "methods", ()) if r.path.startswith("/api/")}

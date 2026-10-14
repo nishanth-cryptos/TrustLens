@@ -177,5 +177,28 @@ and extracts against the ACTIVE verified bundle. `extract_text` is the same extr
   unstated payment direction is `AMBIGUOUS` and marked for review.
 - **Support states:** `UNSUPPORTED` (non-English or other scripts), `INSUFFICIENT_INFORMATION`, `PARTIALLY_SUPPORTED`
   (a referenced attachment that is not evaluated) and `ERROR` (malformed bytes) are explicit. None is benign.
-- **Not implemented:** an API endpoint, scoring, `DetectionResult` persistence and the result UI (S5). The golden
-  fixtures test the extractor; they never stand in for it.
+- **Extraction confidence** is extraction certainty (KB-002 §8), not indicator strength: HIGH for explicit wording or a
+  parsed fact, MEDIUM for interpretive readings, LOW only for an ambiguous reading.
+- The golden fixtures test the extractor; they never stand in for it.
+
+## S5 governed evaluation and result (migration 0006)
+
+- **Operations:** `createEvaluations`, `getEvaluation`, `listCaseEvaluations` and `getDetectionResult`
+  (`trustlens_backend/evaluation.py`).
+- **Analyze:** "Analyze message" needs exactly one stored and verified text in the submission. The server runs S4
+  against the active verified bundle and stores the input envelope encrypted. It records one immutable governed input
+  artifact and a `REQUESTED` evaluation, then answers `202`.
+- **Worker:** follows the DATA-001-WP2 completion protocol. It verifies the artifact digest and the pinned bundle, enters
+  `RUNNING` with a fence token and every pin, and calls the existing kernel (`evaluate_detection_from_governed`). The
+  result, rule projection, audit and `COMPLETED` commit together, compare-and-set on the token. The database refuses a
+  result for anything but the live fence, and a completed result never changes.
+- **Recovery:** in the served app, a loop runs at startup and every 30 s. It fences `RUNNING` work whose 60 s lease
+  expired (`FAILED_INFRASTRUCTURE`) and runs `REQUESTED` work that was never dispatched. A retry is a new evaluation.
+- **Result:** the STANDARD view (owner) or DETAILED view (assigned analyst with content permission). The stored digest is
+  re-verified on every read, and every read is audited.
+- **UI:** the result panel uses the exact UX-003 governed labels, meanings and action instructions. It withholds any
+  incomplete, contradictory or other-view response. `NO_SCAM_PATTERN` is never shown as safe.
+- **Before use:** review `make migration-sql`, then `make migrate`, to apply `0006_evaluation_result`. Until then the
+  evaluation operations answer `503`.
+- **Not exposed:** indicator identities and observation spans. DetectionResultResponse v1 has no field for them
+  (UX-003 open decision; needs a governed API revision).

@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import EvidencePanel from "./EvidencePanel";
 import { CaseView, INPUT_TYPES, RELATIONSHIPS, SubmissionView, createCase, createSubmission, listCases, listSubmissions } from "./cases";
+import { EvaluationView, ResultView } from "./evaluation";
 import { EvidenceView } from "./evidence";
 
 type Props = { initialCases?: CaseView[]; initialSubmissions?: SubmissionView[]; initialSelected?: string | null;
-               initialSubmission?: string | null; initialEvidence?: EvidenceView[] };
+               initialSubmission?: string | null; initialEvidence?: EvidenceView[];
+               initialEvaluation?: EvaluationView | null; initialResult?: ResultView | null };
 
 const when = (iso: string) => new Date(iso).toLocaleString();
 const CASE_STATE_LABELS: Record<string, string> = { OPEN: "Open", UNDER_REVIEW: "Under review", CLOSED: "Closed" };
@@ -16,7 +18,7 @@ export const SUBMISSION_STATE_LABELS: Record<string, string> = {
 };
 
 export default function Workspace({ initialCases, initialSubmissions = [], initialSelected = null, initialSubmission = null,
-                                    initialEvidence }: Props) {
+                                    initialEvidence, initialEvaluation, initialResult }: Props) {
   const [cases, setCases] = useState<CaseView[] | null>(initialCases ?? null);
   const [selected, setSelected] = useState<string | null>(initialSelected);
   const [submissions, setSubmissions] = useState<SubmissionView[]>(initialSubmissions);
@@ -106,7 +108,8 @@ export default function Workspace({ initialCases, initialSubmissions = [], initi
                     {INPUT_TYPES[s.declared_input_type] ?? s.declared_input_type} · {SUBMISSION_STATE_LABELS[s.state] ?? s.state} · received {when(s.received_at)}
                   </button>
                   {s.submission_id === openSubmission && (
-                    <EvidencePanel submissionId={s.submission_id} initialEvidence={initialEvidence}
+                    <EvidencePanel caseId={current.case_id} submissionId={s.submission_id} initialEvidence={initialEvidence}
+                                   initialEvaluation={initialEvaluation} initialResult={initialResult}
                                    canUpload={current.viewer_access.relationship === "OWNER" && current.state === "OPEN"} />
                   )}
                 </li>
@@ -129,8 +132,8 @@ export default function Workspace({ initialCases, initialSubmissions = [], initi
             </fieldset>
           )}
           <p className="note">
-            Choose a submission to see or add its message text. Only synthetic test data should be used. Nothing is
-            analysed here and no result is produced.
+            Choose a submission to see or add its message text and to analyse it. Only synthetic test data should be
+            used. Results come from TrustLens's governed rules; they are not official determinations.
           </p>
         </div>
       )}

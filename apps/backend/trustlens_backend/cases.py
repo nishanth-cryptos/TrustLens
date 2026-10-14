@@ -165,6 +165,11 @@ def _page_params(request: Request, filters: dict) -> tuple[dict | None, list | N
                 errors.append({"field": key, "code": "INVALID_VALUE", "message": "Value is not in the accepted vocabulary."})
             else:
                 out[key] = params[key]
+        elif kind == "uuid":
+            if _uuid(params[key]) is None:
+                errors.append({"field": key, "code": "INVALID_UUID", "message": "Not a UUID."})
+            else:
+                out[key] = _uuid(params[key])
         else:
             try:
                 parsed = datetime.fromisoformat(params[key].replace("Z", "+00:00"))

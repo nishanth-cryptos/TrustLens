@@ -57,3 +57,17 @@ h2 { font-size: 24px; margin: 0; } h3 { margin-top: 32px; } h4 { margin: 28px 0 
 
 .knowledge-status { margin: 24px 0 0; padding: 18px 20px; border: 1px solid #d4ded2; border-radius: 14px; display: grid; gap: 8px; }
 .knowledge-status h2 { margin: 0; font-size: 18px; }
+
+.analysis-panel { margin-top: 8px; padding-top: 12px; border-top: 1px dashed #d4ded2; display: grid; gap: 8px; }
+.analysis-panel h5 { margin: 0; font-size: 16px; }
+.analysis-panel .button { margin-top: 0; justify-self: start; }
+.result { display: grid; gap: 4px; padding: 16px 18px; border: 1px solid #b9c8bc; border-radius: 14px; background: white; }
+.result section { padding: 8px 0; border-bottom: 1px solid #e3eae3; }
+.result section:last-child { border-bottom: 0; }
+.result h6 { margin: 0 0 6px; font-size: 15px; color: #28584d; }
+.result .classification { font-size: 18px; margin: 0; color: #16312e; }
+.result ul { margin: 4px 0; padding-left: 20px; }
+.result blockquote { margin: 0; padding-left: 10px; border-left: 3px solid #b9c8bc; color: #384d45; }
+.axes { display: grid; gap: 6px; margin: 0; }
+.axes dt { font-weight: 650; color: #28584d; }
+.axes dd { margin: 0 0 4px; }

@@ -115,7 +115,19 @@ PATTERNS: dict[str, str] = {
                          rf"(?:\s+{_AMOUNT})?\s+(?:now|immediately|right\s+now|right\s+away|urgently|asap|at\s+once)\b",
     "payment_demand": rf"\b(?:pay|transfer|send)\s+(?:{_AMOUNT}|the\s+(?:amount|fee|charges?|dues|fine|penalty|balance)|money|funds)",
     "upfront_fee": r"\b(?:pay|deposit|transfer|send)\s+(?:a\s+|the\s+)?(?:(?:rs\.?|inr|₹)\s*[\d,]+(?:\.\d+)?\s+(?:as\s+)?)?(?:registration|processing|activation"
-                   r"|joining|clearance|customs|release|refundable|advance|upfront|delivery|redelivery|re-delivery|shipping)\s+(?:fee|charges?|deposit|amount)",
+                   r"|joining|clearance|customs|release|refundable|advance|upfront|delivery|redelivery|re-delivery|shipping|placement|training"
+                   r"|application|verification|onboarding|kit|security)\s+(?:fee|charges?|deposit|amount)",
+    "explicit_no_fee": r"\bno\s+(?:registration\s+|joining\s+|placement\s+|hidden\s+)?(?:fee|fees|charges?)\s+(?:at\s+any\s+stage|is\s+required|are\s+required|required)\b"
+                       r"|\bfree\s+of\s+(?:cost|charge)\b",
+    "job_context": r"\b(?:job|jobs|vacancy|vacancies|hiring|recruitment|recruiter|placement|offer\s+letter|interview|employment"
+                   r"|selected\s+for\s+(?:the\s+)?(?:job|role|post|position))\b",
+    "job_guarantee": r"\b(?:job|placement|employment|selection|salary|income)\s+(?:is\s+)?(?:guaranteed|assured)\b"
+                     r"|\b(?:guaranteed|assured|100%)\s+(?:job|placement|selection|salary|income)\b",
+    "unsolicited_offer": r"\b(?:congratulations|congrats)\b[^.!?\n]{0,40}?\b(?:won|selected|winner|eligible|chosen|shortlisted)\b"
+                         r"|\byou\s+have\s+been\s+(?:selected|chosen|shortlisted)\b|\b(?:exclusive|special)\s+offer\s+for\s+you\b",
+    "claimed_relative": r"\b(?:mum|mom|mummy|mama|dad|daddy|papa|mother|father)\s*,?\s+(?:it'?s|its)\s+me\b"
+                        r"|\bthis\s+is\s+your\s+(?:son|daughter|nephew|niece|brother|sister|uncle|aunt|cousin|grandson|granddaughter)\b",
+    "scarcity": r"\bonly\s+\d+\s+(?:seats?|slots?|spots?|places?)\s+(?:left|remaining)\b|\blimited\s+(?:seats|slots|spots)\b",
     "payment_context": r"\b(?:complete|finish|finali[sz]e|process|approve|authori[sz]e)\s+(?:the\s+|your\s+|this\s+)?(?:payment|transaction|transfer)\b",
     "deposit_for_earnings": rf"\b(?:deposit|recharge|top[\s-]?up|invest)\s+{_AMOUNT}(?=(?:\s+\w+){{0,4}}?\s+(?:to\s+)?(?:unlock|release|withdraw|activate|claim))",
     "withdrawal_blocked": r"\b(?:to\s+)?(?:unlock|release|enable|allow)\s+(?:the\s+|your\s+)?withdrawals?\b(?:\s+of\s+(?:your\s+)?(?:balance|earnings|funds|money|commission|profits?))?"
@@ -185,6 +197,7 @@ PATTERNS: dict[str, str] = {
     "bare_domain": r"(?<![@\w.-])(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+(?P<tld>[a-z]{2,24})\b(?:/[^\s<>\"'\]\[]*)?",
     # clause structure
     "negation": r"\b(?:never|not|don't|dont|do\s+not|does\s+not|doesn't|won't|will\s+not|wouldn't|shouldn't|should\s+not|cannot|can't|no\s+one|nobody)\b",
+    "contrast": r"\b(?:but|however|yet|whereas|although|though|that\s+said)\b",
     "negation_exempt": r"\bnever\s+mind\b|\bnot\s+only\b|\bno\s+matter\b|\bnot\s+just\b",
     "conditional_coercion": r"\bif\s+you\s+(?:do\s+not|don't|dont|fail\s+to|refuse\s+to)\s+$",
     "reported_frame": r"\b(?:asked|told|instructed|wanted|pressured|forced|requested|kept\s+asking)\s+(?:me|us|him|her|them|my\s+\w+)\b"
@@ -200,8 +213,11 @@ PATTERNS: dict[str, str] = {
                         r"(?:(?:i|we)\s+need\s+you\s+to\s+)?(?:(?:please|kindly)\s+)?$",
     "discourse_marker": r"^\s*(?:that\s+said|however|but|also|now|and|so|ok|okay|dear\s+(?:customer|user|sir|madam))\s*,?\s*",
     "scam_lexicon": r"\b(?:scam|scams|scammer|scammers|fraud|frauds|fraudster|fraudsters|fake|cheat|cheated|suspicious)\b",
-    "clause_split": r"\s*[;:]\s+|\s+[-–—]\s+|,?\s+(?:and|then)\s+(?=(?:share|send|give|tell|provide|confirm|forward|enter|install|download|open|click|tap|visit|connect|scan"
-                    r"|pay|transfer|deposit|verify|update|call|dial|reply|complete|log\s*in|sign\s*in|keep|do\s+not|don't|never)\b)",
+    # A contrastive conjunction always starts a new clause: negation never crosses "but" (Codex S4/S5 MEDIUM-1).
+    "clause_split": r"\s*[;:]\s+|\s+[-–—]\s+|,?\s+(?:but|however|yet|whereas|although|though)\b,?\s+"
+                    r"|(?:,?\s+(?:and|then)|,)\s+(?=(?:(?:please|kindly)\s+)?(?:share|send|give|tell|provide|confirm"
+                    r"|forward|enter|install|download|open|click|tap|visit|connect|scan|pay|transfer|deposit|verify|update|call|dial|reply"
+                    r"|complete|log\s*in|sign\s*in|keep|do\s+not|don't|never)\b)",
     "sentence_split": r"(?<=[.!?])\s+|\n+",
 }
 _CASE_SENSITIVE = {"it_support", "bank_claim"}
@@ -485,7 +501,8 @@ class Message:
         coerced = bool(_RX["conditional_coercion"].search(prefix))
         conditional = negation is not None and re.search(r"\bif\s+you\s+$", prefix[:negation.start()]) is not None
         window = 6 if request else 2
-        negated = (negation is not None and not exempt and not coerced and not conditional
+        contrasted = negation is not None and _RX["contrast"].search(prefix[negation.end():]) is not None
+        negated = (negation is not None and not exempt and not coerced and not conditional and not contrasted
                    and len(prefix[negation.end():].split()) <= window)
         polarity = "NEGATED" if negated else "AFFIRMED"
         if self.in_quote(pos):
@@ -508,6 +525,10 @@ class Message:
 
 
 # ================================================================ findings
+# Extraction confidence (KB-002 §8) is "how sure are we the text says this", never indicator strength: HIGH for an
+# explicit pattern or a parsed fact, MEDIUM for a contextual or interpretive reading (identity claims, cover stories,
+# descriptive or interrogative requests, referenced-but-unseen artefacts), LOW only for an ambiguous reading. Weak
+# indicators stay weak through the governed rules and strengths, not through confidence.
 @dataclass
 class Finding:
     obs_type: str
@@ -700,9 +721,9 @@ def _url_findings(msg: Message, input_id: str, raw_of, out: list[Finding]) -> li
         if f.live_first_party():
             if verify_at:
                 f.emit("FAKE_VERIFICATION_SITE", "HIGH")
-            f.emit("LINK_PRESENT", "LOW")
+            f.emit("LINK_PRESENT", "HIGH")                   # a parsed URL is a fact
             if urls[-1]["structural"]["flags"].get("shortened"):
-                f.emit("SHORTENED_URL", "LOW")
+                f.emit("SHORTENED_URL", "HIGH")
         out.append(f)
     return urls
 
@@ -768,10 +789,10 @@ def _find_all(msg: Message, input_id: str, raw_of) -> tuple[list[Finding], list[
     _payment_findings(msg, out, qr_present, threat_present)
     deadlines = _simple(msg, out, "deadline", "TEMPORAL_PRESSURE", "URGENCY_DEADLINE", "URGENCY_DEADLINE", "HIGH",
                         {"pressure": {"kind": "DEADLINE", "dimension_ref": "SE-02"}})
-    _simple(msg, out, "urgency", "TEMPORAL_PRESSURE", "URGENCY", "URGENCY", "LOW",
+    _simple(msg, out, "urgency", "TEMPORAL_PRESSURE", "URGENCY", "URGENCY", "HIGH",
             {"pressure": {"kind": "URGENCY", "dimension_ref": "SE-02"}}, skip=[(f.start, f.end) for f in deadlines])
     pressured = {msg.clause_at(f.start).sentence_start for f in out if f.risky and f.indicators}
-    for f in _simple(msg, out, "urgency_contextual", "TEMPORAL_PRESSURE", "URGENCY", "URGENCY", "LOW",
+    for f in _simple(msg, out, "urgency_contextual", "TEMPORAL_PRESSURE", "URGENCY", "URGENCY", "MEDIUM",
                      {"pressure": {"kind": "URGENCY", "dimension_ref": "SE-02"}}, skip=[(f.start, f.end) for f in deadlines]):
         if msg.clause_at(f.start).sentence_start not in pressured:
             f.indicators.clear()               # a time word is pressure only beside a live threat or request
@@ -794,19 +815,33 @@ def _find_all(msg: Message, input_id: str, raw_of) -> tuple[list[Finding], list[
             end -= 1
         f = Finding("CLAIM", "KYC_PRETEXT", start, end, _claim_structure(msg, m.start()), {"pretext": {"kind": "KYC_UPDATE"}}, risky=True)
         if f.live_first_party():
-            f.emit("KYC_PRETEXT", "LOW")
+            f.emit("KYC_PRETEXT", "HIGH")
         out.append(f)
         break
-    _simple(msg, out, "verification_pretext", "CLAIM", "VERIFICATION_PRETEXT", "VERIFICATION_PRETEXT", "LOW",
+    _simple(msg, out, "verification_pretext", "CLAIM", "VERIFICATION_PRETEXT", "VERIFICATION_PRETEXT", "HIGH",
             {"pretext": {"kind": "VERIFICATION"}})
-    _simple(msg, out, "task_earning", "CLAIM", "TASK_EARNING_LURE", "TASK_EARNING_LURE", "LOW", {"pretext": {"kind": "JOB_OFFER"}})
+    _simple(msg, out, "task_earning", "CLAIM", "TASK_EARNING_LURE", "TASK_EARNING_LURE", "HIGH", {"pretext": {"kind": "JOB_OFFER"}})
     _simple(msg, out, "off_platform", "LINK_ACTION", "OFF_PLATFORM_HANDOFF", "OFF_PLATFORM_HANDOFF", "MEDIUM", request=True)
-    _simple(msg, out, "investment", "CLAIM", "INVESTMENT_SOLICITATION", "INVESTMENT_SOLICITATION", "LOW", {"pretext": {"kind": "INVESTMENT"}})
+    _simple(msg, out, "job_guarantee", "CLAIM", "JOB_GUARANTEE", "JOB_GUARANTEE", "HIGH", {"pretext": {"kind": "JOB_OFFER"}})
+    _simple(msg, out, "unsolicited_offer", "CLAIM", "UNSOLICITED_OFFER", "UNSOLICITED_OFFER", "MEDIUM", {"pretext": {"kind": "PRIZE"}})
+    _simple(msg, out, "scarcity", "TEMPORAL_PRESSURE", "SCARCITY", "SCARCITY_PRESSURE", "HIGH", {"pressure": {"kind": "SCARCITY"}})
+    for m in _find("job_context", msg)[:1]:                # one job pretext per message
+        f = Finding("CLAIM", "JOB_CONTEXT", m.start(), m.end(), _claim_structure(msg, m.start()), {"pretext": {"kind": "JOB_OFFER"}},
+                    risky=True)
+        if f.live_first_party():
+            f.emit("JOB_CONTEXT", "MEDIUM")               # a job is mentioned; that it is the pretext is read
+        out.append(f)
+    for m in _find("explicit_no_fee", msg):
+        f = Finding("CLAIM", "EXPLICIT_NO_FEE", m.start(), m.end(), _claim_structure(msg, m.start()))
+        if f.live_first_party():
+            f.emit("EXPLICIT_NO_FEE", "HIGH")
+        out.append(f)
+    _simple(msg, out, "investment", "CLAIM", "INVESTMENT_SOLICITATION", "INVESTMENT_SOLICITATION", "MEDIUM", {"pretext": {"kind": "INVESTMENT"}})
     for m in _find("parcel", msg)[:1]:
         f = Finding("CLAIM", "PARCEL_PRETEXT", m.start(), m.end(), _claim_structure(msg, m.start()), {"pretext": {"kind": "PARCEL_DELIVERY"}},
                     risky=True)
         if f.live_first_party():
-            f.emit("PARCEL_PRETEXT", "LOW")
+            f.emit("PARCEL_PRETEXT", "MEDIUM")             # a parcel is mentioned; that it is the pretext is read
         out.append(f)
     for m in _find("return_guarantee", msg):
         f = Finding("CLAIM", "RETURN_GUARANTEE", m.start(), m.end(), _claim_structure(msg, m.start()),
@@ -871,7 +906,7 @@ def _find_all(msg: Message, input_id: str, raw_of) -> tuple[list[Finding], list[
     # QR artefact
     if qr_present:
         marker = attachment[0] if attachment else _find("qr_mention", msg)[0]
-        out.append(Finding("ENTITY", "QR_PRESENT", marker.start(), marker.end(), None, {}, indicators=[("QR_PRESENT", "LOW", False)]))
+        out.append(Finding("ENTITY", "QR_PRESENT", marker.start(), marker.end(), None, {}, indicators=[("QR_PRESENT", "MEDIUM", False)]))   # referenced, not seen
         for m in _find("qr_scan", msg):
             s = msg.structure(m.start(), request=True)
             a, b = _sentence_after(msg, m.end())
@@ -892,6 +927,12 @@ def _find_all(msg: Message, input_id: str, raw_of) -> tuple[list[Finding], list[
     # identity claims: projected only alongside a live sensitive directive in the same message
     live_directive = any(f.indicators and f.risky and f.obs_type in ("AUTHENTICATION_ACTION", "PAYMENT_CONTEXT", "DEVICE_ACTION", "LINK_ACTION")
                          and f.structure is not None and f.structure.mood != "DESCRIPTIVE" for f in out)
+    for m in _find("claimed_relative", msg):
+        f = Finding("IDENTITY_ASSERTION", "CLAIMED_RELATIVE", m.start(), m.end(), _claim_structure(msg, m.start()),
+                    {"actor": {"claimed_identity": "RELATIVE", "verified": "UNKNOWN"}}, risky=True)
+        if f.live_first_party():
+            f.emit("CLAIMED_RELATIVE", "MEDIUM")
+        out.append(f)
     for m in _find("new_number", msg):
         f = Finding("IDENTITY_ASSERTION", "NEW_NUMBER", m.start(), m.end(), _claim_structure(msg, m.start()),
                     {"actor": {"claimed_identity": "KNOWN_CONTACT", "verified": "UNKNOWN"}}, risky=True)

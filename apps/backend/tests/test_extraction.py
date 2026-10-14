@@ -152,6 +152,33 @@ class ExtractionTests(unittest.TestCase):
         secrecy = next(o for o in g.observations if o["canonical_value"] == "SECRECY_REQUEST")
         self.assertNotEqual(secrecy.get("polarity"), "NEGATED")
 
+    def test_negation_never_crosses_a_contrastive_clause(self):
+        """Codex S4/S5 MEDIUM-1: 'We do not need X, but share the OTP' is an affirmed live request."""
+        for text in ("Example Bank: We do not need your password, but share the OTP you just received with our officer now.",
+                     "Example Bank: We do not need your password; however, share the OTP you just received with our officer now."):
+            with self.subTest(text=text[30:60]):
+                g = self.extract(text)
+                otp = next(o for o in g.observations if o["canonical_value"] == "REQUEST_DISCLOSE_OTP")
+                self.assertEqual((otp["polarity"], otp["attribution"], otp["mood"]), ("AFFIRMED", "FIRST_PARTY", "DIRECTIVE"))
+                self.assertIn(otp["raw_span"], text)
+                self.assertIn("CREDENTIAL_REQUEST_OTP", g.positive_signals())
+                self.assertEqual(g.negative_signals(), ())
+                result = evaluate_detection_from_governed(self.rk, evaluation_id="ev-1", evaluation_timestamp="2026-10-15T00:00:00Z",
+                                                          **g.engine_inputs())
+                self.assertEqual((result.classification, result.as_dict()["matched_rules"]), ("SCAM_PATTERN_DETECTED", ["TL-CRED-001"]))
+        counterexamples = {  # negation inside its own clause stays negated; nothing after "but" is a request
+            "Never share your OTP with anyone, but do call our official helpline if you are unsure.":
+                {"NEGATED_CREDENTIAL_REQUEST", "SELF_PROTECTIVE_WARNING"},
+            "We will never ask for your OTP, but we may send you one when you log in.":
+                {"EDUCATIONAL_CONTENT", "NEGATED_CREDENTIAL_REQUEST", "SUPPORT_NEVER_ASKS"},
+            "Do not share the OTP you just received, but keep it safe.": {"NEGATED_CREDENTIAL_REQUEST", "SELF_PROTECTIVE_WARNING"},
+            "The caller asked me to share my OTP, but I refused. Is this a scam?": {"REPORTED_SCAM_NARRATIVE"},
+        }
+        for text, negatives in counterexamples.items():
+            with self.subTest(text=text[:40]):
+                g = self.extract(text)
+                self.assertEqual((g.positive_signals(), set(g.negative_signals())), ((), negatives))
+
     def test_reported_quoted_and_hypothetical_requests_are_preserved_not_live(self):
         cases = {"He told me to install AnyDesk so he could help with my refund.": "REPORTED",
                  'The SMS said "share the OTP you just received with our officer" and I deleted it.': "QUOTED",
@@ -188,6 +215,12 @@ class ExtractionTests(unittest.TestCase):
             "Your subscription will be suspended. Update your card details at billing-help.example immediately.":
                 {"CREDENTIAL_REQUEST_CARD", "LINK_PRESENT", "SUSPENSION_THREAT", "URGENCY"},
             "Share the 6 digit WhatsApp linking code you received so I can recover your account.": {"DEVICE_LINKING_CODE_REQUEST"},
+            "Congratulations, you have been selected for the data entry job. Pay Rs 1,500 registration fee today.":
+                {"JOB_CONTEXT", "UNSOLICITED_OFFER", "UPFRONT_FEE_DEMAND"},
+            "Mum, it's me, this is my new number. Please send Rs 20,000 urgently.":
+                {"CLAIMED_RELATIVE", "NEW_NUMBER_CLAIM", "PAYMENT_DEMAND", "URGENCY"},
+            "Job guaranteed! Only 3 slots left, pay the placement fee now.":
+                {"JOB_CONTEXT", "JOB_GUARANTEE", "SCARCITY_PRESSURE", "UPFRONT_FEE_DEMAND"},
         }
         for text, expected in cases.items():
             with self.subTest(text=text[:40]):
@@ -196,6 +229,18 @@ class ExtractionTests(unittest.TestCase):
                 self.assert_governed(g)
         g = self.extract("Scan the QR at the counter to pay the shop Rs 250.")
         self.assertEqual((g.positive_signals(), g.negative_signals()), (("QR_PRESENT", "QR_SCAN_REQUEST"), ("PAY_MERCHANT_DIRECTION",)))
+
+    def test_extraction_confidence_is_certainty_not_strength(self):
+        """KB-002 §8: a parsed URL or an explicit statement is HIGH; interpretive readings MEDIUM; only ambiguity is LOW."""
+        g = self.extract("Your KYC expires today. Open this link http://examplebank-kyc-verify.example and enter your credentials to verify.")
+        levels = {i["indicator_id"]: i["confidence"]["level"] for i in g.indicator_observations}
+        self.assertEqual((levels["LINK_PRESENT"], levels["KYC_PRETEXT"], levels["URGENCY_DEADLINE"]), ("HIGH", "HIGH", "HIGH"))
+        g = self.extract("Scan this QR to complete the transaction. [image attached]")
+        self.assertEqual({i["indicator_id"]: i["confidence"]["level"] for i in g.indicator_observations},
+                         {"QR_PRESENT": "MEDIUM", "PAYMENT_CONTEXT": "LOW"})
+        g = self.extract("Thank you for applying. There is no fee at any stage of our hiring process.")
+        self.assertEqual((g.positive_signals(), g.negative_signals()), (("JOB_CONTEXT",), ("EXPLICIT_NO_FEE",)))
+        self.assertEqual(self.extract("Hi Mum, I will be home by seven tonight.").positive_signals(), ())
 
     # ---- adversarial input
     def test_invisible_characters_fullwidth_and_homoglyphs_do_not_hide_a_request(self):
