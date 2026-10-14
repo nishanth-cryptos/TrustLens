@@ -7,6 +7,11 @@
 # Offline: the only network step is `pip install` of the pinned deps in requirements.txt.
 # Validation itself reads only in-repo files and the committed evidence bundle — run_all.py's
 # preflight refuses to run if any validator imports a network module.
+#
+# Self-test cadence (DEC-010, accepted by the sponsor 2026-10-14):
+# the ~1 h non-vacuity self-test runs daily, on manual dispatch, and on any PR/push that changes
+# the gate itself (knowledge/**, requirements.txt, this workflow). Other relevant changes still get
+# the full validation suite. knowledge/validation/validate_ci_cadence.py checks this wiring.
 name: knowledge-validation
 
 on:
@@ -29,6 +34,8 @@ on:
   pull_request:
     paths: *knowledge-paths
   workflow_dispatch: {}
+  schedule:
+    - cron: "17 2 * * *"   # daily full self-test (and validation suite) on the default branch
 
 # Least privilege: the gate only reads the tree.
 permissions:
@@ -36,7 +43,7 @@ permissions:
 
 # One in-flight run per ref; supersede stale runs to keep CI quiet without dropping coverage.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name }}   # a push never cancels the scheduled self-test
   cancel-in-progress: true
 
 jobs:
@@ -58,12 +65,12 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run knowledge quality gate
-        run: python knowledge/validation/run_all.py
+        run: python knowledge/validation/run_all.py --report gate-summary.json
 
       - name: Write machine-readable summary to job summary
         if: ${{ always() }}
         run: |
-          python knowledge/validation/run_all.py --json > gate-summary.json || true
+          [ -f gate-summary.json ] || echo '{"gate": "NOT_RUN"}' > gate-summary.json
           {
             echo '### TrustLens knowledge quality gate'
             echo '```json'
@@ -71,8 +78,42 @@ jobs:
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
 
+  selftest-scope:
+    name: Self-test scope
+    runs-on: ubuntu-latest
+    outputs:
+      required: ${{ steps.scope.outputs.required }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Decide whether the gate itself changed
+        id: scope
+        shell: bash
+        env:
+          EVENT: ${{ github.event_name }}
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD: ${{ github.event.pull_request.head.sha }}
+          PUSH_BEFORE: ${{ github.event.before }}
+          PUSH_AFTER: ${{ github.sha }}
+        run: |
+          set -uo pipefail
+          scope=knowledge/validation/selftest_scope.py
+          if [ "$EVENT" = pull_request ] && changed=$(git diff --name-only "$PR_BASE...$PR_HEAD"); then
+            printf '%s\n' "$changed" | python3 "$scope" --event "$EVENT" >> "$GITHUB_OUTPUT"
+          elif [ "$EVENT" = push ] && changed=$(git diff --name-only "$PUSH_BEFORE" "$PUSH_AFTER"); then
+            printf '%s\n' "$changed" | python3 "$scope" --event "$EVENT" >> "$GITHUB_OUTPUT"
+          else
+            python3 "$scope" --event "$EVENT" --unknown >> "$GITHUB_OUTPUT"
+          fi
+
   gate-selftest:
     name: Quality-gate self-test (gate must bite)
+    needs: selftest-scope
+    # Fail closed: runs unless the scope decision explicitly succeeded with required=false.
+    if: ${{ !cancelled() && (needs.selftest-scope.result != 'success' || needs.selftest-scope.outputs.required != 'false') }}
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository

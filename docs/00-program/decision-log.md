@@ -288,6 +288,94 @@ and isolation tests. It is not a configuration toggle.
 
 ---
 
+## DEC-010 — Quality-gate self-test cadence
+
+**Status.** ACCEPTED by the sponsor on 2026-10-14 (proposed by the builder the same day). The acceptance does not
+permit weakening any validator or omitting mandatory security coverage.
+
+**Decision proposed.** Keep the canonical validation suite (`run_all.py`, KB-001 §11 merge-eligibility rule) on every
+relevant pull request and push. Run the roughly one-hour non-vacuity self-test (`ci_selftest.py`):
+- daily by schedule;
+- on manual dispatch;
+- on any pull request or push that changes the gate itself (`knowledge/**`, `requirements.txt`, the workflow).
+
+The scope decision fails closed: an unknown event or an unknown or empty change list runs the self-test.
+
+**Alternatives and justification.** Running the self-test on every relevant PR delays routine documentation, contract
+and gate-record changes by about an hour while proving nothing new about the gate. Dropping the self-test would remove
+the non-vacuity proof (GATE-006); not chosen. Branch protection on `main` currently requires no status check, so no
+required check is broken. Both job names and the workflow name are kept, because frozen Phase-7 validators and
+historical CI evidence refer to them.
+
+**Consequences.** A regression that only the self-test would catch, introduced by a change outside the gate scope
+(for example a contract edit that breaks a defect injector), is found by the next daily run rather than on its PR.
+`validate_ci_cadence.py` (canonical check 38) keeps the wiring, the decision table and the fail-closed condition
+under negative-mutation tests. GATE-006 and KB-001 remain historical records of the original design.
+
+**Reversal cost.** Low: restore the self-test job's unconditional trigger.
+
+---
+
+## DEC-011 — T07: CLI-first operator interaction for local knowledge activation
+
+**Status.** ACCEPTED by the sponsor on 2026-10-14. Resolves T07 / P7C-01 for the S3 minimum activation capability only.
+
+**Decision.** A minimal authenticated command line (`trustlens_backend.knowledge_cli`, `make knowledge-activate`)
+operates the accepted `activateKnowledgeBundle` operation:
+- it uses the existing BFF sign-in flow and ADMINISTRATOR authorization (no new endpoint, role or bypass);
+- the operator selects an exact eligible published digest;
+- the current state is sent as the precondition (`expected_active_content_digest`);
+- the operator confirms by typing the digest prefix;
+- the server records the activation and its governed audit event.
+
+The CLI never accesses the database. Rollback, withdrawal and the operator-management UI remain S9.
+
+**Consequences.** Only the activation write is served. Withdrawal remains a governance action outside S3, so no request
+path can change a bundle reference's eligibility.
+
+---
+
+## DEC-012 — Publisher authenticity for the single-machine synthetic development profile
+
+**Status.** ACCEPTED by the sponsor on 2026-10-14. A bounded exception under ADR-0013 Decision 9.
+
+**Decision.** For the single-machine, synthetic-only development deployment, activation may record authenticity
+`NOT_REQUIRED_BY_POLICY` only when ALL of these hold:
+- the bundle comes from governed Git/CI publication (canonical gate passed; `gate = PASS`);
+- its exact content digest is pinned in the committed release record
+  `apps/backend/knowledge_releases/local-development.json`;
+- manifest, per-file hashes, content digest, runtime compatibility and eligibility are verified at activation;
+- it is approved for that deployment;
+- no mutable "latest" reference and no arbitrary working-tree content becomes authoritative.
+
+**Not covered.** Production, external distribution and untrusted repositories still require publisher-authenticity
+verification (ADR-0013). An unsigned bundle is never described as cryptographically publisher-authenticated.
+
+**Reversal cost.** Low: remove the release record or the exception; activation then fails closed.
+
+---
+
+## DEC-013 — Local-development ADMINISTRATOR provisioning (PROPOSED)
+
+**Status.** PROPOSED on 2026-10-14 for independent review. It is used only after explicit sponsor confirmation of a
+specific separate account.
+
+**Decision proposed.** `make provision-administrator` / `make revoke-administrator`
+(`trustlens_backend.provisioning`) grant or revoke ADMINISTRATOR under these rules:
+- only for an exact Keycloak user ID (UUID) typed twice;
+- only to a separate account holding no other active role (a USER account is never elevated, and an administrator
+  account never gains USER);
+- only when issuer, redirect, app origin and database are loopback in the synthetic-only profile;
+- with the same WORKLOAD attribution, transactional ROLE_ASSIGNED / ROLE_REVOKED audit, idempotent repeats and
+  write-once revocation as DEC-009.
+
+Identity-provider claims never grant application roles. There is no HTTP path to any role change. It is not a
+general or production role-management system; that stays with S9.
+
+**Reversal cost.** Low: `make revoke-administrator`; the history is kept.
+
+---
+
 ## Summary
 
 | ID | Decision | Decided by | Status |
@@ -301,6 +389,10 @@ and isolation tests. It is not a configuration toggle.
 | DEC-007 | Sextortion in taxonomy; detection deferred (safeguarding) | Programme | Accepted |
 | DEC-008 | MVP language scope English-only (OI-04 resolved); schemas stay extensible | Sponsor | Accepted |
 | DEC-009 | Single-tenant MVP; multiple users and five roles; future multi-tenancy requires governed revision/migration/tests | User (programme sponsor) | Accepted |
+| DEC-010 | Self-test daily, on dispatch and on gate changes; validation suite unchanged on every relevant change | Sponsor | Accepted |
+| DEC-011 | T07: CLI-first authenticated local knowledge activation through `activateKnowledgeBundle`; rollback/withdrawal/UI in S9 | Sponsor | Accepted |
+| DEC-012 | Local single-machine synthetic profile may record authenticity `NOT_REQUIRED_BY_POLICY` under strict conditions; not production | Sponsor | Accepted |
+| DEC-013 | Local-only ADMINISTRATOR provisioning for a separate account (loopback, synthetic, exact subject twice, audited) | Proposed by builder; sponsor confirmation before use | **Proposed** |
 
 ## Change history
 
@@ -311,3 +403,6 @@ and isolation tests. It is not a configuration toggle.
 | 1.2 | 2026-08-28 | DEC-007 added — sextortion added to the taxonomy (TAX-11) with detection deferred for safeguarding (WP5). | Threat Intelligence Lead |
 | 1.3 | 2026-08-29 | DEC-008 added — Sponsor resolved OI-04: MVP language scope is English-only (CONF-004 option a); schemas stay language/script-extensible. Accepts ADR-0014; unblocks Phase-2 closure. | Technical Program Director |
 | 1.4 | 2026-10-13 | DEC-009 records the user's explicit single-tenant MVP decision; ASM-002 resolved forward without rewriting frozen contracts. | Programme / builder bookkeeping |
+| 1.5 | 2026-10-14 | DEC-010 proposed: quality-gate self-test cadence (schedule, dispatch and gate changes; fail closed). Not accepted until merged by the sponsor. | Programme / builder bookkeeping |
+| 1.6 | 2026-10-14 | Sponsor accepted DEC-010; DEC-011 (T07 CLI-first activation) and DEC-012 (local authenticity exception) recorded as accepted. | Programme / builder bookkeeping |
+| 1.7 | 2026-10-14 | DEC-013 proposed: local-development ADMINISTRATOR provisioning (separate account, loopback synthetic profile). | Programme / builder bookkeeping |

@@ -6,13 +6,15 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { createServer } from "vite";
 
 const server = await createServer({ server: { middlewareMode: true }, appType: "custom" });
-let App, auth, Workspace, submissionLabels, cases, evidence;
+let App, auth, Workspace, submissionLabels, cases, evidence, KnowledgeStatus, knowledge;
 try {
   ({ default: App } = await server.ssrLoadModule("/src/App.tsx"));
   auth = await server.ssrLoadModule("/src/auth.ts");
   ({ default: Workspace, SUBMISSION_STATE_LABELS: submissionLabels } = await server.ssrLoadModule("/src/Workspace.tsx"));
   cases = await server.ssrLoadModule("/src/cases.ts");
   evidence = await server.ssrLoadModule("/src/evidence.ts");
+  ({ default: KnowledgeStatus } = await server.ssrLoadModule("/src/KnowledgeStatus.tsx"));
+  knowledge = await server.ssrLoadModule("/src/knowledge.ts");
 } finally {
   await server.close();
 }
@@ -55,7 +57,7 @@ test("collects no content and keeps no credential in browser storage", () => {
   }
   const code = (file) => readFileSync(new URL(file, import.meta.url), "utf8").replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/.*$/gm, "");
   const source = code("./App.tsx") + code("./auth.ts") + code("./cases.ts") + code("./Workspace.tsx") + code("./evidence.ts")
-    + code("./EvidencePanel.tsx");
+    + code("./EvidencePanel.tsx") + code("./knowledge.ts") + code("./KnowledgeStatus.tsx");
   for (const forbidden of [/localStorage/, /sessionStorage/, /indexedDB/i, /document\.cookie/, /Authorization/,
                            /access_token|id_token|refresh_token/, /console\./]) {
     assert.doesNotMatch(source, forbidden);
@@ -327,4 +329,42 @@ test("every accepted submission state has a truthful label distinct from evidenc
       initialSelected: aCase.case_id }));
     assert.match(html, new RegExp(` · ${labels[state]} · received`));
   }
+});
+
+const bundle = { content_digest: "ab".repeat(32), bundle_version: "1.0.0", manifest_schema_version: "1.1.0", commit_sha: null,
+  governance_eligibility: "ELIGIBLE" };
+
+test("knowledge status is shown only to knowledge-read roles", () => {
+  const userHtml = render({ initialState: { kind: "signed-in", me: { ...me, roles: ["USER"] } } });
+  assert.doesNotMatch(userHtml, /Governed analysis knowledge/);
+  for (const role of ["ANALYST", "KNOWLEDGE_EDITOR", "KNOWLEDGE_APPROVER", "ADMINISTRATOR"]) {
+    assert.match(render({ initialState: { kind: "signed-in", me: { ...me, roles: [role] } } }), /Governed analysis knowledge/, role);
+  }
+});
+
+test("knowledge states are stated honestly and never as an analysis result", () => {
+  const none = renderToStaticMarkup(createElement(KnowledgeStatus, { initial: { deployment_state: "NO_ACTIVE_BUNDLE", active_bundle: null,
+    state_changed_at: "2026-10-14T10:00:00Z" } }));
+  assert.match(none, /No governed knowledge bundle is active/);
+  const active = renderToStaticMarkup(createElement(KnowledgeStatus, { initial: { deployment_state: "ACTIVE", active_bundle: bundle,
+    state_changed_at: "2026-10-14T10:00:00Z" } }));
+  assert.match(active, /recorded as active/);
+  assert.match(active, /1\.0\.0/);
+  assert.match(active, /abababababababab…/);
+  assert.match(active, /eligible/);
+  const withdrawn = renderToStaticMarkup(createElement(KnowledgeStatus, { initial: { deployment_state: "ACTIVE_BUNDLE_WITHDRAWN",
+    active_bundle: { ...bundle, governance_eligibility: "WITHDRAWN" }, state_changed_at: "2026-10-14T10:00:00Z" } }));
+  assert.match(withdrawn, /withdrawn\. New analysis is blocked/);
+  for (const html of [none, active, withdrawn]) {
+    assert.doesNotMatch(html, /\bready\b|verdict|score|\bsafe\b|risk|scam detected|no scam/i);
+    assert.match(html, /nothing here is a\s+result about any message/);
+  }
+});
+
+test("knowledge status uses only the accepted read operation", async () => {
+  const s = scripted([[200, { deployment_state: "NO_ACTIVE_BUNDLE", active_bundle: null, state_changed_at: "2026-10-14T10:00:00Z" }]]);
+  const r = await knowledge.getActiveKnowledge(s.fetcher);
+  assert.equal(r.kind, "ok");
+  assert.deepEqual(s.calls.map((c) => [c.url, c.init.method ?? "GET"]), [["/api/v1/knowledge/active", "GET"]]);
+  assert.deepEqual(knowledge.KNOWLEDGE_READERS, ["ANALYST", "KNOWLEDGE_EDITOR", "KNOWLEDGE_APPROVER", "ADMINISTRATOR"]);
 });

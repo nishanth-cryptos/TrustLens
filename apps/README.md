@@ -137,3 +137,26 @@ Evidence routes answer `503` until **both** of these are true:
    [S2-local-development-profile.md](../docs/07-implementation/S2-local-development-profile.md).
 
 That file also lists the approved limits and the bounded local admission control (`429 RATE_LIMITED`).
+
+## S3 governed knowledge seam (exact-digest activation, DEC-011 / DEC-012)
+
+Migration `0005_knowledge_seam` creates the accepted contract tables `knowledge_bundle_reference`,
+`knowledge_activation_record` and `knowledge_deployment_state`. It records one `NO_ACTIVE_BUNDLE` state for deployment
+`local-development`. Apply it like the earlier migrations: `make migration-sql` to review, then `make migrate`.
+
+1. `make knowledge-bundle` runs the canonical gate, publishes with the existing tool and installs the bundle at
+   `~/.local/share/trustlens/knowledge/<digest>/`. It installs only if the exact digest is approved in
+   [`backend/knowledge_releases/local-development.json`](backend/knowledge_releases/local-development.json).
+2. `make knowledge-activate DIGEST=<sha256> CHANGE_REF=<REF>` signs you in through Keycloak (an ADMINISTRATOR account
+   is required; see DEC-013 and `make provision-administrator SUBJECT=<id> CONFIRM_SUBJECT=<id>` for a separate local
+   account). It shows the current and requested digests, asks you to type the digest prefix, and calls the
+   accepted `activateKnowledgeBundle` operation. The CLI never touches the database.
+
+- **Server checks:** the release approval, the publication gate, local verification (manifest, per-file hashes, digest,
+  compatibility), eligibility and the stale-state precondition. Every outcome is audited as `KNOWLEDGE_ACTIVATED` or
+  `KNOWLEDGE_ACTIVATION_REJECTED`.
+- **Authenticity:** recorded as `NOT_REQUIRED_BY_POLICY` under DEC-012, for this single-machine synthetic profile only.
+  It is not publisher authentication.
+- **Readiness:** evaluation readiness and `/health/ready` are `OK` only for an active, eligible, verified bundle with the
+  S2 dependencies present.
+- **Not implemented:** rollback, withdrawal and the operator UI (S9), and analysis itself (S4/S5).

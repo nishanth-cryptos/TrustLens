@@ -743,13 +743,21 @@ class RouteSurfaceTests(unittest.TestCase):
         me = next(o["path"] for o in catalog["operations"] if o["operation_id"] == "getMe")
         from trustlens_backend.cases import OPERATIONS
         from trustlens_backend.evidence import OPERATIONS as EVIDENCE_OPERATIONS
-        s2 = {o["path"] for o in catalog["operations"] if o["operation_id"] in {**OPERATIONS, **EVIDENCE_OPERATIONS}}
+        from trustlens_backend.knowledge_seam import OPERATIONS as KNOWLEDGE_OPERATIONS
+        s2 = {o["path"] for o in catalog["operations"]
+              if o["operation_id"] in {**OPERATIONS, **EVIDENCE_OPERATIONS, **KNOWLEDGE_OPERATIONS}}
         app = create_app(None, configure_from_environment=False)
         self.assertEqual({r.path for r in app.routes}, probes | {me} | s2 | AUTH_BOUNDARY_ROUTES)
         served = {(m, r.path) for r in app.routes for m in getattr(r, "methods", ()) if r.path.startswith("/api/")}
         catalogued = {(o["method"], o["path"]) for o in catalog["operations"]}
         self.assertTrue(served <= catalogued, served - catalogued)          # no invented operation or method
         self.assertFalse(any(p.startswith(catalog["base_path"]) for p in AUTH_BOUNDARY_ROUTES))
+        # DEC-011 scope: only activateKnowledgeBundle is served; rollback and withdrawal stay with S9 (PLAN-001 §6).
+        writes = {o["operation_id"]: (o["method"], o["path"]) for o in catalog["operations"]
+                  if o["operation_id"] in {"activateKnowledgeBundle", "rollbackKnowledgeBundle", "withdrawKnowledgeBundle"}}
+        self.assertEqual(len(writes), 3)
+        self.assertIn(writes["activateKnowledgeBundle"], served)
+        self.assertFalse({writes["rollbackKnowledgeBundle"], writes["withdrawKnowledgeBundle"]} & served)
 
 
 if __name__ == "__main__":

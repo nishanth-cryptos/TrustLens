@@ -1,0 +1,21 @@
+{
+  "release_record_schema_version": "1.0",
+  "deployment_ref": "local-development",
+  "profile": "SINGLE_MACHINE_SYNTHETIC_DEVELOPMENT",
+  "authenticity_policy": {
+    "decision": "DEC-012",
+    "outcome": "NOT_REQUIRED_BY_POLICY",
+    "scope": "This single-machine, synthetic-only development deployment. Not production, external distribution or an untrusted repository; those require publisher-authenticity verification (ADR-0013 Decision 9). An unsigned bundle is not publisher-authenticated."
+  },
+  "approved_bundles": [
+    {
+      "release_record_ref": "TL-KREL-LOCAL-0001",
+      "content_digest": "bd4f1dcaeb09e660e9e863ac29d6e07a106dd1f74f8d0186d7c8d997ddb37725",
+      "bundle_version": "1.0.0",
+      "manifest_schema_version": "1.1.0",
+      "published_from_commit": "fefedda764fa214222f07d2428470cb6e7eb6f38",
+      "publication": "knowledge/publish/build_bundle.py --gate PASS after knowledge/validation/run_all.py passed, from the governed merged commit above",
+      "approved_by": "DEC-012 (sponsor, 2026-10-14)"
+    }
+  ]
+}
