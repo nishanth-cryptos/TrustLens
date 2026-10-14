@@ -3,10 +3,10 @@
 | Field | Value |
 |---|---|
 | Document ID | REG-DECISION |
-| Version | 1.4 |
+| Version | 1.8 |
 | Status | Active |
 | Owner role | Technical Program Director |
-| Last updated | 2026-10-13 |
+| Last updated | 2026-10-14 |
 
 Programme-level decisions. **Architecture** decisions live as numbered ADRs in
 [`adr/`](../../adr/README.md); this log records scope, process and evidence-policy decisions,
@@ -355,12 +355,12 @@ verification (ADR-0013). An unsigned bundle is never described as cryptographica
 
 ---
 
-## DEC-013 — Local-development ADMINISTRATOR provisioning (PROPOSED)
+## DEC-013 — Local-development ADMINISTRATOR provisioning
 
-**Status.** PROPOSED on 2026-10-14 for independent review. It is used only after explicit sponsor confirmation of a
-specific separate account.
+**Status.** ACCEPTED by the sponsor on 2026-10-14 (proposed the same day; the sponsor then activated the approved
+bundle through the authenticated ADMINISTRATOR API). Each use still names one specific separate account.
 
-**Decision proposed.** `make provision-administrator` / `make revoke-administrator`
+**Decision.** `make provision-administrator` / `make revoke-administrator`
 (`trustlens_backend.provisioning`) grant or revoke ADMINISTRATOR under these rules:
 - only for an exact Keycloak user ID (UUID) typed twice;
 - only to a separate account holding no other active role (a USER account is never elevated, and an administrator
@@ -392,7 +392,7 @@ general or production role-management system; that stays with S9.
 | DEC-010 | Self-test daily, on dispatch and on gate changes; validation suite unchanged on every relevant change | Sponsor | Accepted |
 | DEC-011 | T07: CLI-first authenticated local knowledge activation through `activateKnowledgeBundle`; rollback/withdrawal/UI in S9 | Sponsor | Accepted |
 | DEC-012 | Local single-machine synthetic profile may record authenticity `NOT_REQUIRED_BY_POLICY` under strict conditions; not production | Sponsor | Accepted |
-| DEC-013 | Local-only ADMINISTRATOR provisioning for a separate account (loopback, synthetic, exact subject twice, audited) | Proposed by builder; sponsor confirmation before use | **Proposed** |
+| DEC-013 | Local-only ADMINISTRATOR provisioning for a separate account (loopback, synthetic, exact subject twice, audited) | Sponsor | Accepted |
 
 ## Change history
 
@@ -406,3 +406,4 @@ general or production role-management system; that stays with S9.
 | 1.5 | 2026-10-14 | DEC-010 proposed: quality-gate self-test cadence (schedule, dispatch and gate changes; fail closed). Not accepted until merged by the sponsor. | Programme / builder bookkeeping |
 | 1.6 | 2026-10-14 | Sponsor accepted DEC-010; DEC-011 (T07 CLI-first activation) and DEC-012 (local authenticity exception) recorded as accepted. | Programme / builder bookkeeping |
 | 1.7 | 2026-10-14 | DEC-013 proposed: local-development ADMINISTRATOR provisioning (separate account, loopback synthetic profile). | Programme / builder bookkeeping |
+| 1.8 | 2026-10-14 | Sponsor accepted DEC-013; recorded as accepted with Phase 9 S4. | Programme / builder bookkeeping |

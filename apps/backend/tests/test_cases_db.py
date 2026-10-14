@@ -38,7 +38,7 @@ class CaseApiTests(DbHarness, unittest.TestCase):
         self.assertEqual(effective["contract_version"], "0.3.0")
         contract = {t["name"]: t for t in effective["tables"]}
         types = {"uuid": "uuid", "text": "text", "timestamptz": "timestamp with time zone", "bigint": "bigint",
-                 "integer": "integer", "boolean": "boolean", "jsonb": "jsonb"}
+                 "integer": "integer", "boolean": "boolean", "jsonb": "jsonb", "text[]": "ARRAY"}
         owner = _settings("TRUSTLENS_TEST_MIGRATOR_DB_ENV_FILE")   # information_schema hides columns the app role cannot read
         with psycopg.connect(**owner.connection_parameters(), autocommit=True) as c, c.cursor() as cur:
             cur.execute("SELECT table_name, column_name, data_type, is_nullable FROM information_schema.columns"
@@ -49,6 +49,7 @@ class CaseApiTests(DbHarness, unittest.TestCase):
             cur.execute("SELECT indexdef FROM pg_indexes WHERE schemaname = 'trustlens' AND indexname = 'uq_api_idempotency_scope'")
             self.assertIn("WHERE (superseded_at IS NULL)", cur.fetchone()[0])
         self.assertIn("evidence_upload_intent", live)
+        self.assertIn("detection_result", live)                    # 0006 (S5) tables are checked against the contract too
         for table, columns in live.items():
             expected = [(col["name"], types[col["type"]], col["nullable"]) for col in contract[table]["columns"]]
             self.assertEqual(columns, expected, table)

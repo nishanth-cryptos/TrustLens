@@ -159,4 +159,46 @@ Migration `0005_knowledge_seam` creates the accepted contract tables `knowledge_
   It is not publisher authentication.
 - **Readiness:** evaluation readiness and `/health/ready` are `OK` only for an active, eligible, verified bundle with the
   S2 dependencies present.
-- **Not implemented:** rollback, withdrawal and the operator UI (S9), and analysis itself (S4/S5).
+- **Not implemented:** rollback, withdrawal and the operator UI (S9), and scoring and results (S5).
+
+## S4 deterministic extraction (no endpoint, no result)
+
+`trustlens_backend/extraction.py` turns one FINALIZED synthetic text evidence item into governed engine inputs.
+`extract_finalized_evidence` authorizes the caller as `createEvaluations` does (USER/ANALYST with case access), reads
+the original bytes through the encrypted store, re-verifies digest and length, audits the read (`EVIDENCE_ACCESSED`)
+and extracts against the ACTIVE verified bundle. `extract_text` is the same extractor over bytes.
+
+- **Output:** an immutable `GovernedInput`: input envelope, observations, indicator observations and the input
+  support state. All are checked against the KB-002 schemas, the active registry and negative library, and the
+  engine's own `build_validated_context`. `engine_inputs()` is what S5 will pass to `evaluate_detection_from_governed`.
+- **Grounding:** offsets index `normalized_text`; every `raw_span` is the exact submitted text. Provenance pins the
+  extractor version and the pattern-pack digest (`config_ref`).
+- **Structure:** negated, reported, quoted and hypothetical occurrences never project a positive indicator. An
+  unstated payment direction is `AMBIGUOUS` and marked for review.
+- **Support states:** `UNSUPPORTED` (non-English or other scripts), `INSUFFICIENT_INFORMATION`, `PARTIALLY_SUPPORTED`
+  (a referenced attachment that is not evaluated) and `ERROR` (malformed bytes) are explicit. None is benign.
+- **Extraction confidence** is extraction certainty (KB-002 §8), not indicator strength: HIGH for explicit wording or a
+  parsed fact, MEDIUM for interpretive readings, LOW only for an ambiguous reading.
+- The golden fixtures test the extractor; they never stand in for it.
+
+## S5 governed evaluation and result (migration 0006)
+
+- **Operations:** `createEvaluations`, `getEvaluation`, `listCaseEvaluations` and `getDetectionResult`
+  (`trustlens_backend/evaluation.py`).
+- **Analyze:** "Analyze message" needs exactly one stored and verified text in the submission. The server runs S4
+  against the active verified bundle and stores the input envelope encrypted. It records one immutable governed input
+  artifact and a `REQUESTED` evaluation, then answers `202`.
+- **Worker:** follows the DATA-001-WP2 completion protocol. It verifies the artifact digest and the pinned bundle, enters
+  `RUNNING` with a fence token and every pin, and calls the existing kernel (`evaluate_detection_from_governed`). The
+  result, rule projection, audit and `COMPLETED` commit together, compare-and-set on the token. The database refuses a
+  result for anything but the live fence, and a completed result never changes.
+- **Recovery:** in the served app, a loop runs at startup and every 30 s. It fences `RUNNING` work whose 60 s lease
+  expired (`FAILED_INFRASTRUCTURE`) and runs `REQUESTED` work that was never dispatched. A retry is a new evaluation.
+- **Result:** the STANDARD view (owner) or DETAILED view (assigned analyst with content permission). The stored digest is
+  re-verified on every read, and every read is audited.
+- **UI:** the result panel uses the exact UX-003 governed labels, meanings and action instructions. It withholds any
+  incomplete, contradictory or other-view response. `NO_SCAM_PATTERN` is never shown as safe.
+- **Before use:** review `make migration-sql`, then `make migrate`, to apply `0006_evaluation_result`. Until then the
+  evaluation operations answer `503`.
+- **Not exposed:** indicator identities and observation spans. DetectionResultResponse v1 has no field for them
+  (UX-003 open decision; needs a governed API revision).

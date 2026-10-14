@@ -30,12 +30,13 @@ class FoundationTests(unittest.TestCase):
 
     def test_unimplemented_routes_and_framework_docs_are_not_enabled(self):
         with TestClient(create_app(None, configure_from_environment=False)) as client:
-            for path in ("/api/v1/evaluations/x", "/api/v1/reports/x", "/docs", "/redoc",
+            for path in ("/api/v1/evaluations/x/corrections", "/api/v1/reports/x", "/docs", "/redoc",
                          "/openapi.json"):
                 self.assertEqual(client.get(path).status_code, 404)
             # getMe and the S2 evidence routes exist but fail closed without authentication configuration.
             self.assertEqual(client.get("/api/v1/me").status_code, 503)
             self.assertEqual(client.get("/api/v1/evidence/00000000-0000-4000-8000-000000000000").status_code, 503)
+            self.assertEqual(client.get("/api/v1/evaluations/00000000-0000-4000-8000-000000000000").status_code, 503)
 
     def test_startup_does_not_connect_or_create_schema(self):
         with patch("psycopg.connect", side_effect=AssertionError("unexpected database call")), \

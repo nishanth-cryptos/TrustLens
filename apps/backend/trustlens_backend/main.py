@@ -1,7 +1,8 @@
 """Loopback backend: internal probes, the browser authentication boundary and GET /api/v1/me.
 
 Startup never connects to the database or the identity provider and never creates a schema. Missing or unsafe
-authentication configuration disables sign-in (fail closed); it is never replaced by a development bypass.
+authentication configuration disables sign-in (fail closed); it is never replaced by a development bypass. In the served
+application only, the S5 evaluation recovery loop starts after startup in a background thread and connects then.
 """
 import sys
 from uuid import uuid4
@@ -14,6 +15,7 @@ from .admission import Admission, admission_middleware
 from .audit import AuditUnavailable, PostgresAuditSink
 from .auth import AuthRuntime, csrf_middleware, install
 from .cases import install as install_cases
+from .evaluation import install as install_evaluation, start_recovery
 from .evidence import get_store, install as install_evidence
 from .capabilities import evidence_schema_active
 from .knowledge_seam import evaluation_readiness, install as install_knowledge, verifier_from_environment
@@ -39,7 +41,7 @@ def runtime_from_environment(environment=None) -> AuthRuntime:
                        evidence_store_paths=(env.get("TRUSTLENS_EVIDENCE_DIR", "~/.local/share/trustlens/evidence-dev"),
                                              env.get("TRUSTLENS_EVIDENCE_KEK_FILE", "~/.config/trustlens/evidence-kek-v1.key")),
                        knowledge_verifier=verifier_from_environment(env),
-                       deployment_ref=env.get("TRUSTLENS_DEPLOYMENT_REF", "local-development"))
+                       deployment_ref=env.get("TRUSTLENS_DEPLOYMENT_REF", "local-development"), evaluation_recovery=True)
 
 
 def create_app(runtime: AuthRuntime | None = None, configure_from_environment: bool = True) -> FastAPI:
@@ -78,6 +80,13 @@ def create_app(runtime: AuthRuntime | None = None, configure_from_environment: b
     install_cases(app)
     install_evidence(app)
     install_knowledge(app)
+    install_evaluation(app)
+
+    @app.on_event("startup")
+    def recover_evaluations():
+        # S5 durability: fence expired executions and resume undispatched ones after a restart (served app only).
+        if runtime is not None and runtime.evaluation_recovery and runtime.database is not None:
+            app.state.evaluation_recovery = start_recovery(runtime)
     return app
 
 
