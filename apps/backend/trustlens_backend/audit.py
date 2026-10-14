@@ -37,8 +37,15 @@ SAFE_METADATA = {
     "INTEGRITY_FAILURE": {"stage": "category"},
     "ROLE_ASSIGNED": {"role": "category", "principal_id": "uuid", "reason_ref": "reference"},
     "ROLE_REVOKED": {"role": "category", "principal_id": "uuid", "reason_ref": "reference"},
+    # S3 knowledge activation (ADR-0013 Decision 14): exact digests, deployment, actor (event column), outcome, reason.
+    "KNOWLEDGE_ACTIVATED": {"content_digest": "sha256", "previous_content_digest": "sha256", "activation_id": "uuid",
+                            "deployment": "deployment", "governance_change_ref": "reference", "authenticity": "category"},
+    "KNOWLEDGE_ACTIVATION_REJECTED": {"content_digest": "sha256", "deployment": "deployment", "reason": "category",
+                                      "governance_change_ref": "reference"},
 }
 _REFERENCE = re.compile(r"^[A-Z0-9][A-Z0-9:_-]{0,79}$")
+_SHA256 = re.compile(r"^[0-9a-f]{64}$")
+_DEPLOYMENT = re.compile(r"^[a-z0-9][a-z0-9-]{0,62}$")
 
 
 class AuditUnavailable(RuntimeError):
@@ -72,7 +79,9 @@ def _validate(event: AuditEvent) -> None:
         kind = allowed.get(key)
         ok = (kind == "category" and isinstance(value, str) and _CATEGORY.match(value)) or \
              (kind == "uuid" and isinstance(value, str) and _UUID.match(value)) or \
-             (kind == "reference" and isinstance(value, str) and _REFERENCE.match(value))
+             (kind == "reference" and isinstance(value, str) and _REFERENCE.match(value)) or \
+             (kind == "sha256" and isinstance(value, str) and _SHA256.match(value)) or \
+             (kind == "deployment" and isinstance(value, str) and _DEPLOYMENT.match(value))
         if not ok:
             raise ValueError("safe_metadata key or value is not permitted")
     for ref in (event.actor_principal_id, event.target_id, event.case_record_id, event.evidence_item_id):

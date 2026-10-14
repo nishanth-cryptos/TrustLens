@@ -34,6 +34,8 @@ ERRORS = {   # API-001 §31 codes used by this slice (HTTP status, retryability,
     "IDEMPOTENCY_KEY_REUSED": (409, "RETRY_WITH_CHANGES", "This Idempotency-Key was already used for a different request."),
     "IDEMPOTENCY_IN_PROGRESS": (409, "RETRYABLE", "The original request with this Idempotency-Key is still in progress."),
     "STATE_CONFLICT": (409, "NOT_RETRYABLE", "This action is not allowed in the current state."),
+    "PRECONDITION_FAILED": (412, "RETRY_WITH_CHANGES", "The expected state did not match. Refresh and try again."),
+    "KNOWLEDGE_NOT_ELIGIBLE": (409, "NOT_RETRYABLE", "That exact knowledge bundle is not eligible for activation here."),
     "PAYLOAD_TOO_LARGE": (413, "RETRY_WITH_CHANGES", "The content exceeds the configured size bound."),
     "UNSUPPORTED_MEDIA_TYPE": (415, "RETRY_WITH_CHANGES", "This media type is not accepted."),
     "RATE_LIMITED": (429, "RETRYABLE", "Too many requests. Please wait and try again."),
@@ -58,6 +60,9 @@ class AuthRuntime:
     database: object | None = None      # DatabaseSettings for the S2 resource store (None: resource API unavailable)
     evidence_store: object | None = None          # EvidenceContentStore (built lazily from evidence_store_paths)
     evidence_store_paths: tuple | None = None     # (content directory, key-encryption key file)
+    knowledge_verifier: object | None = None      # KnowledgeVerifier over the content-addressed bundle store (S3)
+    deployment_ref: str = "local-development"     # knowledge_deployment_state.deployment_ref of this deployment
+    knowledge_release_dir: object | None = None   # committed release records (default: apps/backend/knowledge_releases)
 
     @property
     def session_cookie(self) -> str:

@@ -54,3 +54,6 @@ h2 { font-size: 24px; margin: 0; } h3 { margin-top: 32px; } h4 { margin: 28px 0 
   text-decoration: underline; cursor: pointer; }
 .link-button:disabled { color: #8a9a90; cursor: not-allowed; }
 .link-button:focus-visible { outline: 3px solid #e2a03f; outline-offset: 2px; }
+
+.knowledge-status { margin: 24px 0 0; padding: 18px 20px; border: 1px solid #d4ded2; border-radius: 14px; display: grid; gap: 8px; }
+.knowledge-status h2 { margin: 0; font-size: 18px; }

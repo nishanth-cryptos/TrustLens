@@ -39,6 +39,9 @@ def _settings(variable):
 
 class DbHarness:
     evidence_store = None          # set by evidence tests to a temporary LocalEncryptedContentStore
+    knowledge_verifier = None      # set by knowledge tests to a KnowledgeVerifier over a temporary bundle store
+    knowledge_release_dir = None   # set by knowledge tests to a temporary release-record directory
+    deployment_ref = "local-development"
 
     @classmethod
     def setUpClass(cls):
@@ -64,15 +67,16 @@ class DbHarness:
             pid = cur.fetchone()[0]
             if "USER" not in roles:
                 provisioning.revoke_user(cur, T.ISSUER, subject)
-            if "ANALYST" in roles:
+            for role in (r for r in roles if r != "USER"):        # ANALYST, KNOWLEDGE_EDITOR, KNOWLEDGE_APPROVER, ADMINISTRATOR
                 cur.execute("SELECT principal_reference_id::text FROM trustlens.principal_reference WHERE external_issuer = %s",
                             (provisioning.PROVISIONER_ISSUER,))
                 cur.execute("INSERT INTO trustlens.role_assignment (role_assignment_id, principal_reference_id, role,"
                             " assigned_by_principal_id, assignment_reason_ref, effective_from)"
-                            " VALUES (%s, %s, 'ANALYST', %s, 'TEST-ANALYST', now())", (str(uuid.uuid4()), pid, cur.fetchone()[0]))
+                            " VALUES (%s, %s, %s, %s, %s, now())",
+                            (str(uuid.uuid4()), pid, role, cur.fetchone()[0], f"TEST-{role}"))
         return subject, pid
 
-    def client_for(self, subject):
+    def client_for(self, subject, extra_claims=None):
         """A browser signed in as `subject` through the full OIDC callback (fake provider, real stores)."""
         clock, wall = T.Clock(), T.Clock()
         wall.now = time.time()
@@ -81,14 +85,15 @@ class DbHarness:
         runtime = AuthRuntime(settings=s, oidc=OIDCClient(s, httpx.Client(transport=httpx.MockTransport(provider.handler)), clock=wall),
                               transactions=TransactionStore(300, 100, clock=clock), sessions=SessionStore(1800, 28800, 100, clock=clock),
                               principals=PostgresPrincipalStore(self.app_db), audit=PostgresAuditSink(self.app_db), database=self.app_db,
-                              evidence_store=self.evidence_store)
+                              evidence_store=self.evidence_store, knowledge_verifier=self.knowledge_verifier,
+                              deployment_ref=self.deployment_ref, knowledge_release_dir=self.knowledge_release_dir)
         app = create_app(runtime)
         app.state.admission = Admission(GENEROUS, GENEROUS)
         client = TestClient(app, base_url=T.BACKEND)
         client.__enter__()
         self.addCleanup(client.__exit__, None, None, None)
         login = client.get("/auth/login", follow_redirects=False)
-        provider.claims_override = {"sub": subject}
+        provider.claims_override = {"sub": subject, **(extra_claims or {})}
         code, query = provider.authorize(login.headers["location"])
         r = client.get("/auth/callback", params={"code": code, "state": query["state"][0], "iss": T.ISSUER}, follow_redirects=False)
         self.assertEqual(r.headers["location"], T.APP + "/", "sign-in failed")

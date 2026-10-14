@@ -6,13 +6,17 @@ authentication configuration disables sign-in (fail closed); it is never replace
 import sys
 from uuid import uuid4
 
+import psycopg
+
 from fastapi import FastAPI, Request
 
 from .admission import Admission, admission_middleware
 from .audit import AuditUnavailable, PostgresAuditSink
 from .auth import AuthRuntime, csrf_middleware, install
 from .cases import install as install_cases
-from .evidence import install as install_evidence
+from .evidence import get_store, install as install_evidence
+from .capabilities import evidence_schema_active
+from .knowledge_seam import evaluation_readiness, install as install_knowledge, verifier_from_environment
 from .config import AuthConfigurationError, AuthSettings, load_environment_files
 from .database import DatabaseConfigurationError, DatabaseSettings
 from .oidc import OIDCClient
@@ -33,7 +37,9 @@ def runtime_from_environment(environment=None) -> AuthRuntime:
                        sessions=SessionStore(settings.session_idle_seconds, settings.session_absolute_seconds, settings.max_sessions),
                        principals=principals, audit=audit, database=database,
                        evidence_store_paths=(env.get("TRUSTLENS_EVIDENCE_DIR", "~/.local/share/trustlens/evidence-dev"),
-                                             env.get("TRUSTLENS_EVIDENCE_KEK_FILE", "~/.config/trustlens/evidence-kek-v1.key")))
+                                             env.get("TRUSTLENS_EVIDENCE_KEK_FILE", "~/.config/trustlens/evidence-kek-v1.key")),
+                       knowledge_verifier=verifier_from_environment(env),
+                       deployment_ref=env.get("TRUSTLENS_DEPLOYMENT_REF", "local-development"))
 
 
 def create_app(runtime: AuthRuntime | None = None, configure_from_environment: bool = True) -> FastAPI:
@@ -63,14 +69,30 @@ def create_app(runtime: AuthRuntime | None = None, configure_from_environment: b
 
     @app.get("/health/ready")
     def readiness():
-        # The accepted internal probe has HTTP 200 + categorical status. Protected content/keys, knowledge and the
-        # remaining S2 schema are not configured, so the service is still not ready even when sign-in works.
-        return {"status": "NOT_READY"}
+        # Accepted internal probe: HTTP 200 + categorical status only (ARCH-005 §8). OK requires the required
+        # persistence (S2 schema), the protected evidence store and a verified, eligible, active knowledge bundle.
+        # Every failure is NOT_READY; reasons are never exposed here.
+        return {"status": "OK" if probe_ready(app.state.auth) else "NOT_READY"}
 
     install(app)
     install_cases(app)
     install_evidence(app)
+    install_knowledge(app)
     return app
+
+
+def probe_ready(runtime) -> bool:
+    if runtime is None or runtime.database is None:
+        return False
+    try:
+        with psycopg.connect(**runtime.database.connection_parameters(), autocommit=True) as connection:
+            connection.execute("SET statement_timeout = '5s'")
+            with connection.cursor() as cur:
+                if not evidence_schema_active(connection) or get_store(runtime) is None:
+                    return False
+                return evaluation_readiness(cur, runtime.knowledge_verifier, runtime.deployment_ref).ready
+    except (psycopg.Error, OSError, DatabaseConfigurationError):
+        return False
 
 
 app = create_app()
