@@ -31,6 +31,10 @@ SAFE_METADATA = {
     "AUTHENTICATION_SUCCEEDED": {"method": "category"},
     "AUTHENTICATION_FAILED": {"method": "category", "reason": "category"},
     "AUTHORIZATION_DENIED": {"reason": "category", "operation": "category"},
+    "CASE_CREATED": {},
+    "EVIDENCE_RECEIVED": {},
+    "EVIDENCE_STORED": {"stage": "category"},
+    "INTEGRITY_FAILURE": {"stage": "category"},
     "ROLE_ASSIGNED": {"role": "category", "principal_id": "uuid", "reason_ref": "reference"},
     "ROLE_REVOKED": {"role": "category", "principal_id": "uuid", "reason_ref": "reference"},
 }
@@ -52,6 +56,8 @@ class AuditEvent:
     target_id: str | None = None
     safe_metadata: dict | None = field(default=None)
     occurred_at: datetime | None = None
+    case_record_id: str | None = None
+    evidence_item_id: str | None = None
 
 
 def _instant(value: datetime) -> str:
@@ -69,7 +75,7 @@ def _validate(event: AuditEvent) -> None:
              (kind == "reference" and isinstance(value, str) and _REFERENCE.match(value))
         if not ok:
             raise ValueError("safe_metadata key or value is not permitted")
-    for ref in (event.actor_principal_id, event.target_id):
+    for ref in (event.actor_principal_id, event.target_id, event.case_record_id, event.evidence_item_id):
         if ref is not None and not _UUID.match(ref):
             raise ValueError("references must be lowercase UUIDv4 text")
     if not isinstance(event.correlation_id, str) or not _UUID.match(event.correlation_id):
@@ -96,8 +102,8 @@ def append(cursor, event: AuditEvent, chain_id: str = CHAIN_ID) -> dict:
         "event_schema_version": EVENT_SCHEMA_VERSION, "event_type": event.event_type,
         "occurred_at": _instant(event.occurred_at or now), "recorded_at": _instant(now),
         "actor_principal_id": event.actor_principal_id, "actor_kind": event.actor_kind, "outcome": event.outcome,
-        "target_kind": event.target_kind, "target_id": event.target_id, "case_record_id": None, "evaluation_id": None,
-        "evidence_item_id": None, "bundle_content_digest": None, "correlation_id": event.correlation_id,
+        "target_kind": event.target_kind, "target_id": event.target_id, "case_record_id": event.case_record_id, "evaluation_id": None,
+        "evidence_item_id": event.evidence_item_id, "bundle_content_digest": None, "correlation_id": event.correlation_id,
         "safe_metadata": dict(event.safe_metadata) if event.safe_metadata else None, "previous_event_hash": head[1],
     }
     row["event_hash"] = event_hash(row)

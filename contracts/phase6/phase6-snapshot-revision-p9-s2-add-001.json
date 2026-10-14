@@ -1,0 +1,395 @@
+{
+  "revision_schema_version": "1.0.0",
+  "revision_id": "P6-SNAPSHOT-REV-001",
+  "title": "Forward Phase-6 snapshot revision for persistence addendum P9-S2-ADD-001 (evidence upload intent, idempotency supersession)",
+  "status": "ACCEPTED",
+  "approved": true,
+  "activated": true,
+  "independent_review": {
+    "state": "APPROVED",
+    "verdict_record": "docs/00-program/GATE-033-p9-s2-add-001-persistence-revision.md",
+    "prior_rounds": [
+      {
+        "reviewer": "Codex (independent)",
+        "verdict": "REQUEST_CHANGES",
+        "counts": {
+          "BLOCKER": 0,
+          "HIGH": 0,
+          "MEDIUM": 6,
+          "LOW": 1
+        },
+        "summary": "Seven findings; all corrected with regression tests.",
+        "findings_addressed": [
+          "1 machine addendum invalid against schema-contract table definition",
+          "2 concurrent evidence PUT race (attempt fencing)",
+          "3 short filesystem writes",
+          "4 forwarded-header admission bypass",
+          "5 unbounded streamed JSON",
+          "6 disposable-test database isolation",
+          "7 misleading upload failure copy"
+        ]
+      },
+      {
+        "reviewer": "Codex (independent)",
+        "verdict": "REQUEST_CHANGES",
+        "counts": null,
+        "summary": "Two targeted findings (severity breakdown not recorded); both corrected.",
+        "findings_addressed": [
+          "permanent credential loaders guarded before any read in disposable mode",
+          "snapshot validator enforces governed CHECK predicates, not only names"
+        ]
+      },
+      {
+        "reviewer": "Codex (independent)",
+        "verdict": "REQUEST_CHANGES",
+        "counts": {
+          "BLOCKER": 0,
+          "HIGH": 0,
+          "MEDIUM": 1,
+          "LOW": 0
+        },
+        "summary": "Exactly one MEDIUM finding; corrected.",
+        "findings_addressed": [
+          "credential-path guard resolves symlinks before '..' and loads the guarded destination"
+        ]
+      },
+      {
+        "reviewer": "Codex (independent)",
+        "verdict": "APPROVE",
+        "counts": null,
+        "summary": "APPROVE with 0 remaining material findings; REL-01, effective contract 0.3.0, the corrected validator and the symlink-safe guards explicitly approved; READY_FOR_GOVERNED_ACTIVATION YES; READY_FOR_LOCAL_MIGRATION_AFTER_ACTIVATION YES.",
+        "findings_addressed": []
+      }
+    ]
+  },
+  "integration": {
+    "state": "REMOTE_CI_AND_MERGE_PENDING",
+    "pr_number": null,
+    "merge_commit": null
+  },
+  "authorizing_change": {
+    "id": "P9-S2-ADD-001",
+    "phase": "PHASE-9",
+    "work_package": "P9-S2 secure evidence intake",
+    "sponsor_decision": "APPROVED IN PRINCIPLE 2026-10-14 (not an independent review)",
+    "addendum": "contracts/postgresql/schema-v1-addendum-p9-s2-add-001.json",
+    "human_contract": "docs/06-contracts/DATA-001-WP2-ADD-P9-S2-001-evidence-upload-intent.md"
+  },
+  "predecessor": {
+    "path": "contracts/phase6/phase6-closure-v1.json",
+    "sha256": "506b9afdffc7bedc5d04ed49f9b605ea1518a7d7a95bd96e9b695d9aae597d3d",
+    "snapshot_artifact_count": 19,
+    "unchanged": true,
+    "rule": "The Phase-6 closure manifest and its 19-artifact snapshot are not edited. This forward revision carries every pin unchanged and adds new pins; it takes effect only on activation."
+  },
+  "phase7_closure": {
+    "path": "contracts/phase7/phase7-closure-v1.json",
+    "sha256": "8f815cef93cbe858f7e68bea5a3896147cf935145e2e0b07d4ab49e91dcf9ca5",
+    "unchanged": true
+  },
+  "carried_artifacts": [
+    {
+      "id": "DATA-001",
+      "path": "docs/06-contracts/DATA-001-data-domain-lifecycle-contract.md",
+      "work_package": "P6-WP1",
+      "role": "Logical data domain and lifecycle contract (incl. P6-WP6 additive revision)",
+      "sha256": "07e10050f4245bf51b87c029aa74de5049b69c20e0e2c87b6a2db1c8dcf17f5e"
+    },
+    {
+      "id": "DATA-001-WP2",
+      "path": "docs/06-contracts/DATA-001-WP2-postgresql-persistence-contract.md",
+      "work_package": "P6-WP2",
+      "role": "PostgreSQL persistence contract (incl. P6-WP6-ADD-001)",
+      "sha256": "1880c934b17737fa4c530eae33cd2209f1d44e1a100743d7a64d2037c466e56d"
+    },
+    {
+      "id": "POSTGRESQL-SCHEMA-V1",
+      "path": "contracts/postgresql/schema-v1.json",
+      "work_package": "P6-WP2",
+      "role": "Machine-readable persistence contract 0.2.0",
+      "sha256": "f3595294ff5138e2e7f0167df2818b291bbc1b77ccf9e38113ea4921954c7ecd"
+    },
+    {
+      "id": "API-001",
+      "path": "docs/06-contracts/API-001-api-resource-protocol-contract.md",
+      "work_package": "P6-WP3",
+      "role": "API resource, authorization and protocol contract",
+      "sha256": "09c863e636c1bf4799d8091d185b8b9ad5870d154f8495347d923793c972b385"
+    },
+    {
+      "id": "API-CATALOG-V1",
+      "path": "contracts/api/api-v1.json",
+      "work_package": "P6-WP3",
+      "role": "Machine-readable API v1 catalog",
+      "sha256": "d6fa8626e678b7b597ee58d5283f389afd8729e4a650859b28656009fb0731d1"
+    },
+    {
+      "id": "OAS-001",
+      "path": "docs/06-contracts/OAS-001-openapi-contract.md",
+      "work_package": "P6-WP4",
+      "role": "OpenAPI contract document",
+      "sha256": "cdbbdc0d2ca46b5f41424e9f1db2fb876c4c3cbacec0034f77e792c25487832f"
+    },
+    {
+      "id": "OPENAPI-V1",
+      "path": "contracts/api/openapi-v1.json",
+      "work_package": "P6-WP4",
+      "role": "OpenAPI 3.1 encoding of the API catalog",
+      "sha256": "cb1ddb45c87e91eaf3c76f354b370fe5a4f90a8cc856bc0c0f55452355668f50"
+    },
+    {
+      "id": "INT-001",
+      "path": "docs/06-contracts/INT-001-external-enrichment-integration-contract.md",
+      "work_package": "P6-WP5",
+      "role": "External enrichment integration contract",
+      "sha256": "3753118735ec9568d4970a3bf31c57405b534221e2a6118f59b7aefd2fd37a73"
+    },
+    {
+      "id": "EXTERNAL-ENRICHMENT-V1",
+      "path": "contracts/integrations/external-enrichment-v1.json",
+      "work_package": "P6-WP5",
+      "role": "Machine-readable integration policy",
+      "sha256": "aa1702a53b2c341dba32e4913d43bb76b8fa2c5d0bcebff4f9967bbcfc5a916b"
+    },
+    {
+      "id": "OPS-001",
+      "path": "docs/06-contracts/OPS-001-operational-replay-persistence-contract.md",
+      "work_package": "P6-WP6",
+      "role": "Operational, replay and persistence-follow-up contract",
+      "sha256": "437cf815ab62d449cf91e2a7eab96cebd2750023c7a27099cbde82d695505625"
+    },
+    {
+      "id": "OPERATIONAL-V1",
+      "path": "contracts/operations/operational-v1.json",
+      "work_package": "P6-WP6",
+      "role": "Machine-readable operational contract",
+      "sha256": "9d05c8d59de5bf0967cefa6e365af8614a2b6c7ea91764a14ae6b7d2d4edcbf1"
+    },
+    {
+      "id": "ADR-0011",
+      "path": "adr/ADR-0011-database-migration-tooling.md",
+      "work_package": "P6-WP2",
+      "role": "Database migration tooling decision (Accepted)",
+      "sha256": "b1d3f46f8dd1e9d9eb3c49a8e9df0fb428164c9ef2b1cd93d4aeaafbdec86717"
+    },
+    {
+      "id": "ADR-0012",
+      "path": "adr/ADR-0012-threat-intelligence-adapter-architecture-provider-selection.md",
+      "work_package": "P6-WP5",
+      "role": "Threat-intelligence adapter architecture decision (Accepted)",
+      "sha256": "8c04c2cc248778e2c64a50fcd1812a6dc39949a863bd35f692b75f59edc7b11b"
+    },
+    {
+      "id": "GATE-019",
+      "path": "docs/00-program/GATE-019-phase-6-data-contract-foundation.md",
+      "work_package": "P6-WP1",
+      "role": "P6-WP1 gate record",
+      "sha256": "f9bf03350d55a264a288797bb1221b5bf0f1d8edb4c7233d3e61d101c9f64a63"
+    },
+    {
+      "id": "GATE-020",
+      "path": "docs/00-program/GATE-020-phase-6-postgresql-persistence.md",
+      "work_package": "P6-WP2",
+      "role": "P6-WP2 gate record",
+      "sha256": "a2bd82f2263059ee3ed47c21a8f653f96480714e5b154eb2d20a2251eca06387"
+    },
+    {
+      "id": "GATE-021",
+      "path": "docs/00-program/GATE-021-phase-6-api-contract.md",
+      "work_package": "P6-WP3",
+      "role": "P6-WP3 gate record",
+      "sha256": "86b64cedd0362e313059d1e57aef23aae5d7bcf792e5c3952ce8c484c34f0418"
+    },
+    {
+      "id": "GATE-022",
+      "path": "docs/00-program/GATE-022-phase-6-openapi-contract.md",
+      "work_package": "P6-WP4",
+      "role": "P6-WP4 gate record",
+      "sha256": "1c0d3f00325216529a13296fb22b64754b7709ee3d3d34f979c0b412e9495da2"
+    },
+    {
+      "id": "GATE-023",
+      "path": "docs/00-program/GATE-023-phase-6-integration-contract.md",
+      "work_package": "P6-WP5",
+      "role": "P6-WP5 gate record",
+      "sha256": "98068a8e7f351e54b7c17bd95b86250ac05d900c9163d2e681ac5b0d40dfe667"
+    },
+    {
+      "id": "GATE-024",
+      "path": "docs/00-program/GATE-024-phase-6-operational-contract.md",
+      "work_package": "P6-WP6",
+      "role": "P6-WP6 gate record",
+      "sha256": "b86ef7f8272fcfbbc7f4ac7f5417f18abc9ee9e942c8b1bdf797d213bbe1fc34"
+    }
+  ],
+  "structural_schema_pins": {
+    "origin": "P6-WP7-LOW-1",
+    "artifacts": [
+      {
+        "id": "PERSISTENCE-STRUCTURAL-SCHEMA",
+        "path": "contracts/postgresql/schema-contract.schema.json",
+        "sha256": "55d17c1d6deffc40277330da997a4a439606b974c41978e9bdc430d3ec661321",
+        "role": "Structural authority schema (carried P6-WP7-LOW-1 pin)"
+      },
+      {
+        "id": "API-STRUCTURAL-SCHEMA",
+        "path": "contracts/api/api-contract.schema.json",
+        "sha256": "1e04e90ddc8b291d4d2f168cceeb28f440219b9abc2593f32b70ae5c19c52d40",
+        "role": "Structural authority schema (carried P6-WP7-LOW-1 pin)"
+      },
+      {
+        "id": "INTEGRATION-STRUCTURAL-SCHEMA",
+        "path": "contracts/integrations/integration-contract.schema.json",
+        "sha256": "4c6fd1dfffb76133892f5e157ac11fc57f7f08ab13a3155f9db9218157191679",
+        "role": "Structural authority schema (carried P6-WP7-LOW-1 pin)"
+      },
+      {
+        "id": "OPERATIONAL-STRUCTURAL-SCHEMA",
+        "path": "contracts/operations/operational-contract.schema.json",
+        "sha256": "4e175c81362dcfd1f3c1aabac37bbd5d0b689590160e3944041cb309235162fd",
+        "role": "Structural authority schema (carried P6-WP7-LOW-1 pin)"
+      }
+    ]
+  },
+  "added_artifacts": [
+    {
+      "id": "P9-S2-ADD-001-MACHINE",
+      "path": "contracts/postgresql/schema-v1-addendum-p9-s2-add-001.json",
+      "sha256": "c616ee70c57ae1102a717ee48add22209d0b2210d54afdc4d218cbe87fc3f04d",
+      "role": "Machine addendum (becomes authoritative on activation)"
+    },
+    {
+      "id": "PERSISTENCE-ADDENDUM-SCHEMA",
+      "path": "contracts/postgresql/schema-addendum.schema.json",
+      "sha256": "4cc38f952fb431fe88fcbbc566b9544d7da70608dbd953a2a1471d866ca6223b",
+      "role": "Closed addendum structure over the actual structural definitions"
+    },
+    {
+      "id": "DATA-001-WP2-ADD-P9-S2-001",
+      "path": "docs/06-contracts/DATA-001-WP2-ADD-P9-S2-001-evidence-upload-intent.md",
+      "sha256": "a99bcc43ae5142f3df36025afa6eb742b2578beb94948e5d4d6a2ecd72f4fed2",
+      "role": "Human addendum contract"
+    },
+    {
+      "id": "MIGRATION-0004",
+      "path": "apps/backend/migrations/versions/0004_evidence_intake.py",
+      "sha256": "8d77832f2ee44d553496d20b02fc8e210fa0aa5f005e0f6ef0a69fe82ecc32b9",
+      "role": "Candidate migration implementing the effective 0.3.0 delta"
+    },
+    {
+      "id": "SNAPSHOT-REVISION-SCHEMA",
+      "path": "contracts/phase6/phase6-snapshot-revision-contract.schema.json",
+      "sha256": "c9d896972201459ee476ca322826719e145e7bcb1289fbbf998ca44a10c18205",
+      "role": "Closed schema of this revision record"
+    },
+    {
+      "id": "SNAPSHOT-REVISION-NEGATIVES",
+      "path": "contracts/phase6/fixtures/snapshot-revision-negative-mutations.json",
+      "sha256": "396f8777ef420ed6f88cfb4a3d79a6516be23a4e9558b4de3f7cc822a7a8414e",
+      "role": "Negative mutations that must bite"
+    },
+    {
+      "id": "SNAPSHOT-REVISION-VALIDATOR",
+      "path": "knowledge/validation/validate_phase6_snapshot_revision.py",
+      "sha256": "a8b3fb4e5510482e5a5c4e1c286b2e2d327745d6d38f2f8a3791ea52288a18ad",
+      "role": "Offline validator of this revision"
+    },
+    {
+      "id": "GATE-033",
+      "path": "docs/00-program/GATE-033-p9-s2-add-001-persistence-revision.md",
+      "sha256": "c1114b01c66cfdef6fe048b942db2001edfd915561c7aee6ccec359fa1ab5d5c",
+      "role": "Gate record of the independent approval"
+    }
+  ],
+  "effective_persistence_contract": {
+    "base_path": "contracts/postgresql/schema-v1.json",
+    "base_version": "0.2.0",
+    "base_sha256": "f3595294ff5138e2e7f0167df2818b291bbc1b77ccf9e38113ea4921954c7ecd",
+    "addendum_id": "P9-S2-ADD-001",
+    "effective_version": "0.3.0",
+    "structural_schema": "contracts/postgresql/schema-contract.schema.json",
+    "composition": "Deterministic: base 0.2.0 + vocabularies, logical coverage, tables added; amended tables take added columns, write-once columns, exact-match unique and transition-guard replacements, added guards (validate_phase6_snapshot_revision.compose).",
+    "table_count": 40,
+    "vocabulary_count": 79,
+    "added_tables": [
+      "evidence_upload_intent"
+    ],
+    "amended_tables": [
+      "api_idempotency_record",
+      "cross_store_operation"
+    ]
+  },
+  "constraint_relaxations": [
+    {
+      "id": "P9-S2-ADD-001-REL-01",
+      "classification": "GOVERNED_CONSTRAINT_RELAXATION",
+      "table": "api_idempotency_record",
+      "constraint": "uq_api_idempotency_scope",
+      "accepted": true,
+      "acceptance_by": "Independent review recorded in GATE-033"
+    }
+  ],
+  "api_contract": {
+    "api_catalog_path": "contracts/api/api-v1.json",
+    "api_version": "v1",
+    "api_catalog_sha256": "d6fa8626e678b7b597ee58d5283f389afd8729e4a650859b28656009fb0731d1",
+    "openapi_path": "contracts/api/openapi-v1.json",
+    "openapi_info_version": "api-v1/contract-0.1.0",
+    "openapi_sha256": "cb1ddb45c87e91eaf3c76f354b370fe5a4f90a8cc856bc0c0f55452355668f50",
+    "changed": false
+  },
+  "migration": {
+    "path": "apps/backend/migrations/versions/0004_evidence_intake.py",
+    "revision": "0004_evidence_intake",
+    "down_revision": "0003_case_submission",
+    "applied_to_sponsor_database": false,
+    "apply_before_activation": false
+  },
+  "open_items": [
+    {
+      "id": "P6-WP7-LOW-1",
+      "state": "RESOLVED_BY_ACCEPTED_REVISION",
+      "why_open": "Resolved forward: this accepted revision pins the four structural JSON Schemas. The frozen Phase-6 closure manifest keeps its historical OPEN record; repository authority follows the merge of this revision.",
+      "owner": "Programme governance (GATE-033)"
+    },
+    {
+      "id": "ADDITIVE-REVISION-ID-PATTERN",
+      "state": "OPEN / NON-BLOCKING",
+      "why_open": "schema-contract.schema.json admits additive_revisions ids of the form P6-WPn-ADD-nnn only, so the effective 0.3.0 contract records P9-S2-ADD-001 in its status and in this revision rather than in additive_revisions. Widening the pattern would be a separate governed structural-schema change.",
+      "owner": "Programme governance"
+    },
+    {
+      "id": "OI-05",
+      "state": "OPEN",
+      "why_open": "Retention durations stay unspecified; evidence_upload_intent references retention_policy_reference without any duration.",
+      "owner": "Sponsor / Privacy"
+    }
+  ],
+  "activation_steps": [
+    "Done: independent review returned APPROVE (GATE-033); this revision is ACCEPTED and the addendum ACTIVATED in branch phase9-s2-evidence-intake.",
+    "Pending: the sponsor opens a pull request, remote CI passes and the sponsor merges; record the PR number and merge commit in integration afterwards.",
+    "After merge: the sponsor creates the evidence key with the documented noclobber command (S2-local-development-profile.md).",
+    "After merge: the sponsor reviews the rendered SQL with make migration-sql, then applies it with make migrate as tl_schema_migrator.",
+    "Restart the backend; evidence intake turns on only when migration 0004 and the evidence key are both present."
+  ],
+  "claim_boundary": {
+    "may_support": [
+      "APPROVED_FOLLOWING_INDEPENDENT_REVIEW",
+      "ACTIVATED_IN_BRANCH",
+      "EFFECTIVE_CONTRACT_STRUCTURALLY_VALID",
+      "HISTORICAL_PINS_UNCHANGED",
+      "OFFLINE_VALIDATION_PASSES"
+    ],
+    "must_not_support": [
+      "MERGED",
+      "REMOTE_CI_PASSED",
+      "PRODUCTION_READY",
+      "SPONSOR_DATABASE_MIGRATED",
+      "COMPLETE_T09",
+      "PRODUCTION_KMS",
+      "FULL_S2_COMPLETE",
+      "ACCESSIBILITY_CONFORMANCE",
+      "API_CHANGED"
+    ]
+  }
+}

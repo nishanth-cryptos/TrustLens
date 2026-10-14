@@ -1,0 +1,1013 @@
+{
+  "fixture_schema_version": "1.0.0",
+  "validator": "knowledge/validation/validate_phase6_snapshot_revision.py",
+  "description": "Each mutation is applied to a copy of the inputs; the named PSR check must fail. Targets: manifest, addendum, phase6, api, data_negatives, human_contract and the migration text.",
+  "mutations": [
+    {
+      "id": "PSR-N01",
+      "description": "manifest gains an unknown property",
+      "expect": "PSR-01",
+      "path": [
+        "manifest",
+        "activation_date"
+      ],
+      "op": "set",
+      "value": "2026-10-15"
+    },
+    {
+      "id": "PSR-N02",
+      "description": "revision reverts to CANDIDATE while it records an approval",
+      "expect": "PSR-02",
+      "path": [
+        "manifest",
+        "status"
+      ],
+      "op": "set",
+      "value": "CANDIDATE"
+    },
+    {
+      "id": "PSR-N03",
+      "description": "accepted revision no longer approved",
+      "expect": "PSR-02",
+      "path": [
+        "manifest",
+        "approved"
+      ],
+      "op": "set",
+      "value": false
+    },
+    {
+      "id": "PSR-N04",
+      "description": "accepted revision no longer activated",
+      "expect": "PSR-02",
+      "path": [
+        "manifest",
+        "activated"
+      ],
+      "op": "set",
+      "value": false
+    },
+    {
+      "id": "PSR-N05",
+      "description": "independent review recorded as still PENDING",
+      "expect": "PSR-02",
+      "path": [
+        "manifest",
+        "independent_review",
+        "state"
+      ],
+      "op": "set",
+      "value": "PENDING"
+    },
+    {
+      "id": "PSR-N06",
+      "description": "every REQUEST_CHANGES round erased, leaving only the approval",
+      "expect": "PSR-02",
+      "path": [
+        "manifest",
+        "independent_review",
+        "prior_rounds"
+      ],
+      "op": "set",
+      "value": [
+        {
+          "reviewer": "Codex (independent)",
+          "verdict": "APPROVE",
+          "counts": null,
+          "summary": "APPROVE with 0 remaining material findings; REL-01, effective contract 0.3.0, the corrected validator and the symlink-safe guards explicitly approved; READY_FOR_GOVERNED_ACTIVATION YES; READY_FOR_LOCAL_MIGRATION_AFTER_ACTIVATION YES.",
+          "findings_addressed": []
+        }
+      ]
+    },
+    {
+      "id": "PSR-N07",
+      "description": "predecessor Phase-6 closure digest altered",
+      "expect": "PSR-03",
+      "path": [
+        "manifest",
+        "predecessor",
+        "sha256"
+      ],
+      "op": "set",
+      "value": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "id": "PSR-N08",
+      "description": "predecessor declared changed",
+      "expect": "PSR-03",
+      "path": [
+        "manifest",
+        "phase7_closure",
+        "unchanged"
+      ],
+      "op": "set",
+      "value": false
+    },
+    {
+      "id": "PSR-N09",
+      "description": "one of the 19 historical pins dropped",
+      "expect": "PSR-04",
+      "path": [
+        "manifest",
+        "carried_artifacts",
+        3
+      ],
+      "op": "remove"
+    },
+    {
+      "id": "PSR-N10",
+      "description": "historical DATA-001-WP2 pin rewritten",
+      "expect": "PSR-04",
+      "path": [
+        "manifest",
+        "carried_artifacts",
+        {
+          "id": "DATA-001-WP2"
+        },
+        "sha256"
+      ],
+      "op": "set",
+      "value": "1111111111111111111111111111111111111111111111111111111111111111"
+    },
+    {
+      "id": "PSR-N11",
+      "description": "historical pin role reworded",
+      "expect": "PSR-04",
+      "path": [
+        "manifest",
+        "carried_artifacts",
+        {
+          "id": "API-CATALOG-V1"
+        },
+        "role"
+      ],
+      "op": "set",
+      "value": "API catalog (revised)"
+    },
+    {
+      "id": "PSR-N12",
+      "description": "frozen Phase-6 snapshot silently rewritten for schema-v1.json",
+      "expect": "PSR-04",
+      "path": [
+        "phase6",
+        "snapshot",
+        "artifacts",
+        {
+          "id": "POSTGRESQL-SCHEMA-V1"
+        },
+        "sha256"
+      ],
+      "op": "set",
+      "value": "2222222222222222222222222222222222222222222222222222222222222222"
+    },
+    {
+      "id": "PSR-N13",
+      "description": "a structural-schema pin is missing",
+      "expect": "PSR-05",
+      "path": [
+        "manifest",
+        "structural_schema_pins",
+        "artifacts",
+        1
+      ],
+      "op": "remove"
+    },
+    {
+      "id": "PSR-N14",
+      "description": "a structural-schema pin does not match its bytes",
+      "expect": "PSR-05",
+      "path": [
+        "manifest",
+        "structural_schema_pins",
+        "artifacts",
+        0,
+        "sha256"
+      ],
+      "op": "set",
+      "value": "3333333333333333333333333333333333333333333333333333333333333333"
+    },
+    {
+      "id": "PSR-N15",
+      "description": "migration 0004 changed without a revision update",
+      "expect": "PSR-06",
+      "path": [
+        "manifest",
+        "added_artifacts",
+        {
+          "id": "MIGRATION-0004"
+        },
+        "sha256"
+      ],
+      "op": "set",
+      "value": "4444444444444444444444444444444444444444444444444444444444444444"
+    },
+    {
+      "id": "PSR-N16",
+      "description": "the human contract is not pinned",
+      "expect": "PSR-06",
+      "path": [
+        "manifest",
+        "added_artifacts",
+        {
+          "id": "DATA-001-WP2-ADD-P9-S2-001"
+        }
+      ],
+      "op": "remove"
+    },
+    {
+      "id": "PSR-N17",
+      "description": "review finding 1: invalid logical_object",
+      "expect": "PSR-07",
+      "path": [
+        "addendum",
+        "tables_added",
+        0,
+        "logical_object"
+      ],
+      "op": "set",
+      "value": "EvidenceItem (pre-content intake record)"
+    },
+    {
+      "id": "PSR-N18",
+      "description": "review finding 1: soft_references missing",
+      "expect": "PSR-07",
+      "path": [
+        "addendum",
+        "tables_added",
+        0,
+        "soft_references"
+      ],
+      "op": "remove"
+    },
+    {
+      "id": "PSR-N19",
+      "description": "review finding 1: unique constraint purpose missing",
+      "expect": "PSR-07",
+      "path": [
+        "addendum",
+        "tables_added",
+        0,
+        "unique",
+        0,
+        "purpose"
+      ],
+      "op": "remove"
+    },
+    {
+      "id": "PSR-N20",
+      "description": "review finding 1: check constraint purpose missing",
+      "expect": "PSR-07",
+      "path": [
+        "addendum",
+        "tables_added",
+        0,
+        "checks",
+        2,
+        "purpose"
+      ],
+      "op": "remove"
+    },
+    {
+      "id": "PSR-N21",
+      "description": "review finding 1: index justification missing",
+      "expect": "PSR-07",
+      "path": [
+        "addendum",
+        "tables_added",
+        0,
+        "indexes",
+        0,
+        "justification"
+      ],
+      "op": "remove"
+    },
+    {
+      "id": "PSR-N22",
+      "description": "addendum left CANDIDATE while the revision is accepted",
+      "expect": "PSR-08",
+      "path": [
+        "addendum",
+        "status"
+      ],
+      "op": "set",
+      "value": "CANDIDATE"
+    },
+    {
+      "id": "PSR-N23",
+      "description": "addendum extends a different base digest",
+      "expect": "PSR-08",
+      "path": [
+        "addendum",
+        "extends",
+        "sha256"
+      ],
+      "op": "set",
+      "value": "5555555555555555555555555555555555555555555555555555555555555555"
+    },
+    {
+      "id": "PSR-N24",
+      "description": "replaced unique no longer matches the base exactly",
+      "expect": "PSR-09",
+      "path": [
+        "addendum",
+        "tables_amended",
+        0,
+        "unique_replaced",
+        0,
+        "from",
+        "purpose"
+      ],
+      "op": "set",
+      "value": "paraphrased purpose"
+    },
+    {
+      "id": "PSR-N25",
+      "description": "replaced transition guard no longer matches the base",
+      "expect": "PSR-09",
+      "path": [
+        "addendum",
+        "tables_amended",
+        0,
+        "transition_guards_replaced",
+        1,
+        "from"
+      ],
+      "op": "set",
+      "value": "After active_until something else entirely."
+    },
+    {
+      "id": "PSR-N26",
+      "description": "added table collides with a base table",
+      "expect": "PSR-09",
+      "path": [
+        "addendum",
+        "tables_added",
+        0,
+        "name"
+      ],
+      "op": "set",
+      "value": "evidence_item"
+    },
+    {
+      "id": "PSR-N27",
+      "description": "effective contract: digest column without DIGEST content kind (DC-21)",
+      "expect": "PSR-10",
+      "path": [
+        "addendum",
+        "tables_added",
+        0,
+        "columns",
+        {
+          "name": "client_declared_sha256"
+        },
+        "content_kind"
+      ],
+      "op": "remove"
+    },
+    {
+      "id": "PSR-N28",
+      "description": "effective contract: ON DELETE CASCADE (DC-04)",
+      "expect": "PSR-10",
+      "path": [
+        "addendum",
+        "tables_added",
+        0,
+        "foreign_keys",
+        0,
+        "on_delete"
+      ],
+      "op": "set",
+      "value": "CASCADE"
+    },
+    {
+      "id": "PSR-N29",
+      "description": "effective contract: score column (DC-12)",
+      "expect": "PSR-10",
+      "path": [
+        "addendum",
+        "tables_added",
+        0,
+        "columns"
+      ],
+      "op": "append",
+      "value": {
+        "name": "upload_score",
+        "type": "integer",
+        "nullable": true,
+        "classification": "C2",
+        "description": "forbidden"
+      }
+    },
+    {
+      "id": "PSR-N30",
+      "description": "effective contract: new table not mapped to its logical object (DC-05)",
+      "expect": "PSR-10",
+      "path": [
+        "addendum",
+        "logical_object_coverage_added",
+        "EvidenceItem"
+      ],
+      "op": "set",
+      "value": [
+        "evidence_item"
+      ]
+    },
+    {
+      "id": "PSR-N31",
+      "description": "manifest claims a different effective version",
+      "expect": "PSR-10",
+      "path": [
+        "manifest",
+        "effective_persistence_contract",
+        "effective_version"
+      ],
+      "op": "set",
+      "value": "0.2.1"
+    },
+    {
+      "id": "PSR-N32",
+      "description": "a historical data-contract negative mutation no longer bites",
+      "expect": "PSR-11",
+      "path": [
+        "data_negatives"
+      ],
+      "op": "append",
+      "value": {
+        "id": "INERT",
+        "description": "inert",
+        "path": [
+          "status"
+        ],
+        "op": "set",
+        "value": "inert",
+        "expect": "DC-04"
+      }
+    },
+    {
+      "id": "PSR-N33",
+      "description": "relaxation mislabelled as purely additive",
+      "expect": "PSR-12",
+      "path": [
+        "addendum",
+        "change_class"
+      ],
+      "op": "set",
+      "value": "ADDITIVE"
+    },
+    {
+      "id": "PSR-N34",
+      "description": "relaxation record removed from the addendum",
+      "expect": "PSR-12",
+      "path": [
+        "addendum",
+        "constraint_relaxations",
+        0
+      ],
+      "op": "remove"
+    },
+    {
+      "id": "PSR-N35",
+      "description": "relaxation not accepted although the revision is approved",
+      "expect": "PSR-12",
+      "path": [
+        "manifest",
+        "constraint_relaxations",
+        0,
+        "accepted"
+      ],
+      "op": "set",
+      "value": false
+    },
+    {
+      "id": "PSR-N36",
+      "description": "human contract no longer documents the relaxation",
+      "expect": "PSR-12",
+      "path": [
+        "human_contract"
+      ],
+      "op": "set",
+      "value": "# Addendum\nAdditive change only.\n"
+    },
+    {
+      "id": "PSR-N37",
+      "description": "partial predicate dropped from the replacement unique",
+      "expect": "PSR-12",
+      "path": [
+        "addendum",
+        "tables_amended",
+        0,
+        "unique_replaced",
+        0,
+        "to",
+        "where"
+      ],
+      "op": "remove"
+    },
+    {
+      "id": "PSR-N38",
+      "description": "migration no longer follows 0003",
+      "expect": "PSR-13",
+      "path": [
+        "migration"
+      ],
+      "op": "replace_text",
+      "old": "down_revision = \"0003_case_submission\"",
+      "new": "down_revision = \"0002_audit_chain\""
+    },
+    {
+      "id": "PSR-N39",
+      "description": "migration makes a NOT NULL intent column nullable",
+      "expect": "PSR-13",
+      "path": [
+        "migration"
+      ],
+      "op": "replace_text",
+      "old": "    declared_byte_length bigint NOT NULL,",
+      "new": "    declared_byte_length bigint,"
+    },
+    {
+      "id": "PSR-N40",
+      "description": "migration creates the idempotency index without its partial predicate",
+      "expect": "PSR-13",
+      "path": [
+        "migration"
+      ],
+      "op": "replace_text",
+      "old": "idempotency_key_digest) WHERE superseded_at IS NULL;",
+      "new": "idempotency_key_digest);"
+    },
+    {
+      "id": "PSR-N41",
+      "description": "migration changes the abandoned-upload index predicate",
+      "expect": "PSR-13",
+      "path": [
+        "migration"
+      ],
+      "op": "replace_text",
+      "old": "(intent_state, state_changed_at) WHERE intent_state = 'OPEN';",
+      "new": "(intent_state, state_changed_at);"
+    },
+    {
+      "id": "PSR-N42",
+      "description": "migration drops a contract check constraint",
+      "expect": "PSR-13",
+      "path": [
+        "migration"
+      ],
+      "op": "replace_text",
+      "old": "    CONSTRAINT ck_evidence_upload_intent_same_identity CHECK (evidence_item_id IS NULL OR evidence_item_id = evidence_upload_intent_id),\n",
+      "new": ""
+    },
+    {
+      "id": "PSR-N43",
+      "description": "evidence_item guard allows CONTENT_PENDING -> FAILED_TERMINAL (not in §11)",
+      "expect": "PSR-14",
+      "path": [
+        "migration"
+      ],
+      "op": "replace_text",
+      "old": "('CONTENT_PENDING', 'FAILED_RETRYABLE'),",
+      "new": "('CONTENT_PENDING', 'FAILED_RETRYABLE'), ('CONTENT_PENDING', 'FAILED_TERMINAL'),"
+    },
+    {
+      "id": "PSR-N44",
+      "description": "attempt fencing guard removed",
+      "expect": "PSR-14",
+      "path": [
+        "migration"
+      ],
+      "op": "replace_text",
+      "old": "NEW.attempt_count < OLD.attempt_count OR ",
+      "new": ""
+    },
+    {
+      "id": "PSR-N45",
+      "description": "governed-deletion trigger for evidence_upload_intent removed",
+      "expect": "PSR-14",
+      "path": [
+        "migration"
+      ],
+      "op": "replace_text",
+      "old": "CREATE TRIGGER tr_evidence_upload_intent_governed_deletion BEFORE DELETE ON trustlens.evidence_upload_intent\n    FOR EACH ROW EXECUTE FUNCTION trustlens.tg_governed_deletion_only();\n",
+      "new": ""
+    },
+    {
+      "id": "PSR-N46",
+      "description": "supersession may happen before active_until",
+      "expect": "PSR-14",
+      "path": [
+        "migration"
+      ],
+      "op": "replace_text",
+      "old": "IF NEW.superseded_at IS NOT NULL AND OLD.active_until > now() THEN",
+      "new": "IF false THEN"
+    },
+    {
+      "id": "PSR-N47",
+      "description": "migration grants DELETE to the application role",
+      "expect": "PSR-15",
+      "path": [
+        "migration"
+      ],
+      "op": "replace_text",
+      "old": "GRANT SELECT, INSERT ON trustlens.evidence_item,",
+      "new": "GRANT SELECT, INSERT, DELETE ON trustlens.evidence_item,"
+    },
+    {
+      "id": "PSR-N48",
+      "description": "migration grants UPDATE on an immutable declared value",
+      "expect": "PSR-15",
+      "path": [
+        "migration"
+      ],
+      "op": "replace_text",
+      "old": "GRANT UPDATE (intent_state, last_rejection_category,",
+      "new": "GRANT UPDATE (declared_byte_length, intent_state, last_rejection_category,"
+    },
+    {
+      "id": "PSR-N49",
+      "description": "addendum grants diverge from the migration",
+      "expect": "PSR-15",
+      "path": [
+        "addendum",
+        "grants_added",
+        "tl_app_runtime",
+        4
+      ],
+      "op": "remove"
+    },
+    {
+      "id": "PSR-N50",
+      "description": "migration drops a table",
+      "expect": "PSR-15",
+      "path": [
+        "migration"
+      ],
+      "op": "replace_text",
+      "old": "REVOKE ALL ON trustlens.evidence_item,",
+      "new": "DROP TABLE trustlens.case_access_grant;\nREVOKE ALL ON trustlens.evidence_item,"
+    },
+    {
+      "id": "PSR-N51",
+      "description": "migration alters an undeclared table",
+      "expect": "PSR-15",
+      "path": [
+        "migration"
+      ],
+      "op": "replace_text",
+      "old": "REVOKE ALL ON trustlens.evidence_item,",
+      "new": "ALTER TABLE trustlens.case_record ADD COLUMN relationship_to_content text;\nREVOKE ALL ON trustlens.evidence_item,"
+    },
+    {
+      "id": "PSR-N52",
+      "description": "API contract declared changed",
+      "expect": "PSR-16",
+      "path": [
+        "manifest",
+        "api_contract",
+        "changed"
+      ],
+      "op": "set",
+      "value": true
+    },
+    {
+      "id": "PSR-N53",
+      "description": "API catalog version drifts",
+      "expect": "PSR-16",
+      "path": [
+        "api",
+        "api_version"
+      ],
+      "op": "set",
+      "value": "v2"
+    },
+    {
+      "id": "PSR-N54",
+      "description": "claim boundary no longer excludes approval",
+      "expect": "PSR-17",
+      "path": [
+        "manifest",
+        "claim_boundary",
+        "must_not_support"
+      ],
+      "op": "set",
+      "value": [
+        "PRODUCTION_READY"
+      ]
+    },
+    {
+      "id": "PSR-N55",
+      "description": "migration recorded as applied to the sponsor database",
+      "expect": "PSR-17",
+      "path": [
+        "manifest",
+        "migration",
+        "applied_to_sponsor_database"
+      ],
+      "op": "set",
+      "value": true
+    },
+    {
+      "id": "PSR-N56",
+      "description": "additive-revision id limitation dropped",
+      "expect": "PSR-17",
+      "path": [
+        "manifest",
+        "open_items",
+        {
+          "id": "ADDITIVE-REVISION-ID-PATTERN"
+        }
+      ],
+      "op": "remove"
+    },
+    {
+      "id": "PSR-N57",
+      "description": "activation steps skip independent review",
+      "expect": "PSR-17",
+      "path": [
+        "manifest",
+        "activation_steps"
+      ],
+      "op": "set",
+      "value": [
+        "Run make migrate on the sponsor database now."
+      ]
+    },
+    {
+      "id": "PSR-N58",
+      "description": "ck_evidence_item_content_sha256_pattern replaced by CHECK (true), migration pin updated to match",
+      "expect": "PSR-13",
+      "path": [
+        "migration"
+      ],
+      "op": "replace_text",
+      "old": "CONSTRAINT ck_evidence_item_content_sha256_pattern CHECK (content_sha256 ~ '^[0-9a-f]{64}$')",
+      "new": "CONSTRAINT ck_evidence_item_content_sha256_pattern CHECK (true)",
+      "rehash": "MIGRATION-0004",
+      "must_not_report": [
+        "PSR-06"
+      ]
+    },
+    {
+      "id": "PSR-N59",
+      "description": "ck_evidence_item_byte_length replaced by CHECK(true), migration pin updated to match",
+      "expect": "PSR-13",
+      "path": [
+        "migration"
+      ],
+      "op": "replace_text",
+      "old": "CONSTRAINT ck_evidence_item_byte_length CHECK (byte_length >= 0)",
+      "new": "CONSTRAINT ck_evidence_item_byte_length CHECK(true)",
+      "rehash": "MIGRATION-0004",
+      "must_not_report": [
+        "PSR-06"
+      ]
+    },
+    {
+      "id": "PSR-N60",
+      "description": "ck_evidence_item_byte_length weakened to admit negative lengths, pin updated",
+      "expect": "PSR-13",
+      "path": [
+        "migration"
+      ],
+      "op": "replace_text",
+      "old": "CHECK (byte_length >= 0)",
+      "new": "CHECK (byte_length >= -1)",
+      "rehash": "MIGRATION-0004",
+      "must_not_report": [
+        "PSR-06"
+      ]
+    },
+    {
+      "id": "PSR-N61",
+      "description": "digest pattern loosened to any hex length, pin updated",
+      "expect": "PSR-13",
+      "path": [
+        "migration"
+      ],
+      "op": "replace_text",
+      "old": "CHECK (content_sha256 ~ '^[0-9a-f]{64}$')",
+      "new": "CHECK (content_sha256 ~ '^[0-9a-f]+$')",
+      "rehash": "MIGRATION-0004",
+      "must_not_report": [
+        "PSR-06"
+      ]
+    },
+    {
+      "id": "PSR-N62",
+      "description": "vocabulary CHECK widened with an ungoverned state, pin updated",
+      "expect": "PSR-13",
+      "path": [
+        "migration"
+      ],
+      "op": "replace_text",
+      "old": "CHECK (intent_state IN ('OPEN', 'MATERIALIZED'))",
+      "new": "CHECK (intent_state IN ('OPEN', 'MATERIALIZED', 'ABANDONED'))",
+      "rehash": "MIGRATION-0004",
+      "must_not_report": [
+        "PSR-06"
+      ]
+    },
+    {
+      "id": "PSR-N63",
+      "description": "vocabulary literal case changed (case-sensitive comparison), pin updated",
+      "expect": "PSR-13",
+      "path": [
+        "migration"
+      ],
+      "op": "replace_text",
+      "old": "CHECK (intent_state IN ('OPEN', 'MATERIALIZED'))",
+      "new": "CHECK (intent_state IN ('open', 'MATERIALIZED'))",
+      "rehash": "MIGRATION-0004",
+      "must_not_report": [
+        "PSR-06"
+      ]
+    },
+    {
+      "id": "PSR-N64",
+      "description": "nullable digest pattern reduced to IS NULL OR true, pin updated",
+      "expect": "PSR-13",
+      "path": [
+        "migration"
+      ],
+      "op": "replace_text",
+      "old": "CHECK (client_declared_sha256 IS NULL OR client_declared_sha256 ~ '^[0-9a-f]{64}$')",
+      "new": "CHECK (client_declared_sha256 IS NULL OR true)",
+      "rehash": "MIGRATION-0004",
+      "must_not_report": [
+        "PSR-06"
+      ]
+    },
+    {
+      "id": "PSR-N65",
+      "description": "explicit check made vacuous with OR true, pin updated",
+      "expect": "PSR-13",
+      "path": [
+        "migration"
+      ],
+      "op": "replace_text",
+      "old": "CHECK ((intent_state = 'MATERIALIZED') = (evidence_item_id IS NOT NULL))",
+      "new": "CHECK ((intent_state = 'MATERIALIZED') = (evidence_item_id IS NOT NULL) OR true)",
+      "rehash": "MIGRATION-0004",
+      "must_not_report": [
+        "PSR-06"
+      ]
+    },
+    {
+      "id": "PSR-N66",
+      "description": "an ungoverned extra CHECK is added, pin updated",
+      "expect": "PSR-13",
+      "path": [
+        "migration"
+      ],
+      "op": "replace_text",
+      "old": "    CONSTRAINT ck_evidence_item_byte_length CHECK (byte_length >= 0),\n",
+      "new": "    CONSTRAINT ck_evidence_item_byte_length CHECK (byte_length >= 0),\n    CONSTRAINT ck_evidence_item_extra CHECK (true),\n",
+      "rehash": "MIGRATION-0004",
+      "must_not_report": [
+        "PSR-06"
+      ]
+    },
+    {
+      "id": "PSR-N67",
+      "description": "migration text edited without updating its pin",
+      "expect": "PSR-06",
+      "path": [
+        "migration"
+      ],
+      "op": "replace_text",
+      "old": "CHECK (byte_length >= 0)",
+      "new": "CHECK  (byte_length >= 0)"
+    },
+    {
+      "id": "PSR-N68",
+      "description": "contract rule changed while the migration keeps the old predicate",
+      "expect": "PSR-13",
+      "path": [
+        "addendum",
+        "tables_added",
+        0,
+        "checks",
+        {
+          "name": "ck_evidence_upload_intent_declared_length"
+        },
+        "rule"
+      ],
+      "op": "set",
+      "value": "declared_byte_length >= 1"
+    },
+    {
+      "id": "PSR-N69",
+      "description": "integration claims MERGED without a PR number or merge commit",
+      "expect": "PSR-02",
+      "path": [
+        "manifest",
+        "integration",
+        "state"
+      ],
+      "op": "set",
+      "value": "MERGED"
+    },
+    {
+      "id": "PSR-N70",
+      "description": "approval verdict points at a record other than its gate",
+      "expect": "PSR-02",
+      "path": [
+        "manifest",
+        "independent_review",
+        "verdict_record"
+      ],
+      "op": "set",
+      "value": "docs/00-program/GATE-032-phase-7-closure.md"
+    },
+    {
+      "id": "PSR-N71",
+      "description": "gate record status claims a merge instead of merge pending",
+      "expect": "PSR-02",
+      "path": [
+        "gate"
+      ],
+      "op": "replace_text",
+      "old": "FORWARD ACTIVATION RECORDED — REMOTE CI + MERGE PENDING**",
+      "new": "FORWARD ACTIVATION RECORDED — MERGED**"
+    },
+    {
+      "id": "PSR-N72",
+      "description": "human contract status row still says CANDIDATE",
+      "expect": "PSR-08",
+      "path": [
+        "human_contract"
+      ],
+      "op": "replace_text",
+      "old": "| Status | **APPROVED FOLLOWING INDEPENDENT REVIEW",
+      "new": "| Status | **CANDIDATE"
+    },
+    {
+      "id": "PSR-N73",
+      "description": "a later REQUEST_CHANGES round follows the approval",
+      "expect": "PSR-02",
+      "path": [
+        "manifest",
+        "independent_review",
+        "prior_rounds"
+      ],
+      "op": "append",
+      "value": {
+        "reviewer": "Codex (independent)",
+        "verdict": "REQUEST_CHANGES",
+        "counts": null,
+        "summary": "Hypothetical later round.",
+        "findings_addressed": []
+      }
+    },
+    {
+      "id": "PSR-N74",
+      "description": "claim boundary no longer excludes MERGED",
+      "expect": "PSR-17",
+      "path": [
+        "manifest",
+        "claim_boundary",
+        "must_not_support"
+      ],
+      "op": "set",
+      "value": [
+        "PRODUCTION_READY",
+        "SPONSOR_DATABASE_MIGRATED",
+        "COMPLETE_T09",
+        "PRODUCTION_KMS",
+        "FULL_S2_COMPLETE",
+        "ACCESSIBILITY_CONFORMANCE",
+        "REMOTE_CI_PASSED",
+        "API_CHANGED"
+      ]
+    },
+    {
+      "id": "PSR-N75",
+      "description": "P6-WP7-LOW-1 still carried as pending although the revision is accepted",
+      "expect": "PSR-17",
+      "path": [
+        "manifest",
+        "open_items",
+        {
+          "id": "P6-WP7-LOW-1"
+        },
+        "state"
+      ],
+      "op": "set",
+      "value": "CARRIED_PENDING_ACTIVATION"
+    },
+    {
+      "id": "PSR-N76",
+      "description": "the gate record of the approval is not pinned",
+      "expect": "PSR-06",
+      "path": [
+        "manifest",
+        "added_artifacts",
+        {
+          "id": "GATE-033"
+        }
+      ],
+      "op": "remove"
+    }
+  ]
+}

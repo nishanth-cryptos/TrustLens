@@ -44,7 +44,8 @@ Order (dependency-aware, see ORDER below):
   Phase-7 evidence review and security (P7-WP4: content permission, review, break-glass, adjudication and audit invariants) →
   Phase-7 reporting and historical workflows (P7-WP5: reports, replay, re-analysis, correction, deletion and 410 invariants) →
   Phase-7 accessibility, responsive and enrichment UX (P7-WP6: accessibility, layout parity, unsupported language and advisory enrichment invariants) →
-  Phase-7 integrated closure (P7-WP7: cross-package handoffs, coverage, consistency and the carried decision register)
+  Phase-7 integrated closure (P7-WP7: cross-package handoffs, coverage, consistency and the carried decision register) →
+  Phase-6 forward snapshot revision (P6-SNAPSHOT-REV-001 CANDIDATE: carried pins + effective persistence contract 0.3.0)
 
 Usage:
   python knowledge/validation/run_all.py             # human-readable; runs all; non-zero on any failure
@@ -172,6 +173,9 @@ def phase7_design_root():
 #     the closed UX-002..UX-005 contracts, INT-001, ADR-0014 and the closed Phase-6 API catalog / OpenAPI. Static only.
 #  36 the Phase-7 P7-WP7 integrated closure gate runs last (after check 35) because it checks the six Phase-7 packages
 #     together and relies on each canonical Phase-7 validator having passed first; it re-validates none of them. Static only.
+#  37 the forward Phase-6 snapshot revision P6-SNAPSHOT-REV-001 (CANDIDATE, persistence addendum P9-S2-ADD-001) runs after
+#     both closure gates: it carries their pins unchanged, composes the effective persistence contract 0.3.0 and reuses the
+#     data-contract checks (check 23) on it. Static only; it never executes the migration.
 ORDER = [
     ("knowledge/validation/manual_evidence_check.py", "durable-truth: evidence integrity + automated-status preservation"),
     ("knowledge/validation/phase1_consistency_check.py", "Phase-1 counts consistent across manifest / taxonomy / matrix / corpus"),
@@ -209,6 +213,7 @@ ORDER = [
     ("knowledge/validation/validate_ux_reporting.py", "Phase-7 P7-WP5 reporting and historical workflows: closed offline schema; scope equals the UX-001 P7-WP5 handoff; 13 operations equal the API/OpenAPI; reports case-scoped, source-pinned, never regenerated from latest material or sent automatically; replay exact with explicit unavailable outcomes and no fallback to re-analysis; re-analysis and correction create new evaluations; governed deletion request, decision, execution and completion distinct; 410 distinct from 404; no computed comparison; scenarios re-derived by an independent decision procedure; lifecycle fail-closed"),
     ("knowledge/validation/validate_ux_accessibility.py", "Phase-7 P7-WP6 accessibility, responsive behaviour, unsupported language and external enrichment: closed offline schema; scope equals the UX-001 P7-WP6 handoff; listEvaluationEnrichments equals the API/OpenAPI/INT-001 surface; enrichment advisory, off the result surface and attributed by category and observation time only; interpretation derived from INT-001 so NOT_FOUND and UNAVAILABLE are claimed only where the record establishes them and provider CLEAN is never TrustLens safety; English-only detection scope, unsupported language never benign; every UX-001 accessibility commitment covered with no conformance claim; no invented breakpoints; permission, control and redaction parity across layouts; scenarios re-derived by an independent decision procedure; lifecycle fail-closed"),
     ("knowledge/validation/validate_phase7_closure.py", "Phase-7 P7-WP7 integrated closure: closed offline schema; Phase-7 artifact snapshot intact; work-package register equals each contract's lifecycle and merge record (P7-WP1 merge and CI pinned); every UX-001 handoff consumed once; every public API operation accounted for once; access, exposure, tenancy, retention, claims and carryovers consistent across contracts; every deferred decision carried verbatim to a Phase-8/9/10 or programme owner, resolved or superseded; unmet roadmap commitments (REPORT-001, WCAG 2.2 AA) recorded as deviations; lifecycle fail-closed"),
+    ("knowledge/validation/validate_phase6_snapshot_revision.py", "Phase-6 forward snapshot revision P6-SNAPSHOT-REV-001 (CANDIDATE, not approved or activated): the 19 Phase-6 closure pins carried byte-for-byte, the four P6-WP7-LOW-1 structural-schema pins and the P9-S2-ADD-001 artifacts pinned; effective persistence contract 0.3.0 composed from 0.2.0 + the machine addendum passes DC-01..DC-25 and every historical data-contract negative mutation; the idempotency-scope change recorded as a governed constraint relaxation; migration 0004 catalog, transition and privilege guards match the contract; API/OpenAPI unchanged; negative mutations must bite"),
 ]
 
 # Network-capable modules a validator must never import — the offline guarantee (WP7 STEP 7).

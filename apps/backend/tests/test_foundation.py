@@ -1,5 +1,6 @@
 import json
 import importlib.util
+import os
 import unittest
 from pathlib import Path
 from unittest.mock import patch
@@ -29,10 +30,12 @@ class FoundationTests(unittest.TestCase):
 
     def test_unimplemented_routes_and_framework_docs_are_not_enabled(self):
         with TestClient(create_app(None, configure_from_environment=False)) as client:
-            for path in ("/api/v1/cases", "/api/v1/evaluations", "/docs", "/redoc", "/openapi.json"):
+            for path in ("/api/v1/evaluations/x", "/api/v1/reports/x", "/docs", "/redoc",
+                         "/openapi.json"):
                 self.assertEqual(client.get(path).status_code, 404)
-            # getMe exists from S2 but fails closed without authentication configuration; it never answers 200.
+            # getMe and the S2 evidence routes exist but fail closed without authentication configuration.
             self.assertEqual(client.get("/api/v1/me").status_code, 503)
+            self.assertEqual(client.get("/api/v1/evidence/00000000-0000-4000-8000-000000000000").status_code, 503)
 
     def test_startup_does_not_connect_or_create_schema(self):
         with patch("psycopg.connect", side_effect=AssertionError("unexpected database call")), \
@@ -46,6 +49,8 @@ class FoundationTests(unittest.TestCase):
         self.assertIs(kernel.evaluate_detection_from_governed, evaluate_detection_from_governed)
         self.assertEqual(kernel.ENGINE_VERSION, "1.0.0")
 
+    # These check the sponsor-facing (non-disposable) configuration path; disposable mode has its own tests.
+    @patch.dict(os.environ, {"TRUSTLENS_TEST_DISPOSABLE_DB": ""})
     def test_credentials_are_required_and_redacted(self):
         with self.assertRaises(DatabaseConfigurationError):
             DatabaseSettings.from_environment({})
@@ -55,10 +60,12 @@ class FoundationTests(unittest.TestCase):
         self.assertNotIn(sample, repr(settings))
         self.assertNotIn(sample, str(settings.sqlalchemy_url()))
 
+    @patch.dict(os.environ, {"TRUSTLENS_TEST_DISPOSABLE_DB": ""})
     def test_invalid_port_has_safe_error(self):
         with self.assertRaisesRegex(DatabaseConfigurationError, "must be an integer"):
             DatabaseSettings.from_environment({"TRUSTLENS_DB_PORT": "invalid"})
 
+    @patch.dict(os.environ, {"TRUSTLENS_TEST_DISPOSABLE_DB": ""})
     def test_application_role_cannot_run_migrations(self):
         from alembic import command
         from alembic.config import Config

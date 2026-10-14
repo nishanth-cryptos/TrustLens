@@ -29,6 +29,15 @@ NO_STORE = {"Cache-Control": "no-store", "Pragma": "no-cache", "Referrer-Policy"
 ERRORS = {   # API-001 §31 codes used by this slice (HTTP status, retryability, safe message)
     "UNAUTHENTICATED": (401, "RETRY_WITH_CHANGES", "Sign in to continue."),
     "FORBIDDEN": (403, "NOT_RETRYABLE", "This request is not permitted."),
+    "INVALID_REQUEST": (400, "RETRY_WITH_CHANGES", "The request is not valid."),
+    "NOT_FOUND": (404, "NOT_RETRYABLE", "Not found."),
+    "IDEMPOTENCY_KEY_REUSED": (409, "RETRY_WITH_CHANGES", "This Idempotency-Key was already used for a different request."),
+    "IDEMPOTENCY_IN_PROGRESS": (409, "RETRYABLE", "The original request with this Idempotency-Key is still in progress."),
+    "STATE_CONFLICT": (409, "NOT_RETRYABLE", "This action is not allowed in the current state."),
+    "PAYLOAD_TOO_LARGE": (413, "RETRY_WITH_CHANGES", "The content exceeds the configured size bound."),
+    "UNSUPPORTED_MEDIA_TYPE": (415, "RETRY_WITH_CHANGES", "This media type is not accepted."),
+    "RATE_LIMITED": (429, "RETRYABLE", "Too many requests. Please wait and try again."),
+    "INTEGRITY_FAILURE": (500, "NOT_RETRYABLE", "Stored content failed integrity verification and is withheld."),
     "DEPENDENCY_UNAVAILABLE": (503, "RETRYABLE", "Sign-in is temporarily unavailable."),
     "INTERNAL_ERROR": (500, "RETRYABLE", "Something went wrong."),
 }
@@ -46,16 +55,25 @@ class AuthRuntime:
     sessions: SessionStore
     principals: PrincipalStore
     audit: AuditSink
+    database: object | None = None      # DatabaseSettings for the S2 resource store (None: resource API unavailable)
+    evidence_store: object | None = None          # EvidenceContentStore (built lazily from evidence_store_paths)
+    evidence_store_paths: tuple | None = None     # (content directory, key-encryption key file)
 
     @property
     def session_cookie(self) -> str:
         return "__Host-tl_session" if self.settings.secure_cookies else "tl_session"
 
 
-def api_error(request: Request, code: str, clear_session: AuthRuntime | None = None) -> JSONResponse:
+def api_error(request: Request, code: str, clear_session: AuthRuntime | None = None,
+              field_errors: list[dict] | None = None, retry_after: int | None = None) -> JSONResponse:
     status, retryability, message = ERRORS[code]
-    response = JSONResponse({"error": {"code": code, "message": message, "request_id": request.state.request_id,
-                                       "retryability": retryability}}, status_code=status, headers=NO_STORE)
+    body = {"code": code, "message": message, "request_id": request.state.request_id, "retryability": retryability}
+    if field_errors:
+        body["field_errors"] = field_errors              # field paths and codes only; submitted values never echoed
+    headers = dict(NO_STORE)
+    if retry_after is not None:
+        headers["Retry-After"] = str(retry_after)
+    response = JSONResponse({"error": body}, status_code=status, headers=headers)
     if clear_session is not None:
         _clear_cookie(response, clear_session.session_cookie, "/", clear_session.settings.secure_cookies)
     return response
@@ -243,24 +261,33 @@ def logout(request: Request):
     return response
 
 
-def get_me(request: Request):
-    """API-001 getMe: SELF, all five roles, MeResponse; roles re-read from trusted state on every request."""
+def current_principal(request: Request, operation: str):
+    """(runtime, principal, None) for an authenticated, active principal, or (runtime, None, error response).
+    Roles are re-read from trusted state on every request; a revoked or deactivated principal loses its sessions."""
     runtime = _runtime(request)
     if runtime is None:
-        return api_error(request, "DEPENDENCY_UNAVAILABLE")
+        return None, None, api_error(request, "DEPENDENCY_UNAVAILABLE")
     session_id = request.cookies.get(runtime.session_cookie)
     session = runtime.sessions.get(session_id)
     if session is None:
-        return api_error(request, "UNAUTHENTICATED", clear_session=runtime if session_id else None)
+        return runtime, None, api_error(request, "UNAUTHENTICATED", clear_session=runtime if session_id else None)
     try:
         principal = runtime.principals.get_active(session.principal_reference_id)
     except PrincipalStoreUnavailable:
-        return api_error(request, "DEPENDENCY_UNAVAILABLE")
+        return runtime, None, api_error(request, "DEPENDENCY_UNAVAILABLE")
     if principal is None:            # deactivated or every role revoked since sign-in
         runtime.sessions.invalidate_principal(session.principal_reference_id)
         _audit(runtime, request, "AUTHORIZATION_DENIED", "DENIED", "PRINCIPAL_INACTIVE_OR_NO_ROLE",
-               principal_id=session.principal_reference_id, operation="GET_ME")
-        return api_error(request, "UNAUTHENTICATED", clear_session=runtime)
+               principal_id=session.principal_reference_id, operation=operation)
+        return runtime, None, api_error(request, "UNAUTHENTICATED", clear_session=runtime)
+    return runtime, principal, None
+
+
+def get_me(request: Request):
+    """API-001 getMe: SELF, all five roles, MeResponse; roles re-read from trusted state on every request."""
+    runtime, principal, error = current_principal(request, "GET_ME")
+    if error is not None:
+        return error
     return JSONResponse({"principal_id": principal.principal_reference_id, "principal_kind": principal.principal_kind,
                          "roles": list(principal.roles), "capabilities": []}, headers=NO_STORE)
 

@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://trustlens/contracts/postgresql/schema-addendum.schema.json",
+  "title": "TrustLens PostgreSQL persistence-contract addendum (composable revision of schema-v1.json)",
+  "description": "Closed structure of a governed persistence addendum. Every table, column, unique constraint and vocabulary fragment is validated against the ACTUAL structural definitions of schema-contract.schema.json (no copy). The effective contract is produced by deterministic composition with its pinned base and must then pass the full data-contract validation (DC-01..DC-25).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["addendum_schema_version", "addendum_id", "title", "status", "status_note", "change_class", "extends", "resulting_contract",
+               "human_contract", "frozen_artifacts_unchanged", "api_impact", "reasons", "byte_definitions", "vocabularies_added",
+               "logical_object_coverage_added", "tables_added", "tables_amended", "constraint_relaxations",
+               "existing_contract_tables_created_by_migration", "api_resolution", "grants_added"],
+  "properties": {
+    "addendum_schema_version": {"const": "1.1"},
+    "addendum_id": {"type": "string", "pattern": "^P[0-9]+-[A-Z0-9]+-ADD-[0-9]{3}$"},
+    "title": {"type": "string", "minLength": 10},
+    "status": {"enum": ["CANDIDATE", "ACTIVATED"]},
+    "status_note": {"type": "string", "minLength": 10},
+    "change_class": {"enum": ["ADDITIVE", "ADDITIVE_WITH_GOVERNED_CONSTRAINT_RELAXATION"]},
+    "extends": {
+      "type": "object", "additionalProperties": false, "required": ["path", "contract_id", "contract_version", "sha256"],
+      "properties": {
+        "path": {"const": "contracts/postgresql/schema-v1.json"},
+        "contract_id": {"type": "string"},
+        "contract_version": {"type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$"},
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "resulting_contract": {
+      "type": "object", "additionalProperties": false, "required": ["contract_version", "status"],
+      "properties": {
+        "contract_version": {"type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$"},
+        "status": {"type": "string", "minLength": 10}
+      }
+    },
+    "human_contract": {"type": "string", "pattern": "^docs/06-contracts/[A-Za-z0-9._-]+\\.md$"},
+    "frozen_artifacts_unchanged": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+    "api_impact": {"type": "string", "pattern": "^NONE\\."},
+    "reasons": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 10}},
+    "byte_definitions": {"type": "object", "additionalProperties": {"type": "string", "minLength": 10}},
+    "vocabularies_added": {
+      "type": "object",
+      "additionalProperties": {"$ref": "https://trustlens/contracts/postgresql/schema-contract.schema.json#/properties/vocabularies/additionalProperties"}
+    },
+    "logical_object_coverage_added": {
+      "type": "object",
+      "additionalProperties": {"type": "array", "minItems": 1, "items": {"$ref": "https://trustlens/contracts/postgresql/schema-contract.schema.json#/$defs/identifier"}}
+    },
+    "tables_added": {"type": "array", "items": {"$ref": "https://trustlens/contracts/postgresql/schema-contract.schema.json#/$defs/table"}},
+    "tables_amended": {
+      "type": "array",
+      "items": {
+        "type": "object", "additionalProperties": false, "required": ["name"],
+        "properties": {
+          "name": {"$ref": "https://trustlens/contracts/postgresql/schema-contract.schema.json#/$defs/identifier"},
+          "columns_added": {"type": "array", "items": {"$ref": "https://trustlens/contracts/postgresql/schema-contract.schema.json#/$defs/column"}},
+          "mutable_columns_added": {"type": "array", "items": {"type": "string"}},
+          "write_once_columns_added": {"type": "array", "items": {"type": "string"}},
+          "unique_replaced": {
+            "type": "array",
+            "items": {
+              "type": "object", "additionalProperties": false, "required": ["from", "to", "relaxation_id"],
+              "properties": {
+                "from": {"$ref": "https://trustlens/contracts/postgresql/schema-contract.schema.json#/$defs/unique"},
+                "to": {"$ref": "https://trustlens/contracts/postgresql/schema-contract.schema.json#/$defs/unique"},
+                "relaxation_id": {"type": "string", "pattern": "^P[0-9]+-[A-Z0-9]+-ADD-[0-9]{3}-REL-[0-9]{2}$"}
+              }
+            }
+          },
+          "transition_guards_replaced": {
+            "type": "array",
+            "items": {"type": "object", "additionalProperties": false, "required": ["from", "to"],
+                      "properties": {"from": {"type": "string", "minLength": 10}, "to": {"type": "string", "minLength": 10}}}
+          },
+          "transition_guards_added": {"type": "array", "items": {"type": "string", "minLength": 10}}
+        }
+      }
+    },
+    "constraint_relaxations": {
+      "type": "array",
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["id", "classification", "table", "constraint", "from", "to", "why", "not_purely_additive", "preserved_invariants",
+                     "migration_compatibility", "review_required"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^P[0-9]+-[A-Z0-9]+-ADD-[0-9]{3}-REL-[0-9]{2}$"},
+          "classification": {"const": "GOVERNED_CONSTRAINT_RELAXATION"},
+          "table": {"type": "string"},
+          "constraint": {"type": "string", "pattern": "^uq_[a-z0-9_]+$"},
+          "from": {"type": "string", "minLength": 10},
+          "to": {"type": "string", "minLength": 10},
+          "why": {"type": "string", "minLength": 20},
+          "not_purely_additive": {"const": true},
+          "preserved_invariants": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 10}},
+          "migration_compatibility": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 10}},
+          "review_required": {"type": "string", "minLength": 10}
+        }
+      }
+    },
+    "existing_contract_tables_created_by_migration": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+    "api_resolution": {"type": "object", "additionalProperties": {"type": "string", "minLength": 10}},
+    "grants_added": {
+      "type": "object",
+      "additionalProperties": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 5}}
+    }
+  }
+}

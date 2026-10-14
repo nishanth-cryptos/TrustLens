@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { AuthState, SIGN_IN_PATH, SigninNotice, clearSigninNotice, loadSession, readSigninNotice, signOut } from "./auth";
+import Workspace from "./Workspace";
 
 const NOTICES: Record<Exclude<SigninNotice, null>, string> = {
   denied: "You signed in, but this account has not been given access to TrustLens. Ask an administrator to grant access.",
@@ -66,7 +67,9 @@ export default function App({ initialState = { kind: "loading" }, initialNotice 
           <button type="button" className="button secondary" onClick={handleSignOut} disabled={busy}>
             {busy ? "Signing out…" : "Sign out"}
           </button>
-          <p className="note">Case intake and analysis are not available yet; no content is collected here.</p>
+          {state.me.roles.includes("USER") || state.me.roles.includes("ANALYST")
+            ? <Workspace />
+            : <p className="note">Case work is available to users and analysts only.</p>}
         </>}
 
         {state.kind === "unavailable" && <>

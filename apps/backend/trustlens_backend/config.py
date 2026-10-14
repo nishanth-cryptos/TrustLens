@@ -10,6 +10,8 @@ from urllib.parse import urlsplit
 
 from dotenv import dotenv_values
 
+from .disposable import PermanentConfigurationRefused, guard_env_file
+
 
 class AuthConfigurationError(ValueError):
     pass
@@ -113,13 +115,19 @@ class AuthSettings:
 
 
 def load_environment_files(environment: Mapping[str, str] | None = None) -> dict:
-    """Process variables, then files named by TRUSTLENS_OIDC_ENV_FILE / TRUSTLENS_APP_DB_ENV_FILE (never override)."""
+    """Process variables, then files named by TRUSTLENS_OIDC_ENV_FILE / TRUSTLENS_APP_DB_ENV_FILE (never override).
+
+    In disposable test mode every named file passes the shared guard first: permanent configuration is refused before
+    any existence check or read (fail closed: authentication stays disabled)."""
     env = dict(os.environ if environment is None else environment)
     for variable in ("TRUSTLENS_OIDC_ENV_FILE", "TRUSTLENS_APP_DB_ENV_FILE"):
         name = env.get(variable)
         if not name:
             continue
-        path = Path(name).expanduser()
+        try:
+            path = guard_env_file(name, env)
+        except PermanentConfigurationRefused:
+            raise AuthConfigurationError(f"{variable} names permanent configuration, refused in disposable test mode") from None
         if not path.is_file():
             raise AuthConfigurationError(f"{variable} names a file that does not exist")
         for key, value in dotenv_values(path).items():

@@ -17,10 +17,11 @@ backend-build:
 backend-test:
 	PYTHONPATH=apps/backend $(BACKEND_PY) -m unittest discover -s apps/backend/tests -v
 
-# Single process only: S2 sessions are held in memory (no --workers / --reload).
+# Single process, loopback only, proxy headers OFF (trustlens_backend/serve.py): S2 sessions and admission buckets
+# are held in memory, and no X-Forwarded-For style header is trusted. Not a reverse-proxy configuration.
 backend-run:
 	TRUSTLENS_OIDC_ENV_FILE="$(OIDC_ENV_FILE)" TRUSTLENS_APP_DB_ENV_FILE="$(APP_DB_ENV_FILE)" \
-	PYTHONPATH=apps/backend $(BACKEND_PY) -m uvicorn trustlens_backend.main:app --host 127.0.0.1 --port 8000 --no-access-log
+	PYTHONPATH=apps/backend $(BACKEND_PY) -m trustlens_backend.serve
 
 database-check:
 	PYTHONPATH=apps/backend $(BACKEND_PY) -m trustlens_backend.database --env-file "$(ENV_FILE)"
