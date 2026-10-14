@@ -1,4 +1,4 @@
-"""Local ADMINISTRATOR provisioning (DEC-013, PROPOSED) against a DISPOSABLE PostgreSQL. Synthetic subjects only.
+"""Local ADMINISTRATOR provisioning (DEC-013, accepted) against a DISPOSABLE PostgreSQL. Synthetic subjects only.
 
 Roles come only from TrustLens role_assignment rows written by this explicit procedure; identity-provider claims never
 grant an application role.

@@ -35,6 +35,8 @@ SAFE_METADATA = {
     "EVIDENCE_RECEIVED": {},
     "EVIDENCE_STORED": {"stage": "category"},
     "INTEGRITY_FAILURE": {"stage": "category"},
+    # S4: the server-side read of original bytes for deterministic extraction (API-001 §12 audits every content read).
+    "EVIDENCE_ACCESSED": {"stage": "category"},
     "ROLE_ASSIGNED": {"role": "category", "principal_id": "uuid", "reason_ref": "reference"},
     "ROLE_REVOKED": {"role": "category", "principal_id": "uuid", "reason_ref": "reference"},
     # S3 knowledge activation (ADR-0013 Decision 14): exact digests, deployment, actor (event column), outcome, reason.

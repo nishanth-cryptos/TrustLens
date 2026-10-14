@@ -159,4 +159,23 @@ Migration `0005_knowledge_seam` creates the accepted contract tables `knowledge_
   It is not publisher authentication.
 - **Readiness:** evaluation readiness and `/health/ready` are `OK` only for an active, eligible, verified bundle with the
   S2 dependencies present.
-- **Not implemented:** rollback, withdrawal and the operator UI (S9), and analysis itself (S4/S5).
+- **Not implemented:** rollback, withdrawal and the operator UI (S9), and scoring and results (S5).
+
+## S4 deterministic extraction (no endpoint, no result)
+
+`trustlens_backend/extraction.py` turns one FINALIZED synthetic text evidence item into governed engine inputs.
+`extract_finalized_evidence` authorizes the caller as `createEvaluations` does (USER/ANALYST with case access), reads
+the original bytes through the encrypted store, re-verifies digest and length, audits the read (`EVIDENCE_ACCESSED`)
+and extracts against the ACTIVE verified bundle. `extract_text` is the same extractor over bytes.
+
+- **Output:** an immutable `GovernedInput`: input envelope, observations, indicator observations and the input
+  support state. All are checked against the KB-002 schemas, the active registry and negative library, and the
+  engine's own `build_validated_context`. `engine_inputs()` is what S5 will pass to `evaluate_detection_from_governed`.
+- **Grounding:** offsets index `normalized_text`; every `raw_span` is the exact submitted text. Provenance pins the
+  extractor version and the pattern-pack digest (`config_ref`).
+- **Structure:** negated, reported, quoted and hypothetical occurrences never project a positive indicator. An
+  unstated payment direction is `AMBIGUOUS` and marked for review.
+- **Support states:** `UNSUPPORTED` (non-English or other scripts), `INSUFFICIENT_INFORMATION`, `PARTIALLY_SUPPORTED`
+  (a referenced attachment that is not evaluated) and `ERROR` (malformed bytes) are explicit. None is benign.
+- **Not implemented:** an API endpoint, scoring, `DetectionResult` persistence and the result UI (S5). The golden
+  fixtures test the extractor; they never stand in for it.
