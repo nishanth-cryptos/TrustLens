@@ -3,16 +3,17 @@
 | Field | Value |
 |---|---|
 | Document ID | GATE-033 |
-| Version | 1.0 |
-| Status | **P9-S2-ADD-001 AND P6-SNAPSHOT-REV-001 APPROVED FOLLOWING INDEPENDENT REVIEW — FORWARD ACTIVATION RECORDED — REMOTE CI + MERGE PENDING**. Not S2 closure. Migration 0004 is not applied to the sponsor's database |
+| Version | 1.1 |
+| Status | **P9-S2-ADD-001 AND P6-SNAPSHOT-REV-001 APPROVED FOLLOWING INDEPENDENT REVIEW — ACTIVATED — MERGED (PR #47, merge `258cca4`)**. Remote CI is not verified in this record. The sponsor reports migration 0004 applied locally (§8). Not S2 closure |
+| Status history | 1.0 (2026-10-14): approved, forward activation recorded, remote CI + merge pending → 1.1 (2026-10-14): merged (§8) |
 | Phase assessed | Phase 9, S2 (secure evidence intake): a governed forward revision of the Phase-6 persistence contract |
 | Owner role | Backend / Data Architect |
-| Baseline | `35fc587` (branch `phase9-s2-evidence-intake`; the revision is uncommitted until the sponsor's PR) |
+| Baseline | `35fc587` (branch `phase9-s2-evidence-intake`), merged into `main` by PR #47 (§8) |
 | Primary deliverables | [DATA-001-WP2-ADD-P9-S2-001](../06-contracts/DATA-001-WP2-ADD-P9-S2-001-evidence-upload-intent.md); [`schema-v1-addendum-p9-s2-add-001.json`](../../contracts/postgresql/schema-v1-addendum-p9-s2-add-001.json) with [`schema-addendum.schema.json`](../../contracts/postgresql/schema-addendum.schema.json); [`phase6-snapshot-revision-p9-s2-add-001.json`](../../contracts/phase6/phase6-snapshot-revision-p9-s2-add-001.json) with its schema and negative fixtures; [`validate_phase6_snapshot_revision.py`](../../knowledge/validation/validate_phase6_snapshot_revision.py); migration `apps/backend/migrations/versions/0004_evidence_intake.py` |
 | Sponsor decision | P9-S2-ADD-001 approved in principle by the sponsor on 2026-10-14. The user (programme sponsor) asked for this activation record on 2026-10-14. No further sponsor sign-off is recorded here: the sponsor's own Git review and merge are the remaining integration step |
 | Independent review | Four rounds (§3). Final: **APPROVE**, 0 remaining material findings |
 | Related open items | P6-WP7-LOW-1 (resolved forward, §5); ADDITIVE-REVISION-ID-PATTERN (open, non-blocking); OI-05 (open); G-09 (open) |
-| Last updated | 2026-10-14 |
+| Last updated | 2026-10-14 (1.1) |
 
 ## 1. Checkpoint purpose
 
@@ -56,7 +57,7 @@ The reviewer's readiness statements: **READY_FOR_GOVERNED_ACTIVATION: YES**; **R
 
 These are the builder's results. The reviewer's own runs are not reproduced here.
 
-## 5. Activation boundary
+## 5. Activation boundary (as recorded at approval; see §8 for the merge)
 
 - **Accepted in this branch:** P6-SNAPSHOT-REV-001 is ACCEPTED (approved and activated) and P9-S2-ADD-001 is ACTIVATED.
   They become repository authority when the sponsor merges this branch. Its integration state is
@@ -79,3 +80,19 @@ additive-revision-id limitation remain open with their owners.
 
 **APPROVED FOLLOWING INDEPENDENT REVIEW — FORWARD ACTIVATION RECORDED — REMOTE CI + MERGE PENDING.** The governed
 record is ready for the sponsor's manual Git/PR process.
+
+## 8. Post-merge integration record
+
+Bookkeeping on branch `phase9-s2-final-cleanup`, based on `main` at the merge commit.
+
+| Evidence | Value | Source |
+| --- | --- | --- |
+| Repository | nishanth-cryptos/TrustLens | merge commit subject |
+| Pull request | #47, MERGED | sponsor-reported; merge commit subject "Merge pull request #47 from nishanth-cryptos/phase9-s2-evidence-intake" |
+| Merge commit | `258cca4084fc1ead680cdc2473bab95c915aedaf` (2026-10-14T17:52:13+05:30) | local git history |
+| Merge parents | base `61cad3b1f503720219f9eb9f764b690976bb92f4`; PR head `8fd4f6f1bb9420c7e10abf672f96ddb650deebb6` | local git history |
+| Remote CI | **NOT VERIFIED** here (no read-only GitHub access in this environment); no CI result is claimed | — |
+| Local acceptance (sponsor-reported) | migration 0004 applied; synthetic evidence finalized with SHA-256 metadata visible; evidence persisted across browser refresh and backend restart; audit-chain verification PASS with 14 events | sponsor report, not re-run by the builder |
+
+P6-SNAPSHOT-REV-001 records integration state MERGED with this PR and merge commit. The frozen Phase-6 closure
+snapshot and its 19 pins are unchanged.

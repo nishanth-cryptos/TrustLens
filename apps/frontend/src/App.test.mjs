@@ -6,11 +6,11 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { createServer } from "vite";
 
 const server = await createServer({ server: { middlewareMode: true }, appType: "custom" });
-let App, auth, Workspace, cases, evidence;
+let App, auth, Workspace, submissionLabels, cases, evidence;
 try {
   ({ default: App } = await server.ssrLoadModule("/src/App.tsx"));
   auth = await server.ssrLoadModule("/src/auth.ts");
-  ({ default: Workspace } = await server.ssrLoadModule("/src/Workspace.tsx"));
+  ({ default: Workspace, SUBMISSION_STATE_LABELS: submissionLabels } = await server.ssrLoadModule("/src/Workspace.tsx"));
   cases = await server.ssrLoadModule("/src/cases.ts");
   evidence = await server.ssrLoadModule("/src/evidence.ts");
 } finally {
@@ -110,7 +110,7 @@ test("workspace lists cases and submissions; text entry appears only for a chose
   assert.match(html, /Your cases/);
   assert.match(html, /Create a case/);
   assert.match(html, /synthetic test data/);
-  assert.match(html, /Text message \(SMS\) · Waiting for evidence/);
+  assert.match(html, /Text message \(SMS\) · Open for evidence/);
   assert.match(html, /Record submission/);
   assert.match(html, /Nothing is\s+analysed/);
   assert.doesNotMatch(html, /<(form|input|textarea|iframe)\b/);
@@ -302,4 +302,29 @@ test("an unfinished upload can be resumed with the same text and offers a contin
     initialSelected: aCase.case_id, initialSubmission: aSubmission.submission_id,
     initialEvidence: [evidenceView("FINALIZED", { finalized_at: "2026-10-14T09:03:00Z" })] }));
   assert.doesNotMatch(done, /Continue this upload/);
+});
+
+test("a submission with finalized evidence never reads as waiting for evidence", () => {
+  const stored = evidenceView("FINALIZED", { byte_length: 57, content_sha256: "cd".repeat(32), finalized_at: "2026-10-14T09:03:00Z" });
+  const html = renderToStaticMarkup(createElement(Workspace, { initialCases: [aCase], initialSubmissions: [aSubmission],
+    initialSelected: aCase.case_id, initialSubmission: aSubmission.submission_id, initialEvidence: [stored] }));
+  assert.equal(aSubmission.state, "RECEIVING");                          // backend state unchanged: still open for intake
+  assert.doesNotMatch(html, /Waiting for evidence/i);
+  assert.match(html, /Text message \(SMS\) · Open for evidence/);
+  assert.match(html.replace(/<\/?(span|code)[^>]*>/g, ""), /Stored and verified · 57 bytes · SHA-256 cdcdcdcdcdcd…/);
+});
+
+test("every accepted submission state has a truthful label distinct from evidence content state", () => {
+  const catalog = JSON.parse(readFileSync(new URL("../../../contracts/api/api-v1.json", import.meta.url), "utf8"));
+  const states = catalog.vocabularies.api_submission_state.values;
+  const labels = submissionLabels;
+  assert.deepEqual(Object.keys(labels).sort(), [...states].sort());
+  for (const label of Object.values(labels)) {
+    assert.doesNotMatch(label, /waiting|missing|no evidence|safe|verdict|score|risk|analys/i);
+  }
+  for (const state of states) {
+    const html = renderToStaticMarkup(createElement(Workspace, { initialCases: [aCase], initialSubmissions: [{ ...aSubmission, state }],
+      initialSelected: aCase.case_id }));
+    assert.match(html, new RegExp(` · ${labels[state]} · received`));
+  }
 });

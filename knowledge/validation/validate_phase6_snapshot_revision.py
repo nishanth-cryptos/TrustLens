@@ -28,8 +28,9 @@ persistence contract 0.3.0 from the frozen base 0.2.0 and the machine addendum, 
   PSR-15 privileges: grants equal the addendum; UPDATE only on declared mutable/write-once columns; no DELETE/TRUNCATE/ALL,
          no DROP TABLE, no change to undeclared tables
   PSR-16 API/OpenAPI contracts unchanged (Phase-6 pinned bytes and versions); API impact NONE
-  PSR-17 claim boundary for the lifecycle (no approval/activation claim while CANDIDATE; no merge, remote-CI, production,
-         sponsor-migration or completeness claim); open items and post-decision steps carried
+  PSR-17 claim boundary for the lifecycle (no approval/activation claim while CANDIDATE; no merge claim before MERGED;
+         never a remote-CI, production or completeness claim; the sponsor database recorded as migrated only after
+         merge); open items and post-decision steps carried
 
 It then applies contracts/phase6/fixtures/snapshot-revision-negative-mutations.json and requires each named check to fail.
 Offline and deterministic: reads repository files only; no network, no database, no execution of the migration.
@@ -75,9 +76,10 @@ REQUIRED_ADDED = {ADDENDUM_PATH, ADDENDUM_SCHEMA_PATH, "docs/06-contracts/DATA-0
 REQUIRED_ADDED_ACCEPTED = REQUIRED_ADDED | {GATE_PATH}          # an accepted revision also pins its gate record
 EFFECTIVE_VERSION = "0.3.0"
 HISTORICAL_PIN_COUNT = 19
-MUST_NOT_SUPPORT = {"PRODUCTION_READY", "SPONSOR_DATABASE_MIGRATED", "COMPLETE_T09", "PRODUCTION_KMS", "FULL_S2_COMPLETE",
-                    "ACCESSIBILITY_CONFORMANCE"}
-MUST_NOT_SUPPORT_BY_LIFECYCLE = {"CANDIDATE": {"APPROVED", "ACTIVATED"}, "ACCEPTED": {"MERGED", "REMOTE_CI_PASSED"}}
+MUST_NOT_SUPPORT = {"PRODUCTION_READY", "COMPLETE_T09", "PRODUCTION_KMS", "FULL_S2_COMPLETE", "ACCESSIBILITY_CONFORMANCE",
+                    "REMOTE_CI_PASSED"}                     # remote CI is never verified by this offline validator
+MUST_NOT_SUPPORT_BY_LIFECYCLE = {"CANDIDATE": {"APPROVED", "ACTIVATED", "MERGED"}, "ACCEPTED": {"MERGED"},
+                                 "MERGED": set()}
 LOW1_STATE = {"CANDIDATE": "CARRIED_PENDING_ACTIVATION", "ACCEPTED": "RESOLVED_BY_ACCEPTED_REVISION"}
 STEPS_BY_LIFECYCLE = {"CANDIDATE": ("independent review", "gate record", "make migration-sql", "make migrate", "evidence key"),
                       "ACCEPTED": ("pull request", "merge", "make migration-sql", "make migrate", "evidence key")}
@@ -352,6 +354,10 @@ def check(docs: dict, ctx: dict) -> list[tuple[str, str]]:
     if integ["state"] == "REMOTE_CI_AND_MERGE_PENDING" and ("REMOTE CI + MERGE PENDING" not in gate_status
                                                              or re.search(r"\bMERGED\b", gate_status)):
         e("PSR-02", "the gate record's status must state that remote CI and merge are pending (and claim no merge)")
+    if merged and not (re.search(r"\bMERGED\b", gate_status) and f"#{integ['pr_number']}" in gate_status
+                       and integ["merge_commit"] and integ["merge_commit"][:7] in gate_status
+                       and integ["merge_commit"] in (docs.get("gate") or "")):
+        e("PSR-02", "a MERGED revision's gate record must state the merge with its PR number and exact merge commit")
     if not any(r["verdict"] == "REQUEST_CHANGES" for r in rounds):
         e("PSR-02", "the prior REQUEST_CHANGES review rounds must remain recorded")
 
@@ -604,11 +610,16 @@ def check(docs: dict, ctx: dict) -> list[tuple[str, str]]:
 
     # PSR-17 claims and carried items
     cb = m["claim_boundary"]
-    excluded = MUST_NOT_SUPPORT | MUST_NOT_SUPPORT_BY_LIFECYCLE.get(life, set())
+    stage = "MERGED" if integ["state"] == "MERGED" else life
+    excluded = MUST_NOT_SUPPORT | MUST_NOT_SUPPORT_BY_LIFECYCLE.get(stage, set())
+    if not mig["applied_to_sponsor_database"]:
+        excluded = excluded | {"SPONSOR_DATABASE_MIGRATED"}
     if not excluded <= set(cb["must_not_support"]) or set(cb["may_support"]) & set(cb["must_not_support"]):
         e("PSR-17", f"the claim boundary must exclude {sorted(excluded)}")
-    if mig["applied_to_sponsor_database"] is not False or mig["apply_before_activation"] is not False:
-        e("PSR-17", "migration 0004 must not be applied to the sponsor database before activation")
+    if stage == "MERGED" and "MERGED" in cb["must_not_support"]:
+        e("PSR-17", "a merged revision must not exclude MERGED from its claim boundary")
+    if mig["apply_before_activation"] is not False or (mig["applied_to_sponsor_database"] and stage != "MERGED"):
+        e("PSR-17", "migration 0004 may be recorded as applied to the sponsor database only after the activation is merged")
     items = {o["id"]: o for o in m["open_items"]}
     if "ADDITIVE-REVISION-ID-PATTERN" not in items or items.get("P6-WP7-LOW-1", {}).get("state") != LOW1_STATE.get(life):
         e("PSR-17", f"open items must carry P6-WP7-LOW-1 as {LOW1_STATE.get(life)} and the additive-revision id limitation")
