@@ -6,9 +6,13 @@
 This is **not** TrustLens backend integration, S8 implementation authorization, the S2 containerised-backend addendum,
 or OCR activation. No TrustLens feature flag, route, database, migration, evidence store, key or UI is touched.
 
-Nothing here has been built or run against Docker. No image digest, dependency approval or test result is recorded or
-implied. Running the proof needs a separate, explicit authorization, after the Security review in
-[SECURITY-REVIEW-CHECKLIST.md](SECURITY-REVIEW-CHECKLIST.md) and after every OPEN lock item is resolved.
+No Docker image has been built or run for this proof. The immutable base-image digest, dependency pins and
+112 offline test results are recorded, but they do not demonstrate real OCR or runtime isolation. The requester,
+as the user-declared sole Security approver, conditionally accepted PB-02/PB-08/PB-13 for first construction
+against source commit `5d7f880` (see [PR #56](https://github.com/nishanth-cryptos/TrustLens/pull/56) and
+[SECURITY-REVIEW-CHECKLIST.md](SECURITY-REVIEW-CHECKLIST.md)). **PB-14 and N2 written acknowledgement remain OPEN:**
+no Docker Desktop startup, image pull or build is authorized. A separate PE-09 authorization and PE-08
+vulnerability scan review are required before any worker/OCR run.
 
 ## Where things live
 
@@ -75,7 +79,7 @@ mutates only resources named `tl-s8proof-*` that carry the label `trustlens.s8pr
 ## Offline checks (allowed now)
 
 ```sh
-apps/backend/.venv/bin/python -m unittest discover -s tools/s8-ocr-proof/tests -v   # 107 tests, no Docker or network
+apps/backend/.venv/bin/python -m unittest discover -s tools/s8-ocr-proof/tests -v   # 112 previously verified offline tests; no Docker or network
 apps/backend/.venv/bin/python tools/s8-ocr-proof/harness.py check-lock              # per-phase OPEN items, exits 1
 R="$(python3 -c 'import os,tempfile; print(os.path.realpath(tempfile.mkdtemp()))')"
 apps/backend/.venv/bin/python tools/s8-ocr-proof/gen_synthetic_png.py --scratch-root "$R" --workdir corpus-check
@@ -99,8 +103,8 @@ and no fingerprint reads it.
 
 | Phase | Contents | Gates |
 | --- | --- | --- |
-| `PRE_BUILD` | PB-01, PB-03–PB-07 and PB-09–PB-12 satisfied with recorded evidence or requester decisions (see `PREBUILD-EVIDENCE.md`); OPEN: tag GPG trust (PB-02), Python interpreter review (PB-08), Security review (PB-13), requester build authorization (PB-14) | `build` |
-| `PRE_EXECUTION` | Verified in code: local runtime and probe image IDs equal `build.json` (PE-01/02); build logs (PE-03) and every required build-evidence file (PE-04) present as regular, non-symlinked files matching their recorded size and SHA-256, and the evidence equal to what is baked into the runtime image; the build-input fingerprint equal to the current inputs (PE-07). Reviews: build evidence (PE-05), local `FROM` resolution (PE-06) | `run` (together with `PRE_BUILD` and the N2 acknowledgement) |
+| `PRE_BUILD` | PB-01–PB-13 are SATISFIED for the limited synthetic proof (PB-02 accepted signer-key risk; PB-08/PB-13 conditionally accepted for first build), with evidence and limitations in the lock and Security checklist; **OPEN: PB-14** (requester Docker Desktop/N2 startup and build authorization) | `build` |
+| `PRE_EXECUTION` | Verified in code: local runtime and probe image IDs equal `build.json` (PE-01/02); build logs (PE-03) and every required build-evidence file (PE-04) present as regular, non-symlinked files matching their recorded size and SHA-256, and the evidence equal to what is baked into the runtime image; the build-input fingerprint equal to the current inputs (PE-07). Reviews: build evidence (PE-05), local `FROM` resolution (PE-06), pinned-runtime-image vulnerability scan and finding disposition **before worker execution** (PE-08), and a **separate requester run authorization** (PE-09) | `run` (together with `PRE_BUILD` and the N2 acknowledgement) |
 | `ACCEPTANCE` | Artifacts: rebuild comparison (AC-01), `results.json` (AC-06). Reviews: reproducibility (AC-02), SBOM (AC-03), vulnerability scan (AC-04), licences (AC-05), final review (AC-07) | Nothing; reported as open until produced and reviewed |
 
 ### Build record and build-input fingerprint (F5)
