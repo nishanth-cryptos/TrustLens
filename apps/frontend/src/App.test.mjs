@@ -6,7 +6,8 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { createServer } from "vite";
 
 const server = await createServer({ server: { middlewareMode: true }, appType: "custom" });
-let App, auth, Workspace, submissionLabels, cases, evidence, KnowledgeStatus, knowledge, evaluation, AnalysisPanel;
+let App, auth, Workspace, submissionLabels, cases, evidence, KnowledgeStatus, knowledge, evaluation, AnalysisPanel, history, HistoryPanel,
+  EvidencePanel;
 try {
   ({ default: App } = await server.ssrLoadModule("/src/App.tsx"));
   auth = await server.ssrLoadModule("/src/auth.ts");
@@ -17,6 +18,9 @@ try {
   knowledge = await server.ssrLoadModule("/src/knowledge.ts");
   evaluation = await server.ssrLoadModule("/src/evaluation.ts");
   ({ default: AnalysisPanel } = await server.ssrLoadModule("/src/AnalysisPanel.tsx"));
+  history = await server.ssrLoadModule("/src/history.ts");
+  ({ default: HistoryPanel } = await server.ssrLoadModule("/src/HistoryPanel.tsx"));
+  ({ default: EvidencePanel } = await server.ssrLoadModule("/src/EvidencePanel.tsx"));
 } finally {
   await server.close();
 }
@@ -60,7 +64,7 @@ test("collects no content and keeps no credential in browser storage", () => {
   const code = (file) => readFileSync(new URL(file, import.meta.url), "utf8").replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/.*$/gm, "");
   const source = code("./App.tsx") + code("./auth.ts") + code("./cases.ts") + code("./Workspace.tsx") + code("./evidence.ts")
     + code("./EvidencePanel.tsx") + code("./knowledge.ts") + code("./KnowledgeStatus.tsx") + code("./evaluation.ts")
-    + code("./AnalysisPanel.tsx");
+    + code("./AnalysisPanel.tsx") + code("./history.ts") + code("./HistoryPanel.tsx");
   for (const forbidden of [/localStorage/, /sessionStorage/, /indexedDB/i, /document\.cookie/, /Authorization/,
                            /access_token|id_token|refresh_token/, /console\./]) {
     assert.doesNotMatch(source, forbidden);
@@ -540,4 +544,170 @@ test("frontend consistency tables equal the accepted UX-003 contract (no invente
   assert.equal(evaluation.DEGRADED_CONFIDENCE_CAP, axes.degraded_confidence_cap);
   assert.equal(axes.finding_basis, "matched_rules NON_EMPTY");
   assert.equal(contract.rule_identity.rule_id_pattern, "^TL-[A-Z]{3,5}-\\d{3}$");
+});
+
+// ---- S6 history, evidence download, correction and replay (UX-004 / UX-005)
+const available = (entries, extra = {}) => ({ status: "AVAILABLE", entries, nextCursor: null, loadingMore: false, moreFailed: false, ...extra });
+
+test("history lists every evaluation as its own record, newest first, with immutable provenance", () => {
+  const older = anEvaluation("COMPLETED", { evaluation_id: "11111111-2222-4333-8444-555555555555", requested_at: "2026-10-14T09:00:00Z",
+    provenance: { engine_version: "1.0.0", result_contract_version: "1.1.0", bundle_content_digest: "bd4f1dca".padEnd(64, "0"),
+                  bundle_version: "1.0.0", evaluation_profile_id: "mvp-default", evaluation_timestamp: "2026-10-14T09:00:00Z" } });
+  const newer = anEvaluation("COMPLETED", { origin: "USER_CORRECTION", predecessor_evaluation_id: older.evaluation_id });
+  const entries = [{ evaluation: newer, result: aResult(), note: null },
+                   { evaluation: older, result: aResult({ evaluation_id: older.evaluation_id }), note: null }];
+  const html = visible(renderToStaticMarkup(createElement(HistoryPanel, { caseId: aCase.case_id, submissionId: aSubmission.submission_id,
+    canReplay: false, initialState: available(entries) })));
+  assert.match(html, /Latest New analysis after a correction/);
+  assert.match(html, /Earlier First analysis/);
+  assert.ok(html.includes(history.COMPARISON_NOTICE));
+  assert.match(html, /bundle 1\.0\.0 bd4f1dca0000…/);
+  assert.equal(html.match(/Classification: Scam pattern detected/g).length, 2);
+  assert.equal(html.match(/Open this result/g).length, 2);
+  assert.doesNotMatch(html, /Replay to verify|difference|improved|better|worse|%/i);    // no computed comparison
+  const analyst = visible(renderToStaticMarkup(createElement(HistoryPanel, { caseId: aCase.case_id, submissionId: aSubmission.submission_id,
+    canReplay: true, initialState: available(entries) })));
+  assert.equal(analyst.match(/Replay to verify/g).length, 2);
+});
+
+test("original evidence is offered only with content permission and after the audit notice", () => {
+  const stored = evidenceView("FINALIZED", { byte_length: 57, content_sha256: "ab".repeat(32), finalized_at: "2026-10-14T09:03:00Z",
+    content_link: "/api/v1/evidence/9a8b7c6d-5e4f-4a3b-8c2d-1e0f9a8b7c6d/content" });
+  const panel6 = (props) => renderToStaticMarkup(createElement(EvidencePanel, { caseId: aCase.case_id, submissionId: aSubmission.submission_id,
+    canUpload: false, initialEvidence: [stored], initialEvaluation: null, ...props }));
+  const owner = panel6({ canViewContent: true });
+  assert.match(owner, /<a href="\/api\/v1\/evidence\/9a8b7c6d-5e4f-4a3b-8c2d-1e0f9a8b7c6d\/content" download="">Download the original<\/a>/);
+  assert.ok(owner.includes(history.DOWNLOAD_NOTICE));
+  const noContent = panel6({ canViewContent: false });
+  assert.doesNotMatch(noContent, /Download the original|recorded in the audit log/);
+});
+
+test("a correction is offered to the owner of a ready result with the governed notice; never to others", () => {
+  const ready = { initialEvaluation: anEvaluation("COMPLETED"), initialResult: aResult() };
+  const owner = visible(panel({ ...ready, canCorrect: true }));
+  assert.match(owner, /Describe the correction/);
+  assert.ok(owner.includes(history.CORRECTION_NOTICE));
+  assert.ok(owner.includes(history.REANALYSIS_NOTICE));
+  assert.match(owner, /Submit correction and analyse again/);
+  assert.doesNotMatch(visible(panel({ ...ready, canCorrect: false })), /Describe the correction/);
+  assert.doesNotMatch(visible(panel({ initialEvaluation: anEvaluation("QUEUED"), canCorrect: true })), /Describe the correction/);
+});
+
+test("correction and replay requests carry only their accepted fields with CSRF and an Idempotency-Key", async () => {
+  for (const [call, path, expected] of [
+    [(f, k) => history.createCorrection(evaluationId, "SYNTHETIC: misread", f, k), `/api/v1/evaluations/${evaluationId}/corrections`,
+     { correction_description: "SYNTHETIC: misread", reason_code: "EXTRACTION_ERROR" }],
+    [(f, k) => history.createReplay(evaluationId, f, k), `/api/v1/evaluations/${evaluationId}/replays`, { reason_code: "ANALYST_VERIFICATION" }]]) {
+    const { fetcher, calls } = fakeFetch({ "/auth/csrf": [200, { csrf_token: "t" }], [path]: [202, {}] });
+    await call(fetcher, () => "key-0123456789abcdef");
+    const post = calls.find((c) => c.init.method === "POST");
+    assert.deepEqual(JSON.parse(post.init.body), expected);
+    assert.equal(post.init.headers["X-CSRF-Token"], "t");
+    assert.equal(post.init.headers["Idempotency-Key"], "key-0123456789abcdef");
+  }
+});
+
+test("replay polling is bounded and outcomes use the governed labels", async () => {
+  let polls = 0;
+  const fetcher = async () => { polls++; return { status: 200, ok: true, json: async () => ({ replay_id: "r", evaluation_id: evaluationId, state: "PENDING", requested_at: "x" }) }; };
+  const r = await history.waitForReplay({ replay_id: "r", evaluation_id: evaluationId, state: "PENDING", requested_at: "x" }, { fetcher, sleep: async () => {} });
+  assert.equal(r.state, "PENDING");
+  assert.equal(polls, 10);
+  assert.equal(history.REPLAY_OUTCOMES.MATCH.label, "Reproduced exactly");
+  assert.equal(history.REPLAY_OUTCOMES.FAILED_BUNDLE_UNAVAILABLE.label, "Replay unavailable: knowledge bundle unavailable");
+  for (const { label, meaning } of Object.values(history.REPLAY_OUTCOMES)) assert.doesNotMatch(label + meaning, /new result|current engine|latest/i);
+});
+
+// ---- Codex S6 findings 3 and 4: pagination and explicit history states
+const historyPanel = (initialState) => visible(renderToStaticMarkup(createElement(HistoryPanel, { caseId: aCase.case_id,
+  submissionId: aSubmission.submission_id, canReplay: false, initialState })));
+const evaluationsFor = (n, offset = 0) => Array.from({ length: n }, (_, i) => anEvaluation("QUEUED", {
+  evaluation_id: `00000000-0000-4000-8000-${String(offset + i).padStart(12, "0")}`, requested_at: new Date(Date.UTC(2026, 9, 15, 9, 59 - (offset + i))).toISOString() }));
+const shallow = async (evaluation) => ({ evaluation, result: null, note: null });
+
+test("history states are explicit: loading, empty, unavailable with retry, available with load more", () => {
+  assert.ok(historyPanel(history.LOADING_STATE).includes(history.HISTORY_TEXT.LOADING));
+  const empty = historyPanel({ ...history.LOADING_STATE, status: "EMPTY" });
+  assert.ok(empty.includes(history.HISTORY_TEXT.EMPTY));
+  const failed = historyPanel({ ...history.LOADING_STATE, status: "UNAVAILABLE" });
+  assert.ok(failed.includes(history.HISTORY_TEXT.UNAVAILABLE));
+  assert.match(failed, /Try again/);
+  assert.doesNotMatch(failed, new RegExp(history.HISTORY_TEXT.EMPTY));                  // a failure is never "no history"
+  const entries = evaluationsFor(2).map((evaluation) => ({ evaluation, result: null, note: null }));
+  const page = historyPanel(available(entries, { nextCursor: "c1" }));
+  assert.match(page, /Latest.*Earlier/);
+  assert.match(page, /Load more/);
+  assert.doesNotMatch(historyPanel(available(entries)), /Load more/);
+  assert.ok(historyPanel(available(entries, { nextCursor: "c1", moreFailed: true })).includes(history.HISTORY_TEXT.MORE_FAILED));
+});
+
+test("cursor pagination reaches every evaluation of the submission once, in server order", async () => {
+  const all = evaluationsFor(21);
+  const calls = [];
+  const fetcher = async (url) => {
+    calls.push(url);
+    const cursor = new URL(url, "http://x").searchParams.get("cursor");
+    const body = cursor === null ? { items: all.slice(0, 20), page: { limit: 20, next_cursor: "page-2" } }
+      : { items: [all[19], all[20]], page: { limit: 20, next_cursor: null } };           // overlapping page: no duplicate
+    return { status: 200, ok: true, json: async () => body };
+  };
+  const states = [];
+  const loader = history.createHistoryLoader({ caseId: aCase.case_id, submissionId: aSubmission.submission_id, fetcher,
+    loadEntry: shallow, onChange: (s) => states.push(s) });
+  await loader.first();
+  assert.equal(loader.state.entries.length, 20);
+  assert.equal(loader.state.nextCursor, "page-2");
+  await loader.more();
+  const ids = loader.state.entries.map((e) => e.evaluation.evaluation_id);
+  assert.deepEqual(ids, all.map((e) => e.evaluation_id));                                // newest first, oldest reachable
+  assert.equal(new Set(ids).size, 21);
+  assert.equal(loader.state.nextCursor, null);
+  assert.ok(states.some((s) => s.loadingMore && s.entries.length === 20));               // earlier entries stay visible
+  for (const url of calls) assert.match(url, new RegExp(`/api/v1/cases/${aCase.case_id}/evaluations\\?submission_id=${aSubmission.submission_id}&limit=20`));
+  assert.match(calls[1], /&cursor=page-2$/);
+  await loader.more();                                                                   // nothing more: no request
+  assert.equal(calls.length, 2);
+});
+
+test("a failed request is unavailable, never empty; retry recovers; an empty 200 is empty", async () => {
+  let status = 503;
+  const fetcher = async () => status === 503
+    ? { status: 503, ok: false, json: async () => ({ error: { code: "DEPENDENCY_UNAVAILABLE" } }) }
+    : { status: 200, ok: true, json: async () => ({ items: status === 204 ? [] : evaluationsFor(1), page: { limit: 20 } }) };
+  const loader = history.createHistoryLoader({ caseId: aCase.case_id, submissionId: aSubmission.submission_id, fetcher, loadEntry: shallow,
+    onChange: () => {} });
+  await loader.first();
+  assert.equal(loader.state.status, "UNAVAILABLE");
+  status = 200;
+  await loader.first();                                                                  // the retry action
+  assert.equal(loader.state.status, "AVAILABLE");
+  status = 204;
+  await loader.first();
+  assert.equal(loader.state.status, "EMPTY");
+  status = 200;
+  await loader.first();
+  const more = history.createHistoryLoader({ caseId: aCase.case_id, submissionId: aSubmission.submission_id, loadEntry: shallow, onChange: () => {},
+    fetcher: async (url) => url.includes("cursor") ? { status: 503, ok: false, json: async () => ({ error: { code: "DEPENDENCY_UNAVAILABLE" } }) }
+      : { status: 200, ok: true, json: async () => ({ items: evaluationsFor(20), page: { limit: 20, next_cursor: "p2" } }) } });
+  await more.first();
+  await more.more();
+  assert.equal((more.state.entries.length), 20);                                         // a failed next page keeps the history
+  assert.equal(more.state.moreFailed, true);
+  assert.equal(more.state.status, "AVAILABLE");
+});
+
+test("responses for a previous case or submission are dropped, never shown", async () => {
+  const pending = [];
+  const fetcher = (url) => new Promise((resolve) => pending.push({ url, resolve }));
+  const seen = [];
+  const first = history.createHistoryLoader({ caseId: "case-a", submissionId: "sub-a", fetcher, loadEntry: shallow, onChange: (s) => seen.push(["a", s]) });
+  const loadingA = first.first();
+  first.cancel();                                                                        // the user chose another submission
+  const second = history.createHistoryLoader({ caseId: "case-b", submissionId: "sub-b", fetcher, loadEntry: shallow, onChange: (s) => seen.push(["b", s]) });
+  const loadingB = second.first();
+  pending[1].resolve({ status: 200, ok: true, json: async () => ({ items: evaluationsFor(1, 50), page: { limit: 20 } }) });
+  pending[0].resolve({ status: 200, ok: true, json: async () => ({ items: evaluationsFor(3), page: { limit: 20 } }) });   // late, stale
+  await Promise.all([loadingA, loadingB]);
+  assert.ok(!seen.some(([who, s]) => who === "a" && s.status === "AVAILABLE"));
+  assert.deepEqual(second.state.entries.map((e) => e.evaluation.evaluation_id), [evaluationsFor(1, 50)[0].evaluation_id]);
 });

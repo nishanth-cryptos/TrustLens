@@ -12,6 +12,7 @@ export type EvidenceView = {
   evidence_id: string; submission_id: string; artifact_kind: string; upload_state: string;
   content_sha256: string | null; byte_length: number | null; declared_media_type: string;
   verified_media_type: string | null; display_filename: string | null; ingested_at: string; finalized_at: string | null;
+  content_link?: string | null;
 };
 export type Stage = "PREPARING" | "SENDING" | "CHECKING" | "FINALIZED" | "REJECTED" | "STILL_PROCESSING" | "FAILED";
 

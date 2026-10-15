@@ -59,8 +59,8 @@ def code(response):
     return response.json()["error"]["code"]
 
 
-@unittest.skipUnless(DISPOSABLE, "needs an explicitly disposable PostgreSQL")
-class EvaluationJourneyTests(DbHarness, unittest.TestCase):
+class EvaluationHarness(DbHarness):
+    """Disposable stores, the exact approved bundle activated through the API, and journey helpers (shared with S6)."""
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -154,6 +154,19 @@ class EvaluationJourneyTests(DbHarness, unittest.TestCase):
     def runtime_of(self, client):
         return client.app.state.auth
 
+    def assign_analyst(self, case_id, content=True):
+        """TEST-ONLY stand-in for the S9 assignment workflow: an ASSIGNED_ANALYST grant written as the schema owner."""
+        subject, pid = self.provision(roles=("ANALYST",))
+        owner = self.owner_sql("SELECT owner_principal_id::text FROM trustlens.case_record WHERE case_record_id = %s", (case_id,))[0][0]
+        self.owner_sql("INSERT INTO trustlens.case_access_grant (case_access_grant_id, case_record_id, principal_reference_id, grant_kind,"
+                       " permits_case_metadata, permits_evidence_content, granted_by_principal_id, grant_reason_ref, effective_from)"
+                       " VALUES (gen_random_uuid(), %s, %s, 'ASSIGNED_ANALYST', true, %s, %s, 'TEST-ASSIGNMENT', now())",
+                       (case_id, pid, content, owner))
+        return self.client_for(subject), pid
+
+
+@unittest.skipUnless(DISPOSABLE, "needs an explicitly disposable PostgreSQL")
+class EvaluationJourneyTests(EvaluationHarness, unittest.TestCase):
     # ---- contract parity
     def test_operations_match_the_catalog(self):
         ops = {o["operation_id"]: o for o in CATALOG["operations"]}

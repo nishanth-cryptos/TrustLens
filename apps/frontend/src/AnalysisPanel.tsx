@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import { ACTION_REASON, ACTIONS, AI_STATEMENT, ANALYZE_MESSAGES, AXES, CLASSIFICATIONS, DEGRADED_MEANING, EMPTY_LIST, EvaluationView,
   FAILURE_REASONS, INPUT_SUPPORT, NOT_PROVIDED, Presentation, ResultView, SECTION_TITLES, STATE_LABELS, announcement, createEvaluation,
   getResult, listCaseEvaluations, presentationForError, presentationForStatus, validateResult, waitForEvaluation } from "./evaluation";
+import { CORRECTION_NOTICE, HISTORY_MESSAGES, MAX_CORRECTION_CHARS, REANALYSIS_NOTICE, REANALYSIS_REASON, createCorrection } from "./history";
 
-type Props = { caseId: string; submissionId: string; hasFinalized: boolean;
+type Props = { caseId: string; submissionId: string; hasFinalized: boolean; canCorrect?: boolean; onChange?: () => void;
                initialEvaluation?: EvaluationView | null; initialResult?: ResultView | null };
 type Shown = { evaluation: EvaluationView | null; state: Presentation; result: ResultView | null };
 
@@ -30,10 +31,12 @@ async function present(evaluation: EvaluationView): Promise<Shown> {
   return { evaluation: settled.value, state, result: state === "READY" ? response.value : null };   // payload discarded otherwise
 }
 
-export default function AnalysisPanel({ caseId, submissionId, hasFinalized, initialEvaluation, initialResult }: Props) {
+export default function AnalysisPanel({ caseId, submissionId, hasFinalized, canCorrect = false, onChange = () => {},
+                                        initialEvaluation, initialResult }: Props) {
   const [shown, setShown] = useState<Shown | null>(initial(initialEvaluation, initialResult));
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [correction, setCorrection] = useState("");
 
   useEffect(() => {
     if (initialEvaluation !== undefined) return;
@@ -54,8 +57,9 @@ export default function AnalysisPanel({ caseId, submissionId, hasFinalized, init
     setBusy(true);
     setError(null);
     const previous = shown?.evaluation;
-    const retry = previous?.state === "FAILED" && previous.failure?.retry_guidance === "RETRY_AS_NEW_EVALUATION";
-    const created = await createEvaluation(submissionId, retry ? { predecessor_evaluation_id: previous.evaluation_id } : {});
+    // A new analysis names its predecessor (lineage); the server derives the origin (re-analysis or retry after failure).
+    const created = await createEvaluation(submissionId, previous ? { predecessor_evaluation_id: previous.evaluation_id,
+                                                                      reason_code: REANALYSIS_REASON } : {});
     if (created.kind === "error") {
       setBusy(false);
       return setError(ANALYZE_MESSAGES[created.code] ?? ANALYZE_MESSAGES.INTERNAL_ERROR);
@@ -64,6 +68,24 @@ export default function AnalysisPanel({ caseId, submissionId, hasFinalized, init
     setShown({ evaluation, state: "ACTION_PENDING", result: null });
     setShown(await present(evaluation));
     setBusy(false);
+    onChange();
+  }
+
+  async function correct() {
+    const corrected = shown?.evaluation;
+    if (!corrected) return;
+    setBusy(true);
+    setError(null);
+    const created = await createCorrection(corrected.evaluation_id, correction.trim());
+    if (created.kind === "error") {
+      setBusy(false);
+      return setError(HISTORY_MESSAGES[created.code] ?? HISTORY_MESSAGES.INTERNAL_ERROR);
+    }
+    setCorrection("");
+    setShown({ evaluation: created.value.new_evaluation, state: "ACTION_PENDING", result: null });
+    setShown(await present(created.value.new_evaluation));
+    setBusy(false);
+    onChange();
   }
 
   const evaluation = shown?.evaluation ?? null;
@@ -77,6 +99,7 @@ export default function AnalysisPanel({ caseId, submissionId, hasFinalized, init
           {busy || pending ? "Analysing…" : evaluation ? "Analyze message again" : "Analyze message"}
         </button>
       )}
+      {hasFinalized && evaluation && <p className="meta">{REANALYSIS_NOTICE}</p>}
       {error && <p className="notice" role="alert">{error}</p>}
       {evaluation && (
         <p className="meta">
@@ -94,6 +117,17 @@ export default function AnalysisPanel({ caseId, submissionId, hasFinalized, init
           determination that the content is safe.{evaluation.failure.retry_guidance === "RETRY_AS_NEW_EVALUATION" ? " You can analyse it again as a new evaluation." : ""}</p>
       )}
       {shown?.state === "READY" && shown.result && evaluation && <ResultSections result={shown.result} evaluation={evaluation} />}
+      {canCorrect && shown?.state === "READY" && evaluation && (
+        <div className="correction-form">
+          <label htmlFor={`correction-${submissionId}`}>Did the analysis misread the message? Describe the correction</label>
+          <textarea id={`correction-${submissionId}`} rows={3} value={correction} maxLength={MAX_CORRECTION_CHARS} disabled={busy}
+                    onChange={(e) => setCorrection(e.target.value)} />
+          <p className="meta">{CORRECTION_NOTICE}</p>
+          <button type="button" className="button secondary" onClick={correct} disabled={busy || correction.trim().length === 0}>
+            Submit correction and analyse again
+          </button>
+        </div>
+      )}
     </div>
   );
 }

@@ -96,7 +96,7 @@ class EvidenceApiTests(DbHarness, unittest.TestCase):
         self.assertEqual((final["upload_state"], final["verified_media_type"]), ("FINALIZED", TEXT))
         self.assertIsNotNone(final["finalized_at"])
         self.assertNotIn("ecs_locator", final)
-        self.assertIsNone(final["content_link"])
+        self.assertEqual(final["content_link"], f"/api/v1/evidence/{evidence_id}/content")   # S6 getEvidenceContent
         self.assertEqual(client.get(f"/api/v1/evidence/{evidence_id}").json(), final)
         listed = client.get(f"/api/v1/submissions/{submission_id}/evidence").json()
         self.assertEqual([e["evidence_id"] for e in listed["items"]], [evidence_id])

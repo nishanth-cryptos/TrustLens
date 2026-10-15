@@ -109,6 +109,8 @@ export default function Workspace({ initialCases, initialSubmissions = [], initi
                   </button>
                   {s.submission_id === openSubmission && (
                     <EvidencePanel caseId={current.case_id} submissionId={s.submission_id} initialEvidence={initialEvidence}
+                                   canViewContent={current.viewer_access.can_view_evidence_content}
+                                   canReplay={current.viewer_access.relationship === "ASSIGNED_ANALYST"}
                                    initialEvaluation={initialEvaluation} initialResult={initialResult}
                                    canUpload={current.viewer_access.relationship === "OWNER" && current.state === "OPEN"} />
                   )}

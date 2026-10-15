@@ -71,3 +71,16 @@ h2 { font-size: 24px; margin: 0; } h3 { margin-top: 32px; } h4 { margin: 28px 0 
 .axes { display: grid; gap: 6px; margin: 0; }
 .axes dt { font-weight: 650; color: #28584d; }
 .axes dd { margin: 0 0 4px; }
+
+.history-panel { margin-top: 8px; padding-top: 12px; border-top: 1px dashed #d4ded2; display: grid; gap: 8px; }
+.history-panel h5 { margin: 0; font-size: 16px; }
+.history-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+.history-item { padding: 10px 14px; border: 1px solid #d4ded2; border-radius: 12px; background: white; }
+.history-item.latest { border-color: #28584d; }
+.history-head { display: flex; flex-wrap: wrap; gap: 10px; align-items: baseline; }
+.history-actions { display: flex; flex-wrap: wrap; gap: 14px; }
+.link-button { border: 0; background: none; padding: 0; font: inherit; color: #28584d; text-decoration: underline; cursor: pointer; }
+.replay { padding: 8px 12px; border-left: 3px solid #b9c8bc; }
+.correction-form { display: grid; gap: 8px; max-width: 640px; }
+.correction-form textarea { font: inherit; padding: 10px; border-radius: 10px; border: 1px solid #b9c8bc; }
+.correction-form .button { margin-top: 0; justify-self: start; }

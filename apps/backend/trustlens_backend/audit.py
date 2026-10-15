@@ -43,6 +43,9 @@ SAFE_METADATA = {
     "EVALUATION_COMPLETED": {},
     "EVALUATION_FAILED": {"reason": "category"},
     "RESULT_PERSISTED": {"result_digest": "sha256"},
+    # S6: the correction reason (never the C4 description) and the replay request/outcome (content-free).
+    "USER_CORRECTION": {"reason": "category"},
+    "REPLAY_EXECUTED": {"stage": "category", "outcome": "category"},
     "ROLE_ASSIGNED": {"role": "category", "principal_id": "uuid", "reason_ref": "reference"},
     "ROLE_REVOKED": {"role": "category", "principal_id": "uuid", "reason_ref": "reference"},
     # S3 knowledge activation (ADR-0013 Decision 14): exact digests, deployment, actor (event column), outcome, reason.
