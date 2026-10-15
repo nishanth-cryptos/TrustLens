@@ -17,6 +17,7 @@ from .auth import AuthRuntime, csrf_middleware, install
 from .cases import install as install_cases
 from .evaluation import install as install_evaluation, start_recovery
 from .history import install as install_history
+from .enrichment import install as install_enrichment
 from .evidence import get_store, install as install_evidence
 from .capabilities import evidence_schema_active
 from .knowledge_seam import evaluation_readiness, install as install_knowledge, verifier_from_environment
@@ -83,6 +84,7 @@ def create_app(runtime: AuthRuntime | None = None, configure_from_environment: b
     install_knowledge(app)
     install_evaluation(app)
     install_history(app)
+    install_enrichment(app)
 
     @app.on_event("startup")
     def recover_evaluations():

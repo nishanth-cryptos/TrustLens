@@ -7,7 +7,7 @@ import { createServer } from "vite";
 
 const server = await createServer({ server: { middlewareMode: true }, appType: "custom" });
 let App, auth, Workspace, submissionLabels, cases, evidence, KnowledgeStatus, knowledge, evaluation, AnalysisPanel, history, HistoryPanel,
-  EvidencePanel;
+  EvidencePanel, enrichmentClient, EnrichmentPanel;
 try {
   ({ default: App } = await server.ssrLoadModule("/src/App.tsx"));
   auth = await server.ssrLoadModule("/src/auth.ts");
@@ -21,6 +21,8 @@ try {
   history = await server.ssrLoadModule("/src/history.ts");
   ({ default: HistoryPanel } = await server.ssrLoadModule("/src/HistoryPanel.tsx"));
   ({ default: EvidencePanel } = await server.ssrLoadModule("/src/EvidencePanel.tsx"));
+  enrichmentClient = await server.ssrLoadModule("/src/enrichment.ts");
+  ({ default: EnrichmentPanel } = await server.ssrLoadModule("/src/EnrichmentPanel.tsx"));
 } finally {
   await server.close();
 }
@@ -64,7 +66,7 @@ test("collects no content and keeps no credential in browser storage", () => {
   const code = (file) => readFileSync(new URL(file, import.meta.url), "utf8").replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/.*$/gm, "");
   const source = code("./App.tsx") + code("./auth.ts") + code("./cases.ts") + code("./Workspace.tsx") + code("./evidence.ts")
     + code("./EvidencePanel.tsx") + code("./knowledge.ts") + code("./KnowledgeStatus.tsx") + code("./evaluation.ts")
-    + code("./AnalysisPanel.tsx") + code("./history.ts") + code("./HistoryPanel.tsx");
+    + code("./AnalysisPanel.tsx") + code("./history.ts") + code("./HistoryPanel.tsx") + code("./enrichment.ts") + code("./EnrichmentPanel.tsx");
   for (const forbidden of [/localStorage/, /sessionStorage/, /indexedDB/i, /document\.cookie/, /Authorization/,
                            /access_token|id_token|refresh_token/, /console\./]) {
     assert.doesNotMatch(source, forbidden);
@@ -710,4 +712,109 @@ test("responses for a previous case or submission are dropped, never shown", asy
   await Promise.all([loadingA, loadingB]);
   assert.ok(!seen.some(([who, s]) => who === "a" && s.status === "AVAILABLE"));
   assert.deepEqual(second.state.entries.map((e) => e.evaluation.evaluation_id), [evaluationsFor(1, 50)[0].evaluation_id]);
+});
+
+// ---- S7 advisory enrichment (UX-006)
+const lookup = (status, reputation_result, extra = {}) => ({ enrichment_id: `e-${status}-${reputation_result}`, provider_category: "REPUTATION_LOOKUP",
+  status, reputation_result, observed_at: "2026-10-15T12:00:00Z", advisory: true, ...extra });
+const enrichmentPanel = (initialState) => visible(renderToStaticMarkup(createElement(EnrichmentPanel, { evaluationId, initialState })));
+const enrichmentState = (items, extra = {}) => ({ status: items.length ? "AVAILABLE" : "EMPTY", items, nextCursor: null, loadingMore: false,
+  moreFailed: false, ...extra });
+
+test("every governed enrichment pair uses the exact UX-006 label and meaning; anything else is unrecognized", () => {
+  const contract = JSON.parse(readFileSync(new URL("../../../contracts/ux/ux-accessibility-v1.json", import.meta.url), "utf8")).enrichment;
+  for (const row of contract.interpretation) {
+    const meaning = enrichmentClient.interpret(lookup(row.status, row.reputation_result));
+    assert.deepEqual([meaning.label, meaning.meaning, meaning.providerAssertion], [row.label, row.meaning, row.provider_assertion], row.presentation);
+  }
+  assert.equal(enrichmentClient.ADVISORY_NOTICE, contract.advisory_notice);
+  assert.equal(enrichmentClient.OBSERVED_AT_ABSENT, contract.observed_at_absent_text);
+  assert.equal(enrichmentClient.UNRECOGNIZED.label, contract.unrecognized_pair.label);
+  for (const odd of [lookup("SUCCEEDED", "NOT_EVALUATED"), lookup("FAILED", "CLEAN"), lookup("SUCCEEDED", "MALICIOUS", { advisory: false }),
+                     lookup("SUCCEEDED", "SAFE")]) {
+    assert.equal(enrichmentClient.interpret(odd).label, "Unrecognized lookup record");
+  }
+});
+
+test("a record without resolvable provider attribution is never shown as a provider assertion", () => {
+  const unresolved = { provider_category: enrichmentClient.UNRESOLVED_CATEGORY };
+  for (const record of [lookup("SUCCEEDED", "CLEAN", unresolved), lookup("SUCCEEDED", "MALICIOUS", unresolved),
+                        lookup("SUCCEEDED", "NOT_EVALUATED", unresolved), lookup("SUCCEEDED", "CLEAN", { provider_category: "" }),
+                        lookup("SUCCEEDED", "CLEAN", { provider_category: undefined })]) {
+    assert.equal(enrichmentClient.interpret(record), enrichmentClient.UNRECOGNIZED);       // withheld, even if a stale API sent CLEAN
+  }
+  assert.equal(enrichmentClient.interpret(lookup("SUCCEEDED", "CLEAN")).label, "Provider reports no adverse reputation");   // resolved
+  for (const record of [lookup("SUCCEEDED", "CLEAN", unresolved),
+                        lookup("SUCCEEDED", "NOT_EVALUATED", unresolved)]) {                  // what the API returns on a digest mismatch
+    const html = enrichmentPanel(enrichmentState([record]));
+    assert.match(html, /Unrecognized lookup record/);
+    assert.doesNotMatch(html, /no adverse reputation|Provider reports|\bsafe\b|legitimate|verified/i);
+  }
+});
+
+test("enrichment states are explicit and never read as safety", () => {
+  assert.ok(enrichmentPanel(enrichmentClient.ENRICHMENT_LOADING).includes(enrichmentClient.ENRICHMENT_TEXT.LOADING));
+  const empty = enrichmentPanel(enrichmentState([]));
+  assert.ok(empty.includes(enrichmentClient.ENRICHMENT_TEXT.EMPTY));
+  const failed = enrichmentPanel({ ...enrichmentClient.ENRICHMENT_LOADING, status: "UNAVAILABLE" });
+  assert.ok(failed.includes(enrichmentClient.ENRICHMENT_TEXT.UNAVAILABLE));
+  assert.match(failed, /Try again/);
+  assert.doesNotMatch(failed, /No external lookup is recorded/);
+  const advisory = enrichmentPanel(enrichmentState([lookup("SUCCEEDED", "MALICIOUS"), lookup("SUCCEEDED", "CLEAN"),
+    lookup("TIMED_OUT", "NOT_EVALUATED", { observed_at: null }), lookup("REJECTED", "NOT_EVALUATED")], { nextCursor: "c2" }));
+  assert.ok(advisory.includes(enrichmentClient.ADVISORY_NOTICE));
+  assert.match(advisory, /External lookups \(advisory\)/);
+  assert.match(advisory, /Provider reports malicious · REPUTATION_LOOKUP/);
+  assert.match(advisory, /Provider reports no adverse reputation/);
+  assert.match(advisory, /Lookup timed out .* Observation time not provided\./);
+  assert.match(advisory, /Lookup not permitted/);
+  assert.match(advisory, /Load more lookups/);
+  for (const html of [empty, failed, advisory]) {
+    const claims = html.replace(/not a TrustLens (judgement|finding)/g, "").replace(/This says nothing about whether the message is a scam\./, "");
+    assert.doesNotMatch(claims, /\bis safe\b|\blegitimate\b|\bverified\b|no scam|not a scam|Scam pattern|risk level|classification/i);
+  }
+});
+
+test("only assigned analysts see the external-lookup control, apart from the result", () => {
+  const entries = [{ evaluation: anEvaluation("COMPLETED"), result: aResult(), note: null }];
+  const forAnalyst = visible(renderToStaticMarkup(createElement(HistoryPanel, { caseId: aCase.case_id, submissionId: aSubmission.submission_id,
+    canReplay: true, initialState: available(entries) })));
+  assert.match(forAnalyst, /External lookups \(advisory\)/);
+  const forOwner = visible(renderToStaticMarkup(createElement(HistoryPanel, { caseId: aCase.case_id, submissionId: aSubmission.submission_id,
+    canReplay: false, initialState: available(entries) })));
+  assert.doesNotMatch(forOwner, /External lookups/);
+  const result = visible(panel({ initialEvaluation: anEvaluation("COMPLETED"), initialResult: aResult() }));
+  assert.doesNotMatch(result, /External lookups|provider/i);                              // never on the result surface
+});
+
+test("enrichment loading: failures are unavailable, pages are deduped, stale responses are dropped", async () => {
+  const states = [];
+  let mode = "fail";
+  const fetcher = async (url) => {
+    if (mode === "fail") return { status: 503, ok: false, json: async () => ({ error: { code: "DEPENDENCY_UNAVAILABLE" } }) };
+    if (mode === "empty") return { status: 200, ok: true, json: async () => ({ items: [], page: { limit: 20 } }) };
+    const page2 = url.includes("cursor=");
+    return { status: 200, ok: true, json: async () => page2 ? { items: [lookup("SUCCEEDED", "CLEAN"), lookup("FAILED", "NOT_EVALUATED")], page: { limit: 20 } }
+      : { items: [lookup("SUCCEEDED", "MALICIOUS"), lookup("SUCCEEDED", "CLEAN")], page: { limit: 20, next_cursor: "c2" } } };
+  };
+  const loader = enrichmentClient.createEnrichmentLoader(evaluationId, (s) => states.push(s), fetcher);
+  await loader.first();
+  assert.equal(loader.state.status, "UNAVAILABLE");
+  mode = "empty";
+  await loader.first();
+  assert.equal(loader.state.status, "EMPTY");
+  mode = "pages";
+  await loader.first();
+  await loader.more();
+  assert.deepEqual(loader.state.items.map((i) => i.enrichment_id), ["e-SUCCEEDED-MALICIOUS", "e-SUCCEEDED-CLEAN", "e-FAILED-NOT_EVALUATED"]);
+  let release;
+  const slow = enrichmentClient.createEnrichmentLoader(evaluationId, (s) => states.push(["slow", s.status]),
+    () => new Promise((resolve) => { release = resolve; }));
+  const pending = slow.first();
+  slow.cancel();
+  release({ status: 200, ok: true, json: async () => ({ items: [lookup("SUCCEEDED", "MALICIOUS")], page: { limit: 20 } }) });
+  await pending;
+  assert.ok(!states.some((s) => Array.isArray(s) && s[1] === "AVAILABLE"));
+  const source = readFileSync(new URL("./enrichment.ts", import.meta.url), "utf8");
+  assert.equal((source.match(/\/api\/v1\//g) || []).length, 1);                           // the one accepted read operation
 });

@@ -46,6 +46,13 @@ SAFE_METADATA = {
     # S6: the correction reason (never the C4 description) and the replay request/outcome (content-free).
     "USER_CORRECTION": {"reason": "category"},
     "REPLAY_EXECUTED": {"stage": "category", "outcome": "category"},
+    # S7 advisory enrichment (INT-001 audit.events): exact policy identity and categories only; never an indicator value,
+    # credential, provider body or network target.
+    "PROVIDER_POLICY_SELECTED": {"provider_policy_digest": "sha256"},
+    "ENRICHMENT_REQUESTED": {"indicator_type": "category", "provider_policy_digest": "sha256"},
+    "ENRICHMENT_ACCEPTED": {"lookup_outcome": "category", "provider_policy_digest": "sha256"},
+    "EGRESS_DENIED": {"reason": "category", "provider_policy_digest": "sha256"},
+    "CREDENTIAL_REFERENCE_FAILURE": {"provider_policy_digest": "sha256"},
     "ROLE_ASSIGNED": {"role": "category", "principal_id": "uuid", "reason_ref": "reference"},
     "ROLE_REVOKED": {"role": "category", "principal_id": "uuid", "reason_ref": "reference"},
     # S3 knowledge activation (ADR-0013 Decision 14): exact digests, deployment, actor (event column), outcome, reason.
