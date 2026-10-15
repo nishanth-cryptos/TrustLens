@@ -1,0 +1,431 @@
+{
+  "lock_version": 2,
+  "status": "PROPOSED - NOT APPROVED. Candidates from the S8 governance document (D4, §4A).",
+  "evidence_reference": "docs/07-implementation/S8-screenshot-ocr-governance-proposal.md E2-E5 (observed 2026-10-15)",
+  "phase_rules": {
+    "REVIEW": "status is OPEN or SATISFIED; SATISFIED needs non-empty evidence and is set only through a reviewed change, never by a tool",
+    "ARTIFACT": "status is always PRODUCED_AT_STAGE; the harness verifies it (PRE_EXECUTION: named verifier over real files, the build-input fingerprint and the local images; ACCEPTANCE: a regular JSON file); the lock can never claim it",
+    "PRE_BUILD": "must be fully satisfied before an approved construction step (harness.py build)",
+    "PRE_EXECUTION": "must be satisfied, together with PRE_BUILD, before harness.py run; produced by the build plus review",
+    "ACCEPTANCE": "after the run; never gates build or run; reported as open until produced and reviewed"
+  },
+  "sources": [
+    {
+      "name": "tesseract",
+      "version": "5.5.3",
+      "commit": "db0ec62f81b0737fbbe184d8fea40af5738f8eef",
+      "url": "https://github.com/tesseract-ocr/tesseract/archive/refs/tags/5.5.3.tar.gz",
+      "file": "tesseract-5.5.3.tar.gz",
+      "bytes": 1916037,
+      "sha256": "9218e62793116d42a9f6d14cd9348518b27f382096eea3d0f2d1a24616bb5884",
+      "licence": "Apache-2.0",
+      "sha512": "c55ad36af09f4ba48df2f32a3e2413764aeee330f5f5468e92be59572fd90b388f0ea3cb7dc0cc89c21ff68f76cd0baaee1ca0a45e648dc8f4819aefdc2749c2",
+      "corroboration": [
+        "Homebrew formula SHA-256 (same URL)",
+        "Alpine aports community/tesseract-ocr/APKBUILD pkgver=5.5.3 SHA-512 (observed 2026-10-15, aports master)"
+      ]
+    },
+    {
+      "name": "leptonica",
+      "version": "1.87.0",
+      "url": "https://github.com/DanBloomberg/leptonica/releases/download/1.87.0/leptonica-1.87.0.tar.gz",
+      "file": "leptonica-1.87.0.tar.gz",
+      "bytes": 14802808,
+      "sha256": "c73363397f96eb1295602bf44d708a994ad42046c791bf03ea0505d829bdb6a7",
+      "licence": "BSD-2-Clause-style (leptonica-license.txt)",
+      "sha512": "b689b1cfe4d5b884e7ede9d949149410117bbfbb85a1790c0516919f27e8746783c8a04cac9300c761d2736184fb4b2337ab6c3a2653fa9f69f82ba19b493a2d",
+      "corroboration": [
+        "Homebrew formula SHA-256 (same URL)",
+        "Alpine aports community/leptonica/APKBUILD pkgver=1.87.0 SHA-512 (observed 2026-10-15, aports master)"
+      ]
+    },
+    {
+      "name": "eng.traineddata",
+      "variant": "tessdata_fast",
+      "commit": "923915d4ced2a7235221788285785a29c4a42d4a",
+      "url": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/923915d4ced2a7235221788285785a29c4a42d4a/eng.traineddata",
+      "file": "eng.traineddata",
+      "bytes": 4113088,
+      "sha256": "7d4322bd2a7749724879683fc3912cb542f19906c83bcc1a52132556427170b2",
+      "licence": "Apache-2.0 (repository LICENSE, commit 27cfc71a8874cce2483679eea010e391bb38c2ae)",
+      "corroboration": [
+        "byte-identical to the local Homebrew tessdata copy"
+      ]
+    }
+  ],
+  "configuration": {
+    "base_image": {
+      "requirement": "apt-based Linux image providing CPython 3.12 for linux/arm64, pinned as name@sha256:<64 hex>",
+      "reference": "docker.io/library/python@sha256:16bf2b5c59a08523519d3c8589deca849285dee1d62a3653e124c3dba340f15e",
+      "verified_metadata": {
+        "tag_observed": "python:3.12-slim-trixie",
+        "index": "sha256:a6e34c598f2467ed0e9a8d349809fcd8b5c603269512df273a0bb1784edc11b1",
+        "platform": "linux/arm64/v8",
+        "config": "sha256:ce9a404c2c0138e747a43e6ea022d2f7e670ed868df35d627a663ba7fb940ea9",
+        "created": "2026-10-06T02:11:04.282599847Z",
+        "slsa_provenance": "sha256:e5bc9678f6a8647b1d1bdcaf68ec4f2dff651e59e0caba58f934666b213a39de",
+        "spdx_sbom": "sha256:ba62fc866f1e590f23723352278b883175d1f41a9f459da3afe4fc3edd5aa8a9",
+        "source": "https://github.com/docker-library/python.git#2a3b794c223ab067d122719541cdd54a068732a5:3.12/slim-trixie",
+        "note": "every digest re-computed from the received bytes on 2026-10-15; attestations are registry-hosted and unsigned"
+      }
+    },
+    "python": {
+      "requirement": "CPython 3.12 from the selected base image, used only inside the worker",
+      "path_in_image": "/usr/local/bin/python3.12",
+      "exact_version": "3.12.15",
+      "evidence": "image config PYTHON_VERSION=3.12.15, PYTHON_SHA256=c2c4321961fab0fb999d66e0cecf521c2ab3994c7992873ea99e306c1094fd5a, GPG_KEY=7169605F62C751356D054A26A821E680E5FA6305; SBOM lists python 3.12.15; docker-library Dockerfile (sha256 db36efba...) installs under /usr/local and verifies the CPython tarball by SHA-256 and GPG"
+    },
+    "apt": {
+      "sources_file": {
+        "path_in_workdir": "inputs/apt-sources.list",
+        "bytes": 326,
+        "sha256": "7ee0a89ba1aab59d695499ebaf4b98bb4cd0fd1ad41b576efa43b50735175a19",
+        "content_from": "candidates/apt-sources.debian-trixie-20261006T120000Z.list"
+      },
+      "build_packages": [
+        "g++=4:14.2.0-1",
+        "make=4.4.1-2",
+        "cmake=3.31.6-2",
+        "pkg-config=1.8.1-4",
+        "libpng-dev=1.6.48-1+deb13u6",
+        "zlib1g-dev=1:1.3.dfsg+really1.3.1-1+b1"
+      ],
+      "runtime_packages": [
+        "libpng16-16t64=1.6.48-1+deb13u6",
+        "zlib1g=1:1.3.dfsg+really1.3.1-1+b1",
+        "libstdc++6=14.2.0-19"
+      ],
+      "snapshot": {
+        "timestamp": "20261006T120000Z",
+        "suites": [
+          "trixie",
+          "trixie-updates",
+          "trixie-security"
+        ],
+        "InRelease_sha256": {
+          "trixie": "0584fba32e13e0ab8285fb16c27adea1ec03a73669c18702821094fd6ca86675",
+          "trixie-updates": "056c3b5e561551a5498fbf8c94a91cd6dbd19da16b984e38fdb2cb1938cb0b98",
+          "trixie-security": "1402f5b326f84ad48b7d32e092165d1f6ee192af737c941d70879f3cf9518818"
+        },
+        "signing_keys": "Debian 12 and 13 archive/security keys and 13 release key from https://ftp-master.debian.org/keys/ (fingerprints listed on keys.html)"
+      },
+      "closure_manifest": {
+        "path": "packages/closure-manifest.json",
+        "bytes": 48685,
+        "sha256": "fd8b27ee639d97f11d0eace695cef940c65321588e55dc09da5be620793c536c",
+        "generated_by": "debclosure.py from the signature-verified snapshot indices (PB-11 option O, approved 2026-10-16)"
+      }
+    },
+    "source_date_epoch": 1792074664
+  },
+  "requirements": [
+    {
+      "id": "PB-01",
+      "phase": "PRE_BUILD",
+      "kind": "REVIEW",
+      "status": "SATISFIED",
+      "binds": [
+        "sources.tesseract"
+      ],
+      "description": "Tesseract 5.5.3 source pinned by commit and archive SHA-256",
+      "evidence": "E2 tag commit db0ec62f...; E3 archive SHA-256 from two sources (builder download and Homebrew formula), re-checked against the downloaded bytes on 2026-10-15; third corroboration: archive SHA-512 equals Alpine APKBUILD pkgver=5.5.3 (PREBUILD-EVIDENCE.md)"
+    },
+    {
+      "id": "PB-02",
+      "phase": "PRE_BUILD",
+      "kind": "REVIEW",
+      "status": "OPEN",
+      "description": "Local GPG verification of the 5.5.3 tag signature",
+      "evidence": "PARTIAL (trust not established): tag object 6951ffe10ce031374bcd04fe400811da1e7e04ad (annotated) -> commit db0ec62f...; signature VALIDSIG 49236FEA75C95D698EC2B78AE08C21D5677450AD (RSA-4096, created 2015-08-05, uid sw@weilnetz.de) in an isolated keyring; tag tree identical to the pinned archive (724 files). Full fingerprint only from keyserver.ubuntu.com (unauthenticated); GitHub account stweil lists long ID E08C21D5677450AD only; keys.openpgp.org 404; WKD for weilnetz.de no data; Debian/Arch carry no verifiable key. Security must decide whether this suffices."
+    },
+    {
+      "id": "PB-03",
+      "phase": "PRE_BUILD",
+      "kind": "REVIEW",
+      "status": "SATISFIED",
+      "binds": [
+        "sources.leptonica"
+      ],
+      "description": "Leptonica 1.87.0 archive pinned by SHA-256",
+      "evidence": "E4 release-asset SHA-256, single source, re-checked against the downloaded bytes on 2026-10-15"
+    },
+    {
+      "id": "PB-04",
+      "phase": "PRE_BUILD",
+      "kind": "REVIEW",
+      "status": "SATISFIED",
+      "description": "Second source or signature for the Leptonica archive",
+      "evidence": "The archive on disk (14,802,808 bytes) has SHA-256 c73363397f96...b6a7, equal to Homebrew's formula checksum for the same URL, and SHA-512 b689b1cfe4d5...3a2d, equal to Alpine aports community/leptonica/APKBUILD pkgver=1.87.0 (observed 2026-10-15; PREBUILD-EVIDENCE.md)"
+    },
+    {
+      "id": "PB-05",
+      "phase": "PRE_BUILD",
+      "kind": "REVIEW",
+      "status": "SATISFIED",
+      "binds": [
+        "sources.eng.traineddata"
+      ],
+      "description": "English tessdata_fast model pinned by commit and SHA-256",
+      "evidence": "E5 download at commit 923915d..., byte-identical to the local Homebrew copy"
+    },
+    {
+      "id": "PB-06",
+      "phase": "PRE_BUILD",
+      "kind": "REVIEW",
+      "status": "SATISFIED",
+      "description": "D4 owner decision: Tesseract version (5.5.3 recommended)",
+      "evidence": "Requester decision recorded 2026-10-15 (authorized PRE_BUILD brief): Tesseract 5.5.3 for the disposable standalone proof"
+    },
+    {
+      "id": "PB-07",
+      "phase": "PRE_BUILD",
+      "kind": "REVIEW",
+      "status": "SATISFIED",
+      "binds": [
+        "configuration.base_image.reference"
+      ],
+      "description": "Base image selected and pinned by digest, with supply-chain evidence",
+      "evidence": "Requester approved python:3.12-slim-trixie on linux/arm64 (2026-10-15) pending an exact verified digest; pinned to the arm64 manifest sha256:16bf2b5c... after re-verifying index, manifest, config, SLSA provenance and SPDX SBOM by hashing the received bytes"
+    },
+    {
+      "id": "PB-08",
+      "phase": "PRE_BUILD",
+      "kind": "REVIEW",
+      "status": "OPEN",
+      "binds": [
+        "configuration.python.exact_version"
+      ],
+      "description": "Exact CPython 3.12 patch version and provenance in the base image; interpreter attack surface reviewed",
+      "evidence": "PARTIAL: exact version 3.12.15 and provenance verified (configuration.python.evidence); the interpreter attack-surface review is a Security item; the approved path is now passed as the required PYTHON build argument and is fingerprinted (pending targeted review)"
+    },
+    {
+      "id": "PB-09",
+      "phase": "PRE_BUILD",
+      "kind": "REVIEW",
+      "status": "SATISFIED",
+      "binds": [
+        "configuration.apt.sources_file"
+      ],
+      "description": "Reviewed snapshot apt sources file ({path_in_workdir, sha256, bytes})",
+      "evidence": "Requester decision 2026-10-16 (issue #54): snapshot 20261006T120000Z approved. File content, size and SHA-256 recorded; the three InRelease signatures re-verified 2026-10-16 with the ftp-master Debian 12/13 keys (primaries B8B80B5B…47F8, 04B54C3C…88BD, 41587F7D…9DE4, 05AB9034…A8F0, 5E04A1E3…68C6)."
+    },
+    {
+      "id": "PB-10",
+      "phase": "PRE_BUILD",
+      "kind": "REVIEW",
+      "status": "SATISFIED",
+      "binds": [
+        "configuration.apt.build_packages",
+        "configuration.apt.runtime_packages"
+      ],
+      "description": "Exact name=version build and runtime package lists",
+      "evidence": "Pins resolved from the signature-verified snapshot 20261006T120000Z arm64 indices (trixie be16b37b..., trixie-updates fe771d58..., trixie-security 32bf01dc...), highest version across suites by Debian version ordering; must be redone if PB-09 changes the snapshot"
+    },
+    {
+      "id": "PB-11",
+      "phase": "PRE_BUILD",
+      "kind": "REVIEW",
+      "status": "SATISFIED",
+      "description": "Reachability assessment of the package-install build steps (N1 rule 3), or offline package installation",
+      "evidence": "Requester decision 2026-10-16 (issue #54): option O (verified offline package installation) approved, with closure manifest fd8b27ee639d97f11d0eace695cef940c65321588e55dc09da5be620793c536c (build 103 / 93,413,868 B, runtime 6 / 3,584,992 B). DECISION ONLY: the runtime controls (RUN --network=none honoured, read-only bind mount, offline apt install of the exact local paths, in-build file/checksum/control/dpkg-query/dpkg --audit checks) are UNPROVEN until the first authorized build and are verified under PE-05.",
+      "binds": [
+        "configuration.apt.closure_manifest"
+      ]
+    },
+    {
+      "id": "PB-12",
+      "phase": "PRE_BUILD",
+      "kind": "REVIEW",
+      "status": "SATISFIED",
+      "binds": [
+        "configuration.source_date_epoch"
+      ],
+      "description": "SOURCE_DATE_EPOCH chosen for the build",
+      "evidence": "Requester decision 2026-10-16 (issue #54): SOURCE_DATE_EPOCH=1792074664 approved (= 2026-10-15T14:31:04Z, author and committer time of d7be441)."
+    },
+    {
+      "id": "PB-13",
+      "phase": "PRE_BUILD",
+      "kind": "REVIEW",
+      "status": "OPEN",
+      "description": "Security review of the proof sources (SECURITY-REVIEW-CHECKLIST.md S1-S19)",
+      "evidence": ""
+    },
+    {
+      "id": "PB-14",
+      "phase": "PRE_BUILD",
+      "kind": "REVIEW",
+      "status": "OPEN",
+      "description": "Requester authorization to start Docker, acquire and build",
+      "evidence": ""
+    },
+    {
+      "id": "PE-01",
+      "phase": "PRE_EXECUTION",
+      "kind": "ARTIFACT",
+      "status": "PRODUCED_AT_STAGE",
+      "verifier": "image:runtime",
+      "description": "Runtime image built; build.json (schema 2) records its ID and the local image has exactly that ID"
+    },
+    {
+      "id": "PE-02",
+      "phase": "PRE_EXECUTION",
+      "kind": "ARTIFACT",
+      "status": "PRODUCED_AT_STAGE",
+      "verifier": "image:probe",
+      "description": "Probe image built from the exact runtime tag; recorded ID equals the local image ID"
+    },
+    {
+      "id": "PE-03",
+      "phase": "PRE_EXECUTION",
+      "kind": "ARTIFACT",
+      "status": "PRODUCED_AT_STAGE",
+      "verifier": "files:logs",
+      "description": "Construction logs present as regular files matching their recorded size and SHA-256"
+    },
+    {
+      "id": "PE-04",
+      "phase": "PRE_EXECUTION",
+      "kind": "ARTIFACT",
+      "status": "PRODUCED_AT_STAGE",
+      "verifier": "files:build_evidence",
+      "description": "Every required build-evidence file (CMake caches, ldd records, tesseract --version, SHA256SUMS) present as a regular file matching its recorded size and SHA-256, and equal to the evidence inside the runtime image"
+    },
+    {
+      "id": "PE-07",
+      "phase": "PRE_EXECUTION",
+      "kind": "ARTIFACT",
+      "status": "PRODUCED_AT_STAGE",
+      "verifier": "build_input_fingerprint",
+      "description": "The build-input fingerprint recorded at construction equals the fingerprint of the current build-affecting inputs (review status excluded)"
+    },
+    {
+      "id": "PE-05",
+      "phase": "PRE_EXECUTION",
+      "kind": "REVIEW",
+      "status": "OPEN",
+      "description": "Security review of the build evidence: CMake options, linkage (not proof of PNG-only), RUN --network=none honoured (in-build lo guard passed in the log), and the PB-11 offline package install (file-set, checksum, size and control-data checks, apt install of the exact local paths, dpkg-query and dpkg --audit) passed in both stages",
+      "evidence": ""
+    },
+    {
+      "id": "PE-06",
+      "phase": "PRE_EXECUTION",
+      "kind": "REVIEW",
+      "status": "OPEN",
+      "description": "Probe build resolved FROM tl-s8proof-runtime:proof locally without a pull (probe-build.log)",
+      "evidence": ""
+    },
+    {
+      "id": "AC-01",
+      "phase": "ACCEPTANCE",
+      "kind": "ARTIFACT",
+      "status": "PRODUCED_AT_STAGE",
+      "artifact": "rebuild.json",
+      "description": "Independent no-cache rebuild and image-ID comparison (harness.py rebuild)"
+    },
+    {
+      "id": "AC-02",
+      "phase": "ACCEPTANCE",
+      "kind": "REVIEW",
+      "status": "OPEN",
+      "description": "Reproducibility disposition: identical image IDs or documented residual differences",
+      "evidence": ""
+    },
+    {
+      "id": "AC-03",
+      "phase": "ACCEPTANCE",
+      "kind": "REVIEW",
+      "status": "OPEN",
+      "description": "SBOM of the runtime image (tool selected by Security)",
+      "evidence": ""
+    },
+    {
+      "id": "AC-04",
+      "phase": "ACCEPTANCE",
+      "kind": "REVIEW",
+      "status": "OPEN",
+      "description": "Vulnerability scan with a written disposition per finding",
+      "evidence": ""
+    },
+    {
+      "id": "AC-05",
+      "phase": "ACCEPTANCE",
+      "kind": "REVIEW",
+      "status": "OPEN",
+      "description": "Licence inventory from the SBOM",
+      "evidence": ""
+    },
+    {
+      "id": "AC-06",
+      "phase": "ACCEPTANCE",
+      "kind": "ARTIFACT",
+      "status": "PRODUCED_AT_STAGE",
+      "artifact": "results.json",
+      "description": "P1-P11 observations and measurements (harness.py run)"
+    },
+    {
+      "id": "AC-07",
+      "phase": "ACCEPTANCE",
+      "kind": "REVIEW",
+      "status": "OPEN",
+      "description": "Final independent review of the results",
+      "evidence": ""
+    }
+  ],
+  "candidates": {
+    "note": "Historical options considered (PREBUILD-EVIDENCE.md). Not read by any gate or by the build-input fingerprint; 'configuration' holds the recorded selections.",
+    "tesseract_version": {
+      "recommended": "5.5.3",
+      "alternative": "5.5.2",
+      "decision": "PB-06 OPEN"
+    },
+    "base_images": [
+      {
+        "option": "C (recommended)",
+        "reference_index": "docker.io/library/python@sha256:a6e34c598f2467ed0e9a8d349809fcd8b5c603269512df273a0bb1784edc11b1",
+        "linux_arm64_manifest": "sha256:16bf2b5c59a08523519d3c8589deca849285dee1d62a3653e124c3dba340f15e",
+        "config": "sha256:ce9a404c2c0138e747a43e6ea022d2f7e670ed868df35d627a663ba7fb940ea9",
+        "created": "2026-10-06T02:11:04.282599847Z",
+        "python_version": "3.12.15",
+        "python_path_in_image": "/usr/local/bin/python3.12 (per image design; requires the PYTHON build-argument change)",
+        "provenance": "SLSA v0.2 blob sha256:e5bc9678...; builder https://github.com/docker-library; source docker-library/python.git#2a3b794c223ab067d122719541cdd54a068732a5:3.12/slim-trixie",
+        "apt_snapshot": "snapshot.debian.org 20261006T120000Z (trixie, trixie-updates, trixie-security)",
+        "apt_sources_candidate": {
+          "path": "candidates/apt-sources.debian-trixie-20261006T120000Z.list",
+          "bytes": 326,
+          "sha256": "7ee0a89ba1aab59d695499ebaf4b98bb4cd0fd1ad41b576efa43b50735175a19"
+        },
+        "package_names": {
+          "build": [
+            "g++",
+            "make",
+            "cmake",
+            "pkg-config",
+            "libpng-dev",
+            "zlib1g-dev"
+          ],
+          "runtime": [
+            "libpng16-16t64",
+            "zlib1g",
+            "libstdc++6"
+          ],
+          "versions": "REQUIRE AUTHORIZED ACQUISITION of the snapshot indices"
+        }
+      },
+      {
+        "option": "A",
+        "reference_index": "docker.io/library/ubuntu@sha256:534baea6a22c03a63003dbc8dbe78fe34bc0d7e595d9a9dc9834884ff530eb55",
+        "linux_arm64_manifest": "sha256:08571ca13e00ca07a2a84eab83a959b4242e22cceb16486a11bef1428c9e93a7",
+        "config": "sha256:95d16dfcd4ab8b61154e2280ab9fe4afa2ef03e5eefa8a689e86571e8a1b32cf",
+        "created": "2026-09-18T21:23:13.773952469Z",
+        "provenance": "SPDX SBOM attestation only; no SLSA provenance observed",
+        "apt_snapshot": "none observed for arm64 (snapshot.ubuntu.com: binary-arm64 HTTP 500, ubuntu-ports HTTP 401)"
+      }
+    ],
+    "source_date_epoch": {
+      "value": 1792074664,
+      "source": "committer time of d7be441 (2026-10-15T14:31:04Z), local git",
+      "decision": "PB-12 SATISFIED (requester decision 2026-10-16, issue #54)"
+    }
+  }
+}
