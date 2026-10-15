@@ -1,8 +1,16 @@
 # S8 OCR proof — Security and Docker preflight packet (issue #54)
 
-**Prepared 2026-10-16 by the builder as evidence, not as a review.** Nothing here is a Security decision or a
-requester authorization. PRE_BUILD is **BLOCKED** by PB-02, PB-08, PB-13 (Security) and PB-14 (requester). Every
-other PRE_BUILD item is satisfied, with evidence or a requester decision recorded in `dependencies.lock.json`.
+**Original packet:** prepared 2026-10-16 by the builder as evidence, not an independent Security review.
+
+**Decision update — 2026-10-16:** The requester, declaring sole Security-approver authority, explicitly accepted
+PB-02 for the disposable pinned synthetic proof and conditionally accepted PB-08 and PB-13 **for the first build
+only**, against source commit `5d7f88035cd25f184572df9969b4411188afd8bc`. See [PR #56](https://github.com/nishanth-cryptos/TrustLens/pull/56)
+Security decision comment `6200838093`, `SECURITY-REVIEW-CHECKLIST.md` and `dependencies.lock.json` for exact
+limitations and review provenance. These are requester-declared, not externally authenticated sign-offs.
+**PRE_BUILD remains BLOCKED by PB-14 only.** Before any OCR/probe execution, PE-05/PE-06, **new PE-08** (pinned
+vulnerability scan and findings disposition) and **new PE-09** (separate requester authorization to run P1-P11)
+remain OPEN. Docker startup, image pull/build, package installation and scanner acquisition are still not authorized.
+The original pre-approval choices below are preserved as an evidence snapshot.
 
 Labels used below:
 - **VERIFIED:** checked offline, with the evidence named.
@@ -202,7 +210,7 @@ by explicit path.
 
 | Decision | Accountable | Decision (a/b/c) | Conditions | Commit reviewed | Date |
 | --- | --- | --- | --- | --- | --- |
-| PB-02 | Security | | | | |
-| PB-08 | Security | | | | |
-| PB-13 | Security | | | | |
+| PB-02 | Requester-declared sole Security approver | (a) limited ACCEPT | Unauthenticated full signer fingerprint risk accepted only for pinned synthetic worker | `5d7f88035cd25f184572df9969b4411188afd8bc` | 2026-10-16 |
+| PB-08 | Requester-declared sole Security approver | (b) CONDITIONAL | Actual Python/zlib linkage under PE-05 and pinned image vulnerability scan PE-08 before run | `5d7f88035cd25f184572df9969b4411188afd8bc` | 2026-10-16 |
+| PB-13 | Requester-declared sole Security approver | CONDITIONAL BUILD ONLY | S1–S19 findings, residuals accepted for proof, Syft/Grype selected but not acquired; PE-08 and PE-09 gate run | `5d7f88035cd25f184572df9969b4411188afd8bc` | 2026-10-16 |
 | PB-14 + N2 pre-start acknowledgement | Requester | | | | |
