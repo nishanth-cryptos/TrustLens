@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { ResultSections } from "./AnalysisPanel";
+import EnrichmentPanel from "./EnrichmentPanel";
 import { CLASSIFICATIONS, EvaluationView, STATE_LABELS, getResult, presentationForError, presentationForStatus,
   validateResult, announcement } from "./evaluation";
 import { COMPARISON_NOTICE, HISTORY_MESSAGES, HISTORY_TEXT, HistoryEntry, HistoryState, LOADING_STATE, ORIGIN_LABELS, REPLAY_OUTCOMES,
@@ -23,6 +24,7 @@ export default function HistoryPanel({ caseId, submissionId, canReplay, refresh 
   const [history, setHistory] = useState<HistoryState>(initialState ?? LOADING_STATE);
   const [open, setOpen] = useState<string | null>(null);
   const [replays, setReplays] = useState<Record<string, ReplayView | string>>({});
+  const [lookups, setLookups] = useState<string | null>(null);
   const loader = useRef<ReturnType<typeof createHistoryLoader> | null>(null);
 
   useEffect(() => {
@@ -79,6 +81,11 @@ export default function HistoryPanel({ caseId, submissionId, canReplay, refresh 
                     {open === id ? "Hide this result" : "Open this result"}
                   </button>
                 )}
+                {canReplay && (
+                  <button type="button" className="link-button" aria-expanded={lookups === id} onClick={() => setLookups(lookups === id ? null : id)}>
+                    {lookups === id ? "Hide external lookups" : "External lookups (advisory)"}
+                  </button>
+                )}
                 {canReplay && evaluation.state === "COMPLETED" && (
                   <button type="button" className="link-button" onClick={() => replay(id)}
                           disabled={typeof replayState === "object" && replayState.state === "PENDING"}>
@@ -99,6 +106,7 @@ export default function HistoryPanel({ caseId, submissionId, canReplay, refresh 
                 </div>
               )}
               {open === id && result && <ResultSections result={result} evaluation={evaluation} />}
+              {canReplay && lookups === id && <EnrichmentPanel evaluationId={id} />}
             </li>
           );
         })}

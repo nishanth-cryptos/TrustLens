@@ -67,6 +67,7 @@ class AuthRuntime:
     deployment_ref: str = "local-development"     # knowledge_deployment_state.deployment_ref of this deployment
     knowledge_release_dir: object | None = None   # committed release records (default: apps/backend/knowledge_releases)
     evaluation_recovery: bool = False             # S5: run crash recovery for evaluations (the served app only)
+    enrichment: object | None = None              # S7: EnrichmentRuntime; None = disabled (no provider selected)
 
     @property
     def session_cookie(self) -> str:

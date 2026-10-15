@@ -226,3 +226,24 @@ and extracts against the ACTIVE verified bundle. `extract_text` is the same extr
   - reason codes (`EXTRACTION_ERROR`, `USER_REQUESTED_REANALYSIS`, `ANALYST_VERIFICATION`) are NON-NORMATIVE,
     SYNTHETIC-LOCAL values pending API-owner approval; the 2,000-character correction limit is a local implementation
     parameter pending T09/Product approval.
+
+## S7 governed URL intelligence (migration 0008; live lookups disabled)
+
+- **Adapter** (`trustlens_backend/egress.py`): provider-neutral and deny-by-default. It sends one normalized URL,
+  hostname or registered domain as data to the one destination in an immutable, digest-identified provider policy.
+  - It never connects to, resolves, downloads or follows a submitted URL, and has no generic fetch.
+  - Every attempt resolves through the governed resolver and validates every answer; one denied or mixed answer rejects
+    the lookup. It connects only to that validated address, with SNI and certificate checks for the approved hostname,
+    and verifies the connected peer.
+  - Redirects are refused unless the policy governs them, with per-hop revalidation.
+  - Governed proxies are refused without verified final-hop enforcement; the live transport has no proxy support.
+    Environment proxies are never read. Credentials are references.
+  - Limits are a bounded LOCAL TEST PROFILE, not approved values (T09 / P6-WP6).
+- **Persistence and read** (`trustlens_backend/enrichment.py`):
+  - The internal seam `enrich_evaluation()` records immutable `external_enrichment_result` rows with exact policy,
+    parser, observation and artifact provenance. It never touches a DetectionResult, and replay never calls it.
+  - No accepted operation or automatic trigger invokes the seam; the served app carries no provider, so it is disabled.
+  - `listEvaluationEnrichments` is for assigned analysts only.
+- **UI:** an "External lookups (advisory)" panel per evaluation for assigned analysts, using the exact UX-006 labels.
+  An empty or failed list never implies safety.
+- **Before use:** review `make migration-sql`, then `make migrate`, to apply `0008_external_enrichment`.
