@@ -134,9 +134,9 @@
       "id": "PB-02",
       "phase": "PRE_BUILD",
       "kind": "REVIEW",
-      "status": "OPEN",
+      "status": "SATISFIED",
       "description": "Local GPG verification of the 5.5.3 tag signature",
-      "evidence": "PARTIAL (trust not established): tag object 6951ffe10ce031374bcd04fe400811da1e7e04ad (annotated) -> commit db0ec62f...; signature VALIDSIG 49236FEA75C95D698EC2B78AE08C21D5677450AD (RSA-4096, created 2015-08-05, uid sw@weilnetz.de) in an isolated keyring; tag tree identical to the pinned archive (724 files). Full fingerprint only from keyserver.ubuntu.com (unauthenticated); GitHub account stweil lists long ID E08C21D5677450AD only; keys.openpgp.org 404; WKD for weilnetz.de no data; Debian/Arch carry no verifiable key. Security must decide whether this suffices."
+      "evidence": "PR #56 Security approval record (comment 6200838093), user-declared sole Security authority, reviewing original source commit 5d7f88035cd25f184572df9969b4411188afd8bc. Limited synthetic-only acceptance of unauthenticated full Tesseract signer fingerprint 49236FEA75C95D698EC2B78AE08C21D5677450AD, based on valid tag signature, GitHub 64-bit key ID, tree/archive/hash corroboration. Not claimed as independent signer authentication; any source/key change voids exception."
     },
     {
       "id": "PB-03",
@@ -191,12 +191,12 @@
       "id": "PB-08",
       "phase": "PRE_BUILD",
       "kind": "REVIEW",
-      "status": "OPEN",
+      "status": "SATISFIED",
       "binds": [
         "configuration.python.exact_version"
       ],
       "description": "Exact CPython 3.12 patch version and provenance in the base image; interpreter attack surface reviewed",
-      "evidence": "PARTIAL: exact version 3.12.15 and provenance verified (configuration.python.evidence); the interpreter attack-surface review is a Security item; the approved path is now passed as the required PYTHON build argument and is fingerprinted (pending targeted review)"
+      "evidence": "PR #56 Security approval record (comment 6200838093), user-declared sole Security authority, reviewing original source commit 5d7f88035cd25f184572df9969b4411188afd8bc. CONDITIONAL build-only acceptance of CPython 3.12.15 + zlib; bounded tier2 and -I -S -B; require actual linkage/library verification at PE-05 and a pinned vulnerability scan with documented findings under PE-08 before any worker run. Runtime isolation unproven."
     },
     {
       "id": "PB-09",
@@ -247,9 +247,9 @@
       "id": "PB-13",
       "phase": "PRE_BUILD",
       "kind": "REVIEW",
-      "status": "OPEN",
+      "status": "SATISFIED",
       "description": "Security review of the proof sources (SECURITY-REVIEW-CHECKLIST.md S1-S19)",
-      "evidence": ""
+      "evidence": "PR #56 Security approval record (comment 6200838093), user-declared sole Security authority, reviewing original source commit 5d7f88035cd25f184572df9969b4411188afd8bc. CONDITIONAL construction-only acceptance of S1-S19 recorded in SECURITY-REVIEW-CHECKLIST.md. Accepted risks: shared VM/root-equivalent Docker operator, Docker-managed mounts, trusted-operator same-user path-string race, unsigned base attestations, arm64-only, unreproduced image IDs, bitmap synthetic-only CER limitations, residual Tesseract/Leptonica parsers. Syft chosen for SBOM/licences, Grype for vulnerability scan; exact versions/digests, acquisition/operation and all PE/AC controls remain unapproved or unverified. Neither Docker start nor execution authorized."
     },
     {
       "id": "PB-14",
@@ -313,6 +313,22 @@
       "kind": "REVIEW",
       "status": "OPEN",
       "description": "Probe build resolved FROM tl-s8proof-runtime:proof locally without a pull (probe-build.log)",
+      "evidence": ""
+    },
+    {
+      "id": "PE-08",
+      "phase": "PRE_EXECUTION",
+      "kind": "REVIEW",
+      "status": "OPEN",
+      "description": "Before any OCR-worker/probe execution, Security reviews vulnerability scan of the actual built runtime image using version/digest-pinned Grype (and the selected Syft SBOM as needed), documents material findings and mitigations/risk decisions, and verifies image linkage evidence including Python zlib under PE-05; acquisition/use of scanners separately authorized",
+      "evidence": ""
+    },
+    {
+      "id": "PE-09",
+      "phase": "PRE_EXECUTION",
+      "kind": "REVIEW",
+      "status": "OPEN",
+      "description": "Requester's separately recorded explicit permission to run P1-P11 disposable synthetic-worker OCR tests after PE-05/PE-06 and PE-08, distinct from PB-14 authorization to start Docker and build",
       "evidence": ""
     },
     {
