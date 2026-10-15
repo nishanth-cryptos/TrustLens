@@ -1,16 +1,21 @@
 import { useEffect, useState } from "react";
 import AnalysisPanel from "./AnalysisPanel";
+import HistoryPanel from "./HistoryPanel";
+import { DOWNLOAD_NOTICE } from "./history";
 import { EvaluationView, ResultView } from "./evaluation";
 import { MAX_EVIDENCE_BYTES, STAGE_LABELS, Stage, EvidenceView, UPLOAD_STATE_LABELS, canResume, listEvidence, resumeUpload, uploadText,
   utf8Bytes } from "./evidence";
 
-type Props = { caseId: string; submissionId: string; canUpload: boolean; initialEvidence?: EvidenceView[];
+type Props = { caseId: string; submissionId: string; canUpload: boolean; canViewContent?: boolean; canReplay?: boolean;
+               initialEvidence?: EvidenceView[];
                initialEvaluation?: EvaluationView | null; initialResult?: ResultView | null };
 
 const when = (iso: string | null) => (iso ? new Date(iso).toLocaleString() : "");
 const BUSY: Stage[] = ["PREPARING", "SENDING", "CHECKING"];
 
-export default function EvidencePanel({ caseId, submissionId, canUpload, initialEvidence, initialEvaluation, initialResult }: Props) {
+export default function EvidencePanel({ caseId, submissionId, canUpload, canViewContent = false, canReplay = false, initialEvidence,
+                                        initialEvaluation, initialResult }: Props) {
+  const [refresh, setRefresh] = useState(0);
   const [items, setItems] = useState<EvidenceView[] | null>(initialEvidence ?? null);
   const [text, setText] = useState("");
   const [stage, setStage] = useState<Stage | null>(null);
@@ -51,6 +56,9 @@ export default function EvidencePanel({ caseId, submissionId, canUpload, initial
               {e.byte_length !== null && <span className="meta"> · {e.byte_length.toLocaleString()} bytes</span>}
               {e.content_sha256 && <span className="meta"> · SHA-256 <code>{e.content_sha256.slice(0, 12)}…</code></span>}
               <span className="meta"> · {e.finalized_at ? `stored ${when(e.finalized_at)}` : `started ${when(e.ingested_at)}`}</span>
+              {canViewContent && e.upload_state === "FINALIZED" && e.content_link && (
+                <span className="meta"> · <a href={e.content_link} download>Download the original</a></span>
+              )}
               {canUpload && canResume(e) && (
                 <button type="button" className="link-button" onClick={() => upload(e)} disabled={busy || size === 0}
                         aria-label="Continue this unfinished upload with the text in the box below">
@@ -79,9 +87,11 @@ export default function EvidencePanel({ caseId, submissionId, canUpload, initial
       {stage && <p className={stage === "FINALIZED" ? "success" : "meta"} role="status">{STAGE_LABELS[stage]}</p>}
       {error && <p className="notice" role="alert">{error}</p>}
       <p className="note">The text is stored encrypted for this case. It is analysed only when you choose to analyse it.</p>
-      <AnalysisPanel caseId={caseId} submissionId={submissionId}
+      {canViewContent && (items ?? []).some((e) => e.upload_state === "FINALIZED") && <p className="meta">{DOWNLOAD_NOTICE}</p>}
+      <AnalysisPanel caseId={caseId} submissionId={submissionId} canCorrect={canUpload} onChange={() => setRefresh((n) => n + 1)}
                      hasFinalized={(items ?? []).filter((e) => e.upload_state === "FINALIZED").length === 1}
                      initialEvaluation={initialEvaluation} initialResult={initialResult} />
+      <HistoryPanel caseId={caseId} submissionId={submissionId} canReplay={canReplay} refresh={refresh} />
     </div>
   );
 }

@@ -108,7 +108,8 @@ def _view(row) -> dict:
             "upload_state": UPLOAD_STATE[state] if state else "AWAITING_CONTENT", "content_sha256": digest,
             "byte_length": length, "declared_media_type": declared, "verified_media_type": verified,
             "display_filename": filename, "ingested_at": _instant(created), "finalized_at": _instant(finalized),
-            "content_link": None,       # getEvidenceContent is not part of this slice
+            # getEvidenceContent (S6) for a FINALIZED item; the link grants nothing, the operation still authorizes.
+            "content_link": f"/api/v1/evidence/{evidence_id}/content" if state == "FINALIZED" else None,
             "links": {"self": f"/api/v1/evidence/{evidence_id}", "related": {"submission": f"/api/v1/submissions/{submission_id}"}}}
 
 

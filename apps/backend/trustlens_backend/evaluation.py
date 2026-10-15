@@ -257,46 +257,63 @@ def _create_evaluations(request, runtime, principal, submission_id, key, body):
             return api_error(request, "DEPENDENCY_UNAVAILABLE")
         if isinstance(outcome, idempotency.Replay):
             return _replay(request, runtime, connection, outcome)
-        try:
-            with connection.cursor() as cur:
-                items = _finalized_items(cur, submission_id)
-                origin, predecessor = _origin(cur, submission_id, body)
-            if case[1] not in EVALUABLE_CASE_STATES or len(items) != 1 or origin is None:
-                with connection.transaction(), connection.cursor() as cur:
-                    idempotency.fail_terminal(cur, outcome, 409, "STATE_CONFLICT")
-                return api_error(request, "STATE_CONFLICT")
-            governed = extraction.extract_finalized_evidence(runtime, principal, items[0], correlation_id=request.state.request_id)
-            envelope_id = _store_envelope(connection, runtime, submission_id, items[0], governed)
-            evaluation_id = str(uuid.uuid4())
-            with connection.transaction(), connection.cursor() as cur:
-                _insert_evaluation(cur, evaluation_id, case_id, submission_id, envelope_id, governed, origin, predecessor, body,
-                                   principal, request.state.request_id)
-                _audit(cur, "EVALUATION_STARTED", "SUCCEEDED", "EVALUATION", evaluation_id, case_id, evaluation_id,
-                       request.state.request_id, actor=principal.principal_reference_id, metadata={"origin": origin},
-                       bundle=governed.knowledge_content_digest)
-                idempotency.complete(cur, outcome, 202, "evaluation", evaluation_id)
-        except extraction.ExtractionRefused:
-            idempotency.release(connection, outcome, 409, "STATE_CONFLICT")
-            return api_error(request, "STATE_CONFLICT")
-        except extraction.ExtractionUnavailable as unavailable:
-            if unavailable.category == "INTEGRITY_FAILURE":
-                with connection.transaction(), connection.cursor() as cur:
-                    idempotency.fail_terminal(cur, outcome, 500, "INTEGRITY_FAILURE")
-                return api_error(request, "INTEGRITY_FAILURE")
-            idempotency.release(connection, outcome, 503, "DEPENDENCY_UNAVAILABLE")
-            return api_error(request, "DEPENDENCY_UNAVAILABLE")
-        except _EnvelopeConflict:
-            with connection.transaction(), connection.cursor() as cur:
-                idempotency.fail_terminal(cur, outcome, 500, "INTEGRITY_FAILURE")
-            return api_error(request, "INTEGRITY_FAILURE")
-        except idempotency.StaleClaim:
-            return api_error(request, "IDEMPOTENCY_IN_PROGRESS")
-        except (psycopg.Error, _Unavailable, AuditUnavailable, ContentStoreUnavailable, IntegrityFailure, OSError, ValueError):
-            idempotency.release(connection, outcome, 503, "DEPENDENCY_UNAVAILABLE")
-            return api_error(request, "DEPENDENCY_UNAVAILABLE")
         with connection.cursor() as cur:
-            view = _view(_evaluation_row(cur, evaluation_id))
+            origin, predecessor = _origin(cur, submission_id, body)
+        if origin is None:
+            return _conflict(request, connection, outcome)
+        started = _start_evaluation(request, runtime, principal, connection, outcome, case, submission_id, origin, predecessor, body)
+        if not isinstance(started, str):
+            return started
+        with connection.cursor() as cur:
+            view = _view(_evaluation_row(cur, started))
     return _accepted(runtime, [view])
+
+
+def _conflict(request, connection, outcome, code="STATE_CONFLICT", status=409):
+    with connection.transaction(), connection.cursor() as cur:
+        idempotency.fail_terminal(cur, outcome, status, code)
+    return api_error(request, code)
+
+
+def _start_evaluation(request, runtime, principal, connection, outcome, case, submission_id, origin, predecessor, body,
+                      in_transaction=None, resource=None):
+    """The S5 pipeline shared by createEvaluations and createCorrection: one FINALIZED text item, S4 extraction against
+    the active verified bundle, the encrypted envelope, a REQUESTED evaluation with its single governed artifact and the
+    EVALUATION_STARTED audit, committed with the idempotency outcome. `in_transaction(cur, evaluation_id)` adds rows to
+    that same transaction and returns the (kind, id) the idempotency record points at. Returns the evaluation id, or an
+    error response (the claim is then failed or released, never left completed)."""
+    try:
+        with connection.cursor() as cur:
+            items = _finalized_items(cur, submission_id)
+        if case[1] not in EVALUABLE_CASE_STATES or len(items) != 1:
+            return _conflict(request, connection, outcome)
+        governed = extraction.extract_finalized_evidence(runtime, principal, items[0], correlation_id=request.state.request_id)
+        envelope_id = _store_envelope(connection, runtime, submission_id, items[0], governed)
+        evaluation_id = str(uuid.uuid4())
+        with connection.transaction(), connection.cursor() as cur:
+            _insert_evaluation(cur, evaluation_id, case[0], submission_id, envelope_id, governed, origin, predecessor, body,
+                               principal, request.state.request_id)
+            _audit(cur, "EVALUATION_STARTED", "SUCCEEDED", "EVALUATION", evaluation_id, case[0], evaluation_id,
+                   request.state.request_id, actor=principal.principal_reference_id, metadata={"origin": origin},
+                   bundle=governed.knowledge_content_digest)
+            kind, resource_id = in_transaction(cur, evaluation_id) if in_transaction else ("evaluation", evaluation_id)
+            idempotency.complete(cur, outcome, 202, kind, resource_id)
+    except extraction.ExtractionRefused:
+        idempotency.release(connection, outcome, 409, "STATE_CONFLICT")
+        return api_error(request, "STATE_CONFLICT")
+    except extraction.ExtractionUnavailable as unavailable:
+        if unavailable.category == "INTEGRITY_FAILURE":
+            return _conflict(request, connection, outcome, "INTEGRITY_FAILURE", 500)
+        idempotency.release(connection, outcome, 503, "DEPENDENCY_UNAVAILABLE")
+        return api_error(request, "DEPENDENCY_UNAVAILABLE")
+    except _EnvelopeConflict:
+        return _conflict(request, connection, outcome, "INTEGRITY_FAILURE", 500)
+    except idempotency.StaleClaim:
+        return api_error(request, "IDEMPOTENCY_IN_PROGRESS")
+    except (psycopg.Error, _Unavailable, AuditUnavailable, ContentStoreUnavailable, IntegrityFailure, OSError, ValueError):
+        idempotency.release(connection, outcome, 503, "DEPENDENCY_UNAVAILABLE")
+        return api_error(request, "DEPENDENCY_UNAVAILABLE")
+    return evaluation_id
 
 
 def _accepted(runtime, views):
@@ -526,11 +543,60 @@ def _check_document(document, pins, evaluation_id, context):
         raise ValueError("result provenance does not equal the evaluation pins")
 
 
-def _replay_material_digest(evaluation_id, timestamp, pins, artifact_digest, result_digest, context) -> str:
-    material = {"evaluation_id": evaluation_id, "evaluation_timestamp": _instant_text(timestamp), "input_id": context["input_id"],
-                "pins": pins, "input_support_status": context["input_support_status"], "language": context["language"],
-                "script": context["script"], "governed_artifact_digest": artifact_digest, "result_digest": result_digest}
-    return _digest(canonical_json(material))
+MATERIAL_SET_ID = "DATA-001-WP2-9.1:RM-01..RM-14:v1"
+
+
+def material_record(cur, evaluation_id, result_digest) -> dict | None:
+    """The DATA-001-WP2 §9.1 replay material commitment input, read from the stored rows: RM-01..RM-10 pins plus the
+    evidence, derivative and envelope digests of RM-11..RM-14. The same function is used when the evaluation completes
+    and when a replay verifies it, so the commitment can only match if every committed identity and digest is unchanged.
+    Returns None when a required row is absent (the caller reports the missing material)."""
+    cur.execute(f"SELECT evaluation_id::text, evaluation_timestamp, input_id, engine_version, result_contract_version,"
+                " bundle_content_digest, bundle_version, manifest_schema_version, commit_sha, component_versions,"
+                " evaluation_profile_id, extraction_confidence_gate, risk_matrix_id, confidence_policy_id, action_policy_version,"
+                " input_support_status, language, script, ai_used, ai_config_ref, input_envelope_record_id::text"
+                f" FROM {SCHEMA}.evaluation WHERE evaluation_id = %s", (evaluation_id,))
+    e = cur.fetchone()
+    if e is None or e[1] is None:
+        return None
+    cur.execute(f"SELECT governed_artifact_digest FROM {SCHEMA}.governed_input_artifact WHERE evaluation_id = %s", (evaluation_id,))
+    artifact = cur.fetchone()
+    cur.execute(f"SELECT envelope_sha256 FROM {SCHEMA}.input_envelope_record WHERE input_envelope_record_id = %s", (e[20],))
+    envelope = cur.fetchone()
+    cur.execute(f"SELECT s.evidence_item_id::text, i.content_sha256, i.byte_length, s.evidence_derivative_id::text,"
+                f" d.derivative_sha256, d.byte_length FROM {SCHEMA}.input_envelope_source s"
+                f" LEFT JOIN {SCHEMA}.evidence_item i ON i.evidence_item_id = s.evidence_item_id"
+                f" LEFT JOIN {SCHEMA}.evidence_derivative d ON d.evidence_derivative_id = s.evidence_derivative_id"
+                " WHERE s.input_envelope_record_id = %s", (e[20],))
+    sources = cur.fetchall()
+    if artifact is None or envelope is None or not sources:
+        return None
+    return {
+        "material_set": MATERIAL_SET_ID,
+        "RM-01": {"evaluation_id": e[0], "evaluation_timestamp": _instant_text(e[1]), "input_id": e[2]},
+        "RM-02": {"governed_artifact_digest": artifact[0]},
+        "RM-03": {"engine_version": e[3]},
+        "RM-04": {"result_contract_version": e[4]},
+        "RM-05": {"bundle_content_digest": e[5], "bundle_version": e[6], "manifest_schema_version": e[7], "commit_sha": e[8],
+                  "component_versions": e[9]},
+        "RM-06": {"evaluation_profile_id": e[10], "extraction_confidence_gate": e[11], "risk_matrix_id": e[12],
+                  "confidence_policy_id": e[13], "action_policy_version": e[14]},
+        "RM-07": {"input_support_status": e[15], "language": list(e[16] or []), "script": list(e[17] or [])},
+        "RM-08": {"ai_used": e[18], "ai_config_ref": e[19]},
+        "RM-09": {"external_enrichment_consumed": False},        # none consumed under current contracts (asserted)
+        "RM-10": {"result_digest": result_digest},
+        "RM-11": sorted([{"evidence_item_id": r[0], "content_sha256": r[1], "byte_length": r[2]} for r in sources if r[0]],
+                        key=lambda m: m["evidence_item_id"]),
+        "RM-13": sorted([{"evidence_derivative_id": r[3], "derivative_sha256": r[4], "byte_length": r[5]} for r in sources if r[3]],
+                        key=lambda m: m["evidence_derivative_id"]),
+        "RM-14": {"envelope_sha256": envelope[0]},
+    }
+
+
+def material_digest(record: dict | None) -> str:
+    if record is None:
+        raise ValueError("replay material incomplete: no commitment can be written")
+    return _digest(canonical_json(record))
 
 
 def _complete(connection, evaluation_id, case_id, token, timestamp, document, pins, artifact_digest, context, correlation):
@@ -574,8 +640,7 @@ def _complete(connection, evaluation_id, case_id, token, timestamp, document, pi
         cur.execute(f"UPDATE {SCHEMA}.evaluation SET status = 'COMPLETED', result_computed_at = now(), completed_at = now(),"
                     " replay_material_digest = %s WHERE evaluation_id = %s"
                     " AND status IN ('RUNNING', 'RESULT_COMPUTED_PERSISTENCE_PENDING') AND execution_fence_token = %s",
-                    (_replay_material_digest(evaluation_id, timestamp, pins, artifact_digest, result_digest, context),
-                     evaluation_id, token))
+                    (material_digest(material_record(cur, evaluation_id, result_digest)), evaluation_id, token))
         if cur.rowcount != 1:
             raise _Stale()
 
@@ -624,7 +689,8 @@ def recover(runtime, limit=50) -> dict:
                         (limit,))
             queued = [r[0] for r in cur.fetchall()]
     dispatch(runtime, queued)
-    return {"fenced": [f[0] for f in fenced], "dispatched": queued}
+    from .history import recover_replays                  # S6: replays left PENDING by a crash
+    return {"fenced": [f[0] for f in fenced], "dispatched": queued, "replays": recover_replays(runtime)}
 
 
 def start_recovery(runtime, interval_seconds=30.0):

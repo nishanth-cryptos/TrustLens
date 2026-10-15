@@ -202,3 +202,27 @@ and extracts against the ACTIVE verified bundle. `extract_text` is the same extr
   evaluation operations answer `503`.
 - **Not exposed:** indicator identities and observation spans. DetectionResultResponse v1 has no field for them
   (UX-003 open decision; needs a governed API revision).
+
+## S6 case history, evidence access and replay (migration 0007)
+
+- **Operations** (`trustlens_backend/history.py`): `getEvidenceContent`, `createCorrection`, `createReplay`, `getReplay`.
+  `listCaseEvaluations` filters by `submission_id` for the history view.
+- **Original evidence:** downloads to a caller whose case grant permits evidence content. The bytes are re-read and their
+  length and SHA-256 re-verified first. Every download and integrity failure is audited. Inaccessible evidence answers a
+  masked 404; no role grants content by itself.
+- **Correction:** the owner's free-text description and a reason create a new `USER_CORRECTION` evaluation of the same
+  original bytes. The accepted API has no field-level editing, so it cannot change extraction. Earlier evaluations,
+  artifacts and results never change. The description is never audited.
+- **Re-analysis:** sends its predecessor and a reason; the server derives the origin.
+- **Replay** (assigned analyst, or platform administrator): re-runs only the pinned artifact, bundle digest, engine and
+  profile, and records MATCH or MISMATCH against the stored digest. Missing or failed material is an explicit outcome.
+  Replay never creates an evaluation or result; records are content-free.
+- **Before use:** review `make migration-sql`, then `make migrate`, to apply `0007_correction_replay`.
+- **Scope holds:**
+  - reports (REPORT-001/T06);
+  - governed deletion, tombstones and retention (T10, OI-05);
+  - break-glass content access (no grant store yet; S9);
+  - analyst assignment and an administrator replay surface (S9);
+  - reason codes (`EXTRACTION_ERROR`, `USER_REQUESTED_REANALYSIS`, `ANALYST_VERIFICATION`) are NON-NORMATIVE,
+    SYNTHETIC-LOCAL values pending API-owner approval; the 2,000-character correction limit is a local implementation
+    parameter pending T09/Product approval.
