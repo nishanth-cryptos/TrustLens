@@ -2,16 +2,16 @@
 
 | Field | Value |
 | --- | --- |
-| Status | **PROPOSED — NOT APPROVED; S8 IMPLEMENTATION BLOCKED** |
+| Status | **SPONSOR SCOPE DIRECTION RECORDED — TECHNICAL APPROVALS PENDING; S8 IMPLEMENTATION BLOCKED** |
 | Programme | TrustLens, Phase 9, Slice 8 (S8) |
 | Baseline | `main` at `0f82ea631af24753f4c71bafe29d0ac61e96ccd2` (read on 2026-10-15) |
 | Scope | Synthetic local-development profile only; backend/API first; default OFF |
 | Decision owners | Sponsor/Product; Security/DevSecOps; Backend/Operations; Data; Knowledge/Detection |
-| Implementation authority | **None granted by this proposal.** No runtime, migration, API, UX or policy change is approved here. |
+| Sponsor scope decision | **User-declared approval received 2026-10-15** for synthetic-local, backend-first, default-OFF S8 scope; not an independently authenticated GitHub reviewer sign-off. See §3. |\n| Implementation authority | **None granted by this proposal.** No runtime, migration, API, UX or policy change is approved here. |
 
 ## 1. Authority and non-negotiable boundaries
 
-This is a reviewable **proposal**, not a sponsor decision or an independent approval. It responds to the S8 readiness STOP report (G1–G6) without changing frozen contracts.
+This is a reviewable **proposal with a recorded user-declared Sponsor/Product scope direction**, not an independent technical approval or implementation authorization. It responds to the S8 readiness STOP report (G1–G6) without changing frozen contracts.
 
 - [PLAN-001 §4](PLAN-001-implementation-blueprint.md) makes S8 dependent on S4–S7, an accepted media profile, a least-privilege worker and bounded resources. An unresolved OCR dependency remains **BLOCKED** for that scope.
 - [S2 local profile](S2-local-development-profile.md) currently accepts `text/plain; charset=utf-8` only (64 KiB) and **no images**. That profile must remain unchanged.
@@ -24,13 +24,13 @@ The original screenshot is never modified, interpreted as an instruction, fetche
 
 ## 2. Proposed decisions — owner acceptance required
 
-All nine rows below are **PROPOSED**, not accepted.
+All nine technical/governance decision packages remain **PROPOSED**. Sponsor/Product scope direction has been recorded for the PNG-only local-test intent in D1 and the default-OFF backend-first scope in D5; it does **not** close the independent reviews or authorize coding.
 
 ### D1 — Media profile (G1)
 
 **Proposal:** Introduce a *separate S8 synthetic-local opt-in profile* accepting exactly `image/png`, with `artifact_kind=IMAGE`. Admit a single-frame, non-interlaced, 8-bit RGB or RGBA PNG only. Refuse APNG/multi-frame, unsupported bit depths/color modes, malformed/truncated chunks, CRC errors, trailing content and polyglots. Check declared MIME against actual structural type; file extension is not authority. Preserve original bytes and digest exactly; do not propagate ancillary metadata to the OCR text derivative. Do not enable JPEG, PDF, camera capture or other media.
 
-**Approval:** Sponsor/Product for scope; Security/Backend for the accepted format and parser threat model. The current S2 text-only profile remains the default.
+**Approval:** Sponsor/Product scope direction recorded 2026-10-15 (user-declared; see §3); Security/Backend acceptance of the exact format and parser threat model **PENDING**. The current S2 text-only profile remains the default.
 
 ### D2 — Resource and admission limits (G2 / T09)
 
@@ -75,7 +75,7 @@ If an approved digest or vulnerability disposition cannot be produced, **D4 rema
 
 A later user-facing S8b requires a separately approved additive UX revision and Product/Sponsor scope decision; do not silently edit frozen Phase-7 contracts.
 
-**Approval:** Sponsor/Product, Security and UX owner for any later S8b.
+**Approval:** Sponsor/Product S8a scope direction recorded 2026-10-15 (user-declared; see §3); independent Security sign-off **PENDING**. S8b remains out of scope and would require a new Product/Sponsor and UX owner decision.
 
 ### D6 — OCR lineage, type and uncertainty
 
@@ -128,24 +128,24 @@ No URL/email/image mixture beyond these combinations is activated in S8a. Existi
 | G2 — Resource limits | D2 signed; limits enforced and adversarially tested | Sponsor + Backend/Operations + Security |
 | G3 — Isolation | D3 signed; trusted launcher and actual container isolation demonstrated | Security/DevSecOps |
 | G4 — Engine | D4 pinned version/image/trained-data digests and supply-chain review | Security + Backend + Sponsor |
-| G5 — Post-MVP activation | Explicit synthetic-local scope approval; S8b UI separately deferred | Sponsor/Product |
+| G5 — Post-MVP activation | User-declared synthetic-local scope approval recorded; verify accountable sponsor attestation before gate closure; S8b UI separately deferred | Sponsor/Product (attestation pending) |
 | G6 — Derivative writes | Reviewed, least-privilege migration `0009`, only after D8 approval | Data + Security |
 
 **Decision ledger (unfilled by design):**
 
 | Decision | Current state | Owner decision / evidence reference |
 | --- | --- | --- |
-| D1 | PROPOSED | PENDING |
+| D1 | SPONSOR SCOPE DIRECTION RECORDED; TECHNICAL OPEN | PNG-only synthetic-local intent accepted by requester on 2026-10-15; Security/Backend and formal attestation pending |
 | D2 | PROPOSED | PENDING |
 | D3 | PROPOSED | PENDING |
 | D4 | PROPOSED | PENDING |
-| D5 | PROPOSED | PENDING |
+| D5 | SPONSOR SCOPE DIRECTION RECORDED; TECHNICAL OPEN | Backend-first, synthetic-local, default OFF, no UI accepted by requester on 2026-10-15; Security and formal attestation pending |
 | D6 | PROPOSED | PENDING |
 | D7 | PROPOSED | PENDING |
 | D8 | PROPOSED | PENDING |
 | D9 | PROPOSED | PENDING |
 
-No builder-authored check or draft PR counts as independent approval. Approval must identify an accountable reviewer, the exact decision/version, evidence and any conditions. Sponsor assent alone does not substitute for independent Security/Detection review.
+### Sponsor/Product scope decision — recorded 2026-10-15\n\n**Decision source:** Project conversation, requester-provided direction (not an independently authenticated GitHub review or a verified sponsor identity). The requester explicitly stated: “Proceed with Option A. I approve the proposed synthetic-local, backend-first S8 product scope. Record my sponsor scope decision, keep OCR disabled, and identify any independent technical approvals still needed before implementation.”\n\n**Scope accepted as product direction:** synthetic/local-only tests, PNG screenshot input only for the proposed opt-in profile, English-only OCR evaluation, backend/API first, default OFF, no browser screenshot/camera UI, no production activation, and no change to the S2 text-only default or S1–S7 behavior. This records the requester’s Sponsor/Product **scope assent** to D1/D5; it does **not** approve D1 parser/security specifics, D2 numeric bounds, D3 worker/launcher privileges, D4 engine/image digests, D6 confidence, D7 errors, D8 migration/replay, or D9 exact composition semantics.\n\n**Attestation limit:** No reviewer identity or organizational authority was verified through GitHub. An accountable Sponsor/Product owner must confirm the decision and conditions in the governed review record before G5 is formally CLOSED. OCR must remain OFF, and implementation remains BLOCKED.\n\nNo builder-authored check or draft PR counts as independent approval. Approval must identify an accountable reviewer, the exact decision/version, evidence and any conditions. Sponsor assent alone does not substitute for independent Security/Detection review.
 
 ## 4. Implementation authorization checklist (not yet met)
 
@@ -157,4 +157,4 @@ Required proof: malformed PNG, polyglot, decompression bomb, dimension and outpu
 
 ## 5. Current STOP status
 
-**READY FOR GOVERNANCE REVIEW ONLY. NOT APPROVED. NOT READY TO IMPLEMENT S8.** This document is not a new feature flag, not a media-configuration activation, not an accepted security profile, not a migration, and not a claim of tested OCR. It must not be used to assert S8 completion or production readiness.
+**SPONSOR SCOPE DIRECTION RECORDED; READY FOR GOVERNANCE REVIEW ONLY. NOT INDEPENDENTLY APPROVED. NOT READY TO IMPLEMENT S8.** This document is not a new feature flag, not a media-configuration activation, not an accepted security profile, not a migration, and not a claim of tested OCR. It must not be used to assert S8 completion or production readiness.
