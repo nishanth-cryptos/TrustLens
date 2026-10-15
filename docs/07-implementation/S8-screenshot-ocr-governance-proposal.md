@@ -7,7 +7,9 @@
 | Baseline | `main` at `0f82ea631af24753f4c71bafe29d0ac61e96ccd2` (read on 2026-10-15) |
 | Scope | Synthetic local-development profile only; backend/API first; default OFF |
 | Decision owners | Sponsor/Product; Security/DevSecOps; Backend/Operations; Data; Knowledge/Detection |
-| Sponsor scope decision | **User-declared approval received 2026-10-15** for synthetic-local, backend-first, default-OFF S8 scope; not an independently authenticated GitHub reviewer sign-off. See §3. |\n| Implementation authority | **None granted by this proposal.** No runtime, migration, API, UX or policy change is approved here. |
+| Sponsor scope decision | **User-declared approval received 2026-10-15** for synthetic-local, backend-first, default-OFF S8 scope; not an independently authenticated GitHub reviewer sign-off. See §3. |
+| Implementation authority | **None granted by this proposal.** No runtime, migration, API, UX or policy change is approved here. |
+| Independent review | Draft PR #53 at `45573e78b58764947e94630eddd60b8e17d41bac`: Codex **REQUEST_CHANGES** (0/0/1/0/0). MEDIUM-1 (confidence compatibility) is **OPEN**; see §3. |
 
 ## 1. Authority and non-negotiable boundaries
 
@@ -79,11 +81,18 @@ A later user-facing S8b requires a separately approved additive UX revision and 
 
 ### D6 — OCR lineage, type and uncertainty
 
-**Proposal:** Store original evidence as `IMAGE`; store an immutable `OCR_TEXT` derivative with exactly one original parent, transformation identity/version and its own digest. The derived envelope uses `input_type=SCREENSHOT_DERIVED_TEXT` and attachment role `SCREENSHOT`, with a new `input_id`. This is **not** the original evidence item's `declared_input_type`.
+**Proposal:** Store original evidence as `artifact_kind=IMAGE`; store an immutable `OCR_TEXT` derivative with exactly one original parent, transformation identity/version and its own digest. The server assigns the derived envelope `input_type=SCREENSHOT_DERIVED_TEXT` and attachment role `SCREENSHOT`, with a new `input_id`.
 
-**Conservative initial confidence rule:** Until Knowledge/Detection approve a calibrated mapping, all OCR-derived observations are treated as **LOW** confidence, never promoted to MEDIUM/HIGH from unverified engine confidence. Unreadable/ambiguous text is UNKNOWN or explicitly unsupported, never FALSE; an empty OCR result is not evidence of safety. Preserve extraction limitations and provenance. No new kernel rule, vocabulary or decision axis.
+`declared_input_type` is a **submission** field (`SubmissionCreateRequest`); evidence items carry only `artifact_kind`. The derived envelope's `input_type` is never taken from the submission declaration. Which `declared_input_type` a screenshot-bearing submission declares is a D9 decision.
 
-**Approval:** Knowledge/Detection owner for the mapping; Data/Backend for exact lineage and envelope semantics. Any stronger confidence thresholds need separate review.
+**Proposed extraction-confidence input (not a detection-confidence policy):** Until Knowledge/Detection approve a calibrated mapping, observations in the **OCR-derived envelope only** would carry extraction `confidence` **LOW**, never promoted to MEDIUM/HIGH from unverified engine confidence. This is observation-level extraction confidence (`observation.schema.json` / `indicator-observation.schema.json`). It is not `detection_confidence`, which the kernel computes. With the pinned `extraction_confidence_gate` MEDIUM, the existing evaluator treats a LOW occurrence as UNKNOWN, never FALSE.
+- It does not cap, set or clamp any `detection_confidence`, and it does not set `degraded`.
+- It never applies to the text envelope.
+- It is not a confidence policy for mixed inputs (D7).
+
+Unreadable/ambiguous text is UNKNOWN or explicitly unsupported, never FALSE; an empty OCR result is not evidence of safety. Preserve extraction limitations and provenance. No new kernel rule, vocabulary or decision axis.
+
+**Approval:** Knowledge/Detection owner for the mapping, **before** any OCR-derived envelope code is implemented (§4); Data/Backend for exact lineage and envelope semantics. Any stronger confidence thresholds need separate review.
 
 ### D7 — Failure and response behavior
 
@@ -91,12 +100,35 @@ A later user-facing S8b requires a separately approved additive UX revision and 
 
 - Malformed/unsupported PNG → `415 UNSUPPORTED_MEDIA_TYPE`; oversize → `413 PAYLOAD_TOO_LARGE`; neither reaches the decoder.
 - Screenshot-only, OCR unavailable *before acceptance*: fail the affected operation with the existing dependency-unavailable semantics if applicable; create no fake completed result. If work has already been accepted, record a categorical failed/whole-evaluation error with support `ERROR` and no `NO_SCAM_PATTERN` result.
-- Text plus screenshot, OCR fails: evaluate the available text with `PARTIALLY_SUPPORTED`, cap confidence and explicitly state the missing screenshot channel (DET-001 §3). Do not fabricate an OCR-derived evaluation or an aggregate verdict.
+- Text plus screenshot, OCR fails: **BLOCKED** — see *Mixed-input OCR failure* below. No behavior is proposed for this path until the Knowledge/Detection disposition exists.
 - OCR timeout, worker crash, malformed output or lineage integrity failure: explicit failure and audit-safe metadata; never success, `NO_SCAM_PATTERN`, `CLEAN` or a safety claim.
 
 The API owner must verify the precise pre-acceptance dependency error and asynchronous state mapping against accepted error enums **before coding**. Do not add `OCR_UNAVAILABLE` as a normative public code without governance.
 
-**Approval:** API/Backend and Knowledge/Detection, with Security reviewing fail-closed cases.
+#### Mixed-input OCR failure — BLOCKED pending Knowledge/Detection disposition (MEDIUM-1)
+
+**Input coverage and detection confidence are different axes.**
+- **Input coverage:** `input_support_status` (`PARTIALLY_SUPPORTED`) records that a required channel is missing.
+- **Detection confidence:** `detection_confidence` is computed by the existing kernel. In `knowledge/runtime/aggregation.py`, `_detection_confidence` does not read `input_support_status`. It depends on the governing rule's evidence verdict, ambiguities, the extraction-confidence inputs of matched indicators, the proven independent-evidence count or active overrides, and context-only suppression. Separately, `degraded=true` caps it at MEDIUM. `PARTIALLY_SUPPORTED` executes rules exactly as `SUPPORTED` does (`_EVALUABLE_SUPPORT` in `result.py` / `explanation.py`).
+- **Consequence:** the existing kernel and result contract permit `input_support_status=PARTIALLY_SUPPORTED` with `classification=SCAM_PATTERN_DETECTED`, `detection_confidence=HIGH` and `degraded=false`. Setting `PARTIALLY_SUPPORTED` therefore does **not** cap confidence.
+- **DET-001 §3:** its "cap confidence" consequence for `PARTIALLY_SUPPORTED` is not realized by the kernel for that state. This proposal neither resolves nor reinterprets that difference.
+
+**This proposal does not:**
+- introduce a confidence policy or threshold;
+- set `degraded=true` to obtain a cap;
+- clamp, rewrite or post-process a returned `DetectionResult`;
+- change Phase-3 semantics.
+
+**Required before implementation:** a **Knowledge/Detection-approved confidence policy and kernel-compatibility disposition** for the text-plus-screenshot OCR-failure path. The disposition must state how DET-001 §3's confidence consequence applies to `PARTIALLY_SUPPORTED`, and through which governed change, if any; or else that the path stays unsupported. It is required **before** the mixed path is implemented, not at profile activation.
+
+**Until that approval exists:**
+- the mixed-input failure path is **BLOCKED** and has no implementation;
+- the opt-in profile must not substitute a successful text-only evaluation for a text-plus-screenshot submission, or present it as evaluating the whole submission;
+- such a submission is refused under existing accepted refusal semantics, verified by the API owner as above, rather than evaluated text-only. No new code, field or status is introduced for this.
+
+The existing text-only pipeline (one `TEXT_BODY` → one envelope → one evaluation, S5) is unchanged.
+
+**Approval:** API/Backend and Knowledge/Detection, with Security reviewing fail-closed cases. The mixed-input disposition is owned by **Knowledge/Detection**.
 
 ### D8 — Timing, idempotency, corrections and replay
 
@@ -114,11 +146,15 @@ Historical replay verifies the pinned derivative's parent, state and exact bytes
 | --- | --- | --- | --- |
 | Existing text-only | One `TEXT_BODY` | One text envelope | Exactly the S5 behavior; no regression |
 | Screenshot-only | One `IMAGE` | One OCR-derived envelope with a new `input_id` | One evaluation; OCR failure follows D7 |
-| Text plus screenshot | One `TEXT_BODY` + one `IMAGE` | One text envelope + one OCR-derived envelope | One evaluation **per** envelope; no aggregate verdict |
+| Text plus screenshot | One `TEXT_BODY` + one `IMAGE` | One text envelope + one OCR-derived envelope | **BLOCKED** (D7 mixed-input disposition). If approved: one evaluation **per** envelope; no aggregate verdict |
 
-No URL/email/image mixture beyond these combinations is activated in S8a. Existing URL and enrichment paths remain unchanged and never fetch content from an image. Any input-count or lifecycle changes require API/Data owner sign-off before implementation. Screenshot evidence itself has no `declared_input_type`; only its derived envelope has `SCREENSHOT_DERIVED_TEXT`.
+**Mixed composition is not activatable in S8a while D7's mixed-input disposition is open.** OCR failure cannot be known before the attempt. Until Knowledge/Detection approve that disposition, a text-plus-screenshot submission under the opt-in profile is refused as D7 describes. It is never evaluated text-only as if the whole submission had been evaluated. Screenshot-only and text-only rows are unaffected.
 
-**Approval:** Product/Sponsor and API/Data/Backend.
+No URL/email/image mixture beyond these combinations is activated in S8a. Existing URL and enrichment paths remain unchanged and never fetch content from an image. Any input-count or lifecycle changes require API/Data owner sign-off before implementation.
+
+Evidence items carry `artifact_kind` (`TEXT_BODY`, `IMAGE`); `declared_input_type` belongs to the submission. The `declared_input_type` a screenshot-only or mixed submission declares is **OPEN** for the API/Data owner. The OCR-derived envelope's `input_type` (`SCREENSHOT_DERIVED_TEXT`, D6) is server-assigned and is not taken from that declaration.
+
+**Approval:** Product/Sponsor and API/Data/Backend; Knowledge/Detection for the mixed text-plus-screenshot row (D7).
 
 ## 3. Readiness gates and open blockers
 
@@ -140,21 +176,43 @@ No URL/email/image mixture beyond these combinations is activated in S8a. Existi
 | D3 | PROPOSED | PENDING |
 | D4 | PROPOSED | PENDING |
 | D5 | SPONSOR SCOPE DIRECTION RECORDED; TECHNICAL OPEN | Backend-first, synthetic-local, default OFF, no UI accepted by requester on 2026-10-15; Security and formal attestation pending |
-| D6 | PROPOSED | PENDING |
-| D7 | PROPOSED | PENDING |
+| D6 | PROPOSED | PENDING — Knowledge/Detection extraction-confidence mapping required before OCR-envelope implementation |
+| D7 | PROPOSED; mixed-input OCR-failure path **BLOCKED** | PENDING — Knowledge/Detection confidence policy and kernel-compatibility disposition required before implementation (MEDIUM-1) |
 | D8 | PROPOSED | PENDING |
-| D9 | PROPOSED | PENDING |
+| D9 | PROPOSED; text-plus-screenshot row **BLOCKED** | PENDING — submission `declared_input_type` for screenshot-bearing submissions OPEN (API/Data) |
 
-### Sponsor/Product scope decision — recorded 2026-10-15\n\n**Decision source:** Project conversation, requester-provided direction (not an independently authenticated GitHub review or a verified sponsor identity). The requester explicitly stated: “Proceed with Option A. I approve the proposed synthetic-local, backend-first S8 product scope. Record my sponsor scope decision, keep OCR disabled, and identify any independent technical approvals still needed before implementation.”\n\n**Scope accepted as product direction:** synthetic/local-only tests, PNG screenshot input only for the proposed opt-in profile, English-only OCR evaluation, backend/API first, default OFF, no browser screenshot/camera UI, no production activation, and no change to the S2 text-only default or S1–S7 behavior. This records the requester’s Sponsor/Product **scope assent** to D1/D5; it does **not** approve D1 parser/security specifics, D2 numeric bounds, D3 worker/launcher privileges, D4 engine/image digests, D6 confidence, D7 errors, D8 migration/replay, or D9 exact composition semantics.\n\n**Attestation limit:** No reviewer identity or organizational authority was verified through GitHub. An accountable Sponsor/Product owner must confirm the decision and conditions in the governed review record before G5 is formally CLOSED. OCR must remain OFF, and implementation remains BLOCKED.\n\nNo builder-authored check or draft PR counts as independent approval. Approval must identify an accountable reviewer, the exact decision/version, evidence and any conditions. Sponsor assent alone does not substitute for independent Security/Detection review.
+### Independent review findings
+
+| Finding | Review provenance | Owner | Status |
+| --- | --- | --- | --- |
+| MEDIUM-1 — Confidence compatibility. The kernel permits `PARTIALLY_SUPPORTED` + `SCAM_PATTERN_DETECTED` + `detection_confidence=HIGH` + `degraded=false`, so the earlier D7 wording ("cap confidence") was incorrect. | Codex independent review of Draft PR #53 at `45573e78b58764947e94630eddd60b8e17d41bac`: REQUEST_CHANGES, BLOCKER 0 / HIGH 0 / MEDIUM 1 / LOW 0 / INFO 0, recorded as a GitHub PR comment (as reported by the requester; the comment was not independently retrieved by the builder). | **Knowledge/Detection**: confidence policy and kernel-compatibility disposition. Builder: document correction only. | **OPEN.** D6, D7, D9 and §4 corrected in this revision, pending targeted re-review. The substantive disposition remains open until Knowledge/Detection approve it. |
+
+Codex is an independent reviewer. Its finding is review evidence, not owner approval of any decision, and it closes no D1–D9 decision or G1–G6 gap.
+
+### Sponsor/Product scope decision — recorded 2026-10-15
+
+**Decision source:** Project conversation, requester-provided direction (not an independently authenticated GitHub review or a verified sponsor identity). The requester explicitly stated: “Proceed with Option A. I approve the proposed synthetic-local, backend-first S8 product scope. Record my sponsor scope decision, keep OCR disabled, and identify any independent technical approvals still needed before implementation.”
+
+**Scope accepted as product direction:** synthetic/local-only tests, PNG screenshot input only for the proposed opt-in profile, English-only OCR evaluation, backend/API first, default OFF, no browser screenshot/camera UI, no production activation, and no change to the S2 text-only default or S1–S7 behavior. This records the requester’s Sponsor/Product **scope assent** to D1/D5; it does **not** approve D1 parser/security specifics, D2 numeric bounds, D3 worker/launcher privileges, D4 engine/image digests, D6 confidence, D7 errors, D8 migration/replay, or D9 exact composition semantics.
+
+**Attestation limit:** No reviewer identity or organizational authority was verified through GitHub. An accountable Sponsor/Product owner must confirm the decision and conditions in the governed review record before G5 is formally CLOSED. OCR must remain OFF, and implementation remains BLOCKED.
+
+No builder-authored check or draft PR counts as independent approval. Approval must identify an accountable reviewer, the exact decision/version, evidence and any conditions. Sponsor assent alone does not substitute for independent Security/Detection review.
 
 ## 4. Implementation authorization checklist (not yet met)
 
-Before **any** S8 runtime implementation, confirm D1–D5 approvals, accepted limits and selected isolation/dependency. Before **activating** the S8 profile, also close D6–D9, verify the migration/grants and all tests. If any dependency remains unresolved, report that scope **BLOCKED** under PLAN-001 rather than marking S8 complete.
+Before **any** S8 runtime implementation, confirm D1–D5 approvals, accepted limits and selected isolation/dependency.
+
+Some approvals are required **before the code they govern is written**, not at activation:
+- **D6:** the Knowledge/Detection extraction-confidence mapping, before any OCR-derived envelope code.
+- **D7 mixed-input:** the Knowledge/Detection confidence policy and kernel-compatibility disposition, before any text-plus-screenshot OCR-failure code. Without it, that path stays BLOCKED and only the refusal described in D7/D9 may be implemented.
+
+Before **activating** the S8 profile, also close the remaining D7–D9 items, verify the migration/grants and all tests. If any dependency remains unresolved, report that scope **BLOCKED** under PLAN-001 rather than marking S8 complete.
 
 After authorization only, the smallest proposed S8a scope is: bounded PNG preflight; disabled-by-default OCR port; isolated worker/launcher; immutable derivative + source lineage + audit; envelope/evaluation composition; replay integrity; minimal grant migration; synthetic tests. Preserve the existing API/OpenAPI, Phase-3 kernel, Phase-7 UX contracts, S1–S7 runtime behavior and prior migration history.
 
-Required proof: malformed PNG, polyglot, decompression bomb, dimension and output bounds; isolation escape attempts, timeout/kill and network denial; encrypted original and derivative digest/parent checks; duplicate/retry idempotency; screenshot-only and mixed-input failures; zero OCR calls during replay; authorized role behavior; full backend/frontend regression, canonical quality gate, CI and independent review.
+Required proof: malformed PNG, polyglot, decompression bomb, dimension and output bounds; isolation escape attempts, timeout/kill and network denial; encrypted original and derivative digest/parent checks; duplicate/retry idempotency; screenshot-only failures; refusal of mixed text-plus-screenshot submissions while D7's mixed-input path is BLOCKED (no text-only substitution); the text-only pipeline unchanged; zero OCR calls during replay; authorized role behavior; full backend/frontend regression, canonical quality gate, CI and independent review.
 
 ## 5. Current STOP status
 
-**SPONSOR SCOPE DIRECTION RECORDED; READY FOR GOVERNANCE REVIEW ONLY. NOT INDEPENDENTLY APPROVED. NOT READY TO IMPLEMENT S8.** This document is not a new feature flag, not a media-configuration activation, not an accepted security profile, not a migration, and not a claim of tested OCR. It must not be used to assert S8 completion or production readiness.
+**SPONSOR SCOPE DIRECTION RECORDED; INDEPENDENT FINDING MEDIUM-1 OPEN (Knowledge/Detection); MIXED-INPUT OCR-FAILURE PATH BLOCKED; READY FOR GOVERNANCE REVIEW ONLY. NOT INDEPENDENTLY APPROVED. NOT READY TO IMPLEMENT S8.** This document is not a new feature flag, not a media-configuration activation, not an accepted security profile, not a migration, and not a claim of tested OCR. It must not be used to assert S8 completion or production readiness.
