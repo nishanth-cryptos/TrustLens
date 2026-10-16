@@ -1,4 +1,4 @@
-"""Regression checks for the exact build-stage offline network guard; no Docker or network is used."""
+"""Offline regression checks for the exact build-stage network guard; no Docker or network."""
 import re
 import subprocess
 import tempfile
@@ -13,15 +13,14 @@ GUARD_END = 'non-loopback IPv6 address" >&2; exit 1; };'
 
 def extract_guards():
     worker = WORKER.read_text()
-    steps = re.findall(r"(?ms)^RUN --network=none (.*?)(?=^\\S)", worker + "\\nEND")
+    steps = re.findall(r"(?ms)^RUN --network=none (.*?)(?=^\S)", worker + "\nEND")
     guards = []
     for step in steps:
         if GUARD_START not in step:
             continue
         first = step.index(GUARD_START)
         last = step.index(GUARD_END, first) + len(GUARD_END)
-        guards.append(step[first:last].replace("\\\\
-", " "))
+        guards.append(step[first:last].replace(chr(92) + chr(10), " "))
     return guards
 
 
