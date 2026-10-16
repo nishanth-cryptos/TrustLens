@@ -7,9 +7,9 @@ PB-02 for the disposable pinned synthetic proof and conditionally accepted PB-08
 only**, against source commit `5d7f88035cd25f184572df9969b4411188afd8bc`. See [PR #56](https://github.com/nishanth-cryptos/TrustLens/pull/56)
 Security decision comment `6200838093`, `SECURITY-REVIEW-CHECKLIST.md` and `dependencies.lock.json` for exact
 limitations and review provenance. These are requester-declared, not externally authenticated sign-offs.
-**PRE_BUILD remains BLOCKED by PB-14 only.** Before any OCR/probe execution, PE-05/PE-06, **new PE-08** (pinned
+**PRE_BUILD decisions are SATISFIED, including PB-14 first-build-only consent.** The actual Docker restart policy/state N2 check is still NOT PERFORMED. Before any OCR/probe execution, PE-05/PE-06, **new PE-08** (pinned
 vulnerability scan and findings disposition) and **new PE-09** (separate requester authorization to run P1-P11)
-remain OPEN. Docker startup, image pull/build, package installation and scanner acquisition are still not authorized.
+remain OPEN. **Docker Desktop manual startup, pinned sources/base acquisition and first proof image build are authorized by PB-14** (PR #56 comment `6205866315`), but only after protected-container preflight and verified N2-ACK.json; do not proceed if states are unexpected. OCR worker execution and scanner acquisition remain unauthorized.
 The original pre-approval choices below are preserved as an evidence snapshot.
 
 Labels used below:
@@ -197,7 +197,7 @@ Before committing, the user confirms the set with
 `git status --porcelain --untracked-files=all -- tools/s8-ocr-proof` (expect exactly these 25 paths) and adds them
 by explicit path.
 
-## 5. Minimal outstanding actions before PB-14 can be requested
+## 5. Approval record and mandatory preflight before building
 
 1. **The user** commits the 25 files on `phase9-s8-ocr-proof`. That commit is the one under review.
 2. **Security** reviews that commit and records:
@@ -206,11 +206,11 @@ by explicit path.
      and licence tooling.
 
    The decisions go into the lock through a reviewed change, after which `check-lock` shows only PB-14 open.
-3. **The requester** grants PB-14 with the written pre-start acknowledgement in §3, then follows §3 steps 2–7.
+3. **The requester granted PB-14** with written acknowledgement of the possible auto-restart and resource consequences (PR #56 comment `6205866315`). **The actual preflight remains unperformed**: operator must manually start Docker Desktop, inspect protected container states/policies and record the observed values in N2-ACK.json before sources/base acquisition or the first build. STOP on unknown/unexpected state. Execution PE-08/PE-09 remain OPEN.
 
 | Decision | Accountable | Decision (a/b/c) | Conditions | Commit reviewed | Date |
 | --- | --- | --- | --- | --- | --- |
 | PB-02 | Requester-declared sole Security approver | (a) limited ACCEPT | Unauthenticated full signer fingerprint risk accepted only for pinned synthetic worker | `5d7f88035cd25f184572df9969b4411188afd8bc` | 2026-10-16 |
 | PB-08 | Requester-declared sole Security approver | (b) CONDITIONAL | Actual Python/zlib linkage under PE-05 and pinned image vulnerability scan PE-08 before run | `5d7f88035cd25f184572df9969b4411188afd8bc` | 2026-10-16 |
 | PB-13 | Requester-declared sole Security approver | CONDITIONAL BUILD ONLY | S1–S19 findings, residuals accepted for proof, Syft/Grype selected but not acquired; PE-08 and PE-09 gate run | `5d7f88035cd25f184572df9969b4411188afd8bc` | 2026-10-16 |
-| PB-14 + N2 pre-start acknowledgement | Requester | | | | |
+| PB-14 + N2 pre-start acknowledgement | Requester | APPROVED FOR BUILD ONLY | Written restart/resource-risk acknowledgement; actual preflight, state/policy inspection and scratch N2-ACK.json still required before acquisition/build. No OCR run or scanner download. PR #56 comment `6205866315`. | `d57596fa8b86d1df34ed5cf0c720796f8f568d61` | 2026-10-16 |
