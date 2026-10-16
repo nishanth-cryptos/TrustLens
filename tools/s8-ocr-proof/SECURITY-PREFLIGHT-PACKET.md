@@ -7,7 +7,7 @@ PB-02 for the disposable pinned synthetic proof and conditionally accepted PB-08
 only**, against source commit `5d7f88035cd25f184572df9969b4411188afd8bc`. See [PR #56](https://github.com/nishanth-cryptos/TrustLens/pull/56)
 Security decision comment `6200838093`, `SECURITY-REVIEW-CHECKLIST.md` and `dependencies.lock.json` for exact
 limitations and review provenance. These are requester-declared, not externally authenticated sign-offs.
-**PRE_BUILD decisions are SATISFIED, including PB-14 first-build-only consent.** The actual Docker restart policy/state N2 check is still NOT PERFORMED. Before any OCR/probe execution, PE-05/PE-06, **new PE-08** (pinned
+**PRE_BUILD is BLOCKED again by PB-13 only (new N1 guard re-review); PB-14's first-build-only consent remains SATISFIED.** N2 preflight passed and the protected PostgreSQL/Keycloak containers were observed exited with restart=no; scratch N2-ACK.json was recorded. First image construction attempted, but failed safely at the original strict `ls /sys/class/net == lo` assertion before package installation. Before any OCR/probe execution, PE-05/PE-06, **new PE-08** (pinned
 vulnerability scan and findings disposition) and **new PE-09** (separate requester authorization to run P1-P11)
 remain OPEN. **Docker Desktop manual startup, pinned sources/base acquisition and first proof image build are authorized by PB-14** (PR #56 comment `6205866315`), but only after protected-container preflight and verified N2-ACK.json; do not proceed if states are unexpected. OCR worker execution and scanner acquisition remain unauthorized.
 The original pre-approval choices below are preserved as an evidence snapshot.
@@ -17,6 +17,13 @@ Labels used below:
 - **RESIDUAL:** a risk that remains even if every check passes.
 - **APPROVAL:** a decision only the accountable reviewer or requester can make.
 - **UNPROVEN:** a runtime control that only an authorized build or run can show.
+
+## First real construction diagnostic and amended N1 guard — pending review
+
+- On 2026-10-16 the user reported a BuildKit Docker Desktop 4.90.0 linux/arm64 build failure in both stages at the original `test "$(ls /sys/class/net)" = "lo"` check; all `RUN` instructions still had `--network=none`. No package install or CMake step was reached.
+- Disposable read-only build-stage diagnostics using the exact pinned base showed virtual tunnel interfaces present but **DOWN** (IFF_UP bit clear), `lo` up, **no IPv4 routes**, IPv6 routes/addresses assigned only to `lo`. Neither diagnostic establishes anything about successful package installation or Tesseract runtime isolation.
+- Revised Dockerfile checks the IFF_UP bit for every non-loopback interface, allows only the observed `bonding_masters` non-interface entry, requires readable network control files, and fails if any non-loopback IPv4/IPv6 route or IPv6 address exists. It keeps **all** `RUN --network=none` declarations, pinned base and verified exact-path offline package installation unchanged.
+- **PB-13 is OPEN** for accountable re-review of the changed N1 control, its synthetic fixture and mutation tests, then an authorized build retry. The historical PB-13 decision applies to original source commit `5d7f880` and does not automatically approve this new code. **PB-14 remains SATISFIED for build-only scope.** PE-05/PE-06/PE-08/PE-09 remain OPEN; no OCR execution is authorized.
 
 ## 1. Acquisition evidence audit — PASS
 
