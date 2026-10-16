@@ -247,9 +247,9 @@
       "id": "PB-13",
       "phase": "PRE_BUILD",
       "kind": "REVIEW",
-      "status": "SATISFIED",
+      "status": "OPEN",
       "description": "Security review of the proof sources (SECURITY-REVIEW-CHECKLIST.md S1-S19)",
-      "evidence": "PR #56 Security approval record (comment 6200838093), user-declared sole Security authority, reviewing original source commit 5d7f88035cd25f184572df9969b4411188afd8bc. CONDITIONAL construction-only acceptance of S1-S19 recorded in SECURITY-REVIEW-CHECKLIST.md. Accepted risks: shared VM/root-equivalent Docker operator, Docker-managed mounts, trusted-operator same-user path-string race, unsigned base attestations, arm64-only, unreproduced image IDs, bitmap synthetic-only CER limitations, residual Tesseract/Leptonica parsers. Syft chosen for SBOM/licences, Grype for vulnerability scan; exact versions/digests, acquisition/operation and all PE/AC controls remain unapproved or unverified. Neither Docker start nor execution authorized."
+      "evidence": "PR #56 Security approval record (comment 6200838093), user-declared sole Security authority, reviewing original source commit 5d7f88035cd25f184572df9969b4411188afd8bc. CONDITIONAL construction-only acceptance of S1-S19 recorded in SECURITY-REVIEW-CHECKLIST.md. Accepted risks: shared VM/root-equivalent Docker operator, Docker-managed mounts, trusted-operator same-user path-string race, unsigned base attestations, arm64-only, unreproduced image IDs, bitmap synthetic-only CER limitations, residual Tesseract/Leptonica parsers. Syft chosen for SBOM/licences, Grype for vulnerability scan; exact versions/digests, acquisition/operation and all PE/AC controls remain unapproved or unverified. Neither Docker start nor execution authorized. FOLLOW-UP 2026-10-16: First actual build failed closed on Docker Desktop's kernel-created down virtual interfaces. The approved S1-S19 evaluation covered source commit 5d7f880, not the proposed offline-network-guard refactor. CONDITIONAL SOURCE RE-REVIEW REQUIRED before another full build; earlier decision remains historical evidence. Build authorization PB-14 does not override PB-13."
     },
     {
       "id": "PB-14",
