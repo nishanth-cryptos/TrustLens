@@ -10,11 +10,19 @@ No Docker image has been built or run for this proof. The immutable base-image d
 112 offline test results are recorded, but they do not demonstrate real OCR or runtime isolation. The requester,
 as the user-declared sole Security approver, conditionally accepted PB-02/PB-08/PB-13 for first construction
 against source commit `5d7f880` (see [PR #56](https://github.com/nishanth-cryptos/TrustLens/pull/56) and
-[SECURITY-REVIEW-CHECKLIST.md](SECURITY-REVIEW-CHECKLIST.md)). **PB-14 is now SATISFIED for the first build only:** the requester acknowledged the N2 pre-start risks and
+[SECURITY-REVIEW-CHECKLIST.md](SECURITY-REVIEW-CHECKLIST.md)). **PB-14 is SATISFIED for the first build only:** the requester acknowledged the N2 pre-start risks and
 explicitly authorized manual Docker Desktop startup, read-only preflight, pinned artifact/base acquisition and first
 proof-image construction (PR #56 comment `6205866315`). **Actual container restart policies/states have not yet
 been observed; N2-ACK.json must still record them after successful preflight, and any unexpected state is a STOP.**
 Separate PE-09 authorization and PE-08 vulnerability scan review are required before any worker/OCR run.
+
+**FIRST BUILD ATTEMPT (2026-10-16): failed closed before apt or compilation.** On Docker Desktop 4.90.0,
+`RUN --network=none` exposed DOWN kernel tunnel interfaces plus `lo`; the original exact
+`ls /sys/class/net == lo` assertion rejected their presence. No non-loopback IPv4 route,
+IPv6 route/address or IFF_UP state was found in two separate isolated diagnostic builds.
+The Dockerfile now uses a fail-closed interface-UP/routing/address guard; **PB-13 has been
+reopened for Security re-review against the amended source before another full build**.
+The actual guard, offline tests and reviewed approval must all pass first. No OCR run is authorized.
 
 ## Where things live
 
@@ -105,7 +113,7 @@ and no fingerprint reads it.
 
 | Phase | Contents | Gates |
 | --- | --- | --- |
-| `PRE_BUILD` | PB-01–PB-13 are SATISFIED for the limited synthetic proof (PB-02 accepted signer-key risk; PB-08/PB-13 conditionally accepted for first build), with evidence and limitations in the lock and Security checklist; **SATISFIED: PB-14** (requester build-only approval; actual N2 preflight/status record must still succeed) | `build` |
+| `PRE_BUILD` | PB-01–PB-13 are SATISFIED for the limited synthetic proof (PB-02 accepted signer-key risk; PB-08/PB-13 conditionally accepted for first build), with evidence and limitations in the lock and Security checklist; **OPEN: PB-13** (amended N1 guard needs owner Security re-review); **SATISFIED: PB-14** (build-only approval; actual N2 record already collected) | `build` |
 | `PRE_EXECUTION` | Verified in code: local runtime and probe image IDs equal `build.json` (PE-01/02); build logs (PE-03) and every required build-evidence file (PE-04) present as regular, non-symlinked files matching their recorded size and SHA-256, and the evidence equal to what is baked into the runtime image; the build-input fingerprint equal to the current inputs (PE-07). Reviews: build evidence (PE-05), local `FROM` resolution (PE-06), pinned-runtime-image vulnerability scan and finding disposition **before worker execution** (PE-08), and a **separate requester run authorization** (PE-09) | `run` (together with `PRE_BUILD` and the N2 acknowledgement) |
 | `ACCEPTANCE` | Artifacts: rebuild comparison (AC-01), `results.json` (AC-06). Reviews: reproducibility (AC-02), SBOM (AC-03), vulnerability scan (AC-04), licences (AC-05), final review (AC-07) | Nothing; reported as open until produced and reviewed |
 
@@ -194,7 +202,7 @@ Set `R` to an approved canonical scratch root (for example `R="$(python3 -c 'imp
 
 ## Offline package installation (PB-11 option O)
 
-The image build has **no network at all**: every `RUN` is `RUN --network=none` with an in-build `lo`-only guard.
+The image build is **required to have no network access**: every `RUN` uses `RUN --network=none`. The additional fail-closed N1 guard verifies no enabled non-loopback interfaces, non-loopback IPv4/IPv6 routes or IPv6 addresses; it does not mistake DOWN kernel tunnel devices for usable connectivity. The updated guard is **pending owner Security re-review**, not yet proven by a successful full image build.
 - `debclosure.py --index-dir <dir with the verified InRelease and Packages.xz> --output packages/closure-manifest.json`
   re-checks each InRelease against the lock-pinned SHA-256 and each `Packages.xz` against its InRelease entry, then
   resolves the closure of the pinned build and runtime packages: Pre-Depends and Depends, alternatives (an already
