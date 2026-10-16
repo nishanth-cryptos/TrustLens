@@ -276,7 +276,18 @@ class StaticTests(unittest.TestCase):
         finally:
             harness.CLOSURE_ROOT = saved
         still_open = {r["id"] for r in lock["requirements"] if r["phase"] == "PRE_BUILD" and r["status"] == "OPEN"}
-        self.assertEqual(still_open, {"PB-02", "PB-08", "PB-13", "PB-14"})     # Security trust/review and build authorization
+        # PB-02/PB-08/PB-13 were conditionally accepted for BUILD ONLY by the requester,
+        # as recorded against reviewed source commit 5d7f880 in PR #56. They do not authorize Docker.
+        self.assertEqual(still_open, {"PB-14"})
+        for rid in ("PB-02", "PB-08", "PB-13"):
+            item = next(r for r in lock["requirements"] if r["id"] == rid)
+            self.assertEqual(item["status"], "SATISFIED")
+            self.assertIn("6200838093", item["evidence"])
+        # An image vulnerability review and separate OCR run authorization remain mandatory.
+        for rid in ("PE-08", "PE-09"):
+            item = next(r for r in lock["requirements"] if r["id"] == rid)
+            self.assertEqual(item["phase"], "PRE_EXECUTION")
+            self.assertEqual(item["status"], "OPEN")
         self.assertTrue(harness.build_gate(lock))
         result = subprocess.run([sys.executable, str(ROOT / "harness.py"), "check-lock"], capture_output=True, text=True)
         self.assertEqual(result.returncode, 1)
