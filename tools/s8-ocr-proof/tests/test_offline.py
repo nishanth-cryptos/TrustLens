@@ -220,7 +220,13 @@ class StaticTests(unittest.TestCase):
             self.assertIn("--mount=type=bind,source=debs/", step)
             self.assertNotIn("apt-get update", step)
         self.assertEqual(text.count("# OFFLINE-PACKAGES"), 2)
-        self.assertEqual(text.count('test "$(ls /sys/class/net)" = "lo"'), 4)
+        self.assertNotIn('test "$(ls /sys/class/net)" = "lo"', text)
+        for network_guard in ('test -r /sys/class/net/lo/flags',
+                              'test "$((flags & 1))" -eq 0',
+                              "awk 'NR>1 && $1!=\"lo\" {exit 1}' /proc/net/route",
+                              "awk 'NF && $NF!=\"lo\" {exit 1}' /proc/net/ipv6_route",
+                              "awk 'NF && $NF!=\"lo\" {exit 1}' /proc/net/if_inet6"):
+            self.assertEqual(text.count(network_guard), 4)  # all four shell RUNs retain the same fail-closed guard
         self.assertIn("sha256sum -c SHA256SUMS", text)
         for flag in ("-DDISABLE_CURL=ON", "-DDISABLE_ARCHIVE=ON", "-DGRAPHICS_DISABLED=ON", "-DBUILD_TRAINING_TOOLS=OFF",
                      "-DENABLE_NATIVE=OFF", "-DOPENMP_BUILD=OFF", "-DENABLE_JPEG=OFF", "-DENABLE_TIFF=OFF"):
@@ -274,18 +280,22 @@ class StaticTests(unittest.TestCase):
         try:
             self.assertEqual(harness.configuration_errors(lock), [])
             # Build-gate evaluation must use the same real, pinned closure root.
-            self.assertEqual(harness.build_gate(lock), [])
+            self.assertEqual(len(harness.build_gate(lock)), 1)
+            self.assertTrue(harness.build_gate(lock)[0].startswith("PB-13:"))
         finally:
             harness.CLOSURE_ROOT = saved
         still_open = {r["id"] for r in lock["requirements"] if r["phase"] == "PRE_BUILD" and r["status"] == "OPEN"}
         # PB-02/PB-08/PB-13 are conditionally accepted for build-only; PB-14
         # separately authorized first construction after the N2 pre-start acknowledgement.
         # Actual protected-container restart state and proof runtime remain unverified.
-        self.assertEqual(still_open, set())
-        for rid in ("PB-02", "PB-08", "PB-13"):
+        self.assertEqual(still_open, {"PB-13"})
+        for rid in ("PB-02", "PB-08"):
             item = next(r for r in lock["requirements"] if r["id"] == rid)
             self.assertEqual(item["status"], "SATISFIED")
             self.assertIn("6200838093", item["evidence"])
+        pb13 = next(r for r in lock["requirements"] if r["id"] == "PB-13")
+        self.assertEqual(pb13["status"], "OPEN")  # revised N1 guard awaits requester Security re-approval
+        self.assertIn("SOURCE RE-REVIEW REQUIRED", pb13["evidence"])
         pb14 = next(r for r in lock["requirements"] if r["id"] == "PB-14")
         self.assertEqual(pb14["status"], "SATISFIED")
         self.assertIn("6205866315", pb14["evidence"])
@@ -295,8 +305,8 @@ class StaticTests(unittest.TestCase):
             self.assertEqual(item["phase"], "PRE_EXECUTION")
             self.assertEqual(item["status"], "OPEN")
         result = subprocess.run([sys.executable, str(ROOT / "harness.py"), "check-lock"], capture_output=True, text=True)
-        self.assertEqual(result.returncode, 0)
-        self.assertIn("PRE_BUILD: READY", result.stdout)
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("PRE_BUILD: BLOCKED", result.stdout)
         self.assertIn("PRE_EXECUTION: BLOCKED", result.stdout)
 
     def test_acquire_refuses_non_https_and_repository_workdirs(self):
