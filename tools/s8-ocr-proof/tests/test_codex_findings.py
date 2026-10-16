@@ -448,8 +448,8 @@ class F5LockPhases(unittest.TestCase):
 
     def test_check_lock_cli_reports_each_phase(self):
         result = subprocess.run([sys.executable, str(ROOT / "harness.py"), "check-lock"], capture_output=True, text=True)
-        self.assertEqual(result.returncode, 1)
-        self.assertIn("PRE_BUILD: BLOCKED", result.stdout)
+        self.assertEqual(result.returncode, 0)  # PRE_BUILD now authorized; actual Docker preflight has not run.
+        self.assertIn("PRE_BUILD: READY", result.stdout)
         self.assertIn("PRE_EXECUTION: BLOCKED", result.stdout)
         self.assertIn("ACCEPTANCE: OPEN (never gates build or run)", result.stdout)
         self.assertNotIn("SATISFIED", result.stdout)
