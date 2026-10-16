@@ -48,3 +48,11 @@ reviewer, the reviewed commit, the decision and any conditions. A builder self-c
 **NOT approved:** PB-14/N2 Docker Desktop start, image pulls, any Docker construction or test container run; scanner acquisition/use; migrations, persistent service changes, OCR integration or activation, merging this PR. PRE_EXECUTION and ACCEPTANCE must not be represented as passed before actual evidence and review. This sign-off applies to the original reviewed source commit only; substantive source/configuration changes require renewed assessment.
 
 **Owner/Security decision:** Conditionally accepted for the standalone proof's first build, **not for execution or release**. Recorded for the user-declared Security authority against commit `5d7f88035cd25f184572df9969b4411188afd8bc` with PR #56 comment 6200838093.
+
+## Subsequent N1 amendment review — pending, 2026-10-16
+
+**Previous conditional PB-13 disposition above is retained as historical evidence for source commit `5d7f880`.** It is not an approval of the changed network guard.
+
+An authorized first build failed closed before package installation: `RUN --network=none` on Docker Desktop 4.90.0 exposed DOWN kernel virtual tunnel devices, causing the original `ls /sys/class/net == lo` check to reject the build. Disposable diagnostic builds found no non-loopback routes/IPv6 addresses and only `lo` enabled. The updated guard rejects IFF_UP on any non-loopback interface, non-loopback IPv4/IPv6 routes or IPv6 addresses, as well as unreadable tables/unexpected sysfs entries, while retaining all `--network=none` instructions and offline package pins.
+
+**Re-review requirement:** accountable owner/Security reviewer must inspect the exact modified `Dockerfile.worker`, `harness.py` static requirements, `test_network_guard.py` shell fixture, and offline test/mutation results, before explicitly restoring PB-13 to SATISFIED on the new commit. Changes to unrelated runtime boundaries are not authorized. The build remains blocked until that happens. This first-build failure gives **no PE-05/PE-06 approval**; PE-08/PE-09 are still OPEN.
