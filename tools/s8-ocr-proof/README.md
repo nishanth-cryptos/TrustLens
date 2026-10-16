@@ -10,9 +10,11 @@ No Docker image has been built or run for this proof. The immutable base-image d
 112 offline test results are recorded, but they do not demonstrate real OCR or runtime isolation. The requester,
 as the user-declared sole Security approver, conditionally accepted PB-02/PB-08/PB-13 for first construction
 against source commit `5d7f880` (see [PR #56](https://github.com/nishanth-cryptos/TrustLens/pull/56) and
-[SECURITY-REVIEW-CHECKLIST.md](SECURITY-REVIEW-CHECKLIST.md)). **PB-14 and N2 written acknowledgement remain OPEN:**
-no Docker Desktop startup, image pull or build is authorized. A separate PE-09 authorization and PE-08
-vulnerability scan review are required before any worker/OCR run.
+[SECURITY-REVIEW-CHECKLIST.md](SECURITY-REVIEW-CHECKLIST.md)). **PB-14 is now SATISFIED for the first build only:** the requester acknowledged the N2 pre-start risks and
+explicitly authorized manual Docker Desktop startup, read-only preflight, pinned artifact/base acquisition and first
+proof-image construction (PR #56 comment `6205866315`). **Actual container restart policies/states have not yet
+been observed; N2-ACK.json must still record them after successful preflight, and any unexpected state is a STOP.**
+Separate PE-09 authorization and PE-08 vulnerability scan review are required before any worker/OCR run.
 
 ## Where things live
 
@@ -103,7 +105,7 @@ and no fingerprint reads it.
 
 | Phase | Contents | Gates |
 | --- | --- | --- |
-| `PRE_BUILD` | PB-01–PB-13 are SATISFIED for the limited synthetic proof (PB-02 accepted signer-key risk; PB-08/PB-13 conditionally accepted for first build), with evidence and limitations in the lock and Security checklist; **OPEN: PB-14** (requester Docker Desktop/N2 startup and build authorization) | `build` |
+| `PRE_BUILD` | PB-01–PB-13 are SATISFIED for the limited synthetic proof (PB-02 accepted signer-key risk; PB-08/PB-13 conditionally accepted for first build), with evidence and limitations in the lock and Security checklist; **SATISFIED: PB-14** (requester build-only approval; actual N2 preflight/status record must still succeed) | `build` |
 | `PRE_EXECUTION` | Verified in code: local runtime and probe image IDs equal `build.json` (PE-01/02); build logs (PE-03) and every required build-evidence file (PE-04) present as regular, non-symlinked files matching their recorded size and SHA-256, and the evidence equal to what is baked into the runtime image; the build-input fingerprint equal to the current inputs (PE-07). Reviews: build evidence (PE-05), local `FROM` resolution (PE-06), pinned-runtime-image vulnerability scan and finding disposition **before worker execution** (PE-08), and a **separate requester run authorization** (PE-09) | `run` (together with `PRE_BUILD` and the N2 acknowledgement) |
 | `ACCEPTANCE` | Artifacts: rebuild comparison (AC-01), `results.json` (AC-06). Reviews: reproducibility (AC-02), SBOM (AC-03), vulnerability scan (AC-04), licences (AC-05), final review (AC-07) | Nothing; reported as open until produced and reviewed |
 
@@ -153,8 +155,9 @@ workdir it also checks the ARTIFACT items.
 Set `R` to an approved canonical scratch root (for example `R="$(python3 -c 'import os,tempfile; print(os.path.realpath(tempfile.mkdtemp()))')"`),
 `W` to a workdir name such as `run1`, and `NAME` to the authorizing person. `S="--scratch-root $R --workdir $W"`.
 
-0. **Authorization.** Get Security sign-off on the checklist, confirm every `PRE_BUILD` item is satisfied and committed
-   through review, and get the requester's explicit go-ahead to start Docker and build.
+0. **Authorization.** Security's conditional build-only review and requester PB-14/N2 pre-start acknowledgement are
+   recorded on PR #56. Confirm the reviewed proof branch and `PRE_BUILD: READY` before any build. This does NOT waive
+   inspection of real restart policies and protected container states once Docker Desktop starts.
 1. **N2 preflight, before starting Docker Desktop.** Starting the daemon may automatically restart existing
    persistent containers, including `trustlens-postgres-dev` and `trustlens-keycloak-dev`, according to their restart
    policies. The repository does not record those policies, and they cannot be read while the daemon is stopped.
@@ -162,7 +165,8 @@ Set `R` to an approved canonical scratch root (for example `R="$(python3 -c 'imp
    start Docker Desktop yourself; the harness never starts it.
 2. **Read-only inventory:** `apps/backend/.venv/bin/python tools/s8-ocr-proof/harness.py preflight $S`.
    This records the daemon facts and every existing container's restart policy and status, and refuses on missing
-   cgroup v2 or seccomp. If anything is unexpected, or isolation from existing services can't be established, **STOP**.
+   cgroup v2 or seccomp. If anything is unexpected, including the state of the existing protected containers,
+   or isolation from existing services can't be established, **STOP**.
 3. **Acknowledge** by writing `"$R/$W/N2-ACK.json"`. It must record the policies observed in `preflight.json`:
    ```json
    {"operator": "NAME", "date": "YYYY-MM-DD",
