@@ -1,0 +1,174 @@
+# S8 worker-only OCR proof image (§4A). PROPOSED, NOT APPROVED: build only during a separately authorized proof run,
+# through `harness.py build`, which refuses while any dependencies.lock.json item is OPEN.
+#
+# No `# syntax=` directive is used, because it would fetch an unpinned frontend image. The daemon's built-in frontend
+# must honour `RUN --network=none` and `RUN --mount=type=bind` (verified at the first authorized build). As a guard,
+# every shell RUN step fails if a non-loopback interface has IFF_UP, any non-loopback IPv4/IPv6 route or IPv6 address exists, or the check cannot inspect the kernel network tables. Docker Desktop can expose DOWN tunnel devices under `--network=none`; their mere presence is not a networking capability.
+#
+# Network policy (governance §4A N1, PB-11 option O, provisional): EVERY step runs with --network=none. Packages come
+# only from verified local .deb files (packages/closure-manifest.json, pinned in the lock, every file in the
+# fingerprinted build context), bind-mounted read-only. All apt sources are deleted first, so there is no network
+# fallback. Before installation each step checks that the directory holds exactly the files in selection.txt and
+# SHA256SUMS, every checksum, and every file's size, control name, version and architecture; apt then receives only
+# those exact local paths (no glob, no package lists, no removals), and the installed versions are checked afterwards.
+#
+# Permissions (nonroot runtime UID 65534): every COPY from the build context sets its image-side mode explicitly
+# with --chmod=0444 and names individual files, so host scratch modes (0600) never reach the image. /opt/tl is then
+# made read-only (a-w), a root guard checks that every file is world-readable and every directory world-traversable,
+# and a final RUN executed AS UID 65534 opens every runtime script and the model.
+
+ARG BASE_IMAGE
+
+FROM ${BASE_IMAGE} AS builder
+ARG BASE_IMAGE
+ARG SOURCE_DATE_EPOCH
+# OFFLINE-PACKAGES (build closure): verified local .deb files only; no apt sources; no network.
+RUN --network=none --mount=type=bind,source=debs/build,target=/opt/tl-debs set -eu; \
+    test -r /sys/class/net/lo/flags && test -r /proc/net/route && test -r /proc/net/ipv6_route && test -r /proc/net/if_inet6 || { echo "network isolation data unavailable" >&2; exit 1; }; \
+    for iface in /sys/class/net/*; do \
+      if test ! -r "$iface/flags"; then \
+        test "${iface##*/}" = "bonding_masters" || { echo "unknown network interface entry" >&2; exit 1; }; \
+        continue; \
+      fi; \
+      if test "${iface##*/}" != "lo"; then \
+        flags="$(cat "$iface/flags")"; \
+        test "$((flags & 1))" -eq 0 || { echo "non-loopback interface enabled" >&2; exit 1; }; \
+      fi; \
+    done; \
+    awk 'NR>1 && $1!="lo" {exit 1}' /proc/net/route || { echo "non-loopback IPv4 route" >&2; exit 1; }; \
+    awk 'NF && $NF!="lo" {exit 1}' /proc/net/ipv6_route || { echo "non-loopback IPv6 route" >&2; exit 1; }; \
+    awk 'NF && $NF!="lo" {exit 1}' /proc/net/if_inet6 || { echo "non-loopback IPv6 address" >&2; exit 1; }; \
+    printf '%s' "$BASE_IMAGE" | grep -Eq '@sha256:[0-9a-f]{64}$' || { echo "BASE_IMAGE must be pinned by digest" >&2; exit 1; }; \
+    test -n "$SOURCE_DATE_EPOCH"; \
+    rm -rf /etc/apt/sources.list /etc/apt/sources.list.d /var/lib/apt/lists; \
+    mkdir -p /etc/apt/sources.list.d /var/lib/apt/lists/partial /var/cache/apt/archives/partial; \
+    test ! -e /etc/apt/sources.list && test -z "$(ls -A /etc/apt/sources.list.d)" || { echo "an apt source remains" >&2; exit 1; }; \
+    cd /opt/tl-debs; \
+    test "$(ls -A | LC_ALL=C sort)" = "$({ echo SHA256SUMS; echo selection.txt; cut -d' ' -f1 selection.txt; } | LC_ALL=C sort)" || { echo "package directory does not match selection.txt" >&2; exit 1; }; \
+    test "$(cut -d' ' -f1 selection.txt | LC_ALL=C sort)" = "$(awk '{print $2}' SHA256SUMS | LC_ALL=C sort)" || { echo "SHA256SUMS does not match selection.txt" >&2; exit 1; }; \
+    sha256sum -c --strict SHA256SUMS; \
+    set --; \
+    while read -r file name version arch size; do \
+      test -f "$file" && test ! -L "$file" || { echo "$file is not a regular file" >&2; exit 1; }; \
+      test "$(stat -c %s "$file")" = "$size" || { echo "$file has the wrong size" >&2; exit 1; }; \
+      test "$(dpkg-deb -W --showformat='${Package} ${Version} ${Architecture}' "./$file")" = "$name $version $arch" || { echo "$file is not $name $version $arch" >&2; exit 1; }; \
+      set -- "$@" "./$file"; \
+    done < selection.txt; \
+    apt-get install -y --no-install-recommends --no-remove "$@"; \
+    while read -r file name version arch size; do \
+      test "$(dpkg-query -W -f='${Version} ${Architecture}' "$name")" = "$version $arch" || { echo "$name is not installed at $version $arch" >&2; exit 1; }; \
+    done < selection.txt; \
+    test -z "$(dpkg --audit)" || { dpkg --audit >&2; exit 1; }
+
+COPY --chmod=0444 sources/SHA256SUMS sources/eng.traineddata sources/leptonica-1.87.0.tar.gz sources/tesseract-5.5.3.tar.gz /src/
+RUN --network=none set -eu; \
+    test -r /sys/class/net/lo/flags && test -r /proc/net/route && test -r /proc/net/ipv6_route && test -r /proc/net/if_inet6 || { echo "network isolation data unavailable" >&2; exit 1; }; \
+    for iface in /sys/class/net/*; do \
+      if test ! -r "$iface/flags"; then \
+        test "${iface##*/}" = "bonding_masters" || { echo "unknown network interface entry" >&2; exit 1; }; \
+        continue; \
+      fi; \
+      if test "${iface##*/}" != "lo"; then \
+        flags="$(cat "$iface/flags")"; \
+        test "$((flags & 1))" -eq 0 || { echo "non-loopback interface enabled" >&2; exit 1; }; \
+      fi; \
+    done; \
+    awk 'NR>1 && $1!="lo" {exit 1}' /proc/net/route || { echo "non-loopback IPv4 route" >&2; exit 1; }; \
+    awk 'NF && $NF!="lo" {exit 1}' /proc/net/ipv6_route || { echo "non-loopback IPv6 route" >&2; exit 1; }; \
+    awk 'NF && $NF!="lo" {exit 1}' /proc/net/if_inet6 || { echo "non-loopback IPv6 address" >&2; exit 1; }; \
+    cd /src; sha256sum -c SHA256SUMS; \
+    tar -xzf leptonica-1.87.0.tar.gz; tar -xzf tesseract-5.5.3.tar.gz; \
+    cmake -S leptonica-1.87.0 -B build-lept -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/tl \
+      -DCMAKE_INSTALL_LIBDIR=lib -DCMAKE_INSTALL_RPATH=/opt/tl/lib -DBUILD_SHARED_LIBS=ON -DBUILD_PROG=OFF -DSW_BUILD=OFF \
+      -DENABLE_ZLIB=ON -DENABLE_PNG=ON -DENABLE_GIF=OFF -DENABLE_JPEG=OFF -DENABLE_TIFF=OFF -DENABLE_WEBP=OFF \
+      -DENABLE_OPENJPEG=OFF; \
+    cmake --build build-lept --parallel "$(nproc)"; cmake --install build-lept; \
+    cmake -S tesseract-5.5.3 -B build-tess -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/tl \
+      -DCMAKE_PREFIX_PATH=/opt/tl -DCMAKE_INSTALL_LIBDIR=lib -DCMAKE_INSTALL_RPATH=/opt/tl/lib -DBUILD_SHARED_LIBS=ON \
+      -DDISABLE_CURL=ON -DDISABLE_ARCHIVE=ON -DDISABLE_TIFF=ON -DGRAPHICS_DISABLED=ON -DBUILD_TRAINING_TOOLS=OFF \
+      -DBUILD_TESTS=OFF -DOPENMP_BUILD=OFF -DDISABLED_LEGACY_ENGINE=ON -DENABLE_NATIVE=OFF -DENABLE_LTO=OFF \
+      -DENABLE_CCACHE=OFF -DENABLE_PRECOMPILED_HEADERS=OFF -DSW_BUILD=OFF -DINSTALL_CONFIGS=ON; \
+    cmake --build build-tess --parallel "$(nproc)"; cmake --install build-tess; \
+    install -D -m 0444 eng.traineddata /opt/tl/share/tessdata/eng.traineddata; \
+    mkdir -p /opt/tl/share/build-evidence; \
+    cp build-lept/CMakeCache.txt /opt/tl/share/build-evidence/leptonica-CMakeCache.txt; \
+    cp build-tess/CMakeCache.txt /opt/tl/share/build-evidence/tesseract-CMakeCache.txt; \
+    cp SHA256SUMS /opt/tl/share/build-evidence/SHA256SUMS
+
+FROM ${BASE_IMAGE} AS runtime
+# The exact approved interpreter path (dependencies.lock.json configuration.python.path_in_image), passed by
+# harness.py and bound into the build-input fingerprint. No default: a missing argument fails the build.
+ARG PYTHON
+# OFFLINE-PACKAGES (runtime closure): verified local .deb files only; no apt sources; no network.
+RUN --network=none --mount=type=bind,source=debs/runtime,target=/opt/tl-debs set -eu; \
+    test -r /sys/class/net/lo/flags && test -r /proc/net/route && test -r /proc/net/ipv6_route && test -r /proc/net/if_inet6 || { echo "network isolation data unavailable" >&2; exit 1; }; \
+    for iface in /sys/class/net/*; do \
+      if test ! -r "$iface/flags"; then \
+        test "${iface##*/}" = "bonding_masters" || { echo "unknown network interface entry" >&2; exit 1; }; \
+        continue; \
+      fi; \
+      if test "${iface##*/}" != "lo"; then \
+        flags="$(cat "$iface/flags")"; \
+        test "$((flags & 1))" -eq 0 || { echo "non-loopback interface enabled" >&2; exit 1; }; \
+      fi; \
+    done; \
+    awk 'NR>1 && $1!="lo" {exit 1}' /proc/net/route || { echo "non-loopback IPv4 route" >&2; exit 1; }; \
+    awk 'NF && $NF!="lo" {exit 1}' /proc/net/ipv6_route || { echo "non-loopback IPv6 route" >&2; exit 1; }; \
+    awk 'NF && $NF!="lo" {exit 1}' /proc/net/if_inet6 || { echo "non-loopback IPv6 address" >&2; exit 1; }; \
+    rm -rf /etc/apt/sources.list /etc/apt/sources.list.d /var/lib/apt/lists; \
+    mkdir -p /etc/apt/sources.list.d /var/lib/apt/lists/partial /var/cache/apt/archives/partial; \
+    test ! -e /etc/apt/sources.list && test -z "$(ls -A /etc/apt/sources.list.d)" || { echo "an apt source remains" >&2; exit 1; }; \
+    cd /opt/tl-debs; \
+    test "$(ls -A | LC_ALL=C sort)" = "$({ echo SHA256SUMS; echo selection.txt; cut -d' ' -f1 selection.txt; } | LC_ALL=C sort)" || { echo "package directory does not match selection.txt" >&2; exit 1; }; \
+    test "$(cut -d' ' -f1 selection.txt | LC_ALL=C sort)" = "$(awk '{print $2}' SHA256SUMS | LC_ALL=C sort)" || { echo "SHA256SUMS does not match selection.txt" >&2; exit 1; }; \
+    sha256sum -c --strict SHA256SUMS; \
+    set --; \
+    while read -r file name version arch size; do \
+      test -f "$file" && test ! -L "$file" || { echo "$file is not a regular file" >&2; exit 1; }; \
+      test "$(stat -c %s "$file")" = "$size" || { echo "$file has the wrong size" >&2; exit 1; }; \
+      test "$(dpkg-deb -W --showformat='${Package} ${Version} ${Architecture}' "./$file")" = "$name $version $arch" || { echo "$file is not $name $version $arch" >&2; exit 1; }; \
+      set -- "$@" "./$file"; \
+    done < selection.txt; \
+    apt-get install -y --no-install-recommends --no-remove "$@"; \
+    while read -r file name version arch size; do \
+      test "$(dpkg-query -W -f='${Version} ${Architecture}' "$name")" = "$version $arch" || { echo "$name is not installed at $version $arch" >&2; exit 1; }; \
+    done < selection.txt; \
+    test -z "$(dpkg --audit)" || { dpkg --audit >&2; exit 1; }; \
+    rm -rf /var/cache/apt/archives/*.deb
+
+COPY --from=builder /opt/tl/ /opt/tl/
+COPY --chmod=0444 common/tier1.py worker/tier2.py worker/worker_entry.py /opt/tl/worker/
+RUN --network=none set -eu; \
+    test -r /sys/class/net/lo/flags && test -r /proc/net/route && test -r /proc/net/ipv6_route && test -r /proc/net/if_inet6 || { echo "network isolation data unavailable" >&2; exit 1; }; \
+    for iface in /sys/class/net/*; do \
+      if test ! -r "$iface/flags"; then \
+        test "${iface##*/}" = "bonding_masters" || { echo "unknown network interface entry" >&2; exit 1; }; \
+        continue; \
+      fi; \
+      if test "${iface##*/}" != "lo"; then \
+        flags="$(cat "$iface/flags")"; \
+        test "$((flags & 1))" -eq 0 || { echo "non-loopback interface enabled" >&2; exit 1; }; \
+      fi; \
+    done; \
+    awk 'NR>1 && $1!="lo" {exit 1}' /proc/net/route || { echo "non-loopback IPv4 route" >&2; exit 1; }; \
+    awk 'NF && $NF!="lo" {exit 1}' /proc/net/ipv6_route || { echo "non-loopback IPv6 route" >&2; exit 1; }; \
+    awk 'NF && $NF!="lo" {exit 1}' /proc/net/if_inet6 || { echo "non-loopback IPv6 address" >&2; exit 1; }; \
+    test -n "$PYTHON" || { echo "PYTHON build argument is required" >&2; exit 1; }; \
+    case "$PYTHON" in /*/python3.12) ;; *) echo "PYTHON must be an absolute .../python3.12 path" >&2; exit 1;; esac; \
+    test -x "$PYTHON" || { echo "PYTHON is not an executable file in the base image" >&2; exit 1; }; \
+    "$PYTHON" -c 'import sys; assert sys.version_info[:2] == (3, 12), sys.version'; \
+    ln -s "$PYTHON" /opt/tl/bin/python; \
+    /opt/tl/bin/tesseract --version > /opt/tl/share/build-evidence/tesseract-version.txt 2>&1; \
+    ldd /opt/tl/bin/tesseract > /opt/tl/share/build-evidence/tesseract-ldd.txt; \
+    for lib in /opt/tl/lib/libleptonica.so*; do echo "== $lib"; ldd "$lib"; done > /opt/tl/share/build-evidence/leptonica-ldd.txt; \
+    chmod -R a-w /opt/tl; \
+    test -z "$(find /opt/tl ! -type l ! -perm -o+r)" || { echo "unreadable file under /opt/tl" >&2; exit 1; }; \
+    test -z "$(find /opt/tl -type d ! -perm -o+x)" || { echo "untraversable directory under /opt/tl" >&2; exit 1; }
+# The ldd records are linkage evidence for review (D4 item 5). They do NOT prove PNG-only capability: Leptonica's
+# built-in BMP/PNM/SPIX readers and Tesseract's file-list fallback remain (E6, E10). PNG-only is enforced by Tier 2.
+
+USER 65534:65534
+WORKDIR /
+# NONROOT-READ-CHECK: runs as UID 65534 during the build; fails the build if any runtime file is unreadable.
+RUN --network=none ["/opt/tl/bin/python", "-I", "-S", "-B", "-c", "import os; assert os.getuid() == 65534; [open(p, 'rb').read(1) for p in ('/opt/tl/worker/tier1.py', '/opt/tl/worker/tier2.py', '/opt/tl/worker/worker_entry.py', '/opt/tl/share/tessdata/eng.traineddata')]; assert os.access('/opt/tl/bin/tesseract', os.X_OK); os.listdir('/opt/tl/worker')"]
+ENTRYPOINT ["/opt/tl/bin/python", "-I", "-S", "-B", "/opt/tl/worker/worker_entry.py"]
