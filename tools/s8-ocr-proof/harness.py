@@ -649,7 +649,13 @@ def dockerfile_python_findings(worker: str, probe: str) -> list:
 
 
 OFFLINE_INSTALL_REQUIRED = (
-    'test "$(ls /sys/class/net)" = "lo"',
+    'test -r /sys/class/net/lo/flags && test -r /proc/net/route && test -r /proc/net/ipv6_route && test -r /proc/net/if_inet6',
+    'for iface in /sys/class/net/*; do',
+    'test "${iface##*/}" = "bonding_masters"',
+    'test "$((flags & 1))" -eq 0',
+    "awk 'NR>1 && $1!=\"lo\" {exit 1}' /proc/net/route",
+    "awk 'NF && $NF!=\"lo\" {exit 1}' /proc/net/ipv6_route",
+    "awk 'NF && $NF!=\"lo\" {exit 1}' /proc/net/if_inet6",
     "rm -rf /etc/apt/sources.list /etc/apt/sources.list.d /var/lib/apt/lists",
     'test ! -e /etc/apt/sources.list && test -z "$(ls -A /etc/apt/sources.list.d)"',
     'test "$(ls -A | LC_ALL=C sort)" = "$({ echo SHA256SUMS; echo selection.txt; cut -d\' \' -f1 selection.txt; } | LC_ALL=C sort)"',
