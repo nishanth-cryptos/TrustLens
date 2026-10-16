@@ -273,6 +273,8 @@ class StaticTests(unittest.TestCase):
         saved, harness.CLOSURE_ROOT = harness.CLOSURE_ROOT, ROOT    # the real closure, not the fixture stand-in
         try:
             self.assertEqual(harness.configuration_errors(lock), [])
+            # Build-gate evaluation must use the same real, pinned closure root.
+            self.assertEqual(harness.build_gate(lock), [])
         finally:
             harness.CLOSURE_ROOT = saved
         still_open = {r["id"] for r in lock["requirements"] if r["phase"] == "PRE_BUILD" and r["status"] == "OPEN"}
@@ -292,7 +294,6 @@ class StaticTests(unittest.TestCase):
             item = next(r for r in lock["requirements"] if r["id"] == rid)
             self.assertEqual(item["phase"], "PRE_EXECUTION")
             self.assertEqual(item["status"], "OPEN")
-        self.assertEqual(harness.build_gate(lock), [])
         result = subprocess.run([sys.executable, str(ROOT / "harness.py"), "check-lock"], capture_output=True, text=True)
         self.assertEqual(result.returncode, 0)
         self.assertIn("PRE_BUILD: READY", result.stdout)
