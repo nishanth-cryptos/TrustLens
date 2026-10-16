@@ -262,7 +262,7 @@ class StaticTests(unittest.TestCase):
             with pathguard.Scratch(os.path.realpath(tmp), "w") as scratch:
                 self.assertEqual(scratch.workdir, Path(os.path.realpath(tmp)) / "w")
 
-    def test_lock_records_open_items_and_blocks_the_build(self):
+    def test_lock_records_build_approval_and_blocks_unreviewed_execution(self):
         lock = json.loads((ROOT / "dependencies.lock.json").read_text())
         self.assertEqual({s["name"] for s in lock["sources"]}, {"tesseract", "leptonica", "eng.traineddata"})
         for source in lock["sources"]:
@@ -276,22 +276,27 @@ class StaticTests(unittest.TestCase):
         finally:
             harness.CLOSURE_ROOT = saved
         still_open = {r["id"] for r in lock["requirements"] if r["phase"] == "PRE_BUILD" and r["status"] == "OPEN"}
-        # PB-02/PB-08/PB-13 were conditionally accepted for BUILD ONLY by the requester,
-        # as recorded against reviewed source commit 5d7f880 in PR #56. They do not authorize Docker.
-        self.assertEqual(still_open, {"PB-14"})
+        # PB-02/PB-08/PB-13 are conditionally accepted for build-only; PB-14
+        # separately authorized first construction after the N2 pre-start acknowledgement.
+        # Actual protected-container restart state and proof runtime remain unverified.
+        self.assertEqual(still_open, set())
         for rid in ("PB-02", "PB-08", "PB-13"):
             item = next(r for r in lock["requirements"] if r["id"] == rid)
             self.assertEqual(item["status"], "SATISFIED")
             self.assertIn("6200838093", item["evidence"])
+        pb14 = next(r for r in lock["requirements"] if r["id"] == "PB-14")
+        self.assertEqual(pb14["status"], "SATISFIED")
+        self.assertIn("6205866315", pb14["evidence"])
         # An image vulnerability review and separate OCR run authorization remain mandatory.
         for rid in ("PE-08", "PE-09"):
             item = next(r for r in lock["requirements"] if r["id"] == rid)
             self.assertEqual(item["phase"], "PRE_EXECUTION")
             self.assertEqual(item["status"], "OPEN")
-        self.assertTrue(harness.build_gate(lock))
+        self.assertEqual(harness.build_gate(lock), [])
         result = subprocess.run([sys.executable, str(ROOT / "harness.py"), "check-lock"], capture_output=True, text=True)
-        self.assertEqual(result.returncode, 1)
-        self.assertIn("PRE_BUILD: BLOCKED", result.stdout)
+        self.assertEqual(result.returncode, 0)
+        self.assertIn("PRE_BUILD: READY", result.stdout)
+        self.assertIn("PRE_EXECUTION: BLOCKED", result.stdout)
 
     def test_acquire_refuses_non_https_and_repository_workdirs(self):
         import acquire
