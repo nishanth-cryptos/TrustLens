@@ -1,0 +1,11 @@
+# S8 OCR proof — probe image (§4A). Built FROM the exact runtime image (local proof tag created by harness.py) plus
+# one stdlib probe program, so the runtime image itself stays probe-free. Run only with the identical worker flags.
+# The probe file is copied with an explicit world-readable mode (--chmod=0444); the probe directory is created 0755.
+ARG RUNTIME_IMAGE
+FROM ${RUNTIME_IMAGE}
+COPY --chmod=0444 probe/probe.py /opt/tl/probe/probe.py
+USER 65534:65534
+WORKDIR /
+# NONROOT-READ-CHECK: runs as UID 65534 during the build; fails the build if the probe or worker files are unreadable.
+RUN --network=none ["/opt/tl/bin/python", "-I", "-S", "-B", "-c", "import os; assert os.getuid() == 65534; [open(p, 'rb').read(1) for p in ('/opt/tl/probe/probe.py', '/opt/tl/worker/worker_entry.py', '/opt/tl/worker/tier1.py', '/opt/tl/worker/tier2.py')]; os.listdir('/opt/tl/probe')"]
+ENTRYPOINT ["/opt/tl/bin/python", "-I", "-S", "-B", "/opt/tl/probe/probe.py"]
