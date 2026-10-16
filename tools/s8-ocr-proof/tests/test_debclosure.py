@@ -318,6 +318,11 @@ class AcquisitionAndContext(unittest.TestCase):
         INSTALL = '    apt-get install -y --no-install-recommends --no-remove "$@"; \\\n'
         mutants = {
             "networked install": worker.replace("RUN --network=none --mount=type=bind,source=debs/runtime", "RUN --mount=type=bind,source=debs/runtime"),
+            "IFF_UP guard removed": worker.replace('test "$((flags & 1))" -eq 0', "true", 1),
+            "IPv4 route guard removed": worker.replace('awk \'NR>1 && $1!="lo" {exit 1}\' /proc/net/route', "true", 1),
+            "IPv6 route guard removed": worker.replace('awk \'NF && $NF!="lo" {exit 1}\' /proc/net/ipv6_route', "true", 1),
+            "IPv6 address guard removed": worker.replace('awk \'NF && $NF!="lo" {exit 1}\' /proc/net/if_inet6', "true", 1),
+            "network status check removed": worker.replace('test -r /sys/class/net/lo/flags && test -r /proc/net/route', "true && test -r /proc/net/route", 1),
             "apt-get update fallback": worker.replace('apt-get install -y --no-install-recommends --no-remove "$@";', 'apt-get update; apt-get install -y --no-install-recommends --no-remove "$@";', 1),
             "glob instead of exact paths": worker.replace('--no-remove "$@";', "--no-remove ./*.deb;", 1),
             "no-download reinstated": worker.replace('--no-remove "$@";', '--no-remove --no-download "$@";', 1),
