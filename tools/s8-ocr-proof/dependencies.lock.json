@@ -255,9 +255,9 @@
       "id": "PB-14",
       "phase": "PRE_BUILD",
       "kind": "REVIEW",
-      "status": "OPEN",
+      "status": "SATISFIED",
       "description": "Requester authorization to start Docker, acquire and build",
-      "evidence": ""
+      "evidence": "Requester explicit PB-14 first-build authorization and N2 written pre-start acknowledgement, 2026-10-16, in PR #56 comment 6205866315 (in this conversation: 'okay lets do it', directly answering the N2 risks/first isolated build-only authorization question). Allows MANUAL Docker Desktop startup, read-only N2 preflight, scratch-only policy/state ACK, pinned sources/base pull (NO --debs; 103 acquired packages already in approved workdir), synthetic corpus preparation, and first isolated runtime/probe image build, conditionally on observed preflight being acceptable. Actual restart policies and statuses UNKNOWN until daemon starts; stop on unexpected protected-container state or PROBLEM. Not OCR run/rebuild, scanning-tool acquisition, changes to existing containers/keys/volumes, integration/activation or merging. Separate PE-05/06/08 and requester PE-09 remain OPEN."
     },
     {
       "id": "PE-01",
