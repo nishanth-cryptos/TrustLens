@@ -26,6 +26,8 @@ Security re-review and, on 2026-10-21, renewed for the amended source `b62efb1` 
 preflight and N2-ACK.json; BuildKit isolation and the guard's behaviour on live kernel data remain unverified.
 No OCR run is authorized.
 
+**BUILD RETRY (2026-10-21): failed closed at runtime stage 5/7** with `untraversable directory under /opt/tl`, after the network guard, compilation and installation had passed. The log does not name the directory. The likely offending path is `/opt/tl/worker`, **inferred** from the BuildKit/fsutil copy implementation (fsutil `copy.Copy` creates a COPY's destination directory with its `--chmod` mode: tonistiigi/fsutil `c1c5bff` `copy/copy.go` L85-89) and from the log (the readability check, which also covers directories, passed); the failed build did not establish it. The proposed correction sets the COPY-created `/opt/tl/worker` and `/opt/tl/probe` to 0555 as root and makes the guards list each offending path and mode. **PB-13 and PB-14 are OPEN again; `PRE_BUILD` is BLOCKED** until an independent review, a renewed source-bound Security decision and a new build authorization.
+
 ## Where things live
 
 | In this branch (reviewable sources) | In `<scratch-root>/<workdir>`, outside the repository (disposable) |
@@ -115,7 +117,7 @@ and no fingerprint reads it.
 
 | Phase | Contents | Gates |
 | --- | --- | --- |
-| `PRE_BUILD` | PB-01–PB-12 and PB-14 are SATISFIED for the limited synthetic proof (PB-02 signer-key risk accepted; PB-08 Python/zlib conditionally accepted); **SATISFIED: PB-13**, renewed 2026-10-21 for the amended N1 guard at `b62efb1` only (the 2026-10-16 approval of `5d7f880` is historical); **SATISFIED: PB-14** (first build plus one build-only retry; a fresh N2 preflight and N2-ACK.json are required before the retry) | `build` |
+| `PRE_BUILD` | PB-01–PB-12 are SATISFIED for the limited synthetic proof (PB-02 signer-key risk accepted; PB-08 Python/zlib conditionally accepted); **OPEN: PB-13** (the 2026-10-21 renewal for `b62efb1` does not cover the post-retry permission correction); **OPEN: PB-14** (the one additional build-only retry was consumed) | `build` |
 | `PRE_EXECUTION` | Verified in code: local runtime and probe image IDs equal `build.json` (PE-01/02); build logs (PE-03) and every required build-evidence file (PE-04) present as regular, non-symlinked files matching their recorded size and SHA-256, and the evidence equal to what is baked into the runtime image; the build-input fingerprint equal to the current inputs (PE-07). Reviews: build evidence (PE-05), local `FROM` resolution (PE-06), pinned-runtime-image vulnerability scan and finding disposition **before worker execution** (PE-08), and a **separate requester run authorization** (PE-09) | `run` (together with `PRE_BUILD` and the N2 acknowledgement) |
 | `ACCEPTANCE` | Artifacts: rebuild comparison (AC-01), `results.json` (AC-06). Reviews: reproducibility (AC-02), SBOM (AC-03), vulnerability scan (AC-04), licences (AC-05), final review (AC-07) | Nothing; reported as open until produced and reviewed |
 

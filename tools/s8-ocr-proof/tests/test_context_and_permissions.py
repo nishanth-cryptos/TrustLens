@@ -13,9 +13,12 @@ import copy
 import hashlib
 import json
 import os
+import re
 import shutil
 import stat
+import subprocess
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 from unittest import mock
@@ -240,11 +243,35 @@ class NonrootReadability(unittest.TestCase):
             "final user root": (self.worker.replace("USER 65534:65534", "USER 0:0"), None),
             "no read-only guard": (self.worker.replace("chmod -R a-w /opt/tl", "true"), None),
             "no readability guard": (self.worker.replace("find /opt/tl ! -type l ! -perm -o+r", "true"), None),
+            "no traversal guard": (self.worker.replace("find /opt/tl -type d ! -perm -o+x", "true"), None),
             "probe read check misses probe.py": (None, self.probe.replace("'/opt/tl/probe/probe.py', ", "")),
         }
         for label, (worker, probe) in mutants.items():
             with self.subTest(label):
                 self.assertTrue(self.review(worker, probe))
+
+    def test_copy_created_directories_must_be_made_traversable_by_root(self):
+        """The build-retry failure: BuildKit gives the directory a COPY creates the --chmod mode (0444), so
+        /opt/tl/worker and /opt/tl/probe must be set to 0555 by root before the image returns to UID 65534."""
+        probe_repair = 'USER 0:0\nRUN --network=none ["/bin/chmod", "0555", "/opt/tl/probe"]\n'
+        mutants = {
+            "worker directory not repaired (pre-fix)": (self.worker.replace("    chmod 0555 /opt/tl/worker; \\\n", ""), None),
+            "worker directory made writable": (self.worker.replace("chmod 0555 /opt/tl/worker;", "chmod 0755 /opt/tl/worker;"), None),
+            "wrong worker directory repaired": (self.worker.replace("chmod 0555 /opt/tl/worker;", "chmod 0555 /opt/tl/share;"), None),
+            "worker directory repaired after the final USER": (self.worker.replace("    chmod 0555 /opt/tl/worker; \\\n", "").replace(
+                "WORKDIR /\n", "WORKDIR /\nRUN --network=none [\"/bin/chmod\", \"0555\", \"/opt/tl/worker\"]\n", 1), None),
+            "probe directory not repaired (pre-fix)": (None, self.probe.replace(probe_repair, "")),
+            "probe repair not run as root": (None, self.probe.replace("USER 0:0\n", "")),
+            "probe directory made writable": (None, self.probe.replace('"0555", "/opt/tl/probe"', '"0775", "/opt/tl/probe"')),
+            "probe repaired after the final USER": (None, self.probe.replace(probe_repair, "").replace(
+                "WORKDIR /\n", 'WORKDIR /\nRUN --network=none ["/bin/chmod", "0555", "/opt/tl/probe"]\n', 1)),
+        }
+        for label, (worker, probe) in mutants.items():
+            with self.subTest(label):
+                self.assertNotEqual(worker or probe, self.worker if worker else self.probe)
+                self.assertTrue(any("/opt/tl/" in f for f in self.review(worker, probe)), label)
+        self.assertEqual(self.probe.count("USER 0:0"), 1)
+        self.assertLess(self.probe.index(probe_repair), self.probe.index("USER 65534:65534"))
 
     def test_host_scratch_permissions_are_not_relaxed(self):
         self.assertEqual((pathguard.FILE_MODE, pathguard.DIR_MODE), (0o600, 0o700))
@@ -261,6 +288,111 @@ class NonrootReadability(unittest.TestCase):
     def test_build_runs_the_static_review_on_the_prepared_context(self):
         source = (ROOT / "harness.py").read_text()
         self.assertIn('static_dockerfile_review(lambda rel: scratch.read_text(f"context/{rel}"))', source)
+
+
+PERMISSION_START = "chmod 0555 /opt/tl/worker;"
+SHELLS = [shell for shell in ("/bin/sh", "/bin/dash") if os.access(shell, os.X_OK)]
+
+
+def runtime_permission_guard() -> str:
+    """The exact permission repair and guards from the runtime stage of Dockerfile.worker, continuations joined."""
+    worker = (ROOT / "docker" / "Dockerfile.worker").read_text()
+    steps = [s for s in re.findall(r"(?ms)^RUN --network=none (.*?)(?=^\S)", worker + "\nEND") if PERMISSION_START in s]
+    assert len(steps) == 1, len(steps)
+    return steps[0][steps[0].index(PERMISSION_START):].replace(chr(92) + chr(10), " ").strip()
+
+
+class RuntimePermissionGuardExecution(unittest.TestCase):
+    """Runs the extracted guard on a temporary /opt/tl stand-in under /bin/sh and /bin/dash. The tests run as the
+    unprivileged owner, so owner bits stand in for root's override: a directory the owner may traverse but `other`
+    may not (0744) reproduces BuildKit's COPY-created 0444 directory as root sees it."""
+
+    def setUp(self):
+        self.guard = runtime_permission_guard()
+        self.assertTrue(SHELLS)
+
+    def tree(self, worker_dir=0o744, **modes):
+        root = Path(tempfile.mkdtemp()) / "opt-tl"
+        self.addCleanup(lambda: (self.unlock(root.parent), shutil.rmtree(root.parent)))
+        files = {"bin/tesseract": 0o755, "lib/libleptonica.so.6": 0o644, "share/tessdata/eng.traineddata": 0o444,
+                 "share/build-evidence/SHA256SUMS": 0o644, "worker/tier1.py": 0o444, "worker/tier2.py": 0o444,
+                 "worker/worker_entry.py": 0o444}
+        for relative, mode in files.items():
+            (root / relative).parent.mkdir(parents=True, exist_ok=True)
+            (root / relative).write_bytes(b"x")
+            os.chmod(root / relative, modes.get(relative, mode))
+        os.symlink("/nonexistent/python3.12", root / "bin" / "python")    # like the image's interpreter link
+        for directory in ("bin", "lib", "share", "share/tessdata", "share/build-evidence"):
+            os.chmod(root / directory, modes.get(directory, 0o755))
+        os.chmod(root / "worker", worker_dir)
+        return root
+
+    @staticmethod
+    def unlock(path):
+        os.chmod(path, 0o700)
+        for directory, subdirectories, names in os.walk(path):
+            for name in subdirectories:                                     # before os.walk descends into them
+                os.chmod(os.path.join(directory, name), 0o700)
+            for name in names:
+                if not os.path.islink(os.path.join(directory, name)):
+                    os.chmod(os.path.join(directory, name), 0o600)
+
+    def run_guard(self, root, guard=None):
+        script = "set -eu; " + (guard or self.guard).replace("/opt/tl", str(root))
+        return [(shell, subprocess.run([shell, "-c", script], capture_output=True, text=True, timeout=30)) for shell in SHELLS]
+
+    def modes(self, root):
+        return {str(p.relative_to(root)): stat.S_IMODE(p.lstat().st_mode) for p in root.rglob("*") if not p.is_symlink()}
+
+    def test_copy_created_worker_directory_is_repaired_without_write_bits(self):
+        for shell, result in self.run_guard(self.tree()):
+            self.assertEqual(result.returncode, 0, f"{shell}: {result.stderr}")
+        root = self.tree()
+        self.run_guard(root)
+        modes = self.modes(root)
+        self.assertEqual(modes["worker"], 0o555)
+        self.assertEqual({modes[f"worker/{n}"] for n in ("tier1.py", "tier2.py", "worker_entry.py")}, {0o444})
+        self.assertEqual([path for path, mode in modes.items() if mode & 0o222], [])      # read-only everywhere
+        self.assertEqual([path for path, mode in modes.items() if mode & 0o004 == 0], [])  # world-readable
+        self.assertEqual(modes["bin/tesseract"], 0o555)                                    # execute kept, write dropped
+
+    def test_pre_fix_guard_fails_and_names_the_untraversable_directory(self):
+        pre_fix = self.guard.replace(PERMISSION_START + " ", "")
+        self.assertNotEqual(pre_fix, self.guard)
+        root = self.tree()
+        for shell, result in self.run_guard(root, pre_fix):
+            self.assertNotEqual(result.returncode, 0, shell)
+            self.assertIn("untraversable directory under", result.stderr)
+            self.assertIn(f"{root}/worker", result.stderr)
+            self.assertIn("dr-xr--r--", result.stderr)                     # the offending mode is reported
+
+    def test_other_untraversable_or_unreadable_entries_still_fail_with_paths_and_modes(self):
+        cases = {   # label: (tree overrides, message, path, mode string)
+            "nested untraversable directory": ({"share/tessdata": 0o744}, "untraversable directory under", "share/tessdata", "dr-xr--r--"),
+            "directory not world-readable": ({"lib": 0o711}, "unreadable file under", "lib", "dr-x--x--x"),
+            "file not world-readable": ({"lib/libleptonica.so.6": 0o640}, "unreadable file under", "lib/libleptonica.so.6", "-r--r-----"),
+        }
+        for label, (modes, message, path, mode) in cases.items():
+            with self.subTest(label):
+                root = self.tree(**modes)
+                for shell, result in self.run_guard(root):
+                    self.assertNotEqual(result.returncode, 0, f"{shell} accepted {label}")
+                    self.assertIn(message, result.stderr, shell)
+                    self.assertIn(f"{root}/{path}", result.stderr, shell)
+                    self.assertIn(mode, result.stderr, shell)
+
+    def test_guard_fails_closed_when_the_tree_cannot_be_inspected(self):
+        checks = self.guard[self.guard.index('bad="$(find'):]                # the two guards alone
+        root = self.tree()
+        shutil.rmtree(root)
+        for shell, result in self.run_guard(root, checks):
+            self.assertNotEqual(result.returncode, 0, shell)
+            self.assertIn("permission check could not inspect", result.stderr, shell)
+        root = self.tree()
+        os.chmod(root / "share", 0o000)                                      # even the owner cannot descend
+        for shell, result in self.run_guard(root, checks):
+            self.assertNotEqual(result.returncode, 0, shell)
+            self.assertIn("permission check could not inspect", result.stderr, shell)
 
 
 if __name__ == "__main__":

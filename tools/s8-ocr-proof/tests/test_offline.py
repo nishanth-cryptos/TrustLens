@@ -277,26 +277,27 @@ class StaticTests(unittest.TestCase):
         try:
             self.assertEqual(harness.configuration_errors(lock), [])
             # Build-gate evaluation must use the same real, pinned closure root.
-            self.assertEqual(harness.build_gate(lock), [])
+            self.assertEqual(sorted(b.split(":")[0] for b in harness.build_gate(lock)), ["PB-13", "PB-14"])
         finally:
             harness.CLOSURE_ROOT = saved
         still_open = {r["id"] for r in lock["requirements"] if r["phase"] == "PRE_BUILD" and r["status"] == "OPEN"}
-        # PB-02/PB-08/PB-13 are conditionally accepted for build-only (PB-13 renewed for the amended N1 guard at
-        # b62efb1); PB-14 authorizes the first construction plus one build-only retry after a fresh N2 preflight.
+        # PB-02/PB-08 stay conditionally accepted for build-only. PB-13 (renewed for b62efb1) is OPEN again because
+        # the permission correction after the failed retry is build-affecting; PB-14's one retry was consumed.
         # Actual protected-container restart state and proof runtime remain unverified.
-        self.assertEqual(still_open, set())
+        self.assertEqual(still_open, {"PB-13", "PB-14"})
         for rid in ("PB-02", "PB-08"):
             item = next(r for r in lock["requirements"] if r["id"] == rid)
             self.assertEqual(item["status"], "SATISFIED")
             self.assertIn("6200838093", item["evidence"])
         pb13 = next(r for r in lock["requirements"] if r["id"] == "PB-13")
-        self.assertEqual(pb13["status"], "SATISFIED")  # renewed only for the reviewed amended-guard revision
+        self.assertEqual(pb13["status"], "OPEN")  # the b62efb1 decision does not cover the permission correction
         for kept in ("6200838093", "5d7f88035cd25f184572df9969b4411188afd8bc", "SOURCE RE-REVIEW REQUIRED",   # history kept
-                     "6318871714", "b62efb1a0dfe904daec9fd769de353776ad94b3a"):
+                     "6318871714", "b62efb1a0dfe904daec9fd769de353776ad94b3a", "untraversable directory under /opt/tl"):
             self.assertIn(kept, pb13["evidence"])
         pb14 = next(r for r in lock["requirements"] if r["id"] == "PB-14")
-        self.assertEqual(pb14["status"], "SATISFIED")
-        for kept in ("6205866315", "6318871714", "ONE additional isolated build-only retry", "NOT authorized: harness.py run"):
+        self.assertEqual(pb14["status"], "OPEN")  # the one additional retry was consumed by the failed build
+        for kept in ("6205866315", "6318871714", "ONE additional isolated build-only retry", "NOT authorized: harness.py run",
+                     "retry authorized in comment 6318871714 was consumed"):
             self.assertIn(kept, pb14["evidence"])
         # An image vulnerability review and separate OCR run authorization remain mandatory.
         for rid in ("PE-08", "PE-09"):
@@ -304,8 +305,8 @@ class StaticTests(unittest.TestCase):
             self.assertEqual(item["phase"], "PRE_EXECUTION")
             self.assertEqual(item["status"], "OPEN")
         result = subprocess.run([sys.executable, str(ROOT / "harness.py"), "check-lock"], capture_output=True, text=True)
-        self.assertEqual(result.returncode, 0)
-        self.assertIn("PRE_BUILD: READY", result.stdout)
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("PRE_BUILD: BLOCKED", result.stdout)
         self.assertIn("PRE_EXECUTION: BLOCKED", result.stdout)
 
     def test_acquire_refuses_non_https_and_repository_workdirs(self):

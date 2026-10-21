@@ -13,9 +13,13 @@
 # those exact local paths (no glob, no package lists, no removals), and the installed versions are checked afterwards.
 #
 # Permissions (nonroot runtime UID 65534): every COPY from the build context sets its image-side mode explicitly
-# with --chmod=0444 and names individual files, so host scratch modes (0600) never reach the image. /opt/tl is then
-# made read-only (a-w), a root guard checks that every file is world-readable and every directory world-traversable,
-# and a final RUN executed AS UID 65534 opens every runtime script and the model.
+# with --chmod=0444 and names individual files, so host scratch modes (0600) never reach the image. In the BuildKit
+# copy implementation the --chmod mode is passed to fsutil as CopyInfo.Mode (moby/buildkit 4c7542a,
+# solver/llbsolver/file/backend.go L279-281), and fsutil's copy.Copy creates the destination path with that mode
+# instead of 0755 (tonistiigi/fsutil c1c5bff, copy/copy.go L85-89); the daemon's bundled version is not verified.
+# The COPY-created /opt/tl/worker is therefore set to 0555 explicitly by root. /opt/tl is then made read-only
+# (a-w), a root guard checks that every file is world-readable and every directory world-traversable (listing each
+# offending path and mode), and a final RUN executed AS UID 65534 opens every runtime script and the model.
 
 ARG BASE_IMAGE
 
@@ -169,9 +173,12 @@ RUN --network=none set -eu; \
     /opt/tl/bin/tesseract --version > /opt/tl/share/build-evidence/tesseract-version.txt 2>&1; \
     ldd /opt/tl/bin/tesseract > /opt/tl/share/build-evidence/tesseract-ldd.txt; \
     for lib in /opt/tl/lib/libleptonica.so*; do echo "== $lib"; ldd "$lib"; done > /opt/tl/share/build-evidence/leptonica-ldd.txt; \
+    chmod 0555 /opt/tl/worker; \
     chmod -R a-w /opt/tl; \
-    test -z "$(find /opt/tl ! -type l ! -perm -o+r)" || { echo "unreadable file under /opt/tl" >&2; exit 1; }; \
-    test -z "$(find /opt/tl -type d ! -perm -o+x)" || { echo "untraversable directory under /opt/tl" >&2; exit 1; }
+    bad="$(find /opt/tl ! -type l ! -perm -o+r -exec ls -ld -- {} +)" || { echo "permission check could not inspect /opt/tl" >&2; exit 1; }; \
+    test -z "$bad" || { printf 'unreadable file under /opt/tl:\n%s\n' "$bad" >&2; exit 1; }; \
+    bad="$(find /opt/tl -type d ! -perm -o+x -exec ls -ld -- {} +)" || { echo "permission check could not inspect /opt/tl" >&2; exit 1; }; \
+    test -z "$bad" || { printf 'untraversable directory under /opt/tl:\n%s\n' "$bad" >&2; exit 1; }
 # The ldd records are linkage evidence for review (D4 item 5). They do NOT prove PNG-only capability: Leptonica's
 # built-in BMP/PNM/SPIX readers and Tesseract's file-list fallback remain (E6, E10). PNG-only is enforced by Tier 2.
 

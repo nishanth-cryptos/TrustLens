@@ -30,6 +30,7 @@ import difflib
 import hashlib
 import io
 import json
+import posixpath
 import re
 import subprocess
 import sys
@@ -590,10 +591,16 @@ def dockerfile_permission_findings(text: str, required_reads: tuple, runtime_gua
     """Static review (Fix 2). Every COPY from the build context names individual files and sets an explicit octal
     --chmod that every user can read (nonroot UID 65534) and nobody but root can write. The final USER is 65534:65534,
     followed by a `RUN --network=none` read check executed as that UID that opens every required file. The runtime
-    stage also keeps `chmod -R a-w /opt/tl` and the world-readable / world-traversable guards. Static only: whether
-    the image really starts as UID 65534 needs a later, authorized Docker build and run."""
+    stage also keeps `chmod -R a-w /opt/tl` and the world-readable / world-traversable guards. fsutil's copy.Copy
+    creates a COPY's destination directory with the --chmod mode (tonistiigi/fsutil c1c5bff, copy/copy.go L85-89, via
+    moby/buildkit 4c7542a solver/llbsolver/file/backend.go L279-281), so a COPY into /opt/tl/<dir>
+    with a mode that is not world-traversable must be followed, before the final USER 65534:65534, by root setting
+    exactly that directory to 0555. Static only: whether the image really starts as UID 65534 needs a later,
+    authorized Docker build and run."""
     findings = []
-    for args in re.findall(r"(?m)^COPY\s+(.*)$", text):
+    final_user = text.rfind("\nUSER 65534:65534")
+    for copy in re.finditer(r"(?m)^COPY\s+(.*)$", text):
+        args = copy.group(1)
         tokens = args.split()
         flags = [t for t in tokens if t.startswith("--")]
         if any(f.startswith("--from=") for f in flags):
@@ -610,6 +617,21 @@ def dockerfile_permission_findings(text: str, required_reads: tuple, runtime_gua
             findings.append(f"COPY --chmod={chmod} is group- or world-writable: {args}")
         if any(source.endswith("/") for source in operands[:-1]):
             findings.append(f"COPY of a directory leaves image-side modes implicit: {args}")
+        destination = operands[-1].rstrip("/") if operands[-1].endswith("/") else posixpath.dirname(operands[-1])
+        if mode & 0o001 == 0 and destination.startswith("/opt/tl/"):
+            before_user = text[copy.end():final_user] if final_user > copy.end() else ""
+            fixed = re.escape(destination)
+            repair = re.search(rf'chmod 0555 {fixed}(;|\s)|\["/bin/chmod", "0555", "{fixed}"\]', before_user)
+            if not repair:
+                findings.append(f"COPY --chmod={chmod} leaves {destination} untraversable: no `chmod 0555 {destination}` "
+                                f"as root before the final USER 65534:65534")
+            else:
+                upto = text[:copy.end() + repair.start()]
+                stage = upto[upto.rfind("\nFROM "):] if "\nFROM " in upto else upto
+                users = re.findall(r"(?m)^USER\s+(\S+)\s*$", stage)
+                inherits_nonroot = not re.search(r"(?m)^FROM \$\{BASE_IMAGE\}", stage)   # e.g. FROM ${RUNTIME_IMAGE}
+                if (users and users[-1] not in ("0", "0:0", "root")) or (inherits_nonroot and not users):
+                    findings.append(f"`chmod 0555 {destination}` does not run as root (USER 0:0 in this stage)")
     users = re.findall(r"(?m)^USER\s+(\S+)\s*$", text)
     if not users or users[-1] != "65534:65534":
         findings.append("the final USER is not 65534:65534")
