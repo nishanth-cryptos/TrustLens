@@ -648,14 +648,20 @@ def dockerfile_python_findings(worker: str, probe: str) -> list:
     return findings
 
 
-OFFLINE_INSTALL_REQUIRED = (
+# The fail-closed N1 network guard: each rule must appear verbatim (fixed-format parsing of interface flags and of
+# the three kernel network tables before any value is trusted).
+NETWORK_GUARD_RULES = (
     'test -r /sys/class/net/lo/flags && test -r /proc/net/route && test -r /proc/net/ipv6_route && test -r /proc/net/if_inet6',
     'for iface in /sys/class/net/*; do',
     'test "${iface##*/}" = "bonding_masters"',
+    'flags="$(awk \'NR == 1 && length($0) <= 10 && /^0x(0|[1-9a-f][0-9a-f]*)$/ {v = $0} END {if (NR != 1 || v == "") exit 1; print v}\' "$iface/flags")"',
+    'test "$((flags & 8))" -ne 0',
     'test "$((flags & 1))" -eq 0',
-    "awk 'NR>1 && $1!=\"lo\" {exit 1}' /proc/net/route",
-    "awk 'NF && $NF!=\"lo\" {exit 1}' /proc/net/ipv6_route",
-    "awk 'NF && $NF!=\"lo\" {exit 1}' /proc/net/if_inet6",
+    'awk \'NR == 1 {sub(/ +$/, ""); if ($0 != "Iface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT") bad = 1; next} !(NF == 11 && $1 == "lo" && ($2 $3 $4 $8) ~ /^[0-9A-F]+$/ && length($2) == 8 && length($3) == 8 && length($4) == 4 && length($8) == 8 && ($5 $6 $7 $9 $10 $11) ~ /^[0-9]+$/) {bad = 1} END {exit (NR < 1 || bad)}\' /proc/net/route',
+    'awk \'!(NF == 10 && $10 == "lo" && ($1 $2 $3 $4 $5 $6 $7 $8 $9) ~ /^[0-9a-f]+$/ && length($1) == 32 && length($2) == 2 && length($3) == 32 && length($4) == 2 && length($5) == 32 && length($6) == 8 && length($7) == 8 && length($8) == 8 && length($9) == 8) {bad = 1} END {exit bad}\' /proc/net/ipv6_route',
+    'awk \'!(NF == 6 && $6 == "lo" && ($1 $2 $3 $4 $5) ~ /^[0-9a-f]+$/ && length($1) == 32 && length($2) == 2 && length($3) == 2 && length($4) == 2 && length($5) == 2) {bad = 1} END {exit bad}\' /proc/net/if_inet6',
+)
+OFFLINE_INSTALL_REQUIRED = NETWORK_GUARD_RULES + (
     "rm -rf /etc/apt/sources.list /etc/apt/sources.list.d /var/lib/apt/lists",
     'test ! -e /etc/apt/sources.list && test -z "$(ls -A /etc/apt/sources.list.d)"',
     'test "$(ls -A | LC_ALL=C sort)" = "$({ echo SHA256SUMS; echo selection.txt; cut -d\' \' -f1 selection.txt; } | LC_ALL=C sort)"',

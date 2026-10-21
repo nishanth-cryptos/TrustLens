@@ -221,12 +221,9 @@ class StaticTests(unittest.TestCase):
             self.assertNotIn("apt-get update", step)
         self.assertEqual(text.count("# OFFLINE-PACKAGES"), 2)
         self.assertNotIn('test "$(ls /sys/class/net)" = "lo"', text)
-        for network_guard in ('test -r /sys/class/net/lo/flags',
-                              'test "$((flags & 1))" -eq 0',
-                              "awk 'NR>1 && $1!=\"lo\" {exit 1}' /proc/net/route",
-                              "awk 'NF && $NF!=\"lo\" {exit 1}' /proc/net/ipv6_route",
-                              "awk 'NF && $NF!=\"lo\" {exit 1}' /proc/net/if_inet6"):
+        for network_guard in harness.NETWORK_GUARD_RULES:
             self.assertEqual(text.count(network_guard), 4)  # all four shell RUNs retain the same fail-closed guard
+        self.assertNotIn("NR>1", text)                         # the route header is matched, never blindly skipped
         self.assertIn("sha256sum -c SHA256SUMS", text)
         for flag in ("-DDISABLE_CURL=ON", "-DDISABLE_ARCHIVE=ON", "-DGRAPHICS_DISABLED=ON", "-DBUILD_TRAINING_TOOLS=OFF",
                      "-DENABLE_NATIVE=OFF", "-DOPENMP_BUILD=OFF", "-DENABLE_JPEG=OFF", "-DENABLE_TIFF=OFF"):
