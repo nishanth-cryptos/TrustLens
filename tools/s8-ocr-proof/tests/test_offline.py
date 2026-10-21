@@ -301,11 +301,22 @@ class StaticTests(unittest.TestCase):
                      "retry authorized in comment 6318871714 was consumed", "6320631134",
                      "exactly ONE additional build-only attempt", "consumed whether it succeeds or fails"):
             self.assertIn(kept, pb14["evidence"])
-        # Build evidence reviews, an image vulnerability review and separate OCR run authorization remain mandatory.
-        for rid in ("PE-05", "PE-06", "PE-08", "PE-09"):
+        # The build-evidence review (pending Python-zlib linkage and N1/F4 reconciliation), an image vulnerability
+        # review and separate OCR run authorization remain mandatory.
+        for rid in ("PE-05", "PE-08", "PE-09"):
             item = next(r for r in lock["requirements"] if r["id"] == rid)
             self.assertEqual(item["phase"], "PRE_EXECUTION")
             self.assertEqual(item["status"], "OPEN")
+        pe05 = next(r for r in lock["requirements"] if r["id"] == "PE-05")
+        for kept in ("6322860030", "ACCEPT_WITH_LIMITATIONS", "f4eb93cd089354f3c8d849fd706028412d161be9f33fb491ad86664baf5ba51b",
+                     "NOT claimed to be offline", "PE-05 REMAINS OPEN"):
+            self.assertIn(kept, pe05["evidence"])
+        pe06 = next(r for r in lock["requirements"] if r["id"] == "PE-06")   # local FROM resolution accepted, with limits
+        self.assertEqual(pe06["status"], "SATISFIED")
+        for kept in ("6322860030", "sha256:482c806e43d935988f548de57539fc9b25afd6293219a5d55468f4e875c1e1e6",
+                     "sha256:5c02b7b52bcba83f15f537be5544ca679a70a5191d2aca8beb4cdc8803e48799",
+                     "does not establish zero registry metadata/auth traffic"):
+            self.assertIn(kept, pe06["evidence"])
         acceptance = [r for r in lock["requirements"] if r["phase"] == "ACCEPTANCE"]
         self.assertEqual(sorted(r["id"] for r in acceptance), [f"AC-0{i}" for i in range(1, 8)])
         for item in acceptance:      # reviews stay OPEN; artifacts are never claimable in the lock

@@ -28,6 +28,13 @@ No OCR run is authorized.
 
 **BUILD RETRY (2026-10-21): failed closed at runtime stage 5/7** with `untraversable directory under /opt/tl`, after the network guard, compilation and installation had passed. The log does not name the directory. The likely offending path is `/opt/tl/worker`, **inferred** from the BuildKit/fsutil copy implementation (fsutil `copy.Copy` creates a COPY's destination directory with its `--chmod` mode: tonistiigi/fsutil `c1c5bff` `copy/copy.go` L85-89) and from the log (the readability check, which also covers directories, passed); the failed build did not establish it. The proposed correction sets the COPY-created `/opt/tl/worker` and `/opt/tl/probe` to 0555 as root and makes the guards list each offending path and mode. After an independent Codex APPROVE of that correction (committed as `5cd1e40`), **PB-13 was renewed for construction only and PB-14 authorizes exactly ONE further build-only attempt** (PR #56 comment `6320631134`); `check-lock` reports `PRE_BUILD: READY`. That attempt still requires a fresh N2 preflight (protected containers restart=no, exited, no PROBLEM) and a newly written matching N2-ACK.json, and is consumed whether it succeeds or fails. The final nonroot image, the daemon's BuildKit behaviour and any worker/probe execution remain undemonstrated.
 
+**SUCCESSFUL BUILD AND EVIDENCE DISPOSITIONS (2026-10-21):** the authorized attempt of `4c7b0bb` built the runtime image `sha256:482c806e43d935988f548de57539fc9b25afd6293219a5d55468f4e875c1e1e6` and the probe image `sha256:5c02b7b52bcba83f15f537be5544ca679a70a5191d2aca8beb4cdc8803e48799` (build-input fingerprint `af3cf235…c028252`). In PR #56 comment `6322860030` the requester-declared Security owner accepted:
+- **F1:** ACCEPT_WITH_LIMITATIONS. The cached install/compile steps are supported by the preserved earlier log (SHA-256 `f4eb93cd089354f3c8d849fd706028412d161be9f33fb491ad86664baf5ba51b`); compilation did not rerun in the final attempt.
+- **PE-06:** SATISFIED. Local `FROM` resolution against the exact runtime digest was observed, which does not prove zero registry metadata/auth traffic.
+- **F4:** documented. Dockerfile `RUN` steps were network-disabled, but Docker/BuildKit registry metadata and authentication traffic occurred for the digest-pinned base, so the whole build is **not** claimed to be offline.
+
+**PE-05 stays OPEN** pending Python-zlib linkage evidence (one reviewed, container-free image export) and reconciliation of N1's network wording. PE-08, PE-09 and AC-01–AC-07 stay OPEN, and no OCR has run.
+
 ## Where things live
 
 | In this branch (reviewable sources) | In `<scratch-root>/<workdir>`, outside the repository (disposable) |
@@ -206,7 +213,7 @@ Set `R` to an approved canonical scratch root (for example `R="$(python3 -c 'imp
 
 ## Offline package installation (PB-11 option O)
 
-The image build is **required to have no network access**: every `RUN` uses `RUN --network=none`. The additional fail-closed N1 guard verifies no enabled non-loopback interfaces, non-loopback IPv4/IPv6 routes or IPv6 addresses; it does not mistake DOWN kernel tunnel devices for usable connectivity. The updated guard is **pending owner Security re-review**, not yet proven by a successful full image build.
+Every Dockerfile `RUN` instruction is **required to have no network access** (`RUN --network=none`). This does not cover the privileged Docker/BuildKit control plane: resolving the digest-pinned base image produced registry metadata/authentication traffic in the 2026-10-21 build (F4), so the build as a whole is not claimed to be offline. The additional fail-closed N1 guard verifies no enabled non-loopback interfaces, non-loopback IPv4/IPv6 routes or IPv6 addresses; it does not mistake DOWN kernel tunnel devices for usable connectivity. The updated guard was approved for construction (PB-13) and passed in every shell `RUN` step that executed in the 2026-10-21 builds; it is silent on success, so the evidence is each step's successful exit.
 - `debclosure.py --index-dir <dir with the verified InRelease and Packages.xz> --output packages/closure-manifest.json`
   re-checks each InRelease against the lock-pinned SHA-256 and each `Packages.xz` against its InRelease entry, then
   resolves the closure of the pinned build and runtime packages: Pre-Depends and Depends, alternatives (an already
