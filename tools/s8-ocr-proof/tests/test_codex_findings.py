@@ -448,10 +448,10 @@ class F5LockPhases(unittest.TestCase):
 
     def test_check_lock_cli_reports_each_phase(self):
         result = subprocess.run([sys.executable, str(ROOT / "harness.py"), "check-lock"], capture_output=True, text=True)
-        self.assertEqual(result.returncode, 1)  # PB-13/PB-14 reopened: permission correction needs review and a new authorization.
-        self.assertIn("PRE_BUILD: BLOCKED", result.stdout)
-        self.assertIn("PB-13", result.stdout)
-        self.assertIn("PB-14", result.stdout)
+        self.assertEqual(result.returncode, 0)  # PB-13/PB-14 renewed for 5cd1e40; actual Docker preflight has not run.
+        self.assertIn("PRE_BUILD: READY (0 open)", result.stdout)
+        for gate in ("PE-05", "PE-06", "PE-08", "PE-09", "AC-02", "AC-03", "AC-04", "AC-05", "AC-07"):
+            self.assertIn(f"OPEN  {gate}:", result.stdout)
         self.assertIn("PRE_EXECUTION: BLOCKED", result.stdout)
         self.assertIn("ACCEPTANCE: OPEN (never gates build or run)", result.stdout)
         self.assertNotIn("SATISFIED", result.stdout)
