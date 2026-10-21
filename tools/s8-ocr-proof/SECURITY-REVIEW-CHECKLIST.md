@@ -49,10 +49,21 @@ reviewer, the reviewed commit, the decision and any conditions. A builder self-c
 
 **Owner/Security decision:** Conditionally accepted for the standalone proof's first build, **not for execution or release**. Recorded for the user-declared Security authority against commit `5d7f88035cd25f184572df9969b4411188afd8bc` with PR #56 comment 6200838093.
 
-## Subsequent N1 amendment review — pending, 2026-10-16
+## Subsequent N1 amendment review — 2026-10-16 (renewed 2026-10-21, below)
 
 **Previous conditional PB-13 disposition above is retained as historical evidence for source commit `5d7f880`.** It is not an approval of the changed network guard.
 
 An authorized first build failed closed before package installation: `RUN --network=none` on Docker Desktop 4.90.0 exposed DOWN kernel virtual tunnel devices, causing the original `ls /sys/class/net == lo` check to reject the build. Disposable diagnostic builds found no non-loopback routes/IPv6 addresses and only `lo` enabled. The updated guard rejects IFF_UP on any non-loopback interface, non-loopback IPv4/IPv6 routes or IPv6 addresses, as well as unreadable tables/unexpected sysfs entries, while retaining all `--network=none` instructions and offline package pins.
 
 **Re-review requirement:** accountable owner/Security reviewer must inspect the exact modified `Dockerfile.worker`, `harness.py` static requirements, `test_network_guard.py` shell fixture, and offline test/mutation results, before explicitly restoring PB-13 to SATISFIED on the new commit. Changes to unrelated runtime boundaries are not authorized. The build remains blocked until that happens. This first-build failure gives **no PE-05/PE-06 approval**; PE-08/PE-09 are still OPEN.
+
+## PB-13 renewal for the amended N1 guard — 2026-10-21
+
+**Authority:** the requester-declared sole Security approver replied “okay do it” to the explicit PB-13 and PB-14 questions; the decision is recorded in [PR #56 comment 6318871714](https://github.com/nishanth-cryptos/TrustLens/pull/56#issuecomment-6318871714). It is not independent authentication of the Security owner and not an external audit.
+
+**Source reviewed:** `b62efb1a0dfe904daec9fd769de353776ad94b3a` on `phase9-s8-ocr-proof` (the MEDIUM-1 correction: canonical interface-flag parsing before arithmetic, IFF_LOOPBACK on `lo`, the exact `/proc/net/route` header, and well-formed `lo`-only IPv4/IPv6 table lines, identical in all four `RUN --network=none` steps).
+
+- **PB-13: ACCEPT for the synthetic proof-image build only.** Basis: requester-supplied independent Codex report (MEDIUM-1 closed, 0 blocking findings, 117/117 offline tests, 37/37 Dockerfile mutations, 10/10 executable guard mutations, 248/248 guard evaluations); these counts are reviewer-reported. Residual risks accepted for the disposable proof only: root-equivalent Docker operator and shared Docker Desktop VM, unsigned image attestations, unverified Debian mawk and live kernel table formats, unproven BuildKit isolation and build results. The guard must reject unrecognized live data; it must not be weakened to make a build pass.
+- **PB-14: one additional build-only retry**, under the same limits as the first build. It requires the real `PRE_BUILD: READY`, an operator-started Docker Desktop, a fresh read-only N2 preflight and a matching new N2-ACK.json. It does not re-download the `.deb` closure. A single `harness.py build` consumes it.
+
+**NOT approved:** `harness.py run`, P1–P11, real OCR execution, `rebuild`, scanner or SBOM tooling acquisition, changes to PostgreSQL/Keycloak or their Docker resources, integration, migrations, activation, key/evidence store changes, merging. PE-05, PE-06, PE-08, PE-09 and the acceptance gates remain OPEN; a successful build must STOP for evidence review. Any future build-affecting revision requires a renewed PB-13 decision. The 2026-10-16 decision for `5d7f880` remains historical evidence.

@@ -20,9 +20,11 @@ Separate PE-09 authorization and PE-08 vulnerability scan review are required be
 `RUN --network=none` exposed DOWN kernel tunnel interfaces plus `lo`; the original exact
 `ls /sys/class/net == lo` assertion rejected their presence. No non-loopback IPv4 route,
 IPv6 route/address or IFF_UP state was found in two separate isolated diagnostic builds.
-The Dockerfile now uses a fail-closed interface-UP/routing/address guard; **PB-13 has been
-reopened for Security re-review against the amended source before another full build**.
-The actual guard, offline tests and reviewed approval must all pass first. No OCR run is authorized.
+The Dockerfile now uses a fail-closed interface-UP/routing/address guard. **PB-13 was reopened for
+Security re-review and, on 2026-10-21, renewed for the amended source `b62efb1` only** (PR #56 comment
+`6318871714`), with PB-14 extended by **one** additional build-only retry. The retry still requires a fresh N2
+preflight and N2-ACK.json; BuildKit isolation and the guard's behaviour on live kernel data remain unverified.
+No OCR run is authorized.
 
 ## Where things live
 
@@ -113,7 +115,7 @@ and no fingerprint reads it.
 
 | Phase | Contents | Gates |
 | --- | --- | --- |
-| `PRE_BUILD` | PB-01–PB-12 and PB-14 are SATISFIED for the limited synthetic proof (PB-02 signer-key risk accepted; PB-08 Python/zlib conditionally accepted); the earlier PB-13 conditional approval is historical for the original source and must be renewed for the amended N1 guard; **OPEN: PB-13** (amended N1 guard needs owner Security re-review); **SATISFIED: PB-14** (build-only approval; actual N2 record already collected) | `build` |
+| `PRE_BUILD` | PB-01–PB-12 and PB-14 are SATISFIED for the limited synthetic proof (PB-02 signer-key risk accepted; PB-08 Python/zlib conditionally accepted); **SATISFIED: PB-13**, renewed 2026-10-21 for the amended N1 guard at `b62efb1` only (the 2026-10-16 approval of `5d7f880` is historical); **SATISFIED: PB-14** (first build plus one build-only retry; a fresh N2 preflight and N2-ACK.json are required before the retry) | `build` |
 | `PRE_EXECUTION` | Verified in code: local runtime and probe image IDs equal `build.json` (PE-01/02); build logs (PE-03) and every required build-evidence file (PE-04) present as regular, non-symlinked files matching their recorded size and SHA-256, and the evidence equal to what is baked into the runtime image; the build-input fingerprint equal to the current inputs (PE-07). Reviews: build evidence (PE-05), local `FROM` resolution (PE-06), pinned-runtime-image vulnerability scan and finding disposition **before worker execution** (PE-08), and a **separate requester run authorization** (PE-09) | `run` (together with `PRE_BUILD` and the N2 acknowledgement) |
 | `ACCEPTANCE` | Artifacts: rebuild comparison (AC-01), `results.json` (AC-06). Reviews: reproducibility (AC-02), SBOM (AC-03), vulnerability scan (AC-04), licences (AC-05), final review (AC-07) | Nothing; reported as open until produced and reviewed |
 
