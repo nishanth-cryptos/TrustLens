@@ -35,6 +35,8 @@ No OCR run is authorized.
 
 **PE-05 stays OPEN** pending Python-zlib linkage evidence (one reviewed, container-free image export) and reconciliation of N1's network wording. PE-08, PE-09 and AC-01–AC-07 stay OPEN, and no OCR has run.
 
+**PE-05 SATISFIED for static build-evidence review only (2026-10-22, PR #56 comment `6343908889`).** A never-started disposable container (comment `6325610804`) yielded Python's `zlib.cpython-312-aarch64-linux-gnu.so` (SHA-256 `c0f30510…0f06`), whose `DT_NEEDED` is `libz.so.1`, and `libz.so.1` (SHA-256 `6fe00aca…7d65`, equal to the pinned `zlib1g` payload, `SONAME libz.so.1`). Neither has RPATH/RUNPATH, and the required `ZLIB_1.2.0` version is defined. The evidence script **exited 1**: a `set -x` trace polluted its cleanup comparison after every static check had passed. Container removal was confirmed separately ("No such container"). This is static evidence only: no Python import, loader resolution or OCR has been demonstrated. N1/F4 is reconciled: Dockerfile `RUN` steps were network-disabled, but the Docker build as a whole was not offline. PE-08, PE-09 and AC-01–AC-07 stay OPEN.
+
 ## Where things live
 
 | In this branch (reviewable sources) | In `<scratch-root>/<workdir>`, outside the repository (disposable) |
@@ -46,7 +48,7 @@ No OCR run is authorized.
 | `gen_synthetic_png.py`: stdlib synthetic corpus (5x7 bitmap font, `SYNTHETIC TEST` text) | `results.json`: P1–P11 outcomes and measurements |
 | `docker/Dockerfile.worker`, `docker/Dockerfile.probe` | |
 | `dependencies.lock.json`: pinned candidates and OPEN items | |
-| `acquire.py`: the only networked step; `harness.py`: operator harness | |
+| `acquire.py`: the only step that downloads dependencies (Docker/BuildKit also contacts the registry for base-image metadata during `harness.py build`; F4); `harness.py`: operator harness | |
 | `pathguard.py`: shared fail-closed output-path containment (F1) | |
 | `debclosure.py`: offline `.deb` closure resolver; `packages/closure-manifest.json`: its pinned output (PB-11 option O, approved 2026-10-16) | `downloads/debs/{build,runtime}/<sha256>.deb` |
 | `tests/test_offline.py`, `tests/test_codex_findings.py`, `tests/test_f5_build_integrity.py`, `tests/test_context_and_permissions.py`, `tests/test_python_path.py`, `tests/test_debclosure.py`, `tests/fixtures.py`: offline checks and regressions (no Docker, no network) | |
@@ -192,7 +194,7 @@ Set `R` to an approved canonical scratch root (for example `R="$(python3 -c 'imp
     "reviewed_restart_policies": {"trustlens-postgres-dev": "<observed>", "trustlens-keycloak-dev": "<observed>"},
     "accepted_startup_consequences": true}
    ```
-4. **Acquire** (the only networked step):
+4. **Acquire** (the only dependency-download step; F4: `harness.py build` still causes Docker/BuildKit registry metadata/auth traffic for the pinned base):
    `apps/backend/.venv/bin/python tools/s8-ocr-proof/acquire.py $S --authorized-by "$NAME" --pull-base --debs`
    (`--debs` fetches the 109 closure packages, about 97 MB, from `snapshot.debian.org`. They were acquired and verified
    on 2026-10-16 in workdir `proof-20261016` (see `PREBUILD-EVIDENCE.md`), so omit `--debs` there.)

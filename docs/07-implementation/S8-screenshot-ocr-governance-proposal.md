@@ -455,6 +455,8 @@ Required proof: malformed PNG, polyglot, decompression bomb, dimension and outpu
 3. **Compilation** uses only the verified local inputs, with no network where the selected build environment supports it (for example `--network none` on the build step). If a step can't run without network, it is **OPEN** until reviewed, never silently allowed. If any build container must have network access, its reachability to existing services (for example ports published on the host loopback, through `host.docker.internal`) must be assessed first. If it can't be shown to be isolated, STOP.
 4. **OCR execution** is always `--network none`, without exception. This covers the worker and every probe run.
 
+> **N1 scope qualification (2026-10-22, F4; PR #56 comment `6343908889`):** rules 1 and 3 govern the steps the proof controls. Every Dockerfile `RUN` step was network-disabled (`RUN --network=none` with fail-closed guards). However, the privileged Docker/BuildKit control plane separately contacted Docker Hub for registry metadata and authentication while resolving the digest-pinned base image during `harness.py build`. Rule 1's "only step with network access" therefore applies to dependency *downloads*, not to that control-plane traffic, and the Docker build as a whole must not be described as fully offline. No unauthorized apt or source download was demonstrated. This accepted scope limitation does not weaken rule 3 or rule 4 and is not evidence of zero container egress at run time.
+
 **Test matrix (each test passes only on observed evidence):**
 
 | # | Test | Pass condition |

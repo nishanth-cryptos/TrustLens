@@ -100,3 +100,18 @@ The authorized retry of `b62efb1` failed closed at runtime stage 5/7 (`untravers
 - **F2: one bounded, container-free `docker image save` export** of the runtime image is authorized, but only after independent review of the exact path-safe extraction procedure. It covers offline ELF inspection of Python's zlib extension and its libz dependency, plus comparison of the six image-resident build-evidence files. No container creation or start, image code execution, download, build or scanner run.
 
 **Still OPEN:** PE-05 (pending the F2 results, explicit reconciliation of N1's acquisition-only network wording with F4, and Security review), PE-08, PE-09 and AC-01–AC-07. No `harness.py run`, rebuild, container mutation, integration, migration, activation, merge or new build retry is authorized.
+
+## PE-05 static build-evidence closure — 2026-10-22
+
+**Authority:** the requester-declared Security owner replied “okay lets do it”, recorded in [PR #56 comment 6343908889](https://github.com/nishanth-cryptos/TrustLens/pull/56#issuecomment-6343908889). It is not independently authenticated identity or an external audit. The collection method was authorized separately in [comment 6325610804](https://github.com/nishanth-cryptos/TrustLens/pull/56#issuecomment-6325610804): one never-started container, two `docker cp -L` copies and one `docker container rm` by exact ID, in place of the container-free export from comment 6322860030.
+
+**Locally verified on 2026-10-22** (private scratch `pe05-zlib-6325610804-v2/`):
+- `SHA256SUMS` verifies. Python's zlib extension has SHA-256 `c0f3051080bd4a5dab28c2f1e2879a19c129fafac8c1aa7becc49edad73c0f06`; `libz.so.1` has SHA-256 `6fe00acadf8119ff245855e5dcc7f26c6c0ffaf4bfa2baa88feab58f23727d65`, equal to `libz.so.1.3.1` in the pinned `zlib1g` package.
+- Both are AArch64 ELF shared objects. `objdump -p` shows the extension needs `libz.so.1`, `libc.so.6` and `ld-linux-aarch64.so.1`; libz has `SONAME libz.so.1`; neither has RPATH/RUNPATH. The required `ZLIB_1.2.0` is one of libz's 15 version definitions, and the saved `objdump` texts reproduce exactly.
+- The container was created `--pull=never --network=none --read-only --user 65534:65534 --cap-drop ALL --entrypoint /bin/false` from the exact runtime index and was never started (status `created`, zero `StartedAt`, no mounts).
+
+**Cleanup-reporting false negative:** the evidence script **exited with status 1**, not 0. All static ELF and reference-hash checks had passed, but its `set -x` trace polluted the captured `docker container rm` output, so the exact-ID comparison failed, and the script's own success/cleanup self-check is recorded as FAILED. The transcript shows the `rm` ran once by exact ID and the script's follow-up inspect returned "No such container". `cleanup-inspect.err` holds only the pre-removal inspect trace. An independent read-only check on 2026-10-22 returned "No such container", found no proof containers, and showed both protected containers `exited|no`.
+
+**N1/F4 reconciled:** every Dockerfile `RUN` step was network-disabled, but Docker/BuildKit contacted Docker Hub for registry metadata and authentication while resolving the pinned base, so the Docker build as a whole was **not** offline. N1 rule 1 is qualified in the governance proposal.
+
+**Decision:** PE-05 is SATISFIED for static build-evidence review only, with F1 still ACCEPT_WITH_LIMITATIONS. No Python import, loader resolution, symbol binding, PNG-only reachability or OCR result is claimed, and the evidence is local and unsigned. **Still OPEN:** PE-08, PE-09 and AC-01–AC-07.

@@ -301,15 +301,19 @@ class StaticTests(unittest.TestCase):
                      "retry authorized in comment 6318871714 was consumed", "6320631134",
                      "exactly ONE additional build-only attempt", "consumed whether it succeeds or fails"):
             self.assertIn(kept, pb14["evidence"])
-        # The build-evidence review (pending Python-zlib linkage and N1/F4 reconciliation), an image vulnerability
-        # review and separate OCR run authorization remain mandatory.
-        for rid in ("PE-05", "PE-08", "PE-09"):
+        # An image vulnerability review and separate OCR run authorization remain mandatory.
+        for rid in ("PE-08", "PE-09"):
             item = next(r for r in lock["requirements"] if r["id"] == rid)
             self.assertEqual(item["phase"], "PRE_EXECUTION")
             self.assertEqual(item["status"], "OPEN")
-        pe05 = next(r for r in lock["requirements"] if r["id"] == "PE-05")
+        pe05 = next(r for r in lock["requirements"] if r["id"] == "PE-05")   # static build-evidence review only
+        self.assertEqual(pe05["status"], "SATISFIED")
         for kept in ("6322860030", "ACCEPT_WITH_LIMITATIONS", "f4eb93cd089354f3c8d849fd706028412d161be9f33fb491ad86664baf5ba51b",
-                     "NOT claimed to be offline", "PE-05 REMAINS OPEN"):
+                     "NOT claimed to be offline", "PE-05 REMAINS OPEN",                       # history kept
+                     "6343908889", "STATIC BUILD-EVIDENCE REVIEW ONLY",
+                     "c0f3051080bd4a5dab28c2f1e2879a19c129fafac8c1aa7becc49edad73c0f06",
+                     "6fe00acadf8119ff245855e5dcc7f26c6c0ffaf4bfa2baa88feab58f23727d65",
+                     "exited with status 1 (rc=1), NOT 0", "must not be described as fully offline"):
             self.assertIn(kept, pe05["evidence"])
         pe06 = next(r for r in lock["requirements"] if r["id"] == "PE-06")   # local FROM resolution accepted, with limits
         self.assertEqual(pe06["status"], "SATISFIED")
