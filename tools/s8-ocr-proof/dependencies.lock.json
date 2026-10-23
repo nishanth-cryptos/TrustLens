@@ -1,0 +1,447 @@
+{
+  "lock_version": 2,
+  "status": "PROPOSED - NOT APPROVED. Candidates from the S8 governance document (D4, §4A).",
+  "evidence_reference": "docs/07-implementation/S8-screenshot-ocr-governance-proposal.md E2-E5 (observed 2026-10-15)",
+  "phase_rules": {
+    "REVIEW": "status is OPEN or SATISFIED; SATISFIED needs non-empty evidence and is set only through a reviewed change, never by a tool",
+    "ARTIFACT": "status is always PRODUCED_AT_STAGE; the harness verifies it (PRE_EXECUTION: named verifier over real files, the build-input fingerprint and the local images; ACCEPTANCE: a regular JSON file); the lock can never claim it",
+    "PRE_BUILD": "must be fully satisfied before an approved construction step (harness.py build)",
+    "PRE_EXECUTION": "must be satisfied, together with PRE_BUILD, before harness.py run; produced by the build plus review",
+    "ACCEPTANCE": "after the run; never gates build or run; reported as open until produced and reviewed"
+  },
+  "sources": [
+    {
+      "name": "tesseract",
+      "version": "5.5.3",
+      "commit": "db0ec62f81b0737fbbe184d8fea40af5738f8eef",
+      "url": "https://github.com/tesseract-ocr/tesseract/archive/refs/tags/5.5.3.tar.gz",
+      "file": "tesseract-5.5.3.tar.gz",
+      "bytes": 1916037,
+      "sha256": "9218e62793116d42a9f6d14cd9348518b27f382096eea3d0f2d1a24616bb5884",
+      "licence": "Apache-2.0",
+      "sha512": "c55ad36af09f4ba48df2f32a3e2413764aeee330f5f5468e92be59572fd90b388f0ea3cb7dc0cc89c21ff68f76cd0baaee1ca0a45e648dc8f4819aefdc2749c2",
+      "corroboration": [
+        "Homebrew formula SHA-256 (same URL)",
+        "Alpine aports community/tesseract-ocr/APKBUILD pkgver=5.5.3 SHA-512 (observed 2026-10-15, aports master)"
+      ]
+    },
+    {
+      "name": "leptonica",
+      "version": "1.87.0",
+      "url": "https://github.com/DanBloomberg/leptonica/releases/download/1.87.0/leptonica-1.87.0.tar.gz",
+      "file": "leptonica-1.87.0.tar.gz",
+      "bytes": 14802808,
+      "sha256": "c73363397f96eb1295602bf44d708a994ad42046c791bf03ea0505d829bdb6a7",
+      "licence": "BSD-2-Clause-style (leptonica-license.txt)",
+      "sha512": "b689b1cfe4d5b884e7ede9d949149410117bbfbb85a1790c0516919f27e8746783c8a04cac9300c761d2736184fb4b2337ab6c3a2653fa9f69f82ba19b493a2d",
+      "corroboration": [
+        "Homebrew formula SHA-256 (same URL)",
+        "Alpine aports community/leptonica/APKBUILD pkgver=1.87.0 SHA-512 (observed 2026-10-15, aports master)"
+      ]
+    },
+    {
+      "name": "eng.traineddata",
+      "variant": "tessdata_fast",
+      "commit": "923915d4ced2a7235221788285785a29c4a42d4a",
+      "url": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/923915d4ced2a7235221788285785a29c4a42d4a/eng.traineddata",
+      "file": "eng.traineddata",
+      "bytes": 4113088,
+      "sha256": "7d4322bd2a7749724879683fc3912cb542f19906c83bcc1a52132556427170b2",
+      "licence": "Apache-2.0 (repository LICENSE, commit 27cfc71a8874cce2483679eea010e391bb38c2ae)",
+      "corroboration": [
+        "byte-identical to the local Homebrew tessdata copy"
+      ]
+    }
+  ],
+  "configuration": {
+    "base_image": {
+      "requirement": "apt-based Linux image providing CPython 3.12 for linux/arm64, pinned as name@sha256:<64 hex>",
+      "reference": "docker.io/library/python@sha256:16bf2b5c59a08523519d3c8589deca849285dee1d62a3653e124c3dba340f15e",
+      "verified_metadata": {
+        "tag_observed": "python:3.12-slim-trixie",
+        "index": "sha256:a6e34c598f2467ed0e9a8d349809fcd8b5c603269512df273a0bb1784edc11b1",
+        "platform": "linux/arm64/v8",
+        "config": "sha256:ce9a404c2c0138e747a43e6ea022d2f7e670ed868df35d627a663ba7fb940ea9",
+        "created": "2026-10-06T02:11:04.282599847Z",
+        "slsa_provenance": "sha256:e5bc9678f6a8647b1d1bdcaf68ec4f2dff651e59e0caba58f934666b213a39de",
+        "spdx_sbom": "sha256:ba62fc866f1e590f23723352278b883175d1f41a9f459da3afe4fc3edd5aa8a9",
+        "source": "https://github.com/docker-library/python.git#2a3b794c223ab067d122719541cdd54a068732a5:3.12/slim-trixie",
+        "note": "every digest re-computed from the received bytes on 2026-10-15; attestations are registry-hosted and unsigned"
+      }
+    },
+    "python": {
+      "requirement": "CPython 3.12 from the selected base image, used only inside the worker",
+      "path_in_image": "/usr/local/bin/python3.12",
+      "exact_version": "3.12.15",
+      "evidence": "image config PYTHON_VERSION=3.12.15, PYTHON_SHA256=c2c4321961fab0fb999d66e0cecf521c2ab3994c7992873ea99e306c1094fd5a, GPG_KEY=7169605F62C751356D054A26A821E680E5FA6305; SBOM lists python 3.12.15; docker-library Dockerfile (sha256 db36efba...) installs under /usr/local and verifies the CPython tarball by SHA-256 and GPG"
+    },
+    "apt": {
+      "sources_file": {
+        "path_in_workdir": "inputs/apt-sources.list",
+        "bytes": 326,
+        "sha256": "7ee0a89ba1aab59d695499ebaf4b98bb4cd0fd1ad41b576efa43b50735175a19",
+        "content_from": "candidates/apt-sources.debian-trixie-20261006T120000Z.list"
+      },
+      "build_packages": [
+        "g++=4:14.2.0-1",
+        "make=4.4.1-2",
+        "cmake=3.31.6-2",
+        "pkg-config=1.8.1-4",
+        "libpng-dev=1.6.48-1+deb13u6",
+        "zlib1g-dev=1:1.3.dfsg+really1.3.1-1+b1"
+      ],
+      "runtime_packages": [
+        "libpng16-16t64=1.6.48-1+deb13u6",
+        "zlib1g=1:1.3.dfsg+really1.3.1-1+b1",
+        "libstdc++6=14.2.0-19"
+      ],
+      "snapshot": {
+        "timestamp": "20261006T120000Z",
+        "suites": [
+          "trixie",
+          "trixie-updates",
+          "trixie-security"
+        ],
+        "InRelease_sha256": {
+          "trixie": "0584fba32e13e0ab8285fb16c27adea1ec03a73669c18702821094fd6ca86675",
+          "trixie-updates": "056c3b5e561551a5498fbf8c94a91cd6dbd19da16b984e38fdb2cb1938cb0b98",
+          "trixie-security": "1402f5b326f84ad48b7d32e092165d1f6ee192af737c941d70879f3cf9518818"
+        },
+        "signing_keys": "Debian 12 and 13 archive/security keys and 13 release key from https://ftp-master.debian.org/keys/ (fingerprints listed on keys.html)"
+      },
+      "closure_manifest": {
+        "path": "packages/closure-manifest.json",
+        "bytes": 48685,
+        "sha256": "fd8b27ee639d97f11d0eace695cef940c65321588e55dc09da5be620793c536c",
+        "generated_by": "debclosure.py from the signature-verified snapshot indices (PB-11 option O, approved 2026-10-16)"
+      }
+    },
+    "source_date_epoch": 1792074664
+  },
+  "requirements": [
+    {
+      "id": "PB-01",
+      "phase": "PRE_BUILD",
+      "kind": "REVIEW",
+      "status": "SATISFIED",
+      "binds": [
+        "sources.tesseract"
+      ],
+      "description": "Tesseract 5.5.3 source pinned by commit and archive SHA-256",
+      "evidence": "E2 tag commit db0ec62f...; E3 archive SHA-256 from two sources (builder download and Homebrew formula), re-checked against the downloaded bytes on 2026-10-15; third corroboration: archive SHA-512 equals Alpine APKBUILD pkgver=5.5.3 (PREBUILD-EVIDENCE.md)"
+    },
+    {
+      "id": "PB-02",
+      "phase": "PRE_BUILD",
+      "kind": "REVIEW",
+      "status": "SATISFIED",
+      "description": "Local GPG verification of the 5.5.3 tag signature",
+      "evidence": "PR #56 Security approval record (comment 6200838093), user-declared sole Security authority, reviewing original source commit 5d7f88035cd25f184572df9969b4411188afd8bc. Limited synthetic-only acceptance of unauthenticated full Tesseract signer fingerprint 49236FEA75C95D698EC2B78AE08C21D5677450AD, based on valid tag signature, GitHub 64-bit key ID, tree/archive/hash corroboration. Not claimed as independent signer authentication; any source/key change voids exception."
+    },
+    {
+      "id": "PB-03",
+      "phase": "PRE_BUILD",
+      "kind": "REVIEW",
+      "status": "SATISFIED",
+      "binds": [
+        "sources.leptonica"
+      ],
+      "description": "Leptonica 1.87.0 archive pinned by SHA-256",
+      "evidence": "E4 release-asset SHA-256, single source, re-checked against the downloaded bytes on 2026-10-15"
+    },
+    {
+      "id": "PB-04",
+      "phase": "PRE_BUILD",
+      "kind": "REVIEW",
+      "status": "SATISFIED",
+      "description": "Second source or signature for the Leptonica archive",
+      "evidence": "The archive on disk (14,802,808 bytes) has SHA-256 c73363397f96...b6a7, equal to Homebrew's formula checksum for the same URL, and SHA-512 b689b1cfe4d5...3a2d, equal to Alpine aports community/leptonica/APKBUILD pkgver=1.87.0 (observed 2026-10-15; PREBUILD-EVIDENCE.md)"
+    },
+    {
+      "id": "PB-05",
+      "phase": "PRE_BUILD",
+      "kind": "REVIEW",
+      "status": "SATISFIED",
+      "binds": [
+        "sources.eng.traineddata"
+      ],
+      "description": "English tessdata_fast model pinned by commit and SHA-256",
+      "evidence": "E5 download at commit 923915d..., byte-identical to the local Homebrew copy"
+    },
+    {
+      "id": "PB-06",
+      "phase": "PRE_BUILD",
+      "kind": "REVIEW",
+      "status": "SATISFIED",
+      "description": "D4 owner decision: Tesseract version (5.5.3 recommended)",
+      "evidence": "Requester decision recorded 2026-10-15 (authorized PRE_BUILD brief): Tesseract 5.5.3 for the disposable standalone proof"
+    },
+    {
+      "id": "PB-07",
+      "phase": "PRE_BUILD",
+      "kind": "REVIEW",
+      "status": "SATISFIED",
+      "binds": [
+        "configuration.base_image.reference"
+      ],
+      "description": "Base image selected and pinned by digest, with supply-chain evidence",
+      "evidence": "Requester approved python:3.12-slim-trixie on linux/arm64 (2026-10-15) pending an exact verified digest; pinned to the arm64 manifest sha256:16bf2b5c... after re-verifying index, manifest, config, SLSA provenance and SPDX SBOM by hashing the received bytes"
+    },
+    {
+      "id": "PB-08",
+      "phase": "PRE_BUILD",
+      "kind": "REVIEW",
+      "status": "SATISFIED",
+      "binds": [
+        "configuration.python.exact_version"
+      ],
+      "description": "Exact CPython 3.12 patch version and provenance in the base image; interpreter attack surface reviewed",
+      "evidence": "PR #56 Security approval record (comment 6200838093), user-declared sole Security authority, reviewing original source commit 5d7f88035cd25f184572df9969b4411188afd8bc. CONDITIONAL build-only acceptance of CPython 3.12.15 + zlib; bounded tier2 and -I -S -B; require actual linkage/library verification at PE-05 and a pinned vulnerability scan with documented findings under PE-08 before any worker run. Runtime isolation unproven."
+    },
+    {
+      "id": "PB-09",
+      "phase": "PRE_BUILD",
+      "kind": "REVIEW",
+      "status": "SATISFIED",
+      "binds": [
+        "configuration.apt.sources_file"
+      ],
+      "description": "Reviewed snapshot apt sources file ({path_in_workdir, sha256, bytes})",
+      "evidence": "Requester decision 2026-10-16 (issue #54): snapshot 20261006T120000Z approved. File content, size and SHA-256 recorded; the three InRelease signatures re-verified 2026-10-16 with the ftp-master Debian 12/13 keys (primaries B8B80B5B…47F8, 04B54C3C…88BD, 41587F7D…9DE4, 05AB9034…A8F0, 5E04A1E3…68C6)."
+    },
+    {
+      "id": "PB-10",
+      "phase": "PRE_BUILD",
+      "kind": "REVIEW",
+      "status": "SATISFIED",
+      "binds": [
+        "configuration.apt.build_packages",
+        "configuration.apt.runtime_packages"
+      ],
+      "description": "Exact name=version build and runtime package lists",
+      "evidence": "Pins resolved from the signature-verified snapshot 20261006T120000Z arm64 indices (trixie be16b37b..., trixie-updates fe771d58..., trixie-security 32bf01dc...), highest version across suites by Debian version ordering; must be redone if PB-09 changes the snapshot"
+    },
+    {
+      "id": "PB-11",
+      "phase": "PRE_BUILD",
+      "kind": "REVIEW",
+      "status": "SATISFIED",
+      "description": "Reachability assessment of the package-install build steps (N1 rule 3), or offline package installation",
+      "evidence": "Requester decision 2026-10-16 (issue #54): option O (verified offline package installation) approved, with closure manifest fd8b27ee639d97f11d0eace695cef940c65321588e55dc09da5be620793c536c (build 103 / 93,413,868 B, runtime 6 / 3,584,992 B). DECISION ONLY: the runtime controls (RUN --network=none honoured, read-only bind mount, offline apt install of the exact local paths, in-build file/checksum/control/dpkg-query/dpkg --audit checks) are UNPROVEN until the first authorized build and are verified under PE-05.",
+      "binds": [
+        "configuration.apt.closure_manifest"
+      ]
+    },
+    {
+      "id": "PB-12",
+      "phase": "PRE_BUILD",
+      "kind": "REVIEW",
+      "status": "SATISFIED",
+      "binds": [
+        "configuration.source_date_epoch"
+      ],
+      "description": "SOURCE_DATE_EPOCH chosen for the build",
+      "evidence": "Requester decision 2026-10-16 (issue #54): SOURCE_DATE_EPOCH=1792074664 approved (= 2026-10-15T14:31:04Z, author and committer time of d7be441)."
+    },
+    {
+      "id": "PB-13",
+      "phase": "PRE_BUILD",
+      "kind": "REVIEW",
+      "status": "SATISFIED",
+      "description": "Security review of the proof sources (SECURITY-REVIEW-CHECKLIST.md S1-S19)",
+      "evidence": "PR #56 Security approval record (comment 6200838093), user-declared sole Security authority, reviewing original source commit 5d7f88035cd25f184572df9969b4411188afd8bc. CONDITIONAL construction-only acceptance of S1-S19 recorded in SECURITY-REVIEW-CHECKLIST.md. Accepted risks: shared VM/root-equivalent Docker operator, Docker-managed mounts, trusted-operator same-user path-string race, unsigned base attestations, arm64-only, unreproduced image IDs, bitmap synthetic-only CER limitations, residual Tesseract/Leptonica parsers. Syft chosen for SBOM/licences, Grype for vulnerability scan; exact versions/digests, acquisition/operation and all PE/AC controls remain unapproved or unverified. Neither Docker start nor execution authorized. FOLLOW-UP 2026-10-16: First actual build failed closed on Docker Desktop's kernel-created down virtual interfaces. The approved S1-S19 evaluation covered source commit 5d7f880, not the proposed offline-network-guard refactor. CONDITIONAL SOURCE RE-REVIEW REQUIRED before another full build; earlier decision remains historical evidence. Build authorization PB-14 does not override PB-13. DECISION 2026-10-21: PR #56 comment 6318871714 (https://github.com/nishanth-cryptos/TrustLens/pull/56#issuecomment-6318871714, posted by nishanth-cryptos 2026-10-21T14:45:29Z). The requester-declared sole Security approver ('okay do it', recorded through the assistant) ACCEPTS the corrected fail-closed N1 network guard at exact source revision b62efb1a0dfe904daec9fd769de353776ad94b3a on phase9-s8-ocr-proof, for the specified synthetic proof-image build only. Basis: requester-supplied independent Codex STOP REPORT (MEDIUM-1 CLOSED, 0 blocking findings; 117/117 offline tests, 37/37 Dockerfile mutations, 10/10 executable guard mutations, 248/248 independent guard evaluations; all four guards byte-identical with RUN --network=none), reviewer-reported and not independently reproduced by the recording assistant. Residual risks accepted only for the disposable worker proof: root-equivalent Docker operator and shared Docker Desktop VM, unsigned image attestations, unverified on-host Debian mawk/kernel table representations, BuildKit isolation/build results unproven. The guard must reject unrecognized live data and must not be weakened to make a build pass. This updates only the reopened PB-13 source-review condition within the historical S1-S19 conditional construction review; it is not S8 integration or activation approval, not independent authentication of the Security owner and not an external audit. Any future build-affecting revision requires renewed disposition. FOLLOW-UP 2026-10-21 (after the decision above): the authorized build retry failed at runtime stage 5/7 with 'untraversable directory under /opt/tl' (BuildKit gives the directory a COPY --chmod=0444 creates that same mode). The build-affecting correction (explicit root chmod 0555 of the COPY-created /opt/tl/worker and /opt/tl/probe, permission guards that list each offending path and mode, and the matching static review) is NOT covered by the b62efb1a0dfe904daec9fd769de353776ad94b3a decision. PB-13 is OPEN again: independent re-review and a renewed source-bound Security decision are required before another build. RENEWED DECISION 2026-10-21: PR #56 comment 6320631134 (https://github.com/nishanth-cryptos/TrustLens/pull/56#issuecomment-6320631134, posted by nishanth-cryptos 2026-10-21T16:09:55Z). The requester-declared sole Security approver ('okay do it', recorded through the assistant) APPROVES, for construction only, the corrected proof sources at exact commit 5cd1e4055d672fa2f105a7cbfd0c0537b9827011 (fix(s8): correct OCR runtime directory permissions) on phase9-s8-ocr-proof. Basis: reported independent Codex review APPROVE (0 BLOCKER / 0 HIGH / 0 MEDIUM / 1 LOW) and the reported documentation-only resolution of LOW-1; reported checks 122/122 offline tests, 22/22 independent permission evaluations across sh/dash, 8/8 targeted mutations rejected, static/lock/config checks and diff check clean; reviewer-reported, not reproduced by the recording assistant. Changes accepted: targeted 0555 root repair of the COPY-created /opt/tl/worker and /opt/tl/probe directories, fail-closed diagnostic permission checks and the matching static review; files stay 0444, no additional write privileges, final UID/GID 65534, all RUN --network=none safeguards and the existing network guards unchanged. Accepted residual risks, restricted to this build proof: the failed build's log did not identify the offending directory and /opt/tl/worker is an inference from upstream BuildKit/fsutil behaviour and the passed readability check, not on-daemon proof; the Docker 29.7.2 bundled BuildKit behaviour and the final nonroot image are not demonstrated; root-equivalent Docker operator on a shared Docker Desktop VM; unsigned image attestations; host/VM and network-guard variation; residual Tesseract/Leptonica parser exposure. Guards and proof constraints must fail closed and must not be weakened to pass the build. No worker/probe execution has been demonstrated. Approvals for older commits remain historical and do not cover these changes; any subsequent build-affecting source change invalidates this source-bound acceptance. Not independently authenticated authority and not a formal external Security audit."
+    },
+    {
+      "id": "PB-14",
+      "phase": "PRE_BUILD",
+      "kind": "REVIEW",
+      "status": "SATISFIED",
+      "description": "Requester authorization to start Docker, acquire and build",
+      "evidence": "Requester explicit PB-14 first-build authorization and N2 written pre-start acknowledgement, 2026-10-16, in PR #56 comment 6205866315 (in this conversation: 'okay lets do it', directly answering the N2 risks/first isolated build-only authorization question). Allows MANUAL Docker Desktop startup, read-only N2 preflight, scratch-only policy/state ACK, pinned sources/base pull (NO --debs; 103 acquired packages already in approved workdir), synthetic corpus preparation, and first isolated runtime/probe image build, conditionally on observed preflight being acceptable. Actual restart policies and statuses UNKNOWN until daemon starts; stop on unexpected protected-container state or PROBLEM. Not OCR run/rebuild, scanning-tool acquisition, changes to existing containers/keys/volumes, integration/activation or merging. Separate PE-05/06/08 and requester PE-09 remain OPEN. ADDITIONAL AUTHORIZATION 2026-10-21: PR #56 comment 6318871714 (https://github.com/nishanth-cryptos/TrustLens/pull/56#issuecomment-6318871714). The requester authorizes ONE additional isolated build-only retry of the limited first-build authorization (not a run), restricted to the disposable synthetic standalone OCR proof at reviewed revision b62efb1a0dfe904daec9fd769de353776ad94b3a, unchanged pinned dependencies and the approved scratch workdir proof-20261016. Preconditions: check-lock actually reports PRE_BUILD: READY from the amended reviewed lock; operator-controlled Docker Desktop start; fresh read-only N2 preflight confirming the protected PostgreSQL/Keycloak restart policies and statuses; a matching, freshly written scratch-only N2-ACK.json. Abort on unexpected state, unrecognized network layout, policy mismatch or failed guard. Permits only the pinned base/source checks and acquisition (NO re-download of the approved .deb closure), synthetic corpus generation and one harness.py build attempt; that one invocation consumes the retry whatever its outcome. NOT authorized: harness.py run, P1-P11, real OCR execution, rebuild, scanner acquisition, SBOM/vulnerability tooling downloads, changes to PostgreSQL/Keycloak or their Docker resources, application integration, migrations, feature activation, key/evidence store changes or merging PRs. A successful construction must STOP for evidence review; PE-05, PE-06, PE-08, PE-09 and the acceptance gates remain OPEN. FOLLOW-UP 2026-10-21: the one additional build-only retry authorized in comment 6318871714 was consumed by the failed build of b62efb1a0dfe904daec9fd769de353776ad94b3a. PB-14 is OPEN again: any further build needs a new explicit requester authorization, a fresh N2 preflight and a matching N2-ACK.json. FURTHER AUTHORIZATION 2026-10-21: PR #56 comment 6320631134 (https://github.com/nishanth-cryptos/TrustLens/pull/56#issuecomment-6320631134). The requester authorizes exactly ONE additional build-only attempt against exact reviewed source 5cd1e4055d672fa2f105a7cbfd0c0537b9827011, unchanged pinned dependencies and the existing private scratch workdir proof-20261016. Preconditions: the reviewed governance lock truthfully reports PRE_BUILD: READY (exit 0); a fresh read-only N2 preflight confirms trustlens-postgres-dev and trustlens-keycloak-dev restart=no, status=exited, with no PROBLEM entries; a freshly written matching N2-ACK.json acknowledges the actual observed values and startup consequences. Permits only operator-controlled manual Docker Desktop startup, the read-only preflight, pinned base/source verification or acquisition if needed (NO --debs; the approved offline .deb closure is not re-downloaded) and one harness.py build invocation for the disposable runtime/probe images. The single attempt is consumed whether it succeeds or fails; stop immediately after the result for log/build-evidence review, and abort if preflight, policy, approved inputs, isolation guard or build evidence behave unexpectedly. NOT authorized: harness.py run, P1-P11/OCR-worker or probe execution, acceptance rebuild, scanner/Syft/Grype acquisition or execution, changes to existing PostgreSQL/Keycloak containers, other workloads, keys, volumes or evidence stores, TrustLens integration, migrations, activation or PR merge. PE-05, PE-06, PE-08, PE-09 and AC-01-AC-07 remain OPEN; separate Security evidence decisions and an explicit requester PE-09 authorization are required before any OCR execution."
+    },
+    {
+      "id": "PE-01",
+      "phase": "PRE_EXECUTION",
+      "kind": "ARTIFACT",
+      "status": "PRODUCED_AT_STAGE",
+      "verifier": "image:runtime",
+      "description": "Runtime image built; build.json (schema 2) records its ID and the local image has exactly that ID"
+    },
+    {
+      "id": "PE-02",
+      "phase": "PRE_EXECUTION",
+      "kind": "ARTIFACT",
+      "status": "PRODUCED_AT_STAGE",
+      "verifier": "image:probe",
+      "description": "Probe image built from the exact runtime tag; recorded ID equals the local image ID"
+    },
+    {
+      "id": "PE-03",
+      "phase": "PRE_EXECUTION",
+      "kind": "ARTIFACT",
+      "status": "PRODUCED_AT_STAGE",
+      "verifier": "files:logs",
+      "description": "Construction logs present as regular files matching their recorded size and SHA-256"
+    },
+    {
+      "id": "PE-04",
+      "phase": "PRE_EXECUTION",
+      "kind": "ARTIFACT",
+      "status": "PRODUCED_AT_STAGE",
+      "verifier": "files:build_evidence",
+      "description": "Every required build-evidence file (CMake caches, ldd records, tesseract --version, SHA256SUMS) present as a regular file matching its recorded size and SHA-256, and equal to the evidence inside the runtime image"
+    },
+    {
+      "id": "PE-07",
+      "phase": "PRE_EXECUTION",
+      "kind": "ARTIFACT",
+      "status": "PRODUCED_AT_STAGE",
+      "verifier": "build_input_fingerprint",
+      "description": "The build-input fingerprint recorded at construction equals the fingerprint of the current build-affecting inputs (review status excluded)"
+    },
+    {
+      "id": "PE-05",
+      "phase": "PRE_EXECUTION",
+      "kind": "REVIEW",
+      "status": "SATISFIED",
+      "description": "Security review of the build evidence: CMake options, linkage (not proof of PNG-only), RUN --network=none honoured (in-build lo guard passed in the log), and the PB-11 offline package install (file-set, checksum, size and control-data checks, apt install of the exact local paths, dpkg-query and dpkg --audit) passed in both stages",
+      "evidence": "PR #56 comment 6322860030 (https://github.com/nishanth-cryptos/TrustLens/pull/56#issuecomment-6322860030, posted by nishanth-cryptos 2026-10-21T17:57:13Z), requester-declared Security owner ('okay do it', recorded through the assistant; not independently verified identity or an external audit). Scope: build source 4c7b0bb95cabda90db840541ff6d53ec06114d7f, runtime OCI index sha256:482c806e43d935988f548de57539fc9b25afd6293219a5d55468f4e875c1e1e6, probe OCI index sha256:5c02b7b52bcba83f15f537be5544ca679a70a5191d2aca8beb4cdc8803e48799, build-input fingerprint af3cf23544ff4ea5bbc7fb29ba9a9cb1cca0faf543ba2e8e94ffe142fc028252. F1 (cached-step provenance, MEDIUM): ACCEPT_WITH_LIMITATIONS. The successful build reused BuildKit cache for builder 2/4-4/4 and runtime 2/7-4/7; the supporting record of CMake compilation, build/runtime offline package installation (103 build and 6 runtime package verification entries) and digest/size/control checks is the preserved failed-at-permissions log permission-build-failure-20261021/runtime-build.log in private scratch, 125,694 bytes, SHA-256 f4eb93cd089354f3c8d849fd706028412d161be9f33fb491ad86664baf5ba51b, whose commands and inputs match the cache hits. Accepted limitations: local BuildKit cache and preserved unsigned local logs, the original 20:52 clock provenance not independently authenticated, no independent build attestation. Not a no-cache-build authorization and no claim that compilation reran in the final successful attempt. F4 (network/control-plane scope, LOW): documented limitation. RUN --network=none isolates the Dockerfile build instructions, not the privileged Docker/BuildKit image-resolution/authentication control plane; the runtime build log shows registry metadata/authentication traffic for the digest-pinned base, while no unapproved dependency or package layer download was established. The whole Docker build is NOT claimed to be offline, and the network guard must not be weakened. PE-05 REMAINS OPEN pending the actual F2 Python-zlib linkage results (one bounded, container-free docker image save export, authorized only after independent review of the exact procedure), explicit reconciliation of N1's acquisition-only network wording with F4, and Security review. DECISION 2026-10-22: PR #56 comment 6343908889 (https://github.com/nishanth-cryptos/TrustLens/pull/56#issuecomment-6343908889, posted by nishanth-cryptos 2026-10-22T14:59:48Z); requester-declared Security-owner direction ('okay lets do it'), not independently authenticated identity or an external audit. PE-05 is SATISFIED for STATIC BUILD-EVIDENCE REVIEW ONLY; this supersedes the 'PE-05 REMAINS OPEN' statement above. F2 (Python-zlib static linkage), collected under PR #56 comment 6325610804 by one never-started disposable container (docker container create --pull=never --network=none --read-only --user 65534:65534 --cap-drop ALL --entrypoint /bin/false from sha256:482c806e43d935988f548de57539fc9b25afd6293219a5d55468f4e875c1e1e6; observed status created, StartedAt zero, no mounts), two explicit docker cp -L copies and one docker container rm by exact ID f324f806b54e422fcb2f0bfe1e6bd3a4482d636d2bb27bf3940e4d049f85f836, saved in private scratch pe05-zlib-6325610804-v2/. Locally verified 2026-10-22 by the bookkeeping reviewer: SHA256SUMS OK; zlib.cpython-312-aarch64-linux-gnu.so SHA-256 c0f3051080bd4a5dab28c2f1e2879a19c129fafac8c1aa7becc49edad73c0f06 and libz.so.1 (copied from /lib/aarch64-linux-gnu/libz.so.1) SHA-256 6fe00acadf8119ff245855e5dcc7f26c6c0ffaf4bfa2baa88feab58f23727d65, equal to libz.so.1.3.1 in the pinned zlib1g 1:1.3.dfsg+really1.3.1-1+b1 package; both ELF64 AArch64 shared objects; /usr/bin/objdump -p: extension DT_NEEDED libz.so.1, libc.so.6, ld-linux-aarch64.so.1, libz SONAME libz.so.1, no RPATH/RUNPATH in either; the extension's required libz version ZLIB_1.2.0 is among libz's 15 version definitions; the saved objdump texts reproduce exactly from the saved files. CLEANUP-REPORTING FALSE NEGATIVE: the evidence script exited with status 1 (rc=1), NOT 0, after all static ELF and reference-hash checks had passed, because its set -x trace polluted the captured docker container rm output and the exact-ID comparison failed; the script's own success/cleanup self-check is therefore recorded as FAILED. The transcript shows the rm ran once by exact ID and the script's follow-up inspect returned 'No such container'; cleanup-inspect.err holds only the pre-removal inspect trace. An independent read-only check on 2026-10-22 returned 'No such container: f324f806...', found no trustlens.pe05-labelled or tl-s8proof containers, and showed trustlens-postgres-dev and trustlens-keycloak-dev exited|no. F1 remains ACCEPT_WITH_LIMITATIONS (cached BuildKit steps; preserved log SHA-256 f4eb93cd089354f3c8d849fd706028412d161be9f33fb491ad86664baf5ba51b; no no-cache rebuild or attestation claimed). N1/F4 RECONCILED: all Dockerfile RUN steps are network-disabled (RUN --network=none with the fail-closed guards); the Docker/BuildKit control plane separately contacted Docker Hub for registry metadata/authentication while resolving the digest-pinned base, so the whole Docker build was NOT offline and must not be described as fully offline. N1 rule 1's acquisition-only wording is qualified accordingly; this is an accepted scope limitation, not a weakening of the RUN network policy and not evidence of zero container egress at run time; no unauthorized apt/source download was demonstrated. LIMITS: static ELF metadata and hashes only; no proof that Python imports zlib, of actual ld.so resolution or symbol binding, of PNG-only reachability, or of OCR results; the evidence is local, operator-collected and unsigned. PE-08, PE-09 and AC-01-AC-07 remain OPEN."
+    },
+    {
+      "id": "PE-06",
+      "phase": "PRE_EXECUTION",
+      "kind": "REVIEW",
+      "status": "SATISFIED",
+      "description": "Probe build resolved FROM tl-s8proof-runtime:proof locally without a pull (probe-build.log)",
+      "evidence": " DECISION 2026-10-21: PR #56 comment 6322860030 (https://github.com/nishanth-cryptos/TrustLens/pull/56#issuecomment-6322860030, posted by nishanth-cryptos 2026-10-21T17:57:13Z). The requester-declared Security owner ACCEPTS the PE-06 technical evidence for build source 4c7b0bb95cabda90db840541ff6d53ec06114d7f: probe-build.log resolved FROM tl-s8proof-runtime:proof@sha256:482c806e43d935988f548de57539fc9b25afd6293219a5d55468f4e875c1e1e6, the exact recorded runtime OCI index digest; the probe image sha256:5c02b7b52bcba83f15f537be5544ca679a70a5191d2aca8beb4cdc8803e48799 inherits the nine runtime layers and adds three; the probe log shows no layer downloads. Limitations: this supports local resolution but does not establish zero registry metadata/auth traffic; harness.py passes no --pull=false, so local resolution was observed, not enforced; based on the supplied Claude and independent Codex reports, not independently reproduced by the recording assistant."
+    },
+    {
+      "id": "PE-08",
+      "phase": "PRE_EXECUTION",
+      "kind": "REVIEW",
+      "status": "SATISFIED",
+      "description": "Before any OCR-worker/probe execution, Security reviews vulnerability scan of the actual built runtime image using version/digest-pinned Grype (and the selected Syft SBOM as needed), documents material findings and mitigations/risk decisions, and verifies image linkage evidence including Python zlib under PE-05; acquisition/use of scanners separately authorized",
+      "evidence": "2026-10-23 requester-declared Security-owner synthetic-only risk decision: PR #56 comment 6355388711 (https://github.com/nishanth-cryptos/TrustLens/pull/56#issuecomment-6355388711); requester-declared role, not independently authenticated external audit. PE-08 scanner authorization #6344960979; limited scanner provenance risk acceptance #6349137450; interrupted/recovered acquisition #6348423167; completed scan and locally verified SHA256SUMS #6349366554. Syft v1.55.0/Grype v0.120.1 and Grype DB v6.1.10 checksum-pinned; scanned locally held arm64 runtime OCI index sha256:482c806e43d935988f548de57539fc9b25afd6293219a5d55468f4e875c1e1e6, config sha256:af522c198c39510bbdd79fe9325206fd9b7a0dcadffc81ce04c8d086a88a0587. Original scan evidence is in operator-controlled private scratch, not the Git repo; assistant inspected uploaded JSON copies, not the original Mac host. Findings: 174 package matches / 82 distinct IDs = 0 Critical, 14 High, 34 Medium, 6 Low, 28 Negligible (unique ID counts). Security triage and findings documented in #6349656411 and #6349841616. Owner ACCEPTS WITH LIMITATIONS residual risk of all 82 IDs and additional custom OCR-engine advisories omitted by Grype because Tesseract 5.5.3/Leptonica 1.87.0 are not versioned SBOM packages; zlib CVE-2026-85091 applicability dispute remains unresolved. This is not a claim that any finding is fixed, false positive, unreachable or safe for real user input. Worker code uses fixed argv and pinned immutable eng.traineddata, PNG format/size/filter limits, and expected no-network/no-mount/nonroot/read-only/cap-drop/cap limits. Actual runtime enforcement has NOT yet been tested. PE-05 static zlib linkage accepted with limitations in #6343908889, not live symbol resolution. ACCEPTANCE SCOPE: strictly the already-built disposable synthetic S8 P1-P11 proof if separate PE-09 authorization follows successful preflight and guard checks; no OCR run authorized by this decision, no builds, new artifacts, real images, integration, merge or production. Licence evidence gaps (7 SBOM artifact entries, custom OCR package catalog omissions) remain under AC-03/04/05; other AC gates unchanged. Reassess if image/input/model/isolating controls/risks change."
+    },
+    {
+      "id": "PE-09",
+      "phase": "PRE_EXECUTION",
+      "kind": "REVIEW",
+      "status": "SATISFIED",
+      "description": "Requester's separately recorded explicit permission to run P1-P11 disposable synthetic-worker OCR tests after PE-05/PE-06 and PE-08, distinct from PB-14 authorization to start Docker and build",
+      "evidence": "2026-10-23 requester-declared Security owner separately AUTHORIZES exactly ONE isolated disposable synthetic-only S8 P1-P11 OCR/probe harness.py run invocation, including the documented measurements and cleanup checks, by explicit 'yes do it' response to a narrowly worded PE-09 approval request; decision recorded in PR #56 comment 6366134976 (https://github.com/nishanth-cryptos/TrustLens/pull/56#issuecomment-6366134976). Role is requester-declared, not independently authenticated; this is not independent external audit. Approved scope is only existing linux/arm64 runtime tl-s8proof-runtime:proof sha256:482c806e43d935988f548de57539fc9b25afd6293219a5d55468f4e875c1e1e6 and probe tl-s8proof-probe:proof sha256:5c02b7b52bcba83f15f537be5544ca679a70a5191d2aca8beb4cdc8803e48799, unchanged build-input fingerprint af3cf23544ff4ea5bbc7fb29ba9a9cb1cca0faf543ba2e8e94ffe142fc028252, pinned model and synthetic corpus, with documented network-none, read-only, nonroot, cap-drop, no-new-privileges, CPU/memory/pids limits, deadlines, output caps, proof-only cleanup and no pulls. PE-05/PE-06 and PE-08 are SATISFIED only with previously accepted limitations; PE-08 accepts with uncertainty 174 matches / 82 distinct vulnerability IDs, unversioned Tesseract/Leptonica scan coverage gaps and disputed zlib applicability, for synthetic-only tests (decision #6355388711). Operator-reported read-only evidence shows 122/122 offline tests (#6361157242), static proof workdir and image IDs (#6361451061, #6361553509), six runtime baked-evidence hashes (#6362089213), official N2 preflight success (#6362193802), and harness-validated N2-ACK.json (#6366058199). The latter evidence is held on the operator's Mac and not independently rechecked by the assistant. Execution remains fail-closed on fresh N2/environment, artifact, image, and guard mismatches; runtime safeguards and OCR outcomes have not yet been demonstrated. Exactly one harness invocation; a repeat after failure, partial run or STOP needs separate review and renewed authorization. This does NOT approve build/rebuild, image/model/source changes, real-user data, network or guard relaxation, scanner run, protected-container changes, integration, merge or production. AC-01 through AC-07 remain separate OPEN/PRODUCED_AT_STAGE acceptance items. No OCR execution has occurred under this decision."
+    },
+    {
+      "id": "AC-01",
+      "phase": "ACCEPTANCE",
+      "kind": "ARTIFACT",
+      "status": "PRODUCED_AT_STAGE",
+      "artifact": "rebuild.json",
+      "description": "Independent no-cache rebuild and image-ID comparison (harness.py rebuild)"
+    },
+    {
+      "id": "AC-02",
+      "phase": "ACCEPTANCE",
+      "kind": "REVIEW",
+      "status": "OPEN",
+      "description": "Reproducibility disposition: identical image IDs or documented residual differences",
+      "evidence": ""
+    },
+    {
+      "id": "AC-03",
+      "phase": "ACCEPTANCE",
+      "kind": "REVIEW",
+      "status": "OPEN",
+      "description": "SBOM of the runtime image (tool selected by Security)",
+      "evidence": ""
+    },
+    {
+      "id": "AC-04",
+      "phase": "ACCEPTANCE",
+      "kind": "REVIEW",
+      "status": "OPEN",
+      "description": "Vulnerability scan with a written disposition per finding",
+      "evidence": ""
+    },
+    {
+      "id": "AC-05",
+      "phase": "ACCEPTANCE",
+      "kind": "REVIEW",
+      "status": "OPEN",
+      "description": "Licence inventory from the SBOM",
+      "evidence": ""
+    },
+    {
+      "id": "AC-06",
+      "phase": "ACCEPTANCE",
+      "kind": "ARTIFACT",
+      "status": "PRODUCED_AT_STAGE",
+      "artifact": "results.json",
+      "description": "P1-P11 observations and measurements (harness.py run)"
+    },
+    {
+      "id": "AC-07",
+      "phase": "ACCEPTANCE",
+      "kind": "REVIEW",
+      "status": "OPEN",
+      "description": "Final independent review of the results",
+      "evidence": ""
+    }
+  ],
+  "candidates": {
+    "note": "Historical options considered (PREBUILD-EVIDENCE.md). Not read by any gate or by the build-input fingerprint; 'configuration' holds the recorded selections.",
+    "tesseract_version": {
+      "recommended": "5.5.3",
+      "alternative": "5.5.2",
+      "decision": "PB-06 OPEN"
+    },
+    "base_images": [
+      {
+        "option": "C (recommended)",
+        "reference_index": "docker.io/library/python@sha256:a6e34c598f2467ed0e9a8d349809fcd8b5c603269512df273a0bb1784edc11b1",
+        "linux_arm64_manifest": "sha256:16bf2b5c59a08523519d3c8589deca849285dee1d62a3653e124c3dba340f15e",
+        "config": "sha256:ce9a404c2c0138e747a43e6ea022d2f7e670ed868df35d627a663ba7fb940ea9",
+        "created": "2026-10-06T02:11:04.282599847Z",
+        "python_version": "3.12.15",
+        "python_path_in_image": "/usr/local/bin/python3.12 (per image design; requires the PYTHON build-argument change)",
+        "provenance": "SLSA v0.2 blob sha256:e5bc9678...; builder https://github.com/docker-library; source docker-library/python.git#2a3b794c223ab067d122719541cdd54a068732a5:3.12/slim-trixie",
+        "apt_snapshot": "snapshot.debian.org 20261006T120000Z (trixie, trixie-updates, trixie-security)",
+        "apt_sources_candidate": {
+          "path": "candidates/apt-sources.debian-trixie-20261006T120000Z.list",
+          "bytes": 326,
+          "sha256": "7ee0a89ba1aab59d695499ebaf4b98bb4cd0fd1ad41b576efa43b50735175a19"
+        },
+        "package_names": {
+          "build": [
+            "g++",
+            "make",
+            "cmake",
+            "pkg-config",
+            "libpng-dev",
+            "zlib1g-dev"
+          ],
+          "runtime": [
+            "libpng16-16t64",
+            "zlib1g",
+            "libstdc++6"
+          ],
+          "versions": "REQUIRE AUTHORIZED ACQUISITION of the snapshot indices"
+        }
+      },
+      {
+        "option": "A",
+        "reference_index": "docker.io/library/ubuntu@sha256:534baea6a22c03a63003dbc8dbe78fe34bc0d7e595d9a9dc9834884ff530eb55",
+        "linux_arm64_manifest": "sha256:08571ca13e00ca07a2a84eab83a959b4242e22cceb16486a11bef1428c9e93a7",
+        "config": "sha256:95d16dfcd4ab8b61154e2280ab9fe4afa2ef03e5eefa8a689e86571e8a1b32cf",
+        "created": "2026-09-18T21:23:13.773952469Z",
+        "provenance": "SPDX SBOM attestation only; no SLSA provenance observed",
+        "apt_snapshot": "none observed for arm64 (snapshot.ubuntu.com: binary-arm64 HTTP 500, ubuntu-ports HTTP 401)"
+      }
+    ],
+    "source_date_epoch": {
+      "value": 1792074664,
+      "source": "committer time of d7be441 (2026-10-15T14:31:04Z), local git",
+      "decision": "PB-12 SATISFIED (requester decision 2026-10-16, issue #54)"
+    }
+  }
+}
