@@ -1,0 +1,1136 @@
+{
+ "architecture": "arm64",
+ "assumption": "Essential packages are present in the base image (Debian policy 3.5); verified in Docker later",
+ "groups": {
+  "build": {
+   "packages": [
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/b/binutils/binutils_2.44-3_arm64.deb",
+     "name": "binutils",
+     "sha256": "7228716cad15e78d1571f1cd4ec7141f64608790d0fbcba23a07f2eda6298272",
+     "size": 261580,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/b/binutils/binutils_2.44-3_arm64.deb",
+     "version": "2.44-3"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/b/binutils/binutils-aarch64-linux-gnu_2.44-3_arm64.deb",
+     "name": "binutils-aarch64-linux-gnu",
+     "sha256": "79cbf1459118bce3535133ffbf1fd2adbd57af65271f95c829af5cfa7f474168",
+     "size": 820124,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/b/binutils/binutils-aarch64-linux-gnu_2.44-3_arm64.deb",
+     "version": "2.44-3"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/b/binutils/binutils-common_2.44-3_arm64.deb",
+     "name": "binutils-common",
+     "sha256": "f2d6b7d0b5521c4c90fc105e32819cd5268c1aa69104173b3fb856595f898249",
+     "size": 2508772,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/b/binutils/binutils-common_2.44-3_arm64.deb",
+     "version": "2.44-3"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/c/cmake/cmake_3.31.6-2_arm64.deb",
+     "name": "cmake",
+     "sha256": "983aa00debd072f7bfae69f93b1b9e4628da0a914c3745b9022e4cd60215493b",
+     "size": 9905888,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/c/cmake/cmake_3.31.6-2_arm64.deb",
+     "version": "3.31.6-2"
+    },
+    {
+     "architecture": "all",
+     "filename": "pool/main/c/cmake/cmake-data_3.31.6-2_all.deb",
+     "name": "cmake-data",
+     "sha256": "d9060145be892f43cd1888024114ceab019c81479d4b0a3383fe14cebe2295cb",
+     "size": 2268208,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/c/cmake/cmake-data_3.31.6-2_all.deb",
+     "version": "3.31.6-2"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/g/gcc-defaults/cpp_14.2.0-1_arm64.deb",
+     "name": "cpp",
+     "sha256": "88b702b0fa5942a4ee52c27f1ccf6316b831357e86693b709d216ba43348172e",
+     "size": 1568,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/g/gcc-defaults/cpp_14.2.0-1_arm64.deb",
+     "version": "4:14.2.0-1"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/g/gcc-14/cpp-14_14.2.0-19_arm64.deb",
+     "name": "cpp-14",
+     "sha256": "0b440241f7c3e2e87f2d0f1dd36792c4e2705d38a699ed331818799f21ef9437",
+     "size": 1276,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/g/gcc-14/cpp-14_14.2.0-19_arm64.deb",
+     "version": "14.2.0-19"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/g/gcc-14/cpp-14-aarch64-linux-gnu_14.2.0-19_arm64.deb",
+     "name": "cpp-14-aarch64-linux-gnu",
+     "sha256": "8e588ac3efe06f7784b08feac584c70e6965b74c045bae7e4e80bb42938f7dbe",
+     "size": 9168888,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/g/gcc-14/cpp-14-aarch64-linux-gnu_14.2.0-19_arm64.deb",
+     "version": "14.2.0-19"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/g/gcc-defaults/cpp-aarch64-linux-gnu_14.2.0-1_arm64.deb",
+     "name": "cpp-aarch64-linux-gnu",
+     "sha256": "bd9c9f4536a0aea285c4735d2dfedff624f8457b8f1bb3d15ab924e029cd7aff",
+     "size": 4832,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/g/gcc-defaults/cpp-aarch64-linux-gnu_14.2.0-1_arm64.deb",
+     "version": "4:14.2.0-1"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/g/gcc-defaults/g++_14.2.0-1_arm64.deb",
+     "name": "g++",
+     "sha256": "e4b8f8fae7c838c40b9db29251b152c9af03a4d4463388d69efdda66c4e97e79",
+     "size": 1332,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/g/gcc-defaults/g++_14.2.0-1_arm64.deb",
+     "version": "4:14.2.0-1"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/g/gcc-14/g++-14_14.2.0-19_arm64.deb",
+     "name": "g++-14",
+     "sha256": "f4813643994aa96c527e687c9c7d01855aa5fdd86e63cc8bd05c63ecc9373796",
+     "size": 22540,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/g/gcc-14/g++-14_14.2.0-19_arm64.deb",
+     "version": "14.2.0-19"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/g/gcc-14/g++-14-aarch64-linux-gnu_14.2.0-19_arm64.deb",
+     "name": "g++-14-aarch64-linux-gnu",
+     "sha256": "411dac8f1c1d0293e58deddeb170c641ad82c56d51a95f056ee12ba02c24288b",
+     "size": 10059100,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/g/gcc-14/g++-14-aarch64-linux-gnu_14.2.0-19_arm64.deb",
+     "version": "14.2.0-19"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/g/gcc-defaults/g++-aarch64-linux-gnu_14.2.0-1_arm64.deb",
+     "name": "g++-aarch64-linux-gnu",
+     "sha256": "655d9a7cb70b0342f5f1bf4f2a7b0241df15d49ab9a2567445c785b7592122f9",
+     "size": 1200,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/g/gcc-defaults/g++-aarch64-linux-gnu_14.2.0-1_arm64.deb",
+     "version": "4:14.2.0-1"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/g/gcc-defaults/gcc_14.2.0-1_arm64.deb",
+     "name": "gcc",
+     "sha256": "f543b52e29a6780a78c73cf08e551e8e524d623c1092c477cfd8beb5285a86f5",
+     "size": 5136,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/g/gcc-defaults/gcc_14.2.0-1_arm64.deb",
+     "version": "4:14.2.0-1"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/g/gcc-14/gcc-14_14.2.0-19_arm64.deb",
+     "name": "gcc-14",
+     "sha256": "f4ba77903d7efc3c64c69a8a98c7efa8ea1ae4331521bb74abd76bcc43f1b576",
+     "size": 529264,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/g/gcc-14/gcc-14_14.2.0-19_arm64.deb",
+     "version": "14.2.0-19"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/g/gcc-14/gcc-14-aarch64-linux-gnu_14.2.0-19_arm64.deb",
+     "name": "gcc-14-aarch64-linux-gnu",
+     "sha256": "5ff736a332ba5d60ad463355ed25c8c39da1281acf9155cc2f8a55fc1d478be8",
+     "size": 17686496,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/g/gcc-14/gcc-14-aarch64-linux-gnu_14.2.0-19_arm64.deb",
+     "version": "14.2.0-19"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/g/gcc-14/gcc-14-base_14.2.0-19_arm64.deb",
+     "name": "gcc-14-base",
+     "sha256": "34ee90679b018c0e64234747a4c4c0ae6b7f63541115037465a8627c2dfbc594",
+     "size": 49444,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/g/gcc-14/gcc-14-base_14.2.0-19_arm64.deb",
+     "version": "14.2.0-19"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/g/gcc-defaults/gcc-aarch64-linux-gnu_14.2.0-1_arm64.deb",
+     "name": "gcc-aarch64-linux-gnu",
+     "sha256": "c8390408ed90cc96d4fead68e313ed5ce147f1654807c23235818d535d2d7d7e",
+     "size": 1440,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/g/gcc-defaults/gcc-aarch64-linux-gnu_14.2.0-1_arm64.deb",
+     "version": "4:14.2.0-1"
+    },
+    {
+     "architecture": "all",
+     "filename": "pool/main/i/init-system-helpers/init-system-helpers_1.69~deb13u1_all.deb",
+     "name": "init-system-helpers",
+     "sha256": "addf78073e1cbc5a5508937e11d2571055e29835e00ee8fab52a66775649378f",
+     "size": 39360,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/i/init-system-helpers/init-system-helpers_1.69~deb13u1_all.deb",
+     "version": "1.69~deb13u1"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/a/acl/libacl1_2.3.2-2+b1_arm64.deb",
+     "name": "libacl1",
+     "sha256": "10b2399169e42e6d8db55944116cb2ed61caab997cf700acb83de0b0668e5721",
+     "size": 32216,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/a/acl/libacl1_2.3.2-2+b1_arm64.deb",
+     "version": "2.3.2-2+b1"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/liba/libarchive/libarchive13t64_3.7.4-4+deb13u1_arm64.deb",
+     "name": "libarchive13t64",
+     "sha256": "9dc7897bc1c83b03a69c581018010fbd9723ce199b99433639343d8b3a5bcf81",
+     "size": 324064,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/liba/libarchive/libarchive13t64_3.7.4-4+deb13u1_arm64.deb",
+     "version": "3.7.4-4+deb13u1"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/g/gcc-14/libasan8_14.2.0-19_arm64.deb",
+     "name": "libasan8",
+     "sha256": "5621bd583a3390b45726a8eebe23601f7fad86a25193e5349976cbf17e2bc9ad",
+     "size": 2577836,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/g/gcc-14/libasan8_14.2.0-19_arm64.deb",
+     "version": "14.2.0-19"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/g/gcc-14/libatomic1_14.2.0-19_arm64.deb",
+     "name": "libatomic1",
+     "sha256": "7ccff90234484bf21ae5ecb79d25b6a84b2f4038f65dd139085b2e3a937cd8dc",
+     "size": 10128,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/g/gcc-14/libatomic1_14.2.0-19_arm64.deb",
+     "version": "14.2.0-19"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/b/binutils/libbinutils_2.44-3_arm64.deb",
+     "name": "libbinutils",
+     "sha256": "c51c0cc0272202d00fc3e6da8b96bfed2a428c239b689363abddd3bac6bd7a02",
+     "size": 660392,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/b/binutils/libbinutils_2.44-3_arm64.deb",
+     "version": "2.44-3"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/b/brotli/libbrotli1_1.1.0-2+b7_arm64.deb",
+     "name": "libbrotli1",
+     "sha256": "10270398c4842e71c72b4081fa1761728b3225d6c8dce7c58d5baafe58a5e18f",
+     "size": 307600,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/b/brotli/libbrotli1_1.1.0-2+b7_arm64.deb",
+     "version": "1.1.0-2+b7"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/b/bzip2/libbz2-1.0_1.0.8-6_arm64.deb",
+     "name": "libbz2-1.0",
+     "sha256": "3537fe4fc577a60c8a9568873cd577db7ebc135eb8bb1825f18caf8972d9d2f2",
+     "size": 37772,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/b/bzip2/libbz2-1.0_1.0.8-6_arm64.deb",
+     "version": "1.0.8-6"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/g/glibc/libc-dev-bin_2.41-12+deb13u4_arm64.deb",
+     "name": "libc-dev-bin",
+     "sha256": "cd4b3bdf404a01792003f4ca400bc602252ab24e0a8c53e45d474d1818dc02e3",
+     "size": 59092,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/g/glibc/libc-dev-bin_2.41-12+deb13u4_arm64.deb",
+     "version": "2.41-12+deb13u4"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/g/glibc/libc6_2.41-12+deb13u4_arm64.deb",
+     "name": "libc6",
+     "sha256": "8784eda966b189c777a384dac5ce009e8fc9b52d006926c5a013e7fa8aa688cc",
+     "size": 2483572,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/g/glibc/libc6_2.41-12+deb13u4_arm64.deb",
+     "version": "2.41-12+deb13u4"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/g/glibc/libc6-dev_2.41-12+deb13u4_arm64.deb",
+     "name": "libc6-dev",
+     "sha256": "71e373cb5e9da975b02fb4af555929cb1977560e2dd8245de4eb8a7b03677a08",
+     "size": 1624488,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/g/glibc/libc6-dev_2.41-12+deb13u4_arm64.deb",
+     "version": "2.41-12+deb13u4"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/libc/libcap2/libcap2_2.75-10+deb13u1+b3_arm64.deb",
+     "name": "libcap2",
+     "sha256": "863aa5b9cdf6f80010b48982d4639126b09a89eeef2c0c5c7be226297c811581",
+     "size": 28568,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/libc/libcap2/libcap2_2.75-10+deb13u1+b3_arm64.deb",
+     "version": "1:2.75-10+deb13u1+b3"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/g/gcc-14/libcc1-0_14.2.0-19_arm64.deb",
+     "name": "libcc1-0",
+     "sha256": "f5e390b5fd65432b820afa403a61ab4d6286948fc07ca3aacb4d230a81f5c9a5",
+     "size": 42164,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/g/gcc-14/libcc1-0_14.2.0-19_arm64.deb",
+     "version": "14.2.0-19"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/e/e2fsprogs/libcom-err2_1.47.2-3+b12_arm64.deb",
+     "name": "libcom-err2",
+     "sha256": "1acba7e14a17a3f4b8008454e1a75840a5cdff4259d3c1d369092d82089ea0d8",
+     "size": 24932,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/e/e2fsprogs/libcom-err2_1.47.2-3+b12_arm64.deb",
+     "version": "1.47.2-3+b12"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/libx/libxcrypt/libcrypt-dev_4.4.38-1_arm64.deb",
+     "name": "libcrypt-dev",
+     "sha256": "eec6d4658495cdb8ce505cad91e0918edb8086677f280f3851c07ccd70543054",
+     "size": 123160,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/libx/libxcrypt/libcrypt-dev_4.4.38-1_arm64.deb",
+     "version": "1:4.4.38-1"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/libx/libxcrypt/libcrypt1_4.4.38-1_arm64.deb",
+     "name": "libcrypt1",
+     "sha256": "b9aaa808aa3812b3de3e54eb5dfb16762c1779db032604abef2354c02fdc29b8",
+     "size": 91760,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/libx/libxcrypt/libcrypt1_4.4.38-1_arm64.deb",
+     "version": "1:4.4.38-1"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/b/binutils/libctf-nobfd0_2.44-3_arm64.deb",
+     "name": "libctf-nobfd0",
+     "sha256": "7b1894cbd09bd59507af259ba680a1f5d3b68c6ba9e5d69508ea2d75b3f01be6",
+     "size": 152088,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/b/binutils/libctf-nobfd0_2.44-3_arm64.deb",
+     "version": "2.44-3"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/b/binutils/libctf0_2.44-3_arm64.deb",
+     "name": "libctf0",
+     "sha256": "12cb7df9eafd965c00c38a8720c5b78e7b0106390f69fe180a3b3589f407d550",
+     "size": 84232,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/b/binutils/libctf0_2.44-3_arm64.deb",
+     "version": "2.44-3"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/c/curl/libcurl4t64_8.14.1-2+deb13u5_arm64.deb",
+     "name": "libcurl4t64",
+     "sha256": "af72e1cd69240a42a76a578e6902b65f9fa641f5e7352e4bfa0ec5aa38d25204",
+     "size": 359892,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/c/curl/libcurl4t64_8.14.1-2+deb13u5_arm64.deb",
+     "version": "8.14.1-2+deb13u5"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/d/db5.3/libdb5.3t64_5.3.28+dfsg2-9_arm64.deb",
+     "name": "libdb5.3t64",
+     "sha256": "bfef56508d69fd3f940668f6abd0a466a362cabf63c4cc1c787cc58d28f6e92f",
+     "size": 629132,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/d/db5.3/libdb5.3t64_5.3.28+dfsg2-9_arm64.deb",
+     "version": "5.3.28+dfsg2-9"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/e/expat/libexpat1_2.8.3-1~deb13u1_arm64.deb",
+     "name": "libexpat1",
+     "sha256": "c3248c4beb721c8290e6e34527ae56b1fc965aa6a14982ca602df4458ef0854e",
+     "size": 109116,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/e/expat/libexpat1_2.8.3-1~deb13u1_arm64.deb",
+     "version": "2.8.3-1~deb13u1"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/libf/libffi/libffi8_3.4.8-2_arm64.deb",
+     "name": "libffi8",
+     "sha256": "d84a783b818f2386627604e64b793eb4ac5bb9ea1ba321a194a1c9c82fe09a01",
+     "size": 21260,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/libf/libffi/libffi8_3.4.8-2_arm64.deb",
+     "version": "3.4.8-2"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/g/gcc-14/libgcc-14-dev_14.2.0-19_arm64.deb",
+     "name": "libgcc-14-dev",
+     "sha256": "64b8ebc7182a69aa9525df6eab5e7eb849b947e350d821549f8a8a3e9b19e5ba",
+     "size": 2358568,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/g/gcc-14/libgcc-14-dev_14.2.0-19_arm64.deb",
+     "version": "14.2.0-19"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/g/gcc-14/libgcc-s1_14.2.0-19_arm64.deb",
+     "name": "libgcc-s1",
+     "sha256": "1108bc87879833d6d9a145f22a4a15cddb34e065b4b5f4b97bee586adbac2851",
+     "size": 54104,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/g/gcc-14/libgcc-s1_14.2.0-19_arm64.deb",
+     "version": "14.2.0-19"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/g/gmp/libgmp10_6.3.0+dfsg-3_arm64.deb",
+     "name": "libgmp10",
+     "sha256": "a27bbc27f119161ea9702c8dd66f54131cdf0d2ca73000f50ea91ef2fdfef0fb",
+     "size": 535088,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/g/gmp/libgmp10_6.3.0+dfsg-3_arm64.deb",
+     "version": "2:6.3.0+dfsg-3"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/g/gnutls28/libgnutls30t64_3.8.9-3+deb13u4_arm64.deb",
+     "name": "libgnutls30t64",
+     "sha256": "337ef41ab360015d051d6a07f85f8aa6706b35712e3dea23157eba9c902196e2",
+     "size": 1378804,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/g/gnutls28/libgnutls30t64_3.8.9-3+deb13u4_arm64.deb",
+     "version": "3.8.9-3+deb13u4"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/g/gcc-14/libgomp1_14.2.0-19_arm64.deb",
+     "name": "libgomp1",
+     "sha256": "43e84cb7971d8a4d8870cab6204e998ea4f23ee1339bb0ff556dd881bac82d25",
+     "size": 123520,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/g/gcc-14/libgomp1_14.2.0-19_arm64.deb",
+     "version": "14.2.0-19"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/b/binutils/libgprofng0_2.44-3_arm64.deb",
+     "name": "libgprofng0",
+     "sha256": "4642014c84f3d070d889725900fbd23165189597d45deddc7bdcf9928de9e32e",
+     "size": 667648,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/b/binutils/libgprofng0_2.44-3_arm64.deb",
+     "version": "2.44-3"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/k/krb5/libgssapi-krb5-2_1.21.3-5+deb13u1_arm64.deb",
+     "name": "libgssapi-krb5-2",
+     "sha256": "70803e8f5b9dd0a7167671bdd0b3cd05642384c1fc49e8270d340d85bf6c7d4c",
+     "size": 127624,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/k/krb5/libgssapi-krb5-2_1.21.3-5+deb13u1_arm64.deb",
+     "version": "1.21.3-5+deb13u1"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/n/nettle/libhogweed6t64_3.10.1-1_arm64.deb",
+     "name": "libhogweed6t64",
+     "sha256": "cb92d5a51c4fd6c7b7cbb62aaa60c7af830d0bea5b410fb1f47ee685e26944d1",
+     "size": 331628,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/n/nettle/libhogweed6t64_3.10.1-1_arm64.deb",
+     "version": "3.10.1-1"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/g/gcc-14/libhwasan0_14.2.0-19_arm64.deb",
+     "name": "libhwasan0",
+     "sha256": "5a758db399fafd354b6488c4f250b7670fb1f61c31b4e4f329d0fbb750a17084",
+     "size": 1442000,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/g/gcc-14/libhwasan0_14.2.0-19_arm64.deb",
+     "version": "14.2.0-19"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/libi/libidn2/libidn2-0_2.3.8-2_arm64.deb",
+     "name": "libidn2-0",
+     "sha256": "d2e5cef812f15db1eeb35f0a193158ee102a9e94284036c0e293521f2761d2d7",
+     "size": 107232,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/libi/libidn2/libidn2-0_2.3.8-2_arm64.deb",
+     "version": "2.3.8-2"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/i/isl/libisl23_0.27-1_arm64.deb",
+     "name": "libisl23",
+     "sha256": "21c490db3fa5f0a517c55090a199334da6164589772ebd922dff1e569c78515d",
+     "size": 600836,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/i/isl/libisl23_0.27-1_arm64.deb",
+     "version": "0.27-1"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/g/gcc-14/libitm1_14.2.0-19_arm64.deb",
+     "name": "libitm1",
+     "sha256": "d6f0255b498af876ab7bf4420672e43cbe58dcd577f0711131cbfbcbee283cdb",
+     "size": 24192,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/g/gcc-14/libitm1_14.2.0-19_arm64.deb",
+     "version": "14.2.0-19"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/j/jansson/libjansson4_2.14-2+b3_arm64.deb",
+     "name": "libjansson4",
+     "sha256": "7938472b1ddfa8b0c8f58d5f44406ae7a77a342dbb502a02f6bf292b4f853ab0",
+     "size": 39228,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/j/jansson/libjansson4_2.14-2+b3_arm64.deb",
+     "version": "2.14-2+b3"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/libj/libjsoncpp/libjsoncpp26_1.9.6-3_arm64.deb",
+     "name": "libjsoncpp26",
+     "sha256": "346da1614a66ae07549243f2abf1dc5fdcc590a4ccb408458b5ea7ef7997477d",
+     "size": 72912,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/libj/libjsoncpp/libjsoncpp26_1.9.6-3_arm64.deb",
+     "version": "1.9.6-3"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/k/krb5/libk5crypto3_1.21.3-5+deb13u1_arm64.deb",
+     "name": "libk5crypto3",
+     "sha256": "2453e8d4fa3b91b868d5bc10e84a15ad9c7bc4e4cb49379cb1f560bdce50db4a",
+     "size": 81416,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/k/krb5/libk5crypto3_1.21.3-5+deb13u1_arm64.deb",
+     "version": "1.21.3-5+deb13u1"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/k/keyutils/libkeyutils1_1.6.3-6_arm64.deb",
+     "name": "libkeyutils1",
+     "sha256": "5e680f317a6613161986417fb3ed63007c9228343f5ac2348551b103cc7fd7b4",
+     "size": 9716,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/k/keyutils/libkeyutils1_1.6.3-6_arm64.deb",
+     "version": "1.6.3-6"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/k/krb5/libkrb5-3_1.21.3-5+deb13u1_arm64.deb",
+     "name": "libkrb5-3",
+     "sha256": "1f5c46480abf894f662d894696c8a6c6510c2b20616cd453e88b27b11d3be25d",
+     "size": 308256,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/k/krb5/libkrb5-3_1.21.3-5+deb13u1_arm64.deb",
+     "version": "1.21.3-5+deb13u1"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/k/krb5/libkrb5support0_1.21.3-5+deb13u1_arm64.deb",
+     "name": "libkrb5support0",
+     "sha256": "6381bcb54e58854f9ebac2dfa580c3d6112d01b4ca3f725e7263b9374f79608e",
+     "size": 32508,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/k/krb5/libkrb5support0_1.21.3-5+deb13u1_arm64.deb",
+     "version": "1.21.3-5+deb13u1"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/o/openldap/libldap2_2.6.10+dfsg-1_arm64.deb",
+     "name": "libldap2",
+     "sha256": "38fae6af20d41e4b0a8ea1b96d0b81a7a5551a61595bc866c9af870eadfdf1bd",
+     "size": 179312,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/o/openldap/libldap2_2.6.10+dfsg-1_arm64.deb",
+     "version": "2.6.10+dfsg-1"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/g/gcc-14/liblsan0_14.2.0-19_arm64.deb",
+     "name": "liblsan0",
+     "sha256": "488a54a5fe01a926ae16d73dc7ea9f530f1bf63fae73640f741695eec2541a38",
+     "size": 1161132,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/g/gcc-14/liblsan0_14.2.0-19_arm64.deb",
+     "version": "14.2.0-19"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/l/lz4/liblz4-1_1.10.0-4_arm64.deb",
+     "name": "liblz4-1",
+     "sha256": "f86fa7f8112d56b74f99c4a8baade57a9962d187d7c8e319428e171b2a34d223",
+     "size": 59988,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/l/lz4/liblz4-1_1.10.0-4_arm64.deb",
+     "version": "1.10.0-4"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/x/xz-utils/liblzma5_5.8.1-1+deb13u1_arm64.deb",
+     "name": "liblzma5",
+     "sha256": "6a7b98005f84fc26d66a45e432f70d0793646a734f8c44cd1626b3ffa8edd7c6",
+     "size": 302720,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/x/xz-utils/liblzma5_5.8.1-1+deb13u1_arm64.deb",
+     "version": "5.8.1-1+deb13u1"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/m/mpclib3/libmpc3_1.3.1-1+b3_arm64.deb",
+     "name": "libmpc3",
+     "sha256": "d4cfe026a624e51641c80ef2af77387185714f62f3b5c87035e62d9ed8d9eec1",
+     "size": 50480,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/m/mpclib3/libmpc3_1.3.1-1+b3_arm64.deb",
+     "version": "1.3.1-1+b3"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/m/mpfr4/libmpfr6_4.2.2-1_arm64.deb",
+     "name": "libmpfr6",
+     "sha256": "628a4ef58cc6815880f72e9d3953984a379a017e4042bc575f1fcbf3954d79ac",
+     "size": 685000,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/m/mpfr4/libmpfr6_4.2.2-1_arm64.deb",
+     "version": "4.2.2-1"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/n/ncurses/libncursesw6_6.5+20250216-2_arm64.deb",
+     "name": "libncursesw6",
+     "sha256": "72121aeb08be2d915da321ddfae74f62a0764286f336279b2c2609ba07496d6d",
+     "size": 124048,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/n/ncurses/libncursesw6_6.5+20250216-2_arm64.deb",
+     "version": "6.5+20250216-2"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/n/nettle/libnettle8t64_3.10.1-1_arm64.deb",
+     "name": "libnettle8t64",
+     "sha256": "16107ce5a7b522da021fa8aba42d42af9c5e90ddabfcda3710aff6ea95808ee0",
+     "size": 310548,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/n/nettle/libnettle8t64_3.10.1-1_arm64.deb",
+     "version": "3.10.1-1"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/n/nghttp2/libnghttp2-14_1.64.0-1.1+deb13u1_arm64.deb",
+     "name": "libnghttp2-14",
+     "sha256": "ca222b98d5bef2193c05a1e736d0619798ba7a8f8e92526f3e1d06edcd0bf751",
+     "size": 71604,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/n/nghttp2/libnghttp2-14_1.64.0-1.1+deb13u1_arm64.deb",
+     "version": "1.64.0-1.1+deb13u1"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/n/nghttp3/libnghttp3-9_1.8.0-1_arm64.deb",
+     "name": "libnghttp3-9",
+     "sha256": "26bfb8d1bead043f57d95663bab02f7611e7078fb7cf71383fa480c4b4c24d81",
+     "size": 63232,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/n/nghttp3/libnghttp3-9_1.8.0-1_arm64.deb",
+     "version": "1.8.0-1"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/p/p11-kit/libp11-kit0_0.25.5-3_arm64.deb",
+     "name": "libp11-kit0",
+     "sha256": "78bfc746e68a5217e845f488f69100ed89d10c8886fbd3ffce937acb6a7d88fb",
+     "size": 409108,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/p/p11-kit/libp11-kit0_0.25.5-3_arm64.deb",
+     "version": "0.25.5-3"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/p/pkgconf/libpkgconf3_1.8.1-4_arm64.deb",
+     "name": "libpkgconf3",
+     "sha256": "8a9477ed7af47d7ddefa1fe02bf9f87d6778e8cc59062064f1b076880a7a14a5",
+     "size": 35324,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/p/pkgconf/libpkgconf3_1.8.1-4_arm64.deb",
+     "version": "1.8.1-4"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/updates/main/libp/libpng1.6/libpng-dev_1.6.48-1+deb13u6_arm64.deb",
+     "name": "libpng-dev",
+     "sha256": "34f1d78e9ee56801083f843acc0e84cb331d751ddfa7ac834e0ac18ed46bdde9",
+     "size": 360968,
+     "suite": "trixie-security",
+     "url": "https://snapshot.debian.org/archive/debian-security/20261006T120000Z/pool/updates/main/libp/libpng1.6/libpng-dev_1.6.48-1+deb13u6_arm64.deb",
+     "version": "1.6.48-1+deb13u6"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/updates/main/libp/libpng1.6/libpng16-16t64_1.6.48-1+deb13u6_arm64.deb",
+     "name": "libpng16-16t64",
+     "sha256": "57177299a638e30032a7191cc32a1b25fe4de7565164d770685d6d7f56771317",
+     "size": 275220,
+     "suite": "trixie-security",
+     "url": "https://snapshot.debian.org/archive/debian-security/20261006T120000Z/pool/updates/main/libp/libpng1.6/libpng16-16t64_1.6.48-1+deb13u6_arm64.deb",
+     "version": "1.6.48-1+deb13u6"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/p/procps/libproc2-0_4.0.4-9_arm64.deb",
+     "name": "libproc2-0",
+     "sha256": "e81069b58fe82223c71fcd74c760cb0fd3b0e61792fbaf2e5675fd948dc16dba",
+     "size": 62752,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/p/procps/libproc2-0_4.0.4-9_arm64.deb",
+     "version": "2:4.0.4-9"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/libp/libpsl/libpsl5t64_0.21.2-1.1+b1_arm64.deb",
+     "name": "libpsl5t64",
+     "sha256": "7ea03d8a7d16edce7b1b1e94980c058c0f1fb3c595eb9154b0e8590d0e7f75af",
+     "size": 57076,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/libp/libpsl/libpsl5t64_0.21.2-1.1+b1_arm64.deb",
+     "version": "0.21.2-1.1+b1"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/r/rhash/librhash1_1.4.5-1_arm64.deb",
+     "name": "librhash1",
+     "sha256": "3bee5b995ee3219779d0f50b2622b0fbc05bb89c69fa833c83d685a3c88aa73d",
+     "size": 128888,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/r/rhash/librhash1_1.4.5-1_arm64.deb",
+     "version": "1.4.5-1"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/r/rtmpdump/librtmp1_2.4+20151223.gitfa8646d.1-2+b5_arm64.deb",
+     "name": "librtmp1",
+     "sha256": "20d52d20c4834158e956ae8e1d42a61d22330062052116d5422daa2d3b1d433b",
+     "size": 56840,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/r/rtmpdump/librtmp1_2.4+20151223.gitfa8646d.1-2+b5_arm64.deb",
+     "version": "2.4+20151223.gitfa8646d.1-2+b5"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/c/cyrus-sasl2/libsasl2-2_2.1.28+dfsg1-9_arm64.deb",
+     "name": "libsasl2-2",
+     "sha256": "6431628c62524c8397255c1c4a7c7ef63661b801f3be9a59ad41e7a2e46e6210",
+     "size": 55628,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/c/cyrus-sasl2/libsasl2-2_2.1.28+dfsg1-9_arm64.deb",
+     "version": "2.1.28+dfsg1-9"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/c/cyrus-sasl2/libsasl2-modules-db_2.1.28+dfsg1-9_arm64.deb",
+     "name": "libsasl2-modules-db",
+     "sha256": "ed6eb05f8ded71ab16a0369845805b373fc8a71c0e7d33f73fa2fb11e83a1977",
+     "size": 20144,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/c/cyrus-sasl2/libsasl2-modules-db_2.1.28+dfsg1-9_arm64.deb",
+     "version": "2.1.28+dfsg1-9"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/b/binutils/libsframe1_2.44-3_arm64.deb",
+     "name": "libsframe1",
+     "sha256": "d4a90764fa79858347aaa3197bc4489404f005d9cdbea9b2ec75a607ea5ff518",
+     "size": 77772,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/b/binutils/libsframe1_2.44-3_arm64.deb",
+     "version": "2.44-3"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/libs/libssh2/libssh2-1t64_1.11.1-1+deb13u2_arm64.deb",
+     "name": "libssh2-1t64",
+     "sha256": "245565f4ce5493d67a3c54e26bc3d9cf28b1b70eeb912de7cda61af52268017d",
+     "size": 236268,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/libs/libssh2/libssh2-1t64_1.11.1-1+deb13u2_arm64.deb",
+     "version": "1.11.1-1+deb13u2"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/updates/main/o/openssl/libssl3t64_3.5.7-1~deb13u3_arm64.deb",
+     "name": "libssl3t64",
+     "sha256": "d0681293a160392186c6ef85a165e40603d1628a099936137d24d391bd591f97",
+     "size": 2770200,
+     "suite": "trixie-security",
+     "url": "https://snapshot.debian.org/archive/debian-security/20261006T120000Z/pool/updates/main/o/openssl/libssl3t64_3.5.7-1~deb13u3_arm64.deb",
+     "version": "3.5.7-1~deb13u3"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/g/gcc-14/libstdc++-14-dev_14.2.0-19_arm64.deb",
+     "name": "libstdc++-14-dev",
+     "sha256": "8760122d044cd8eb8c69426311d6b5ce7bb8f0f76e9cda1944d153ae878138f8",
+     "size": 2294728,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/g/gcc-14/libstdc++-14-dev_14.2.0-19_arm64.deb",
+     "version": "14.2.0-19"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/g/gcc-14/libstdc++6_14.2.0-19_arm64.deb",
+     "name": "libstdc++6",
+     "sha256": "6669b0c52a2e7c6af9adfdabce3ff6e286065cdfbc7b85280862b5f799daebee",
+     "size": 637536,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/g/gcc-14/libstdc++6_14.2.0-19_arm64.deb",
+     "version": "14.2.0-19"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/s/systemd/libsystemd0_257.13-1~deb13u1_arm64.deb",
+     "name": "libsystemd0",
+     "sha256": "d2f63c408549c29eaefb6f4c948393edce99f45ee8e43c991391bef63fb7d54b",
+     "size": 422500,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/s/systemd/libsystemd0_257.13-1~deb13u1_arm64.deb",
+     "version": "257.13-1~deb13u1"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/libt/libtasn1-6/libtasn1-6_4.20.0-2+deb13u1_arm64.deb",
+     "name": "libtasn1-6",
+     "sha256": "e421da949cd26245f24c594265d6a01900b5e060e80793f68b977f7bfaa009ef",
+     "size": 47304,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/libt/libtasn1-6/libtasn1-6_4.20.0-2+deb13u1_arm64.deb",
+     "version": "4.20.0-2+deb13u1"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/n/ncurses/libtinfo6_6.5+20250216-2_arm64.deb",
+     "name": "libtinfo6",
+     "sha256": "2a747f7fff3c2347c357387a7133df997410f07ba1b1df1a1461a97bd7fbc2fc",
+     "size": 341360,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/n/ncurses/libtinfo6_6.5+20250216-2_arm64.deb",
+     "version": "6.5+20250216-2"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/g/gcc-14/libtsan2_14.2.0-19_arm64.deb",
+     "name": "libtsan2",
+     "sha256": "c767c05f3dade13b5780478366029f2ff32e44bea852c6a4d7a1f93f1363d3e3",
+     "size": 2383440,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/g/gcc-14/libtsan2_14.2.0-19_arm64.deb",
+     "version": "14.2.0-19"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/g/gcc-14/libubsan1_14.2.0-19_arm64.deb",
+     "name": "libubsan1",
+     "sha256": "b5539003465ea1e60f66b9e3a1019da182e826c82d480944f3656b12351c74c8",
+     "size": 1038924,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/g/gcc-14/libubsan1_14.2.0-19_arm64.deb",
+     "version": "14.2.0-19"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/libu/libunistring/libunistring5_1.3-2_arm64.deb",
+     "name": "libunistring5",
+     "sha256": "4847467a0e47039837895e88f5a99a4a86a3d8266be40c3c896fc7c10d552dc7",
+     "size": 452856,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/libu/libunistring/libunistring5_1.3-2_arm64.deb",
+     "version": "1.3-2"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/libu/libuv1/libuv1t64_1.50.0-2_arm64.deb",
+     "name": "libuv1t64",
+     "sha256": "a9be0f24d7686ba94a6ef4f3c638079c6b39c4263306860d51046c4125d065f4",
+     "size": 147988,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/libu/libuv1/libuv1t64_1.50.0-2_arm64.deb",
+     "version": "1.50.0-2"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/libx/libxml2/libxml2_2.12.7+dfsg+really2.9.14-2.1+deb13u3_arm64.deb",
+     "name": "libxml2",
+     "sha256": "a66b9c960acef8ed9653223cbd00b155a92ebb758ea13a788c41609246c23bc7",
+     "size": 631428,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/libx/libxml2/libxml2_2.12.7+dfsg+really2.9.14-2.1+deb13u3_arm64.deb",
+     "version": "2.12.7+dfsg+really2.9.14-2.1+deb13u3"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/x/xxhash/libxxhash0_0.8.3-2_arm64.deb",
+     "name": "libxxhash0",
+     "sha256": "66665776740ced6c5ddcb48a89a92b056d0dcb13851e1ff573d2b99b766e5c6c",
+     "size": 22276,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/x/xxhash/libxxhash0_0.8.3-2_arm64.deb",
+     "version": "0.8.3-2"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/libz/libzstd/libzstd1_1.5.7+dfsg-1_arm64.deb",
+     "name": "libzstd1",
+     "sha256": "924540bd59fdbfa77a0604360efdaca54411a43daf11c7e002a3c64791b67448",
+     "size": 266052,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/libz/libzstd/libzstd1_1.5.7+dfsg-1_arm64.deb",
+     "version": "1.5.7+dfsg-1"
+    },
+    {
+     "architecture": "all",
+     "filename": "pool/updates/main/l/linux/linux-libc-dev_6.12.111-1_all.deb",
+     "name": "linux-libc-dev",
+     "sha256": "b9055566f71a6fa2e818174dcc3622aa0fb5d16cdff1bc5346e52492ba27b57c",
+     "size": 2988444,
+     "suite": "trixie-security",
+     "url": "https://snapshot.debian.org/archive/debian-security/20261006T120000Z/pool/updates/main/l/linux/linux-libc-dev_6.12.111-1_all.deb",
+     "version": "6.12.111-1"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/m/make-dfsg/make_4.4.1-2_arm64.deb",
+     "name": "make",
+     "sha256": "043219839669c431def9bb410c4a827f115ee5bf377469d55c4ed905f81f73be",
+     "size": 452396,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/m/make-dfsg/make_4.4.1-2_arm64.deb",
+     "version": "4.4.1-2"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/updates/main/o/openssl/openssl-provider-legacy_3.5.7-1~deb13u3_arm64.deb",
+     "name": "openssl-provider-legacy",
+     "sha256": "dae4ab96be3a1fc8fd490bbeb3938ecd102d360555d4af8ee2728b42ce9f1059",
+     "size": 313896,
+     "suite": "trixie-security",
+     "url": "https://snapshot.debian.org/archive/debian-security/20261006T120000Z/pool/updates/main/o/openssl/openssl-provider-legacy_3.5.7-1~deb13u3_arm64.deb",
+     "version": "3.5.7-1~deb13u3"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/p/pkgconf/pkg-config_1.8.1-4_arm64.deb",
+     "name": "pkg-config",
+     "sha256": "fef9662964fa4ff2ebbeefe076adffad79374f744274085c8ce931d5feb462a1",
+     "size": 13968,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/p/pkgconf/pkg-config_1.8.1-4_arm64.deb",
+     "version": "1.8.1-4"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/p/pkgconf/pkgconf_1.8.1-4_arm64.deb",
+     "name": "pkgconf",
+     "sha256": "aaf89947e9a5a6d980d14f43dfde8d0ad4e869b5cd33567321ca8baeb7ee7740",
+     "size": 26148,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/p/pkgconf/pkgconf_1.8.1-4_arm64.deb",
+     "version": "1.8.1-4"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/p/pkgconf/pkgconf-bin_1.8.1-4_arm64.deb",
+     "name": "pkgconf-bin",
+     "sha256": "bce0638102650b61224901da320c2f867a91cfc133532a5fb526d2ce05465fe6",
+     "size": 29636,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/p/pkgconf/pkgconf-bin_1.8.1-4_arm64.deb",
+     "version": "1.8.1-4"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/p/procps/procps_4.0.4-9_arm64.deb",
+     "name": "procps",
+     "sha256": "9afd4ad2e8da92322715114fb9555c63ce92f6c72bf72867e76ab2d6a7a3b541",
+     "size": 871348,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/p/procps/procps_4.0.4-9_arm64.deb",
+     "version": "2:4.0.4-9"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/r/rpcsvc-proto/rpcsvc-proto_1.4.3-1+b1_arm64.deb",
+     "name": "rpcsvc-proto",
+     "sha256": "6ae3c216e6c7d8e042ad3f122b8aa89aff56b2b5174b1c5780a7841b3becd61c",
+     "size": 60468,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/r/rpcsvc-proto/rpcsvc-proto_1.4.3-1+b1_arm64.deb",
+     "version": "1.4.3-1+b1"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/z/zlib/zlib1g_1.3.dfsg+really1.3.1-1+b1_arm64.deb",
+     "name": "zlib1g",
+     "sha256": "209aa5cf671e97b9eb0410844fa6df4cae2e75b0c72e7802ab6c8ece13e6ddef",
+     "size": 85116,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/z/zlib/zlib1g_1.3.dfsg+really1.3.1-1+b1_arm64.deb",
+     "version": "1:1.3.dfsg+really1.3.1-1+b1"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/z/zlib/zlib1g-dev_1.3.dfsg+really1.3.1-1+b1_arm64.deb",
+     "name": "zlib1g-dev",
+     "sha256": "745ebcf1fa115e230af76216355d7290a24f1790fe3780249b519c0e4d30534f",
+     "size": 916612,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/z/zlib/zlib1g-dev_1.3.dfsg+really1.3.1-1+b1_arm64.deb",
+     "version": "1:1.3.dfsg+really1.3.1-1+b1"
+    }
+   ],
+   "requested": [
+    "cmake=3.31.6-2",
+    "g++=4:14.2.0-1",
+    "libpng-dev=1.6.48-1+deb13u6",
+    "make=4.4.1-2",
+    "pkg-config=1.8.1-4",
+    "zlib1g-dev=1:1.3.dfsg+really1.3.1-1+b1"
+   ]
+  },
+  "runtime": {
+   "packages": [
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/g/gcc-14/gcc-14-base_14.2.0-19_arm64.deb",
+     "name": "gcc-14-base",
+     "sha256": "34ee90679b018c0e64234747a4c4c0ae6b7f63541115037465a8627c2dfbc594",
+     "size": 49444,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/g/gcc-14/gcc-14-base_14.2.0-19_arm64.deb",
+     "version": "14.2.0-19"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/g/glibc/libc6_2.41-12+deb13u4_arm64.deb",
+     "name": "libc6",
+     "sha256": "8784eda966b189c777a384dac5ce009e8fc9b52d006926c5a013e7fa8aa688cc",
+     "size": 2483572,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/g/glibc/libc6_2.41-12+deb13u4_arm64.deb",
+     "version": "2.41-12+deb13u4"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/g/gcc-14/libgcc-s1_14.2.0-19_arm64.deb",
+     "name": "libgcc-s1",
+     "sha256": "1108bc87879833d6d9a145f22a4a15cddb34e065b4b5f4b97bee586adbac2851",
+     "size": 54104,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/g/gcc-14/libgcc-s1_14.2.0-19_arm64.deb",
+     "version": "14.2.0-19"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/updates/main/libp/libpng1.6/libpng16-16t64_1.6.48-1+deb13u6_arm64.deb",
+     "name": "libpng16-16t64",
+     "sha256": "57177299a638e30032a7191cc32a1b25fe4de7565164d770685d6d7f56771317",
+     "size": 275220,
+     "suite": "trixie-security",
+     "url": "https://snapshot.debian.org/archive/debian-security/20261006T120000Z/pool/updates/main/libp/libpng1.6/libpng16-16t64_1.6.48-1+deb13u6_arm64.deb",
+     "version": "1.6.48-1+deb13u6"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/g/gcc-14/libstdc++6_14.2.0-19_arm64.deb",
+     "name": "libstdc++6",
+     "sha256": "6669b0c52a2e7c6af9adfdabce3ff6e286065cdfbc7b85280862b5f799daebee",
+     "size": 637536,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/g/gcc-14/libstdc++6_14.2.0-19_arm64.deb",
+     "version": "14.2.0-19"
+    },
+    {
+     "architecture": "arm64",
+     "filename": "pool/main/z/zlib/zlib1g_1.3.dfsg+really1.3.1-1+b1_arm64.deb",
+     "name": "zlib1g",
+     "sha256": "209aa5cf671e97b9eb0410844fa6df4cae2e75b0c72e7802ab6c8ece13e6ddef",
+     "size": 85116,
+     "suite": "trixie",
+     "url": "https://snapshot.debian.org/archive/debian/20261006T120000Z/pool/main/z/zlib/zlib1g_1.3.dfsg+really1.3.1-1+b1_arm64.deb",
+     "version": "1:1.3.dfsg+really1.3.1-1+b1"
+    }
+   ],
+   "requested": [
+    "libpng16-16t64=1.6.48-1+deb13u6",
+    "libstdc++6=14.2.0-19",
+    "zlib1g=1:1.3.dfsg+really1.3.1-1+b1"
+   ]
+  }
+ },
+ "indices": {
+  "trixie": {
+   "InRelease_sha256": "0584fba32e13e0ab8285fb16c27adea1ec03a73669c18702821094fd6ca86675",
+   "Packages_xz_bytes": 9614192,
+   "Packages_xz_sha256": "be16b37b2f740f066ea93d35d56f04f94d63693e5a3eb421b052bf86fae75bcd"
+  },
+  "trixie-security": {
+   "InRelease_sha256": "1402f5b326f84ad48b7d32e092165d1f6ee192af737c941d70879f3cf9518818",
+   "Packages_xz_bytes": 264896,
+   "Packages_xz_sha256": "32bf01dc144870354d1e077338cf0c7d845e327ed58f505f8eb7added0313db4"
+  },
+  "trixie-updates": {
+   "InRelease_sha256": "056c3b5e561551a5498fbf8c94a91cd6dbd19da16b984e38fdb2cb1938cb0b98",
+   "Packages_xz_bytes": 4424,
+   "Packages_xz_sha256": "fe771d58d4af39dbb94142d6f3ce578d340c6b1364c172d9e87f2287bdc4994b"
+  }
+ },
+ "schema": "tl-s8proof-deb-closure/1",
+ "snapshot": "20261006T120000Z"
+}
