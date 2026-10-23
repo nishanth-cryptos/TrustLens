@@ -412,8 +412,9 @@ class F5LockPhases(unittest.TestCase):
         self.assertTrue(harness.acceptance_open(lock, None))
         execution = harness.execution_gate(lock, None)
         self.assertTrue(any(b.startswith("PE-01") for b in execution))              # run stays blocked
-        for review in ("PE-08", "PE-09"):                                           # PE-05 closed (static evidence only)
-            self.assertTrue(any(b.startswith(review) for b in execution), review)
+        # PE-08 was Security-reviewed; PE-09 still gates actual worker execution.
+        self.assertFalse(any(b.startswith("PE-08") for b in execution))
+        self.assertTrue(any(b.startswith("PE-09") for b in execution))
 
     def test_placeholder_build_record_no_longer_passes_pre_execution(self):
         """The original F5 defect: non-empty strings in build.json were accepted as produced artifacts."""
@@ -451,8 +452,9 @@ class F5LockPhases(unittest.TestCase):
         result = subprocess.run([sys.executable, str(ROOT / "harness.py"), "check-lock"], capture_output=True, text=True)
         self.assertEqual(result.returncode, 0)  # PB-13/PB-14 renewed for 5cd1e40; actual Docker preflight has not run.
         self.assertIn("PRE_BUILD: READY (0 open)", result.stdout)
-        for gate in ("PE-08", "PE-09", "AC-02", "AC-03", "AC-04", "AC-05", "AC-07"):
+        for gate in ("PE-09", "AC-02", "AC-03", "AC-04", "AC-05", "AC-07"):
             self.assertIn(f"OPEN  {gate}:", result.stdout)
+        self.assertNotIn("OPEN  PE-08:", result.stdout)   # synthetic-only Security decision (6355388711)
         self.assertNotIn("OPEN  PE-06:", result.stdout)   # Security-owner acceptance of local FROM resolution (6322860030)
         self.assertNotIn("OPEN  PE-05:", result.stdout)   # static build-evidence review only (6343908889)
         self.assertIn("PRE_EXECUTION: BLOCKED", result.stdout)
