@@ -310,10 +310,14 @@ class StaticTests(unittest.TestCase):
                      "Tesseract 5.5.3/Leptonica 1.87.0",
                      "separate PE-09 authorization"):
             self.assertIn(kept, pe08["evidence"])
-        # PE-09 is a distinct, still-OPEN authorization for the OCR-worker run.
+        # PE-09 independently authorizes one synthetic-only run, not arbitrary execution.
         pe09 = next(r for r in lock["requirements"] if r["id"] == "PE-09")
         self.assertEqual(pe09["phase"], "PRE_EXECUTION")
-        self.assertEqual(pe09["status"], "OPEN")
+        self.assertEqual(pe09["status"], "SATISFIED")
+        for kept in ("6366134976", "exactly ONE", "synthetic-only",
+                     "repeat after failure, partial run or STOP",
+                     "This does NOT approve build/rebuild", "fresh N2/environment"):
+            self.assertIn(kept, pe09["evidence"])
         pe05 = next(r for r in lock["requirements"] if r["id"] == "PE-05")   # static build-evidence review only
         self.assertEqual(pe05["status"], "SATISFIED")
         for kept in ("6322860030", "ACCEPT_WITH_LIMITATIONS", "f4eb93cd089354f3c8d849fd706028412d161be9f33fb491ad86664baf5ba51b",
