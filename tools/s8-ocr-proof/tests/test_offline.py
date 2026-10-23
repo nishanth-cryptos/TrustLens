@@ -301,11 +301,19 @@ class StaticTests(unittest.TestCase):
                      "retry authorized in comment 6318871714 was consumed", "6320631134",
                      "exactly ONE additional build-only attempt", "consumed whether it succeeds or fails"):
             self.assertIn(kept, pb14["evidence"])
-        # An image vulnerability review and separate OCR run authorization remain mandatory.
-        for rid in ("PE-08", "PE-09"):
-            item = next(r for r in lock["requirements"] if r["id"] == rid)
-            self.assertEqual(item["phase"], "PRE_EXECUTION")
-            self.assertEqual(item["status"], "OPEN")
+        # PE-08 is reviewed with limitations for the isolated synthetic-only proof.
+        pe08 = next(r for r in lock["requirements"] if r["id"] == "PE-08")
+        self.assertEqual(pe08["phase"], "PRE_EXECUTION")
+        self.assertEqual(pe08["status"], "SATISFIED")
+        for kept in ("6355388711", "6344960979", "6349137450",
+                     "174 package matches / 82 distinct IDs",
+                     "Tesseract 5.5.3/Leptonica 1.87.0",
+                     "separate PE-09 authorization"):
+            self.assertIn(kept, pe08["evidence"])
+        # PE-09 is a distinct, still-OPEN authorization for the OCR-worker run.
+        pe09 = next(r for r in lock["requirements"] if r["id"] == "PE-09")
+        self.assertEqual(pe09["phase"], "PRE_EXECUTION")
+        self.assertEqual(pe09["status"], "OPEN")
         pe05 = next(r for r in lock["requirements"] if r["id"] == "PE-05")   # static build-evidence review only
         self.assertEqual(pe05["status"], "SATISFIED")
         for kept in ("6322860030", "ACCEPT_WITH_LIMITATIONS", "f4eb93cd089354f3c8d849fd706028412d161be9f33fb491ad86664baf5ba51b",
